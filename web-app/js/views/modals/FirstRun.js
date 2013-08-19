@@ -2,7 +2,7 @@ define(['marionette', 'templates', 'vent',
         //-- Models
         'models/User',
         //-- libs
-        'wizard', 'tourist'], 
+        'wizard'], 
 
         function ( Marionette, templates, vent,
                    User, wizard ) {

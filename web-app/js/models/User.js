@@ -1,6 +1,5 @@
 define(['backbone', 'vent',
-        'cookie', 'hash',
-        'backbone.flask'],
+        'cookie', 'hash'],
 
         function( Backbone, vent,
                   cookie, hash){

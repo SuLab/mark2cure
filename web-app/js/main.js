@@ -10,12 +10,10 @@ require.config({
     'backbone'          : 'lib/backbone',
     'relational'        : 'lib/backbone-relational',
     'marionette'        : 'lib/backbone.marionette',
-    'backbone.flask'    : 'lib/backbone.flask',
 
     //-- UI Core
     'bootstrap'         : 'lib/bootstrap',
     'wizard'            : 'lib/wizard',
-    'tourist'           : 'lib/tourist',
 
     //-- Utils
     'tpl'               : 'lib/tpl',
