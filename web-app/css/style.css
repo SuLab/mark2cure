@@ -1,0 +1,221 @@
+html, body {
+  height: 100%;
+}
+
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -90px;
+}
+
+#content,
+#network {
+  padding-top: 60px;
+}
+
+#network {
+  position: relative;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Modal Views */
+.modal-box .close-btn {
+  display: block;
+  position: absolute;
+  top: 0; right: 0;
+  border-radius: 0 6px 0 6px;
+  height: 22px;
+  width: 22px;
+  text-align: center;
+  font-size: 22px;
+}
+
+.step-content {
+  padding: 12px;
+}
+
+.modal-body img.logo {
+  width: 200px;
+  margin: 0 auto;
+  display: block;
+  padding: 20px;
+}
+
+.complete-modal h3 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.2em;
+  font-size: 26px;
+  color: #006699;
+  text-align: center;
+  width: 400px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+.complete-modal span.follow-up {
+  color: #999;
+  font-weight: 100;
+}
+
+.complete-modal ul li {
+  font-size: 16px;
+  padding: 6px;
+  margin: 6px;
+}
+
+.complete-modal ul li p input {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  width: 140px;
+  margin: -2px 2px 0px 0px;
+  padding: 2px 4px 2px 4px;
+  border: none;
+}
+
+.feedback-modal .feedback-item {
+  padding: 20px;
+}
+
+.feedback-modal .feedback-item h4 {
+  color: #006699;
+}
+
+.feedback-modal .feedback-item label {
+  color: #999;
+}
+
+.feedback-modal .feedback-item label:hover {
+  color: #333;
+}
+
+/* Analytics View */
+
+#analytics .node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+#analytics .link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+#network button.close {
+  position: absolute;
+  top: 60px;
+  right: 120px;
+  font-size: 28px;
+  color: #000;
+}
+
+#network i.refresh {
+  position: absolute;
+  top: 64px;
+  right: 150px;
+}
+
+#network i.refresh:hover,
+#network button.close:hover {
+  cursor: pointer;
+}
+
+/* Text Annotation View */
+.text-view p.paragraph {
+  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", "serif";
+  line-height: 1.8em;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+
+  /* -webkit-touch-callout: none; */
+  /* -webkit-user-select: none; */
+  /* -khtml-user-select: none; */
+  /* -moz-user-select: none; */
+  /* -ms-user-select: none; */
+  /* user-select: none; */
+}
+
+.text-view p.paragraph.complete {
+  cursor: default;
+}
+
+.text-view p.paragraph.complete span.selectedCompare {
+  border-top: 4px solid #0cf;
+  border-bottom: 4px solid #0cf;
+}
+
+.text-view p.paragraph.editing span:hover {
+  cursor: pointer;
+}
+
+.text-view p.paragraph.editing span.hover {
+  color: steelblue;
+}
+
+.text-view p.paragraph.editing span.selected {
+  background-color: #0cf;
+}
+
+.text-view p.paragraph.editing span.latest {
+  /* border-left: 4px dotted #ccc; */
+  /* border-right: 4px dotted #ccc; */
+}
+
+/* Library  */
+
+.library-view {
+  margin: 10px;
+  overflow: hidden;
+}
+
+.library-view div.doc-item {
+  position: relative;
+  float: left;
+  height: 160px;
+  width: 160px;
+  background: #ededed;
+  padding: 12px;
+  margin: 2px;
+
+  border: 8px solid #c0e7fa;
+}
+
+.library-view div.doc-item i {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.library-view div.doc-item:hover {
+  border: 8px solid #78c0eb;
+  cursor: pointer;
+}
+
+.library-view li p {
+  font-size: 18px;
+  border-bottom: 2px solid #FFF8E7;
+}
+
+/* Footer */
+
+#push,
+#footer {
+  height: 60px;
+}
+
+/* U T I L I T Y */
+div.popover.top {
+  z-index: 10001;
+}
+
+a {
+  color: #006699;
+}

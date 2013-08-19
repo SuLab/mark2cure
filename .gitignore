@@ -1,0 +1,11 @@
+.DS_Store
+*.pyc
+*.pyo
+*.log
+*.pid
+
+/ENV
+/assets
+/service/settings.py
+
+/web-app/js/main.built.js

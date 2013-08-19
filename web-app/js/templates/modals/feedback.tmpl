@@ -1,0 +1,16 @@
+<a href="#" class="close-btn">&times;</a>
+
+<div class="span7 feedback-modal">
+  <% _.each(questions, function(question, question_i) { %>
+    <% if(question_i % 2 == 0) { %><div class="row"><% } %>
+    <fieldset class="fieldset span3 feedback-item">
+      <h4 class="lead"><%= question %>:</h4>
+      <% _.each(['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'], function(option, option_i) { %>
+        <label class="radio">
+          <input type="radio" name="<%= question_i %>" value="<%= option_i %>"><%= option %>
+        </label>
+      <% }) %>
+    </fieldset>
+    <% if(question_i % 2 == 1) { %></div><% } %>
+  <% }) %>
+</div>

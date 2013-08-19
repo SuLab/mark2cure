@@ -1,14 +1,13 @@
 ## Setup
 
-### Local
-
-. ENV/bin/activate
-
 ### Server
 
 #### Dependencies
 
-sudo apt-get install nodejs
+sudo apt-get update
+sudo apt-get upgrate
+sudo apt-get install build-essential python python-dev python-pip git-core uwsgi nginx nodejs
+pip install uwsgi virtualenv
 
 #### Setup
 
@@ -17,7 +16,7 @@ The application runs with uWSGI. To deploy:
 git clone git@bitbucket.org:sulab/mark2cure.git /var/www/
 Add a MySQL DB connection details
 pip install -r service/requirements.txt
-/usr/local/bin/uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
+/usr/bin/uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
 
 ### Cron
 
