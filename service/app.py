@@ -30,5 +30,5 @@ api.add_resource(Network,     '/api/v1/network')
 # Main App Center
 #
 if __name__ == '__main__':
-    app.debug = True
+    # app.debug = True
     app.run()
