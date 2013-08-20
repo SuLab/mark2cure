@@ -16,11 +16,11 @@ An online text annotator to generate user annotations in fun and exploratory way
 
     # make the project folder and download the repo
     cd /var/www/ && git clone https://USER@bitbucket.org/sulab/mark2cure.git && cd mark2cure
-    
+
     # Make the python virtual environment and activate it
     virtualenv ENV
     . ENV/bin/activate
-    
+
     # Install all the python related dependencies 
     easy_install -U distribute
     pip install -r service/requirements.txt

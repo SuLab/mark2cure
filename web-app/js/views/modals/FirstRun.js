@@ -19,7 +19,8 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'change #experience'  : 'saveUserInfo',
-      'blur #user-name'     : 'saveUserInfo'
+      'blur #user-name'     : 'saveUserInfo',
+      'keydown #user-name'  : 'finish'
     },
 
     initialize : function(options) {
@@ -37,7 +38,6 @@ define(['marionette', 'templates', 'vent',
 
           //-- Completed training, hide background
           self.model.save({'first_run' : false});
-
           self.close();
         });
     },
@@ -45,8 +45,22 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Events
     //
+    finish : function(evt) {
+      if(evt.keyCode === 13) {
+        this.saveUserInfo();
+
+        var doc = this.collection.at(0)
+        Backbone.history.navigate( '#/'+ doc.id );
+        vent.trigger('navigate', doc.id );
+
+        //-- Completed training, hide background
+        this.model.save({'first_run' : false});
+        this.close();
+      }
+    },
+
     saveUserInfo : function(evt) {
-      evt.preventDefault();
+      if(evt) { evt.preventDefault(); }
       this.model.set('experience',  Number(this.ui.experience.val()) );
       this.model.set('username',    this.ui.user_name.val()  );
       this.model.save();
