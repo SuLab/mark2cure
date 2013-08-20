@@ -1,44 +1,76 @@
-## Setup
+# Mark2Cure
 
-### Server
+An online text annotator to generate user annotations in fun and exploratory way
 
-#### Dependencies
+## Setup (Ubuntu Server 12.04)
 
-  sudo apt-get update
-  sudo apt-get upgrate
+### Server Dependencies
 
-  sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev
-  sudo apt-get install git-core uwsgi uwsgi-plugin-python nginx nodejs
+    sudo apt-get update
+    sudo apt-get upgrate
 
-#### Setup
+    sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev
+    sudo apt-get install git-core uwsgi uwsgi-plugin-python nginx nodejs
 
-The application runs with uWSGI. To deploy:
+### Project Setup
 
-  cd /var/www/ && git clone https://x0xMaximus@bitbucket.org/sulab/mark2cure.git && cd mark2cure
-  virtualenv ENV
-  . ENV/bin/activate
-  easy_install -U distribute
-  pip install -r service/requirements.txt
+    # make the project folder and download the repo
+    cd /var/www/ && git clone https://USER@bitbucket.org/sulab/mark2cure.git && cd mark2cure
+    
+    # Make the python virtual environment and activate it
+    virtualenv ENV
+    . ENV/bin/activate
+    
+    # Install all the python related dependencies 
+    easy_install -U distribute
+    pip install -r service/requirements.txt
 
-  uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
+    # Start the server to start accepting connections
+    uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
 
-#### Config
+### Server Configuration
 
-  server {
-    listen 80;
+    # /etc/nginx/sites-available/default
+    server {
+        listen 80;
 
-    root /var/www/mark2cure/web-app;
-    index index.html;
+        root /var/www/mark2cure/web-app;
+        index index.html;
 
-    server_name mark2cure.org;
+        server_name mark2cure.org;
 
-    location /api {
-      include uwsgi_params;
-      uwsgi_pass 127.0.0.1:3031;
+        location /api {
+            include uwsgi_params;
+            uwsgi_pass 127.0.0.1:3031;
+        }
     }
-  }
 
 ### Cron
 
-*/30 * * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py heatmap
-0 */2 * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py annotate
+    */30 * * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py heatmap
+    0 */2 * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py annotate
+
+### Control
+
+    # View the server log
+    tail -f /var/www/mark2cure/deploy/uwsgi.log
+    # Restart gracefully
+    kill -HUP $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
+    # Kill
+    kill -INT $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
+
+### Update
+
+    #!/bin/bash
+    LOGPATH=/home/ubuntu/gitpull.log
+
+    echo "Updating repo">>$LOGPATH
+    cd /var/www/mark2cure && git pull origin master
+
+    echo "Compiling Application">>$LOGPATH
+    cd /var/www/mark2cure/web-app && node r.js -o app.build.js
+
+    echo "Restarting uWSGI">>$LOGPATH
+    kill -HUP $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
+
+    date "+%F %T">>$LOGPATH
