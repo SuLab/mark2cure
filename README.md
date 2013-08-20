@@ -4,27 +4,23 @@
 
 #### Dependencies
 
-sudo apt-get update
-sudo apt-get upgrate
+  sudo apt-get update
+  sudo apt-get upgrate
 
-sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev
-sudo apt-get install git-core uwsgi uwsgi-plugin-python nginx nodejs
-
-pip install uwsgi
+  sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev
+  sudo apt-get install git-core uwsgi uwsgi-plugin-python nginx nodejs
 
 #### Setup
 
 The application runs with uWSGI. To deploy:
 
-  cd /var/www/
-  git clone git@bitbucket.org:sulab/mark2cure.git && cd mark2cure
-  mark2cure
+  cd /var/www/ && git clone https://x0xMaximus@bitbucket.org/sulab/mark2cure.git && cd mark2cure
   virtualenv ENV
   . ENV/bin/activate
   easy_install -U distribute
   pip install -r service/requirements.txt
 
-  /usr/bin/uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
+  uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
 
 #### Config
 
@@ -44,5 +40,5 @@ The application runs with uWSGI. To deploy:
 
 ### Cron
 
-*/30 * * * * /var/www/abstract-annotations/ENV/bin/python /var/www/abstract-annotations/service/manage.py heatmap
-0 */2 * * * /var/www/abstract-annotations/ENV/bin/python /var/www/abstract-annotations/service/manage.py annotate
+*/30 * * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py heatmap
+0 */2 * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py annotate
