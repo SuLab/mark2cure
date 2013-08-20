@@ -10,7 +10,7 @@ An online text annotator to generate user annotations in fun and exploratory way
     sudo apt-get upgrate
 
     sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev
-    sudo apt-get install git-core uwsgi uwsgi-plugin-python nginx nodejs
+    sudo apt-get install git-core nginx nodejs
 
 ### Project Setup
 

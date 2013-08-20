@@ -22,24 +22,32 @@ define(['marionette', 'templates', 'vent',
     events : {
       'click .close-btn' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
 
-      'change #user-experience'   : 'saveUserInfo',
-      'blur #user-username'       : 'saveUserInfo',
-      'blur #user-email'          : 'saveUserInfo'
+      'change #user-experience'   : 'saveExperience',
+      'blur #user-username'       : 'saveUserName',
+      'blur #user-email'          : 'saveEmail'
     },
 
     initialize : function(options) {
       this.model = options.user;
+      this.bindTo(this.model, 'sync', this.render, this);
     },
 
     //
     //-- Events
     //
-    saveUserInfo : function(evt) {
+    saveExperience : function(evt) {
       evt.preventDefault();
-      this.model.set('experience',  Number(this.ui.experience.val()) );
-      this.model.set('username',    this.ui.user_name.val()  );
-      this.model.set('email',       this.ui.email.val()  );
-      this.model.save();
+      this.model.save({'experience' : Number(this.ui.experience.val()) });
+    },
+
+    saveUserName : function(evt) {
+      evt.preventDefault();
+      this.model.save({'username' : this.ui.user_name.val()});
+    },
+
+    saveEmail : function(evt) {
+      evt.preventDefault();
+      this.model.save({'email' : this.ui.email.val()});
     }
 
   });
