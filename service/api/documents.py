@@ -49,7 +49,8 @@ class Documents(Resource):
                             user,
                             document,
                             env.get('HTTP_USER_AGENT'),
-                            env.get('REMOTE_ADDR')
+                            env.get('REMOTE_ADDR'),
+                            None
                           );
           db.session.add(ann)
 

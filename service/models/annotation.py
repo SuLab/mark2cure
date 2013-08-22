@@ -15,11 +15,12 @@ class Annotation(db.Model):
 
     user_id       = db.Column(db.Integer, db.ForeignKey('user.id'))
     document_id   = db.Column(db.Integer, db.ForeignKey('document.id'))
+    concept_id    = db.Column(db.Integer, db.ForeignKey('concept.id'))
 
     user_agent  = db.Column(db.String(150))
     player_ip   = db.Column(db.String(30))
 
-    def __init__(self, kind, type, text, start, length, stop, user, document, ua, pip):
+    def __init__(self, kind, type, text, start, length, stop, user, document, ua, pip, concept):
         self.kind     = kind
         self.type     = type
         self.text     = text
@@ -31,6 +32,7 @@ class Annotation(db.Model):
 
         self.user     = user
         self.document = document
+        self.concept  = concept
 
         self.user_agent = ua
         self.player_ip = pip
