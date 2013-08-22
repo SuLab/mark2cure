@@ -13,12 +13,16 @@ define(['marionette', 'templates', 'vent',
     template : templates.modals.complete,
 
     ui : {
-      'email' : 'input'
+      'email' : 'input',
+      'email_btn' : '.btn'
     },
 
     events : {
-      'click a.library'  : 'keepGoing',
-      'blur input'       : 'submitEmail'
+      'click .close-btn' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
+      'click .close-link' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
+
+      'blur input'       : 'submitEmail',
+      'click .btn.btn-success' : function(e) { e.preventDefault(); this.ui.email_btn.removeClass('btn-success').addClass('btn-info'); }
     },
 
     initialize : function(options) {
@@ -30,16 +34,7 @@ define(['marionette', 'templates', 'vent',
     //
     submitEmail : function(evt) {
       evt.preventDefault();
-
       this.model.save({'email' : this.ui.email.val().trim()});
-    },
-
-    keepGoing : function(evt) {
-      evt.preventDefault();
-
-      vent.trigger('modal:close');
-      Backbone.history.navigate( '#/library' );
-      vent.trigger('navigate:library', {});
     }
 
   });

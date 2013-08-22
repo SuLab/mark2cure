@@ -20,6 +20,13 @@ define(['marionette', 'templates', 'vent',
       'click i.refresh'     : 'refreshGraph'
     },
 
+    initialize : function() {
+      var self = this;
+      vent.on('network:refresh', function() {
+        self.refreshGraph();
+      });
+    },
+
     onRender : function() {
       var self = this,
           width = 600,
@@ -27,7 +34,7 @@ define(['marionette', 'templates', 'vent',
 
       if( this.options.explain ) {
         self.ui.close.popover({ title   : '',
-                                content : '<p>Here is your network viewer showing links between papers and concepts.</p><p>Toggle this view using the header icon and this close button.</p> <button class="btn btn-primary btn-small close-network-popover" type="button">Close</button>',
+                                content : templates.snippets.network_info({}),
                                 html    : true,
                                 trigger : 'manual',
                                 placement : 'down',
@@ -39,6 +46,7 @@ define(['marionette', 'templates', 'vent',
 
         //-- Reposition the popover
         $('.popover').css({'position': 'absolute', top: 120, left: ($('body').width()/2)+100 });
+        this.options.explain = false;
       }
 
       this.options.network = {};
@@ -68,7 +76,6 @@ define(['marionette', 'templates', 'vent',
     //-- Events
     //
     refreshGraph : function(evt) {
-      evt.preventDefault();
       var self = this;
       // d3.json("/api/v1/network", function(error, graph) { self.drawNetwork(graph) });
       this.render();

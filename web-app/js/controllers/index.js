@@ -7,8 +7,12 @@ define(['vent'],
       vent.trigger('navigate:settings', {});
     },
 
-    showFeedback : function() {
-      vent.trigger('navigate:feedback', {});
+    showInstructions : function() {
+      vent.trigger('navigate:instructions', {});
+    },
+
+    showSurvey : function() {
+      vent.trigger('navigate:survey', {});
     },
 
     sendMessage : function() {

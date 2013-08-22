@@ -9,11 +9,12 @@ define(['marionette', 'templates', 'vent',
   'use strict';
 
   return Marionette.ItemView.extend({
-    template : templates.modals.feedback,
+    template : templates.modals.survey,
     templateHelpers : function() { return this.options; },
 
     events : {
-      'click .close-btn' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
+      'click .close-btn'    : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
+      'click .btn-success'  : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
 
       'change input' : 'changeInput'
     },

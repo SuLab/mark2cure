@@ -9,8 +9,8 @@ define(['marionette', 'vent',
         'views/blocks/Header', 'views/blocks/Footer',
         'views/layouts/Paragraph/Index', 'views/layouts/Library/Index',
         'views/layouts/Analytics/Network',
-        'views/modals/FirstRun', 'views/modals/Complete', 'views/modals/Message', 'views/modals/Feedback',
-        'views/modals/Settings',
+        'views/modals/FirstRun', 'views/modals/Complete', 'views/modals/Message', 'views/modals/Survey',
+        'views/modals/Settings', 'views/modals/Instructions',
 
         //-- Utils
         'extensions/ModalRegion'],
@@ -26,8 +26,8 @@ define(['marionette', 'vent',
             Header, Footer,
             Paragraph, Library,
             Network,
-            FirstRun, Complete, Message, Feedback,
-            Settings,
+            FirstRun, Complete, Message, Survey,
+            Settings, Instructions,
 
             //--Utils
             ModalRegion) {
@@ -102,12 +102,16 @@ define(['marionette', 'vent',
       app.modal.show( new Message(viewOptions) );
     });
 
-    vent.on('navigate:feedback', function() {
-      app.modal.show( new Feedback(viewOptions) );
+    vent.on('navigate:survey', function() {
+      app.modal.show( new Survey(viewOptions) );
     });
 
     vent.on('navigate:settings', function() {
       app.modal.show(   new Settings(viewOptions) )
+    });
+
+    vent.on('navigate:instructions', function() {
+      app.modal.show(   new Instructions(viewOptions) )
     });
 
     //-- Oneoff modals really...

@@ -9,9 +9,12 @@ define(function(require) {
     modals : {
       first_run   : require('tpl!templates/modals/first_run.tmpl'),
       complete    : require('tpl!templates/modals/complete.tmpl'),
-      feedback    : require('tpl!templates/modals/feedback.tmpl'),
+
+      survey      : require('tpl!templates/modals/survey.tmpl'),
       message     : require('tpl!templates/modals/message.tmpl'),
-      settings    : require('tpl!templates/modals/settings.tmpl')
+
+      settings      : require('tpl!templates/modals/settings.tmpl'),
+      instructions  : require('tpl!templates/modals/instructions.tmpl')
     },
 
     library : {
@@ -26,6 +29,11 @@ define(function(require) {
 
     analytics : {
       network : require('tpl!templates/analytics/network.tmpl')
+    },
+
+    snippets : {
+      paragraph_info  : require('tpl!templates/snippets/paragraph_info.tmpl'),
+      network_info    : require('tpl!templates/snippets/network_info.tmpl')
     }
 
   };

@@ -71,10 +71,6 @@ define(['marionette', 'templates', 'vent',
       if(this.model.get('parentDocument').get('complete')) { return false; }
       this.ui.word.addClass('hover');
       this.updatePosition();
-
-      if( this.model.get('parentDocument').get('cache').get('keypress') ) {
-        this.model.set('selected', true);
-      }
     },
 
     leaveWord : function(evt) {

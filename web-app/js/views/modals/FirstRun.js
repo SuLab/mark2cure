@@ -18,6 +18,9 @@ define(['marionette', 'templates', 'vent',
     },
 
     events : {
+      'click .modal-footer .actions .btn-prev' : 'prev',
+      'click .modal-footer .actions .btn-next' : 'next',
+
       'change #experience'  : 'saveUserInfo',
       'blur #user-name'     : 'saveUserInfo',
       'keydown #user-name'  : 'finish'
@@ -45,6 +48,17 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Events
     //
+    prev : function(evt) {
+      // evt.preventDefault();
+      console.log(this.ui.wizard);
+      this.ui.wizard.previous();
+    },
+
+    next : function(evt) {
+      // evt.preventDefault();
+      this.ui.wizard.next();
+    },
+
     finish : function(evt) {
       if(evt.keyCode === 13) {
         this.saveUserInfo();

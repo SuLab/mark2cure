@@ -39,19 +39,10 @@ define(['marionette', 'templates', 'vent',
       //-- options.score   == Result score of user's selection
       options.max_pop = 0; options.score = {}; options.ann_range = [];
       this.preRender();
-
-      _.bindAll(this, 'keyPressed', 'keyReleased');
-      $(document).bind('keydown', this.keyPressed);
-      $(document).bind('keyup', this.keyReleased);
-      // $(document).bind('mouseup', this.mouseReleased);
     },
 
     onRender : function() {
       this.text.show( new Words(this.options) );
-    },
-
-    onBeforeClose : function() {
-     // $(document).unbind('keypress', 'on_keypress');
     },
 
     preRender : function() {
@@ -77,25 +68,6 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Events
     //
-    keyPressed : function(evt) {
-      if( evt.keyCode === 17 ) { this.model.get('cache').set('keypress', true); };
-    },
-
-    keyReleased : function(evt) {
-      if( evt.keyCode === 17 ) { this.model.get('cache').set('keypress', false); };
-    },
-
-    mouseReleased : function(evt) {
-      if(!document.getSelection) { return false; }
-      var sel = document.getSelection(),
-          $sel = $(sel.focusNode.parentElement),
-          sel_text = sel.toString();
-
-      if( $sel.closest('p').attr('class') === "paragraph editing" &&
-          sel_text.length ) {
-      }
-    },
-
     submitAnnotations : function(evt) {
       var self = this;
       evt.preventDefault();
@@ -107,9 +79,8 @@ define(['marionette', 'templates', 'vent',
       };
 
       if( this.collection.completed().length == 1 ) {
-        // vent.trigger('navigate:explain stuff here');
         this.ui.navigate.popover({  title   : 'Congrats! You annotated your first document!',
-                                    content : '<p>Do your annotations agree with other users? Yellow highlights show community consensus</p><button class="btn btn-primary btn-small explain-network" type="button">Next</button>',
+                                    content : templates.snippets.paragraph_info({}),
                                     html    : true,
                                     trigger : 'manual',
                                     placement : 'left',
@@ -128,8 +99,7 @@ define(['marionette', 'templates', 'vent',
 
     nextDocument : function(evt) {
       //-- Incase they didn't close it before or are skipping
-      this.ui.navigate.popover('hide');
-      $('button.close').popover('hide');
+      $('.popover').hide()
 
       evt.preventDefault();
       var index = this.collection.indexOf(this.model) + 1,
@@ -163,9 +133,7 @@ define(['marionette', 'templates', 'vent',
       this.preRender();
       this.render();
 
-      // if( $('#network').length ) {
-      //     vent.trigger('navigate:analytics', {toggle: true});
-      // }
+      if( $('#network').length ) { vent.trigger('network:refresh', {}); }
     },
 
     //

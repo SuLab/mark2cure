@@ -14,9 +14,7 @@ define(['marionette', 'templates', 'vent'],
 
     events : {
       'click a.network'   : 'showNetwork',
-      'click a.message'   : 'sendMessage',
       'click a.welcome'   : 'showWelcome',
-      'click a.complete'  : 'showComplete',
     },
 
     initialize : function(options) {
@@ -33,19 +31,9 @@ define(['marionette', 'templates', 'vent'],
       vent.trigger('navigate:analytics', {toggle: true});
     },
 
-    sendMessage : function(evt) {
-      evt.preventDefault();
-      vent.trigger('modal:send_message', {});
-    },
-
     showWelcome : function(evt) {
       evt.preventDefault();
       vent.trigger('modal:welcome', {});
-    },
-
-    showComplete : function(evt) {
-      evt.preventDefault();
-      vent.trigger('modal:show_complete', {});
     }
 
   });

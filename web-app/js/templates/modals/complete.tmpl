@@ -1,9 +1,19 @@
-<div class="span5 complete-modal">
+<a href="#" class="close-btn">&times;</a>
+
+<div class="span6 complete-modal">
   <h3>Thanks! Your feedback is incredibly valuable<span class="follow-up">... So, what's next?</span></h3>
 
   <ul class="unstyled">
-    <li><p>If you're interested in following this project, <input type="text" placeholder="enter your email here" value="<%= email %>" />. We'll contact you periodically when we have news to report or when we need your help again.</p></li>
-    <li><p>If you have feedback you'd like the developers to see, <a href="#/feedback">let us know!</a></p></li>
-    <li><p>If you'd like to repeat the disease identification task on more scientific papers, <a href="#" class="library">keep going!</a></p></li>
+    <li><p>If you're interested in following this project, plase enter your email here:
+
+    <br />
+    <div class="input-append">
+      <input class="span2" type="text" placeholder="Email address" value="<%= email %>">
+      <button class="btn btn-success" type="button">Submit</button>
+    </div>
+    <br />
+    We'll contact you periodically when we have news to report or when we need your help again.</p></li>
+    <li><p>If you have feedback you'd like the developers to see, <a href="#/survey">let us know!</a></p></li>
+    <li><p>If you'd like to repeat the disease identification task on more scientific papers, <a href="#" class="close-link">keep going!</a></p></li>
   </ul>
 </div>
