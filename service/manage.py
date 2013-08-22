@@ -64,7 +64,7 @@ class Annotate(Command):
 
       # NCBO Annotator http request
       payload = { 'apikey'                    : settings.NCBO_API_KEY,
-                  'withDefaultStopWords'      : 'true',
+                  'stopWords'                 : settings.STOP_WORDS,
                   'minTermSize'               : 5,
                   'withSynonyms'              : 'true',
                   # 1009 = Human disease ontology
