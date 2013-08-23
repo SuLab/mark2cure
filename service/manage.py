@@ -84,13 +84,11 @@ class Annotate(Command):
           payload['textToAnnotate'] = document.text
           r = requests.post("http://rest.bioontology.org/obs/annotator", data=payload)
 
-
           if r.ok:
             try:
               root = ET.fromstring( r.text.decode('utf-8') )
               # Make array of all relevant NCBO results
               for ann in root.iter('annotationBean'):
-                # if int(ann.find('score').text) >= 2:
                 ctx = ann.find('context')
                 start = int(ctx.find('from').text)-1
                 stop = int(ctx.find('to').text)
