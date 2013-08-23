@@ -13,7 +13,7 @@ define(['marionette', 'vent',
         'views/modals/Settings', 'views/modals/Instructions',
 
         //-- Utils
-        'extensions/ModalRegion', 'extensions/FadeRegion'],
+        'extensions/ModalRegion', 'extensions/FadeRegion', 'extensions/SlideRegion'],
 
    function(marionette, vent,
             //-- Models
@@ -30,7 +30,7 @@ define(['marionette', 'vent',
             Settings, Instructions,
 
             //--Utils
-            ModalRegion, FadeRegion) {
+            ModalRegion, FadeRegion, SlideRegion) {
     'use strict';
 
     var app = new marionette.Application(),
@@ -41,7 +41,7 @@ define(['marionette', 'vent',
 
     app.addRegions({
       header    : '#header',
-      analytics : FadeRegion.extend({el: "#analytics"}),
+      analytics : SlideRegion.extend({el: "#analytics"}),
       main      : FadeRegion.extend({el: "#content"}),
       footer    : '#footer',
       modal     : ModalRegion,
