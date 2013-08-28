@@ -6,9 +6,9 @@ define(['marionette', 'vent',
         'collections/DocumentList',
 
         //-- Views
-        'views/blocks/Header', 'views/blocks/Footer',
-        'views/layouts/Paragraph/Index', 'views/layouts/Library/Index',
-        'views/layouts/Analytics/Network',
+        'views/Header/Index', 'views/Footer/Index',
+        'views/Main/Game/Index', 'views/Main/Library/Index',
+        'views/Analytics/Network',
         'views/modals/FirstRun', 'views/modals/Complete', 'views/modals/Message', 'views/modals/Survey',
         'views/modals/Settings', 'views/modals/Instructions',
 
@@ -24,7 +24,7 @@ define(['marionette', 'vent',
 
             //-- Views
             Header, Footer,
-            Paragraph, Library,
+            Game, Library,
             Network,
             FirstRun, Complete, Message, Survey,
             Settings, Instructions,
@@ -72,7 +72,7 @@ define(['marionette', 'vent',
       var found_model = viewOptions.collection.findWhere({id: Number(param) });
       if(found_model) {
         viewOptions['model'] = found_model;
-        app.main.show( new Paragraph(viewOptions) );
+        app.main.show( new Game(viewOptions) );
       } else {
         Backbone.history.navigate( '#/library' );
         vent.trigger('library', {});

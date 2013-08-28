@@ -6,7 +6,7 @@ define(['marionette', 'templates', 'vent',
   'use strict';
 
   return Marionette.ItemView.extend({
-    template : templates.library.item,
+    template : templates.main.library.item,
     templateHelpers : function() { return this.options; },
     className: 'doc-item',
 

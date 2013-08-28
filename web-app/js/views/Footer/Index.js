@@ -4,7 +4,7 @@ define(['marionette', 'templates'],
   'use strict';
 
   return Marionette.ItemView.extend({
-    template : templates.blocks.footer,
+    template : templates.footer.index,
 
   });
 });

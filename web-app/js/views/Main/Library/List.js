@@ -1,5 +1,5 @@
 define(['marionette', 
-    'views/layouts/Library/Item'], 
+        'views/Main/Library/Item'], 
     function (Marionette, 
               LibItem) {
   'use strict';

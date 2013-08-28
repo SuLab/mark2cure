@@ -5,12 +5,14 @@ define(['marionette', 'templates', 'vent',
   'use strict';
 
   return Marionette.ItemView.extend({
-    template : templates.paragraph.worditem,
+    template : templates.main.game.entity_tag.worditem,
     tagName : "span",
 
     className : function() {
       if( this.model.get('parentDocument').get('complete') && 
-          _.contains(this.options.ann_range, this.model.get('start')) ) { return 'selectedCompare' }
+          _.contains(this.options.ann_range, this.model.get('start')) ) { 
+            return 'selectedCompare' 
+          }
     },
 
     ui : {
@@ -26,19 +28,12 @@ define(['marionette', 'templates', 'vent',
 
     initialize : function(options) {
       this.bindTo(this.model, 'change', this.render);
-      // console.log('WORD INIT :: ', this);
     },
 
     onRender : function() {
       var self = this;
       this.renderingClassSetting('selected');
       this.renderingClassSetting('latest');
-
-      if( this.model.get('parentDocument').get('complete') ) {
-        var popularity = this.model.get('parentDocument').get('popularity')[ this.model.get('position') ];
-        this.$el.css({'backgroundColor': this.options.color_scale(popularity)});
-      }
-
     },
 
     //

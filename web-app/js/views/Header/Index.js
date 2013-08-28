@@ -4,7 +4,7 @@ define(['marionette', 'templates', 'vent'],
   'use strict';
 
   return Marionette.Layout.extend({
-    template : templates.blocks.header,
+    template : templates.header.index,
     templateHelpers : function() { return this.options; },
     className : 'navbar navbar-fixed-top',
 

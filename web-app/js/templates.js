@@ -11,15 +11,21 @@ define(function(require) {
 
     main : {
       library : {
-        index   : require('tpl!templates/library/index.tmpl'),
-        item    : require('tpl!templates/library/item.tmpl')
+        index   : require('tpl!templates/main/library/index.tmpl'),
+        item    : require('tpl!templates/main/library/item.tmpl')
       },
 
       game : {
-        paragraph : {
-          index     : require('tpl!templates/paragraph/index.tmpl'),
-          worditem  : require('tpl!templates/paragraph/worditem.tmpl')
+        index : require('tpl!templates/main/game/index.tmpl'),
+
+        entity_tag : {
+          index     : require('tpl!templates/main/game/entity_tag/index.tmpl'),
+          worditem  : require('tpl!templates/main/game/entity_tag/worditem.tmpl')
         },
+
+        results : {
+          index     : require('tpl!templates/main/game/results/index.tmpl'),
+        }
       }
 
     },

@@ -7,15 +7,8 @@ define(['marionette', 'templates', 'vent',
   'use strict';
 
   return Marionette.Layout.extend({
-    template : templates.main.results.index,
-
+    template : templates.main.game.results.index,
     className : 'results-view',
-
-    ui : {
-    },
-
-    events : {
-    },
 
     initialize : function(options) {
       //-- View to show community consensus and self annotations
@@ -44,6 +37,30 @@ define(['marionette', 'templates', 'vent',
       //   this.options.score = this.compare(defined_correct, user_correct);
       //   this.options.ann_range = this.model.get('annotations').getRange();
       // }
+      //
+      //
+
+      // if( this.collection.completed().length == 1 ) {
+      //   this.ui.navigate.popover({  title   : 'Congrats! You annotated your first document!',
+      //                               content : templates.snippets.paragraph_info({}),
+      //                               html    : true,
+      //                               trigger : 'manual',
+      //                               placement : 'left',
+      //                               container : 'body' });
+      //   this.ui.navigate.popover('show');
+
+      //   $('button.explain-network').click(function(e) {
+      //     self.ui.navigate.popover('hide');
+      //     vent.trigger('navigate:analytics', {toggle: true, explain: true});
+      //   });
+
+      //   this.options.user.save({'first_run' : false});
+      // }
+    },
+
+    onClose : function() {
+      //-- Incase they didn't close it before or are skipping
+      $('.popover').hide()
     },
 
     //

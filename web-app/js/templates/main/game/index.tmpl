@@ -1,13 +1,10 @@
-<p class="paragraph <%= complete ? 'complete' : 'editing' %>"></p>
+<div class="game row"></div>
 
 <div class="navigate row">
+
   <% if(complete) { %>
     <div class="well span10">
         <p>Congratulations, you completed the document!</p>
-        <!--
-        <p>You scored a <strong><%= ((words.length - score.false_neg - score.false_pos ) / words.length).toFixed(2) * 100  %>%</strong></p>
-        <p>You missed <strong><%= score.false_pos || 0 %></strong> and incorrectly selected <strong><%= score.false_neg || 0 %></strong> annotations...</p>
-        -->
     </div>
     <div class="span1">
       <button class="btn btn-success btn-large navigate" type="button">Next</button>
@@ -25,4 +22,5 @@
       <button class="btn btn-primary btn-large done" type="button">Done</button>
     </div>
   <% } %>
+
 <div>
