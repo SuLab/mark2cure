@@ -1,9 +1,31 @@
 define(function(require) {
   'use strict';
   return {
-    blocks : {
-      header      : require('tpl!templates/blocks/header.tmpl'),
-      footer      : require('tpl!templates/blocks/footer.tmpl'),
+    header : {
+      index      : require('tpl!templates/header/index.tmpl'),
+    },
+
+    analytics : {
+      network : require('tpl!templates/analytics/network.tmpl')
+    },
+
+    main : {
+      library : {
+        index   : require('tpl!templates/library/index.tmpl'),
+        item    : require('tpl!templates/library/item.tmpl')
+      },
+
+      game : {
+        paragraph : {
+          index     : require('tpl!templates/paragraph/index.tmpl'),
+          worditem  : require('tpl!templates/paragraph/worditem.tmpl')
+        },
+      }
+
+    },
+
+    footer : {
+      index      : require('tpl!templates/footer/index.tmpl'),
     },
 
     modals : {
@@ -15,20 +37,6 @@ define(function(require) {
 
       settings      : require('tpl!templates/modals/settings.tmpl'),
       instructions  : require('tpl!templates/modals/instructions.tmpl')
-    },
-
-    library : {
-      index   : require('tpl!templates/library/index.tmpl'),
-      item    : require('tpl!templates/library/item.tmpl')
-    },
-
-    paragraph : {
-      index     : require('tpl!templates/paragraph/index.tmpl'),
-      worditem  : require('tpl!templates/paragraph/worditem.tmpl')
-    },
-
-    analytics : {
-      network : require('tpl!templates/analytics/network.tmpl')
     },
 
     snippets : {
