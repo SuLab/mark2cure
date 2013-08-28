@@ -60,31 +60,9 @@ define(['marionette', 'templates', 'vent',
 
     onClose : function() {
       //-- Incase they didn't close it before or are skipping
-      $('.popover').hide()
+      $('.popover').hide();
     },
 
-    //
-    //-- Events
-    //
-
-
-    //
-    //-- Utils
-    //
-    compare : function(user, truth) {
-      var a = 0, b = 0, c = 0, d = 0, fpr, fnr;
-      if( truth.length !== user.length ) return;
-      for (var i = 0; i < truth.length; i++) {
-        switch(user[i] + truth[i]) {
-          case 0: ++d; break;
-          case 2: ++a; break;
-          case 1: user[i] ? ++c : ++b; break;
-        }
-      }
-      if( a+b+c+d !== truth.length ) return;
-      fpr = c/(a+c); fnr = b/(b+d);
-      return {'true_pos': a, 'false_neg': b, 'false_pos': c, 'true_neg': d, 'false_pos_rate': fpr, 'false_neg_rate': fnr}
-    }
 
   });
 });

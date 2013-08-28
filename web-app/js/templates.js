@@ -17,6 +17,7 @@ define(function(require) {
 
       game : {
         index : require('tpl!templates/main/game/index.tmpl'),
+        controls : require('tpl!templates/main/game/controls/index.tmpl'),
 
         entity_tag : {
           index     : require('tpl!templates/main/game/entity_tag/index.tmpl'),
