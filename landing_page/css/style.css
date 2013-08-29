@@ -1,0 +1,30 @@
+body {
+  background: url('/img/background.jpg') repeat #5582be;
+}
+
+.jumbotron {
+  margin-top: 160px;
+  background-color: rgba(238, 238, 238, .85);
+}
+
+.jumbotron h1 {
+  font-size: 40px;
+}
+
+.input {
+  min-height: 80px;
+}
+
+.input .email {
+  padding: 4px;
+  margin-left: 200px;
+}
+
+.input label {
+  color: #fff;
+  padding: 8px;
+}
+
+.bg {
+  background-color: rgba(255, 255, 255, .3);
+}

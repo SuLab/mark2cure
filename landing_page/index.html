@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/style.css" rel="stylesheet" media="screen">
   </head>
   <body>
 
@@ -12,34 +13,48 @@
       <div class="container">
         <h1>Scientific communication is broken.</h1>
         <p>Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong></p>
-
-        <p><a class="btn btn-primary btn-lg">I am willing to beta-test early versions of Mark2Cure</a></p>
       </div>
     </div>
 
-    <div class="container">
+    <div class="container input">
+      <form class="form-inline" role="form">
+
+        <div class="col-lg-3 email">
+          <label class="sr-only" for="email_input">Email address</label>
+          <input type="email" class="form-control" id="email_input" placeholder="Enter email">
+        </div>
+
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" id="beta_bool"> <strong>I'd like to beta-test early versions of Mark2Cure</strong>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+      </form>
+    </div>
+
+    <div class="container bg">
       <div class="row">
-        <div class="col-xs-6 .col-md-4">
+        <div class="col-md-4">
           <h2>Community</h2>
           <p>To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.</p>
         </div>
 
-        <div class="col-xs-6 .col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#">View details »</a></p>
-       </div>
-        <div class="col-xs-6 .col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#">View details »</a></p>
+        <div class="col-md-4">
+          <h2>Research</h2>
+          <p>Playing Mark2Cure will help scientists cure diseases! Game play reveal</p>
+        </div>
+
+        <div class="col-md-4">
+          <h2>Open Source</h2>
+          <p>Mark2Cure is an open source project! That means you can use it on your own, modify and remix the code. </p>
         </div>
       </div>
 
       <hr>
-
       <footer>
-        <p>© Company 2013</p>
+        <p>The Scripps Research Institute 2013</p>
       </footer>
     </div>
 
@@ -47,5 +62,13 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    <script>
+      $('button').click(function(e) {
+        e.preventDefault();
+        var email = $('#email_input').val().trim(),
+            beta = $('#beta_bool').is(':checked');
+        console.log(email, beta);
+      });
+    </script>
   </body>
 </html>
