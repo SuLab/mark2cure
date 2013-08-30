@@ -13,11 +13,16 @@ body {
 
 .input {
   min-height: 80px;
+  margin-bottom: 60px;
 }
 
 .input .email {
   padding: 4px;
   margin-left: 200px;
+}
+
+.input p.lead {
+  color: white;
 }
 
 .input label {

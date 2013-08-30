@@ -5,3 +5,4 @@ from .documents import Documents
 from .messages import Messages
 from .network import Network
 from .users import Users
+from .email import Email

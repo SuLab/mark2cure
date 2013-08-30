@@ -17,21 +17,31 @@
     </div>
 
     <div class="container input">
-      <form class="form-inline" role="form">
 
-        <div class="col-lg-3 email">
-          <label class="sr-only" for="email_input">Email address</label>
-          <input type="email" class="form-control" id="email_input" placeholder="Enter email">
+      <div class="row">
+        <p class="lead">If you'd like to be notified with we launch Mark2Cure, please provide your email address below.<p>
+      </div>
+
+      <div class="row">
+        <div class="alert alert-info" style="display:none;">
+          <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
         </div>
 
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" id="beta_bool"> <strong>I'd like to beta-test early versions of Mark2Cure</strong>
-          </label>
-        </div>
+        <form class="form-inline" role="form">
+          <div class="col-lg-3 email">
+            <label class="sr-only" for="email_input">Email address</label>
+            <input type="email" class="form-control" id="email_input" placeholder="Enter email">
+          </div>
 
-        <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-      </form>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="beta_bool"> <strong>I'd like to beta-test early versions of Mark2Cure</strong>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+        </form>
+      </div>
     </div>
 
     <div class="container bg">
@@ -67,7 +77,19 @@
         e.preventDefault();
         var email = $('#email_input').val().trim(),
             beta = $('#beta_bool').is(':checked');
-        console.log(email, beta);
+            console.log(email, beta);
+
+        $.ajax({
+          type: "POST",
+          url: '/api/v1/email',
+          data: {email: email, email_bool: beta},
+          success: function(a, b, c) {
+            $('form.form-inline').fadeOut();
+            $('.alert').fadeIn();
+          },
+          dataType: "json"
+        });
+
       });
     </script>
   </body>

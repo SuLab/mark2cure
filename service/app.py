@@ -8,7 +8,7 @@ import settings
 #
 app = Flask(__name__,
             static_url_path = '',
-            static_folder = '../web-app')
+            static_folder = '../landing_page')
 app.config['SQLALCHEMY_DATABASE_URI'] = settings.DB_URI
 db.init_app(app)
 
@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = '\xc0\x19\x94\x19v\xf3\x85mul9[y\xd6\xc7\xf4\xc6sz\x0
 #
 api = Api(app)
 
+api.add_resource(Email,       '/api/v1/email')
 api.add_resource(Users,       '/api/v1/user')
 api.add_resource(Messages,    '/api/v1/messages')
 api.add_resource(Annotations, '/api/v1/annotations',  '/api/v1/annotations/<int:ann_id>')

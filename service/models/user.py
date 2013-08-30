@@ -5,7 +5,8 @@ class User(db.Model):
     id          = db.Column(db.Integer,     primary_key=True)
 
     username    = db.Column(db.String(120), unique=True)
-    email       = db.Column(db.String(120))
+    email             = db.Column(db.String(120))
+    email_bool        = db.Column(db.Boolean())
     experience  = db.Column(db.Integer())
 
     created     = db.Column(db.DateTime)
@@ -26,7 +27,7 @@ class User(db.Model):
     def __unicode__(self):
         return self.email
 
-    def __init__(self, username, email, experience, api):
+    def __init__(self, username, email, experience, api, email_bool=None):
         self.username   = username
         self.email      = email
         self.experience = experience
@@ -39,6 +40,7 @@ class User(db.Model):
 
         self.first_run  = True
         self.api_key    = api
+        self.email_bool = email_bool
 
     def __repr__(self):
         return '<User %r>' % self.id
