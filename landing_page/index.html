@@ -19,15 +19,15 @@
         </div>
       </div>
 
-      <div class="container input">
-        <div class="row">
+      <div class="container">
+        <div class="row input">
           <div class="col-md-6 col-md-offset-3">
             <div class="alert alert-info" style="display: none;">
               <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
             </div>
 
             <form class="form-horizontal" role="form">
-              <p class="lead">If you'd like to be notified when we launch Mark2Cure, please provide your email address below.<p>
+              <p class="lead text-center">If you'd like to be notified when we launch Mark2Cure, please provide your email address below.<p>
 
               <div class="form-group">
                 <div class="col-lg-8 col-lg-offset-2">
@@ -87,7 +87,7 @@
           url: '/api/v1/email',
           data: {email: email, email_bool: beta},
           success: function(a, b, c) {
-            $('form.form-inline').fadeOut();
+            $('form').fadeOut();
             $('.alert').fadeIn();
           },
           dataType: "json"
