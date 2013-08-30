@@ -9,64 +9,66 @@
   </head>
   <body>
 
-    <div class="jumbotron">
+    <div id="wrap">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Scientific communication is broken.</h1>
+          <p>Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.</p>
+
+            <p>To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.</p>
+        </div>
+      </div>
+
+      <div class="container input">
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+            <div class="alert alert-info" style="display: none;">
+              <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
+            </div>
+
+            <form class="form-horizontal" role="form">
+              <p class="lead">If you'd like to be notified when we launch Mark2Cure, please provide your email address below.<p>
+
+              <div class="form-group">
+                <div class="col-lg-8 col-lg-offset-2">
+                  <label class="sr-only" for="email_input">Email address</label>
+                  <input type="email" class="form-control" id="email_input" placeholder="Enter email">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="col-lg-4 col-lg-offset-4">
+                  <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="col-lg-6 col-lg-offset-3">
+                  <label class="text-center">
+                    <input type="checkbox" id="beta_bool"> I'd like to beta-test early versions of Mark2Cure
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer">
       <div class="container">
-        <h1>Scientific communication is broken.</h1>
-        <p>Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong></p>
-      </div>
-    </div>
-
-    <div class="container input">
-
-      <div class="row">
-        <p class="lead">If you'd like to be notified with we launch Mark2Cure, please provide your email address below.<p>
-      </div>
-
-      <div class="row">
-        <div class="alert alert-info" style="display:none;">
-          <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
+        <div class="col-md-3 col-md-offset-1">
+          <p><a href="http://sulab.org"><span class="pink">The Su Laboratory</span></a></p>
+          <p><span class="pink">Project Team:</span> Max Nanis, Andrew Su</p>
+          <p>An <a href="https://bitbucket.org/sulab/abstract-annotations"><span class="pink">Open Source</span></a> Project</p><p>
         </div>
 
-        <form class="form-inline" role="form">
-          <div class="col-lg-3 email">
-            <label class="sr-only" for="email_input">Email address</label>
-            <input type="email" class="form-control" id="email_input" placeholder="Enter email">
-          </div>
-
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" id="beta_bool"> <strong>I'd like to beta-test early versions of Mark2Cure</strong>
-            </label>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="container bg">
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Community</h2>
-          <p>To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.</p>
-        </div>
-
-        <div class="col-md-4">
-          <h2>Research</h2>
-          <p>Playing Mark2Cure will help scientists cure diseases! Game play reveals insights about diseases that may have not been previously known.</p>
-        </div>
-
-        <div class="col-md-4">
-          <h2>Open Source</h2>
-          <p>Mark2Cure is an open source project! That means you can use it on your own, modify and remix the code.</p>
-          <p>Check it out <a href="https://bitbucket.org/sulab/mark2cure" target="_blank">here</a>.</p>
+        <div class="col-md-3 col-md-offset-4">
+          <p><a href="http://www.scripps.edu/"><span class="pink">The Scripps Research Institute</span></a></p>
+          <p>10550 North Torrey Pines Road</p>
+          <p>La Jolla, CA 92037</p>
         </div>
       </div>
-
-      <hr>
-      <footer>
-        <p>The Scripps Research Institute 2013</p>
-      </footer>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

@@ -1,9 +1,23 @@
+html, body {
+  height: 100%;
+}
+
 body {
   background: url('/img/background.jpg') repeat #5582be;
 }
 
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by its height */
+  margin: 0 auto -300px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
 .jumbotron {
-  margin-top: 160px;
+  margin-top: 80px;
   background-color: rgba(238, 238, 238, .85);
 }
 
@@ -11,30 +25,19 @@ body {
   font-size: 40px;
 }
 
-.input {
-  min-height: 80px;
-  margin-bottom: 60px;
-}
-
-.input .email {
-  padding: 4px;
-  margin-left: 200px;
-}
-
 .input p.lead {
   color: white;
 }
 
 .input label {
-  color: #fff;
-  padding: 8px;
-}
-
-.bg {
-  background-color: rgba(255, 255, 255, .65);
+  font-weight: normal;
 }
 
 a {
   text-decoration: none;
   color: white;
+}
+
+#footer {
+  height: 120px;
 }
