@@ -60,7 +60,7 @@
         <div class="col-md-3 col-md-offset-1">
           <p><a href="http://sulab.org"><span class="pink">The Su Laboratory</span></a></p>
           <p><span class="pink">Project Team:</span> Max Nanis, Andrew Su</p>
-          <p>An <a href="https://bitbucket.org/sulab/abstract-annotations"><span class="pink">Open Source</span></a> Project</p><p>
+          <p>An <a href="https://bitbucket.org/sulab/mark2cure"><span class="pink">Open Source</span></a> Project</p><p>
         </div>
 
         <div class="col-md-3 col-md-offset-4">
@@ -80,18 +80,19 @@
         e.preventDefault();
         var email = $('#email_input').val().trim(),
             beta = $('#beta_bool').is(':checked');
-            console.log(email, beta);
 
-        $.ajax({
-          type: "POST",
-          url: '/api/v1/email',
-          data: {email: email, email_bool: beta},
-          success: function(a, b, c) {
-            $('form').fadeOut();
-            $('.alert').fadeIn();
-          },
-          dataType: "json"
-        });
+        if(email.length) {
+          $.ajax({
+            type: "POST",
+            url: '/api/v1/email',
+            data: {email: email, email_bool: beta},
+            success: function(a, b, c) {
+              $('form').fadeOut();
+              $('.alert').fadeIn();
+            },
+            dataType: "json"
+          });
+        }
 
       });
     </script>
