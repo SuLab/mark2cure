@@ -9,7 +9,8 @@ define(['marionette', 'templates', 'vent',
     tagName : "span",
 
     events : {
-      'click'     : 'clickWord',
+      'mousedown'   : 'clickOrInitDrag',
+      'mouseup'     : 'releaseDrag'
     },
 
     initialize : function(options) {
@@ -23,25 +24,20 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Event actions
     //
-    clickWord : function(evt) {
-      evt.preventDefault();
-      var self = this,
-          model = self.model,
-          collection = self.model.collection;
-
-      if( evt.shiftKey ) {
-        //-- Shift key was held, select all between the this and the "latest"
-        var current_position = model.get('position'),
-            latest_position = collection.findWhere({latest: true}).get('position'),
-            selection = [current_position, latest_position],
-            included_ids = _.range( _.min(selection), _.max(selection)+1 );
-        _.each(included_ids, function(index) { collection.at(index).set('selected', true); });
+    clickOrInitDrag : function() {
+      if(false) {
+        //-- if this is part of a bigger, prexisting annotation?
       } else {
-        model.set('selected', !this.model.get('selected'));
+        this.model.set('selected', !this.model.get('selected'));
       }
 
-      collection.each(function(word) { word.set('latest', false); });
-      model.set('latest', true);
+      this.model.collection.each(function(word) { word.set('latest', false); });
+      this.model.set('latest', true);
+    },
+
+    releaseDrag : function(evt) {
+        var last_model = this.model.collection.findWhere({latest: true});
+        console.log(last_model.get('text'), this.model.get('text'));
     },
 
     //-- Utilities for view
