@@ -81,7 +81,7 @@
           $.ajax({
             type: "POST",
             url: '/api/v1/email',
-            data: {email: email, email_bool: beta},
+            data: {'email': email, 'email_bool': beta},
             success: function(a, b, c) {
               $('form').fadeOut();
               $('.alert').fadeIn();

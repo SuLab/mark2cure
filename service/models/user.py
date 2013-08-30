@@ -5,8 +5,7 @@ class User(db.Model):
     id          = db.Column(db.Integer,     primary_key=True)
 
     username    = db.Column(db.String(120), unique=True)
-    email             = db.Column(db.String(120))
-    email_bool        = db.Column(db.Boolean())
+    email       = db.Column(db.String(120))
     experience  = db.Column(db.Integer())
 
     created     = db.Column(db.DateTime)
@@ -18,6 +17,7 @@ class User(db.Model):
 
     first_run   = db.Column(db.Boolean())
     api_key     = db.Column(db.Text)
+    email_bool  = db.Column(db.Boolean())
 
     views       = db.relationship('View',         backref=db.backref('user',  lazy='select'))
     messages    = db.relationship('Message',      backref=db.backref('user',  lazy='select'))
@@ -27,7 +27,7 @@ class User(db.Model):
     def __unicode__(self):
         return self.email
 
-    def __init__(self, username, email, experience, api, email_bool=None):
+    def __init__(self, username, email, experience, api, email_bool=False):
         self.username   = username
         self.email      = email
         self.experience = experience
