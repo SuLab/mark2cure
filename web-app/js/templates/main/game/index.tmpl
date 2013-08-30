@@ -1,26 +1,2 @@
 <div class="game row"></div>
-
-<div class="navigate row">
-
-  <% if(complete) { %>
-    <div class="well span10">
-        <p>Congratulations, you completed the document!</p>
-    </div>
-    <div class="span1">
-      <button class="btn btn-success btn-large navigate" type="button">Next</button>
-    </div>
-
-  <% } else { %>
-    <div class="well span10">
-      <p><span class="label label-info">Title</span> <%= title %></p>
-      <p><span class="label label-info">Created</span> <%= moment(created).calendar() %></p>
-      <% if(document_id) { %>
-        <p><span class="label label-info">Document</span> <a href="http://www.ncbi.nlm.nih.gov/pubmed/<%= document_id %>" target="_blank">PubMed Link</a></p>
-      <% } %>
-    </div>
-    <div class="span1">
-      <button class="btn btn-primary btn-large done" type="button">Done</button>
-    </div>
-  <% } %>
-
-<div>
+<div class="controls row"><div>

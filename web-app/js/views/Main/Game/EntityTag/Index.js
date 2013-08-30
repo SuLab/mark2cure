@@ -14,7 +14,7 @@ define(['marionette', 'templates', 'vent',
     },
 
     onRender : function() {
-      this.text.show( new Words({collection: this.collection}) );
+      this.text.show( new Words({collection: this.model.get('words')}) );
     },
 
     //

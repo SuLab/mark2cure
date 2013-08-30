@@ -17,7 +17,7 @@ define(['marionette', 'templates', 'vent',
 
     regions : {
       game      : 'div.game',
-      controls  : 'div.navigate'
+      controls  : 'div.controls'
     },
 
     ui : {
@@ -31,7 +31,7 @@ define(['marionette', 'templates', 'vent',
       //-- this.collection == The Collection of all Documents
       //-- options.user == The Currently Logged in User
 
-      //-- (TODO) Break text into Words array here to prevent doing it on big fetch from API
+      if(!this.model.get('words').length) { this.model.parseText(); }
       this.listenTo(this.model, "change:complete", this.render, this);
     },
 

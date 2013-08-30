@@ -71,10 +71,7 @@ define(['backbone', 'vent',
     }],
 
     initialize : function() {
-      if(this.isNew()) {
-      }
       this.bind('change:complete', this.checkProgress);
-      this.bind('change:text', this.parseText);
     },
 
     parseText : function() {

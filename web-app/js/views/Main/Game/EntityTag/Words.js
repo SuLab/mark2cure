@@ -9,7 +9,6 @@ define(['marionette', 'templates', 'vent',
 
     initialize : function(options) {
       console.log('EntityTag Words :: ', this);
-      this.collection = this.model.get('words');
     },
 
     // buildItemView: function(item, ItemView){
