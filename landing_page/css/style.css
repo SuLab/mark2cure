@@ -1,23 +1,9 @@
-html, body {
-  height: 100%;
-}
-
 body {
   background: url('/img/background_blur.jpg') no-repeat #f0f0ed;
 }
 
-#wrap {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  /* Negative indent footer by its height */
-  margin: 0 auto -300px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
-}
-
 .jumbotron {
-  margin-top: 80px;
+  margin-top: 40px;
   background-color: #fff;
   background-color: rgba(238, 238, 238, .85);
 }
@@ -27,6 +13,7 @@ body {
 }
 
 form {
+  padding: 12px;
   background-color: #fff;
   background-color: rgba(238, 238, 238, .85);
 }
@@ -41,5 +28,6 @@ a {
 }
 
 #footer {
+  margin-top: 200px;
   height: 120px;
 }
