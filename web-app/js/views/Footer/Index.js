@@ -5,6 +5,6 @@ define(['marionette', 'templates'],
 
   return Marionette.ItemView.extend({
     template : templates.footer.index,
-
+    className : 'container'
   });
 });

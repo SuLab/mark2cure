@@ -6,15 +6,5 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.CollectionView.extend({
     itemView: WordItem,
-
-    initialize : function(options) {
-      console.log('EntityTag Words :: ', this);
-    },
-
-    // buildItemView: function(item, ItemView){
-      // return new ItemView({ model : item,
-                            // ann_range: this.options.ann_range });
-    // }
-
   });
 });

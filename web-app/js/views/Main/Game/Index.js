@@ -1,6 +1,6 @@
 define(['marionette', 'templates', 'vent',
         //-- Views
-        'views/Main/Game/EntityTag/Words',
+        'views/Main/Game/EntityTag/Index',
         'views/Main/Game/Results/Index',
         'views/Main/Game/Controls/Index'],
 

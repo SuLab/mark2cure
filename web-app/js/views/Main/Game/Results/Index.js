@@ -6,20 +6,19 @@ define(['marionette', 'templates', 'vent',
                   Words) {
   'use strict';
 
-  return Marionette.Layout.extend({
+  return Marionette.ItemView.extend({
     template : templates.main.game.results.index,
-    className : 'results-view',
 
-    initialize : function(options) {
+    // initialize : function(options) {
       //-- View to show community consensus and self annotations
       //-- this.model == The Document Resource
 
       //-- i think these are in the this.model
       //-- this.collection == The Collection of user's annotations?
-      console.log('results index init :: ', this);
-    },
+      // console.log('results index init :: ', this);
+    // },
 
-    onRender : function() {
+    // onRender : function() {
       // var self = this,
       //     //------
       //     // HEATMAP CUTOFF %
@@ -56,7 +55,7 @@ define(['marionette', 'templates', 'vent',
 
       //   this.options.user.save({'first_run' : false});
       // }
-    },
+    // },
 
     onClose : function() {
       //-- Incase they didn't close it before or are skipping

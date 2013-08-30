@@ -1,6 +1,6 @@
 define(['marionette', 'templates', 'vent',
         //-- ETC
-        'moment', 'd3'],
+        'moment'],
     function (Marionette, templates, vent) {
   'use strict';
 
@@ -8,32 +8,16 @@ define(['marionette', 'templates', 'vent',
     template : templates.main.game.entity_tag.worditem,
     tagName : "span",
 
-    className : function() {
-      if( this.model.get('parentDocument').get('complete') && 
-          _.contains(this.options.ann_range, this.model.get('start')) ) { 
-            return 'selectedCompare' 
-          }
-    },
-
-    ui : {
-      word : 'span.word'
-    },
-
     events : {
       'click'     : 'clickWord',
-      'mouseover' : 'hoveredWord',
-      'mousemove' : 'hoveredWord',
-      'mouseout'  : 'leaveWord',
     },
 
     initialize : function(options) {
-      this.bindTo(this.model, 'change', this.render);
+      this.bindTo(this.model, 'change:selected', this.render);
     },
 
     onRender : function() {
-      var self = this;
       this.renderingClassSetting('selected');
-      this.renderingClassSetting('latest');
     },
 
     //
@@ -44,7 +28,6 @@ define(['marionette', 'templates', 'vent',
       var self = this,
           model = self.model,
           collection = self.model.collection;
-      if(model.get('parentDocument').get('complete')) { return false; }
 
       if( evt.shiftKey ) {
         //-- Shift key was held, select all between the this and the "latest"
@@ -61,34 +44,14 @@ define(['marionette', 'templates', 'vent',
       model.set('latest', true);
     },
 
-    hoveredWord : function(evt) {
-      evt.preventDefault();
-      if(this.model.get('parentDocument').get('complete')) { return false; }
-      this.ui.word.addClass('hover');
-      this.updatePosition();
-    },
-
-    leaveWord : function(evt) {
-      evt.preventDefault();
-      this.ui.word.removeClass('hover');
-    },
-
     //-- Utilities for view
     renderingClassSetting : function(attrCheck) {
       if( this.model.get(attrCheck) ) {
-        this.ui.word.addClass(attrCheck);
+        this.$el.addClass(attrCheck);
       } else {
-        this.ui.word.removeClass(attrCheck);
+        this.$el.removeClass(attrCheck);
       }
-    },
-
-    updatePosition : function() {
-      var position = this.ui.word.position();
-      this.model.set('pos_x',   position.left );
-      this.model.set('pos_y',   position.top );
-      this.model.set('width',   this.ui.word.width() );
-      this.model.set('height',  this.ui.word.height() );
-    },
+    }
 
   });
 });
