@@ -15,6 +15,7 @@ define(['marionette', 'templates', 'vent',
 
     initialize : function(options) {
       this.bindTo(this.model, 'change:selected', this.render);
+      this.bindTo(this.model.get('parentDocument').get('annotations'), 'change', this.selectWordsOfAnnotations);
     },
 
     onRender : function() {
@@ -25,13 +26,7 @@ define(['marionette', 'templates', 'vent',
     //-- Event actions
     //
     clickOrInitDrag : function() {
-      if(false) {
-        //-- if this is part of a bigger, prexisting annotation?
-      } else {
-        this.model.set('selected', !this.model.get('selected'));
-      }
-
-      this.model.collection.each(function(word) { word.set('latest', false); });
+      this.model.collection.clearLatest();
       this.model.set('latest', true);
     },
 
@@ -39,13 +34,15 @@ define(['marionette', 'templates', 'vent',
         var self = this,
             last_model = this.model.collection.findWhere({latest: true}),
             doc = this.model.get('parentDocument'),
-            dragged = last_model != this.model;
+            dragged = last_model != this.model,
+            annotations = doc.get('annotations'),
+            ann_range =  annotations.getRange();
 
         if(dragged) {
           //-- (TODO) Account for reverse dragging
           var start_i = last_model.get('start'),
               stop_i = this.model.get('stop');
-          doc.get('annotations').create({
+          annotations.create({
             kind      : 0,
             type      : 'disease',
             text      : doc.get('text').substring(start_i, stop_i),
@@ -55,22 +52,30 @@ define(['marionette', 'templates', 'vent',
           });
 
         } else {
-          doc.get('annotations').create({
-            kind      : 0,
-            type      : 'disease',
-            text      : self.model.get('text'),
-            length    : self.model.get('length'),
-            start     : self.model.get('start'),
-            stop      : self.model.get('stop')
-          });
-        }
 
+          if( _.contains(ann_range, this.model.get('start')) ) {
+            //-- If the single annotation or range started on a prexisting annotation
+            _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
+          } else {
+            //-- If the single annotation or range started on a prexisting annotation
+            annotations.create({
+              kind      : 0,
+              type      : 'disease',
+              text      : self.model.get('text'),
+              length    : self.model.get('length'),
+              start     : self.model.get('start'),
+              stop      : self.model.get('stop')
+            });
+          }
+
+        }
         this.selectWordsOfAnnotations();
     },
 
     //-- Utilities for view
     selectWordsOfAnnotations : function() {
       var ann_range =  this.model.get('parentDocument').get('annotations').getRange();
+      this.model.collection.clearSelected()
       this.model.collection.each(function(word) {
         //- If the word is part of an annotation
         if( _.contains(ann_range, word.get('start')) ) {

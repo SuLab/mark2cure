@@ -7,8 +7,12 @@ define(['backbone', 'models/Word'],
     model   : Word,
     url     : '/api/v1/words',
 
-    getSelected : function() {
-      return this.where({selected : true});
+    clearLatest : function() {
+      return this.each(function(word) { word.set('latest', false); });
+    },
+
+    clearSelected : function() {
+      return this.each(function(word) { word.set('selected', false); });
     }
 
   });
