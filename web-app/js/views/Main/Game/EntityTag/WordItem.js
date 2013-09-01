@@ -65,9 +65,20 @@ define(['marionette', 'templates', 'vent',
           });
         }
 
+        this.selectWordsOfAnnotations();
     },
 
     //-- Utilities for view
+    selectWordsOfAnnotations : function() {
+      var ann_range =  this.model.get('parentDocument').get('annotations').getRange();
+      this.model.collection.each(function(word) {
+        //- If the word is part of an annotation
+        if( _.contains(ann_range, word.get('start')) ) {
+          word.set('selected', true);
+        }
+      });
+    },
+
     renderingClassSetting : function(attrCheck) {
       if( this.model.get(attrCheck) ) {
         this.$el.addClass(attrCheck);
