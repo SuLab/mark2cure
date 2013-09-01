@@ -16,6 +16,7 @@ define(['marionette', 'templates', 'vent',
 
     initialize : function(options) {
       this.bindTo(this.model, 'change:selected', this.render);
+      this.bindTo(this.model, 'change:neighbor', this.render);
 
       //-- (TODO) Why is this method so slow?
       // var doc = this.model.get('parentDocument');
@@ -25,11 +26,10 @@ define(['marionette', 'templates', 'vent',
 
     onRender : function() {
       this.renderingClassSetting('selected');
-      // -- If is a single word selection, or at the end of a drag
-      // if() {
-        // this.$el.css({'borderBottom' : '6px solid red'});
-        // this.$el.html( this.model.get('text') );
-      // }
+      if(this.model.get('neighbor')) {
+        this.$el.css({'borderRight' : '6px solid white'});
+        this.$el.html( this.model.get('text') ); 
+      }
     },
 
     //
@@ -55,7 +55,8 @@ define(['marionette', 'templates', 'vent',
           doc = this.model.get('parentDocument'),
           dragged = last_model != this.model,
           annotations = doc.get('annotations'),
-          ann_range =  annotations.getRange();
+          ann_range =  annotations.getRange(),
+          prexisting = _.contains(ann_range, this.model.get('start'));
 
       if(dragged) {
         var sel = [last_model.get('start'), this.model.get('stop')],
@@ -68,6 +69,9 @@ define(['marionette', 'templates', 'vent',
           //-- They dragged in reverse
           start_i = this.model.get('start');
           stop_i = last_model.get('stop')+1;
+          last_model.set('neighbor', true)
+        } else {
+          this.model.set('neighbor', true)
         }
 
         annotations.create({
@@ -80,8 +84,8 @@ define(['marionette', 'templates', 'vent',
         });
 
       } else {
-
-        if( _.contains(ann_range, this.model.get('start')) ) {
+        this.model.set('neighbor', true)
+        if( prexisting ) {
           //-- If the single annotation or range started on a prexisting annotation
           _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
         } else {
@@ -99,6 +103,13 @@ define(['marionette', 'templates', 'vent',
       }
 
       this.selectWordsOfAnnotations();
+
+      // -- If is a single word selection, or at the end of a drag
+      // -- AKA :: Is the person to your right selected?
+      // var neighbor = this.model.collection.at( this.model.collection.indexOf(this.model)+1);
+      // if(!prexisting && neighbor && !neighbor.get('selected')) {
+      // }
+
       // _.each(annotations.models, function(ann) {
         // console.log(ann.get('text'), " :: ", ann.get('length'))
       // });

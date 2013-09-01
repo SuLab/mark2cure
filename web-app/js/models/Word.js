@@ -13,6 +13,7 @@ define(['backbone'],
 
       selected  : false,
       latest    : false,
+      neighbor    : false,
 
       pos_x   : null,
       pos_y   : null,
