@@ -1,24 +1,35 @@
-define(['marionette', 'templates', 'vent'],
-        function (Marionette, templates, vent) {
+define(['marionette', 'templates', 'vent',
+        'underscore.string'],
+        function (Marionette, templates, vent,
+                  _s) {
   'use strict';
 
   return Marionette.ItemView.extend({
     template : templates.main.game.controls,
+    templateHelpers : function() { return this.options; },
 
     events : {
       'click button.done'       : 'submitAnnotations',
       'click button.navigate'   : 'nextDocument'
     },
 
-    initialize : function() {
+    initialize : function(options) {
       //-- This is the View w/ Control buttons and navigation
       //-- this.model == The Document
       //-- this.collection == The Collection of all Documents
+      options.ann_list = _.uniq( this.model.get('annotations').pluck('text') ).sort();
+      this.listenTo(this.model.get('annotations'), "add", this.reRender, this);
+      this.listenTo(this.model.get('annotations'), "remove", this.reRender, this);
     },
 
     //
     //-- Events
     //
+    reRender : function() {
+      this.options.ann_list = _.uniq( this.model.get('annotations').pluck('text') ).sort();
+      this.render();
+    },
+
     submitAnnotations : function(evt) {
       evt.preventDefault();
       this.model.save({'complete': true});

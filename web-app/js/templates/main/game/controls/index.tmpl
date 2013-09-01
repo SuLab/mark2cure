@@ -13,6 +13,8 @@
     <% if(document_id) { %>
       <p><span class="label label-info">Document</span> <a href="http://www.ncbi.nlm.nih.gov/pubmed/<%= document_id %>" target="_blank">PubMed Link</a></p>
     <% } %>
+
+    <p><span class="label label-info">Selected</span> <%= _.str.toSentence(ann_list) %></p>
   </div>
   <div class="span1">
     <button class="btn btn-primary btn-large done" type="button">Done</button>
