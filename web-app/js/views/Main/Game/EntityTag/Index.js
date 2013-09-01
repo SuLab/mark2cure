@@ -1,39 +1,12 @@
 define(['marionette', 'templates', 'vent',
-        //-- Views
-        'views/Main/Game/EntityTag/Words'],
+        'views/Main/Game/EntityTag/WordItem'], 
     function (Marionette, templates, vent,
-              //-- Views
-              Words) {
+              WordItem) {
   'use strict';
 
-  return Marionette.Layout.extend({
-    template : templates.main.game.entity_tag.index,
-
-    regions : {
-      text   : 'p.paragraph'
-    },
-
-    onRender : function() {
-      this.text.show( new Words({collection: this.model.get('words')}) );
-    },
-
-    //
-    //-- Events
-    //
-    // saveGame : function() {
-    //   //-- Annotations where sync'd with the server in real time
-    //   _.each(this.model.get('words').getSelected(), function(word) {
-    //     self.model.get('annotations').create({
-    //       kind    : 0,
-    //       type    : 'disease',
-    //       position  : word.get('position'),
-    //       text      : word.get('text'),
-    //       length    : word.get('length'),
-    //       start     : word.get('start'),
-    //       stop      : word.get('stop')
-    //     })
-    //   });
-    // }
-
+  return Marionette.CollectionView.extend({
+    itemView: WordItem,
+    tagName : 'p',
+    className : 'paragraph entity_tag',
   });
 });

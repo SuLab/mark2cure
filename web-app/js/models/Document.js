@@ -2,7 +2,6 @@ define(['backbone', 'vent',
         //-- Data
         'models/Word', 'collections/WordList',
         'models/Annotation', 'collections/AnnotationList',
-        'models/Cache', 'collections/CacheList',
         'models/User',
         //-- Utilities
         'underscore.string'],
@@ -10,7 +9,6 @@ define(['backbone', 'vent',
         //-- Data
         Word, WordList,
         Annotation, AnnotationList,
-        Cache, CacheList,
         User,
         //-- Utilities
         _s){
@@ -29,7 +27,6 @@ define(['backbone', 'vent',
 
       //-- for now, 'complete' can live entirely clientside
       complete      : false,
-      cache         : {}
     },
 
     relations: [{
@@ -49,20 +46,6 @@ define(['backbone', 'vent',
 
       relatedModel: Word,
       collectionType: WordList,
-
-      reverseRelation : {
-        key : 'parentDocument',
-        includeInJSON: false,
-      }
-    }, {
-      type: 'HasOne',
-      key: 'cache',
-
-      relatedModel: Cache,
-      collectionType: CacheList,
-
-      autoFetch       : false,
-      parse           : true,
 
       reverseRelation : {
         key : 'parentDocument',

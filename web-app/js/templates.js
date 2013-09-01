@@ -20,7 +20,6 @@ define(function(require) {
         controls : require('tpl!templates/main/game/controls/index.tmpl'),
 
         entity_tag : {
-          index     : require('tpl!templates/main/game/entity_tag/index.tmpl'),
           worditem  : require('tpl!templates/main/game/entity_tag/worditem.tmpl')
         },
 

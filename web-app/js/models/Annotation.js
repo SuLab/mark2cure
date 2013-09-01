@@ -5,7 +5,6 @@ define(['backbone'],
   return Backbone.RelationalModel.extend({
     defaults: {
       text      : '',
-      position  : 0,
 
       length  : null,
       start   : null,

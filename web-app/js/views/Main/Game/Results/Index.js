@@ -8,8 +8,10 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.ItemView.extend({
     template : templates.main.game.results.index,
+    tagName : 'p',
+    className : 'paragraph results',
 
-    // initialize : function(options) {
+      // initialize : function(options) {
       //-- View to show community consensus and self annotations
       //-- this.model == The Document Resource
 

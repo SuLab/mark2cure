@@ -36,8 +36,35 @@ define(['marionette', 'templates', 'vent',
     },
 
     releaseDrag : function(evt) {
-        var last_model = this.model.collection.findWhere({latest: true});
-        console.log(last_model.get('text'), this.model.get('text'));
+        var self = this,
+            last_model = this.model.collection.findWhere({latest: true}),
+            doc = this.model.get('parentDocument'),
+            dragged = last_model != this.model;
+
+        if(dragged) {
+          //-- (TODO) Account for reverse dragging
+          var start_i = last_model.get('start'),
+              stop_i = this.model.get('stop');
+          doc.get('annotations').create({
+            kind      : 0,
+            type      : 'disease',
+            text      : doc.get('text').substring(start_i, stop_i),
+            length    : stop_i - start_i,
+            start     : start_i,
+            stop      : stop_i
+          });
+
+        } else {
+          doc.get('annotations').create({
+            kind      : 0,
+            type      : 'disease',
+            text      : self.model.get('text'),
+            length    : self.model.get('length'),
+            start     : self.model.get('start'),
+            stop      : self.model.get('stop')
+          });
+        }
+
     },
 
     //-- Utilities for view

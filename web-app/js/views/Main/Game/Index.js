@@ -13,7 +13,6 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.Layout.extend({
     template : templates.main.game.index,
-    templateHelpers : function() { return this.options; },
 
     regions : {
       game      : 'div.game',
@@ -32,18 +31,21 @@ define(['marionette', 'templates', 'vent',
       //-- options.user == The Currently Logged in User
 
       if(!this.model.get('words').length) { this.model.parseText(); }
-      this.listenTo(this.model, "change:complete", this.render, this);
+      this.listenTo(this.model, "change:complete", this.reRender, this);
     },
 
     onRender : function() {
-      console.log('game index rerendzzz', this);
+      this.reRender();
+    },
+
+    reRender : function() {
       this.controls.show( new Controls({model: this.model, collection: this.collection}) );
 
       if( this.model.get('complete') ) {
         this.game.show( new Results({model: this.model}) );
       } else {
-        this.game.show( new EntityTag({model: this.model}) );
-      }
+        this.game.show( new EntityTag({collection: this.model.get('words')}) );
+      } 
     }
 
     //
