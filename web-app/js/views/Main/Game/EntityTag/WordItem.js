@@ -26,22 +26,31 @@ define(['marionette', 'templates', 'vent',
     //-- Event actions
     //
     clickOrInitDrag : function() {
-      this.model.collection.clearLatest();
+      this.model.collection.clear('latest');
       this.model.set('latest', true);
     },
 
     releaseDrag : function(evt) {
-        var self = this,
-            last_model = this.model.collection.findWhere({latest: true}),
-            doc = this.model.get('parentDocument'),
-            dragged = last_model != this.model,
-            annotations = doc.get('annotations'),
-            ann_range =  annotations.getRange();
+      var self = this,
+          last_model = this.model.collection.findWhere({latest: true}),
+          doc = this.model.get('parentDocument'),
+          dragged = last_model != this.model,
+          annotations = doc.get('annotations'),
+          ann_range =  annotations.getRange();
 
         if(dragged) {
-          //-- (TODO) Account for reverse dragging
-          var start_i = last_model.get('start'),
-              stop_i = this.model.get('stop');
+          var sel = [last_model.get('start'), this.model.get('stop')],
+              range = Array.prototype.slice.call(sel).sort(),
+              start_i = range[0],
+              stop_i = range[1]+1;
+
+          //-- (TODO) http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
+          if( String(sel) !== String(range) ) {
+            //-- They dragged in reverse
+            start_i = this.model.get('start');
+            stop_i = last_model.get('stop')+1;
+          }
+
           annotations.create({
             kind      : 0,
             type      : 'disease',
@@ -69,13 +78,13 @@ define(['marionette', 'templates', 'vent',
           }
 
         }
-        this.selectWordsOfAnnotations();
+      this.selectWordsOfAnnotations();
     },
 
     //-- Utilities for view
     selectWordsOfAnnotations : function() {
       var ann_range =  this.model.get('parentDocument').get('annotations').getRange();
-      this.model.collection.clearSelected()
+      this.model.collection.clear('selected');
       this.model.collection.each(function(word) {
         //- If the word is part of an annotation
         if( _.contains(ann_range, word.get('start')) ) {
