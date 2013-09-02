@@ -6,16 +6,21 @@ define(['marionette', 'templates', 'vent'],
     template : templates.main.game.results.index,
     tagName : "span",
 
-    events : {
-    },
-
-    initialize : function(options) {
-    },
-
     onRender : function() {
-      var pop = this.model.get('parentDocument').get('popularity'),
-          highlight = this.options.color_scale(pop[this.model.get('position')]);
-      this.$el.css({'backgroundColor' : highlight});
+      //-- Draw the community consensus
+      var pop = this.model.get('parentDocument').get('popularity')[this.model.get('position')];
+      if(pop >= 1) {
+        this.$el.html(this.model.get('text'));
+        this.$el.addClass('neighbor');
+        this.$el.css({'backgroundColor' : this.options.color_scale(pop)});
+      }
+
+      //-- Draw the user's annotations
+      if( _.contains(this.options.ann_range, this.model.get('start')) ) {
+        this.$el.addClass('selected');
+        this.$el.addClass('neighbor');
+      }
     }
+
   });
 });

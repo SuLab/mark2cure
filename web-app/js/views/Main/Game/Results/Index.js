@@ -18,18 +18,13 @@ define(['marionette', 'templates', 'vent',
 
       //------
       // HEATMAP CUTOFF %
-      // -----
       var community_threshold = .65;
+      // -----
       this.options.popularity = _.max( this.collection.parentDocument.get('popularity') );
       this.options.color_scale = d3.scale.linear()
                                   .domain([0, this.options.popularity])
                                   .range(["white", "yellow"]);
-
-      //   var defined_correct = _.map(this.model.get('popularity'), function(i) { return i/self.options.max_pop >= community_threshold ? true : false; }),
-      //       selected_index  = this.model.get('annotations').pluck('position'),
-      //       user_correct    = _.map(this.model.get('popularity'), function(x, index) { return _.contains(selected_index, index); });
-      //   this.options.score = this.compare(defined_correct, user_correct);
-      //   this.options.ann_range = this.model.get('annotations').getRange();
+      this.options.ann_range = this.collection.parentDocument.get('annotations').getRange();
 
       // if( this.collection.completed().length == 1 ) {
       //   this.ui.navigate.popover({  title   : 'Congrats! You annotated your first document!',
@@ -44,7 +39,6 @@ define(['marionette', 'templates', 'vent',
       //     self.ui.navigate.popover('hide');
       //     vent.trigger('navigate:analytics', {toggle: true, explain: true});
       //   });
-
       // }
     },
 
@@ -55,7 +49,8 @@ define(['marionette', 'templates', 'vent',
 
     buildItemView: function(item, ItemViewType) {
       // build the final list of options for the item view type
-      var options = _.extend({model: item}, { color_scale : this.options.color_scale });
+      var options = _.extend({model: item}, { color_scale : this.options.color_scale,
+                                              ann_range : this.options.ann_range });
       // create the item view instance
       var view = new ItemViewType(options);
       return view;
