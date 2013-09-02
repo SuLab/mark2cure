@@ -1,7 +1,5 @@
 define(['marionette', 'templates', 'vent',
-        'views/Main/Game/Results/ResultItem',
-        //-- ETC
-        'd3'], 
+        'views/Main/Game/Results/ResultItem'],
 
         function (Marionette, templates, vent,
                   ResultItem) {
@@ -25,21 +23,25 @@ define(['marionette', 'templates', 'vent',
                                   .domain([0, this.options.popularity])
                                   .range(["white", "yellow"]);
       this.options.ann_range = this.collection.parentDocument.get('annotations').getRange();
+    },
 
-      // if( this.collection.completed().length == 1 ) {
-      //   this.ui.navigate.popover({  title   : 'Congrats! You annotated your first document!',
-      //                               content : templates.snippets.paragraph_info({}),
-      //                               html    : true,
-      //                               trigger : 'manual',
-      //                               placement : 'left',
-      //                               container : 'body' });
-      //   this.ui.navigate.popover('show');
+    onRender : function() {
+      if( this.collection.parentDocument.collection.completed().length === 1 ) {
+        var $navigate = $('button.navigate');
+        $navigate.popover({  title   : 'Congrats! You annotated your first document!',
+                                    content : templates.snippets.paragraph_info({}),
+                                    html    : true,
+                                    trigger : 'manual',
+                                    placement : 'left',
+                                    container : 'body' });
+       $navigate.popover('show');
+      $('.popover').css({'position': 'absolute', top: 160, left: ($('body').width()/2)+80 });
 
-      //   $('button.explain-network').click(function(e) {
-      //     self.ui.navigate.popover('hide');
-      //     vent.trigger('navigate:analytics', {toggle: true, explain: true});
-      //   });
-      // }
+        $('button.explain-network').click(function(e) {
+          $('.popover').hide();
+          vent.trigger('navigate:analytics', {toggle: true, explain: true});
+        });
+      }
     },
 
     onClose : function() {

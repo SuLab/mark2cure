@@ -126,6 +126,8 @@ svg {
 }
 
 .game p.paragraph.entity_tag {
+  /* (TODO) Why doesn't this work? */
+  cursor: pointer;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
