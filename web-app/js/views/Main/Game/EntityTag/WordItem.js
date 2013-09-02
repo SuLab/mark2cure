@@ -26,10 +26,7 @@ define(['marionette', 'templates', 'vent',
 
     onRender : function() {
       this.renderingClassSetting('selected');
-      if(this.model.get('neighbor')) {
-        this.$el.css({'borderRight' : '6px solid white'});
-        this.$el.html( this.model.get('text') ); 
-      }
+      this.renderingClassSetting('neighbor');
     },
 
     //

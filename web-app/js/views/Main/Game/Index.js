@@ -42,7 +42,7 @@ define(['marionette', 'templates', 'vent',
       this.controls.show( new Controls({model: this.model, collection: this.collection}) );
 
       if( this.model.get('complete') ) {
-        this.game.show( new Results({model: this.model}) );
+        this.game.show( new Results({collection: this.model.get('words')}) );
       } else {
         this.game.show( new EntityTag({collection: this.model.get('words')}) );
       } 

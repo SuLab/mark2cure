@@ -1,45 +1,35 @@
 define(['marionette', 'templates', 'vent',
+        'views/Main/Game/Results/ResultItem',
         //-- ETC
         'd3'], 
 
         function (Marionette, templates, vent,
-                  Words) {
+                  ResultItem) {
   'use strict';
 
-  return Marionette.ItemView.extend({
-    template : templates.main.game.results.index,
+  return Marionette.CollectionView.extend({
+    itemView: ResultItem,
     tagName : 'p',
     className : 'paragraph results',
 
-      // initialize : function(options) {
+    initialize : function(options) {
       //-- View to show community consensus and self annotations
-      //-- this.model == The Document Resource
+      //-- this.collection == The List of words Resource
 
-      //-- i think these are in the this.model
-      //-- this.collection == The Collection of user's annotations?
-      // console.log('results index init :: ', this);
-    // },
+      //------
+      // HEATMAP CUTOFF %
+      // -----
+      var community_threshold = .65;
+      this.options.popularity = _.max( this.collection.parentDocument.get('popularity') );
+      this.options.color_scale = d3.scale.linear()
+                                  .domain([0, this.options.popularity])
+                                  .range(["white", "yellow"]);
 
-    // onRender : function() {
-      // var self = this,
-      //     //------
-      //     // HEATMAP CUTOFF %
-      //     // -----
-      //     community_threshold = .65;
-      // this.options.max_pop = _.max( this.model.get('popularity') );
-      // this.options.color_scale = d3.scale.linear()
-      //                             .domain([0, this.options.max_pop])
-      //                             .range(["white", "yellow"]);
-
-      // if( this.model.get('complete') ) {
       //   var defined_correct = _.map(this.model.get('popularity'), function(i) { return i/self.options.max_pop >= community_threshold ? true : false; }),
       //       selected_index  = this.model.get('annotations').pluck('position'),
       //       user_correct    = _.map(this.model.get('popularity'), function(x, index) { return _.contains(selected_index, index); });
       //   this.options.score = this.compare(defined_correct, user_correct);
       //   this.options.ann_range = this.model.get('annotations').getRange();
-      // }
-      //
-      //
 
       // if( this.collection.completed().length == 1 ) {
       //   this.ui.navigate.popover({  title   : 'Congrats! You annotated your first document!',
@@ -55,15 +45,21 @@ define(['marionette', 'templates', 'vent',
       //     vent.trigger('navigate:analytics', {toggle: true, explain: true});
       //   });
 
-      //   this.options.user.save({'first_run' : false});
       // }
-    // },
+    },
 
     onClose : function() {
       //-- Incase they didn't close it before or are skipping
       $('.popover').hide();
     },
 
+    buildItemView: function(item, ItemViewType) {
+      // build the final list of options for the item view type
+      var options = _.extend({model: item}, { color_scale : this.options.color_scale });
+      // create the item view instance
+      var view = new ItemViewType(options);
+      return view;
+    }
 
   });
 });
