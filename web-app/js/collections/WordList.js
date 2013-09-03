@@ -11,5 +11,11 @@ define(['backbone', 'models/Word'],
       return this.each(function(word) { word.set(attr, false); });
     },
 
+    selectBetweenRange : function(start, stop) {
+      return this.filter(function(word){
+        return word.get('start') >= start && word.get('start') <= stop;
+      });
+    }
+
   });
 });

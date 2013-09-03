@@ -34,8 +34,8 @@ define(['marionette', 'templates', 'vent',
                                     trigger : 'manual',
                                     placement : 'left',
                                     container : 'body' });
-       $navigate.popover('show');
-      $('.popover').css({'position': 'absolute', top: 160, left: ($('body').width()/2)+80 });
+        $navigate.popover('show');
+        $('.popover').css({'position': 'absolute', top: 160, left: ($('body').width()/2)+80 });
 
         $('button.explain-network').click(function(e) {
           $('.popover').hide();

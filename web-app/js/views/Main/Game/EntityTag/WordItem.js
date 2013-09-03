@@ -32,21 +32,24 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Event actions
     //
-    // hover : function() {
-    //   if(window.mouseDown) {
-    //     this.model.set('selected', true);
-    //   }
-    // },
+    hover : function(evt) {
+      if(evt.which) {
+        var last_model = this.model.collection.findWhere({latest: true}),
+            sel = [last_model.get('start'), this.model.get('start')],
+            range = Array.prototype.slice.call(sel).sort(),
+            highlight_list = this.model.collection.selectBetweenRange(range[0], range[1]+1);
+        this.selectWordsOfAnnotations();
+        _.each(highlight_list, function(word) { word.set('selected', true); });
+      }
+    },
 
     clickOrInitDrag : function() {
-      // ++window.mouseDown;
       this.model.collection.clear('latest');
       this.model.set('latest', true);
       this.model.set('selected', true);
     },
 
     releaseDrag : function(evt) {
-      // --window.mouseDown;
       var self = this,
           last_model = this.model.collection.findWhere({latest: true}),
           doc = this.model.get('parentDocument'),

@@ -63,8 +63,6 @@ define(['marionette', 'vent',
         }
       }});
 
-      //-- (TODO) http://stackoverflow.com/questions/322378/javascript-check-if-mouse-button-down
-      window.mouseDown = 0;
     });
 
     vent.on('navigate', function(param) {
