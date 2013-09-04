@@ -25,6 +25,10 @@
             <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
           </div>
 
+          <div class="alert alert-danger" style="display: none;">
+            <strong>Oops!</strong> We recieved your information but an error occured. We may have already had that email address added...
+          </div>
+
           <form class="form-horizontal" role="form">
             <p class="lead text-center">If you'd like to be notified when we launch Mark2Cure, please provide your email address below.<p>
 
@@ -84,7 +88,11 @@
             data: {'email': email, 'email_bool': beta},
             success: function(a, b, c) {
               $('form').fadeOut();
-              $('.alert').fadeIn();
+              $('.alert-info').fadeIn();
+            },
+            error : function() {
+              $('form').fadeOut();
+              $('.alert-danger').fadeIn();
             },
             dataType: "json"
           });

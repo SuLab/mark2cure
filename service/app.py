@@ -8,7 +8,7 @@ import settings
 #
 app = Flask(__name__,
             static_url_path = '',
-            static_folder = '../web-app')
+            static_folder = '../landing_page')
 app.config['SQLALCHEMY_DATABASE_URI'] = settings.DB_URI
 db.init_app(app)
 
