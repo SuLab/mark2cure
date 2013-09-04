@@ -61,12 +61,11 @@ define(['backbone', 'vent',
       var self = this,
           step = 0,
           length = 0,
-          words = _.map(_s.words( self.get('text') ), function(word, index) {
+          words = _.map(_s.words( self.get('text') ), function(word) {
             length = word.length;
             step = step + length + 1;
             return {
               'text'      : word,
-              'position'  : index,
               'length'    : length,
               'start'     : step - length - 1,
               'stop'      : step - 2

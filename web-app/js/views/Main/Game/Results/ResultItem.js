@@ -8,7 +8,7 @@ define(['marionette', 'templates', 'vent'],
 
     onRender : function() {
       //-- Draw the community consensus
-      var pop = this.model.get('parentDocument').get('popularity')[this.model.get('position')];
+      var pop = this.model.get('parentDocument').get('popularity')[ this.model.collection.indexOf( this.model ) ];
       if(pop >= 1) {
         this.$el.html(this.model.get('text'));
         this.$el.addClass('neighbor');
