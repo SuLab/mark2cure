@@ -6,6 +6,9 @@
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/style.css" rel="stylesheet" media="screen">
+
+    <meta property="og:title" content="Mark2Cure" />
+    <meta property="og:image" content="http://beta.mark2cure.org/img/mark2cure.png" />
   </head>
   <body>
 
@@ -56,6 +59,13 @@
         </div>
       </div>
     </div>
+    <div class="container">
+      <div class="row" style="margin-top: 6px;">
+        <div class="col-md-2 col-md-offset-4">
+          <div class="fb-like" data-href="http://mark2cure.org/" data-width="450" data-layout="button_count" data-show-faces="true" data-send="true"></div>
+        </div>
+      </div>
+    </div>
 
     <div id="footer" class="container">
       <div class="col-md-3 col-md-offset-1">
@@ -100,6 +110,16 @@
 
       });
     </script>
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=590750244309284";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
     <script type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-43341013-1']);
