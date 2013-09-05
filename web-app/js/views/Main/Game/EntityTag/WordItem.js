@@ -61,7 +61,7 @@ define(['marionette', 'templates', 'vent',
 
       if(dragged) {
         var sel = [last_model.get('start'), this.model.get('stop')],
-            range = Array.prototype.slice.call(sel).sort(),
+            range = [_.min(sel), _.max(sel)],
             start_i = range[0],
             stop_i = range[1]+1;
 
@@ -101,7 +101,7 @@ define(['marionette', 'templates', 'vent',
       this.selectWordsOfAnnotations();
       this.selectNeighborsOfAnnotations();
 
-      // console.log('/ / / / / / / / / / / /')
+      // console.log('/ / / / / / / / / / / /   ::   ', range);
       // _.each(annotations.models, function(ann) {
       //   console.log(ann.get('text'), " :: ", ann.get('length'))
       // });
