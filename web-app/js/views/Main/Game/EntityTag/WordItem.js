@@ -36,9 +36,10 @@ define(['marionette', 'templates', 'vent',
       if(evt.which) {
         var last_model = this.model.collection.findWhere({latest: true}),
             sel = [last_model.get('start'), this.model.get('start')],
-            range = Array.prototype.slice.call(sel).sort(),
+            range = [_.min(sel), _.max(sel)],
             highlight_list = this.model.collection.selectBetweenRange(range[0], range[1]+1);
         this.selectWordsOfAnnotations();
+
         _.each(highlight_list, function(word) { word.set('selected', true); });
       }
     },
@@ -69,9 +70,6 @@ define(['marionette', 'templates', 'vent',
           //-- They dragged in reverse
           start_i = this.model.get('start');
           stop_i = last_model.get('stop')+1;
-          last_model.set('neighbor', true)
-        } else {
-          this.model.set('neighbor', true)
         }
 
         annotations.create({
@@ -84,7 +82,6 @@ define(['marionette', 'templates', 'vent',
         });
 
       } else {
-        this.model.set('neighbor', true)
         if( prexisting ) {
           //-- If the single annotation or range started on a prexisting annotation
           _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
@@ -99,19 +96,14 @@ define(['marionette', 'templates', 'vent',
             stop      : self.model.get('stop')
           });
         }
-
       }
 
       this.selectWordsOfAnnotations();
+      this.selectNeighborsOfAnnotations();
 
-      // -- If is a single word selection, or at the end of a drag
-      // -- AKA :: Is the person to your right selected?
-      // var neighbor = this.model.collection.at( this.model.collection.indexOf(this.model)+1);
-      // if(!prexisting && neighbor && !neighbor.get('selected')) {
-      // }
-
+      // console.log('/ / / / / / / / / / / /')
       // _.each(annotations.models, function(ann) {
-        // console.log(ann.get('text'), " :: ", ann.get('length'))
+      //   console.log(ann.get('text'), " :: ", ann.get('length'))
       // });
     },
 
@@ -123,6 +115,17 @@ define(['marionette', 'templates', 'vent',
         //- If the word is part of an annotation
         if( _.contains(ann_range, word.get('start')) ) {
           word.set('selected', true);
+        }
+      });
+    },
+
+    selectNeighborsOfAnnotations : function() {
+      this.model.collection.clear('neighbor');
+      this.model.collection.each(function(word, word_idx) {
+        //-- Is the person to your right selected?
+        var neighbor = word.collection.at( word_idx+1);
+        if(neighbor && !neighbor.get('selected') && word.get('selected')) {
+          word.set('neighbor', true);
         }
       });
     },
