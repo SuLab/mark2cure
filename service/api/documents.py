@@ -13,6 +13,7 @@ document_parser = reqparse.RequestParser()
 document_parser.add_argument('document_id',   type=int,   location='json')
 document_parser.add_argument('title',         type=str,   location='json')
 document_parser.add_argument('annotations',   type=list,  location='json')
+document_parser.add_argument('q',             type=str)
 
 document_parser.add_argument('api_key',       type=str,   location='cookies')
 
@@ -25,8 +26,13 @@ class Documents(Resource):
         args = document_parser.parse_args()
         user = db.session.query(User).filter_by(api_key = args['api_key']).first()
 
-        # documents = Document.query.order_by( Document.created ).all()
-        documents = Document.query.limit(30).all()
+        if args['q']:
+          # http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search
+          documents = Document.query.limit(1).all()
+        else:
+          # documents = Document.query.order_by( Document.created ).all()
+          documents = Document.query.limit(30).all()
+
         return jsonify(objects=[i.json_view(user) for i in documents])
 
     def put(self, doc_id):
