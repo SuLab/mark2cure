@@ -18,6 +18,13 @@ define(['backbone', 'models/Annotation'],
       return this.filter(function(annotation) { 
         return index >= annotation.get('start') && index <= annotation.get('stop');
       });
+    },
+
+    exactMatch : function(word) {
+      return this.filter(function(annotation) { 
+        return  word.get('start') == annotation.get('start') &&
+                word.get('stop') == annotation.get('stop');
+      });
     }
 
   });

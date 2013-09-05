@@ -121,12 +121,23 @@ define(['marionette', 'templates', 'vent',
 
     selectNeighborsOfAnnotations : function() {
       this.model.collection.clear('neighbor');
+      var anns = this.model.get('parentDocument').get('annotations');
       this.model.collection.each(function(word, word_idx) {
         //-- Is the person to your right selected?
-        var neighbor = word.collection.at( word_idx+1);
-        if(neighbor && !neighbor.get('selected') && word.get('selected')) {
+        var left_neighbor = word.collection.at(   word_idx - 1),
+            right_neighbor = word.collection.at(  word_idx + 1);
+
+        if(right_neighbor && !right_neighbor.get('selected') && word.get('selected')) {
           word.set('neighbor', true);
         }
+
+        if(anns.exactMatch(word).length > 0 && left_neighbor) {
+          if(left_neighbor.get('selected')) {
+            left_neighbor.set('neighbor', true);
+          }
+          word.set('neighbor', true);
+        }
+
       });
     },
 
