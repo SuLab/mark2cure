@@ -8,13 +8,23 @@
 
 <% } else { %>
   <div class="well span10">
-    <p><span class="label label-info">Title</span> <%= title %></p>
-    <p><span class="label label-info">Created</span> <%= moment(created).calendar() %></p>
-    <% if(document_id) { %>
-      <p><span class="label label-info">Document</span> <a href="http://www.ncbi.nlm.nih.gov/pubmed/<%= document_id %>" target="_blank">PubMed Link</a></p>
-    <% } %>
-
-    <p><span class="label label-info">Selected</span> <%= _.str.toSentence(ann_list) %></p>
+    <div class="row">
+      <div class="span6">
+        <p><span class="label label-info">Title</span> <%= title %></p>
+        <p><span class="label label-info">Created</span> <%= moment(created).calendar() %></p>
+        <% if(document_id) { %>
+          <p><span class="label label-info">Document</span> <a href="http://www.ncbi.nlm.nih.gov/pubmed/<%= document_id %>" target="_blank">PubMed Link</a></p>
+        <% } %>
+        <p><span class="label label-info">Selected</span> <%= _.str.toSentence(ann_list) %></p>
+      </div>
+      <div class="span4">
+        <div class="btn-group entity-sel">
+          <button type="button" class="btn btn-default" data-type="disease" >Disease</button>
+          <button type="button" class="btn btn-default" data-type="gene">Gene</button>
+          <button type="button" class="btn btn-default" data-type="protein">Protein</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="span1">
     <button class="btn btn-primary btn-large done" type="button">Done</button>

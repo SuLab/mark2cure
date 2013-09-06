@@ -5,7 +5,7 @@ define(['backbone', 'vent',
                   cookie, hash){
   'use strict';
 
-  return Backbone.Model.extend({
+  var UserObject = Backbone.Model.extend({
     url     : '/api/v1/user',
     defaults : {
       'username'    : 'User_'+ (''+hash( Date.now() )).substring(0,4),
@@ -19,6 +19,7 @@ define(['backbone', 'vent',
       'feedback_3' : -1,
 
       'first_run'   : true,
+      'advance'     : true,
       'api_key'     : null
     },
 
@@ -45,4 +46,6 @@ define(['backbone', 'vent',
     }
 
   });
+
+  return new UserObject();
 });

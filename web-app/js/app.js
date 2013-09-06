@@ -36,7 +36,7 @@ define(['marionette', 'vent',
     var app = new marionette.Application(),
         viewOptions = {
           collection : new DocumentList(),
-          user : new User()
+          user : User
         };
 
     app.addRegions({

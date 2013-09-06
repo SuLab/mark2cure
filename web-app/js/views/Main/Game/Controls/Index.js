@@ -10,7 +10,8 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'click button.done'       : 'submitAnnotations',
-      'click button.navigate'   : 'nextDocument'
+      'click button.navigate'   : 'nextDocument',
+      'click .entity-sel button' : 'changeSelectionType'
     },
 
     initialize : function(options) {
@@ -46,6 +47,11 @@ define(['marionette', 'templates', 'vent',
 
       //-- Trigger the next view via actually changing url through router
       Backbone.history.navigate( '#/'+ this.model.id );
+    },
+
+    changeSelectionType : function(evt) {
+      var type = $(evt.target).data('type');
+      console.log(type);
     }
 
     //

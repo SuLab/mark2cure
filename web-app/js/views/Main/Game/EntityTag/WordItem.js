@@ -1,7 +1,10 @@
 define(['marionette', 'templates', 'vent',
+        //-- Models
+        'models/User',
         //-- ETC
         'moment'],
-    function (Marionette, templates, vent) {
+    function (Marionette, templates, vent,
+              User) {
   'use strict';
 
   return Marionette.ItemView.extend({
@@ -58,6 +61,10 @@ define(['marionette', 'templates', 'vent',
           annotations = doc.get('annotations'),
           ann_range =  annotations.getRange(),
           prexisting = _.contains(ann_range, this.model.get('start'));
+
+      if(User.get('advance')) {
+        
+      }
 
       if(dragged) {
         var sel = [last_model.get('start'), this.model.get('stop')],
