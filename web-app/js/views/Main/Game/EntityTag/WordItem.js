@@ -14,7 +14,8 @@ define(['marionette', 'templates', 'vent',
     events : {
       'mousedown'   : 'clickOrInitDrag',
       'mouseup'     : 'releaseDrag',
-      'mouseover'   : 'hover'
+      'mouseover'   : 'hover',
+      'mouseout'    : 'leaveHover'
     },
 
     initialize : function(options) {
@@ -44,7 +45,25 @@ define(['marionette', 'templates', 'vent',
         this.selectWordsOfAnnotations();
 
         _.each(highlight_list, function(word) { word.set('selected', true); });
+      } else {
+        if(this.model.get('selected')) {
+          var anns = this.model.get('parentDocument').get('annotations'),
+              ann_list = anns.findContaining(this.model.get('start'));
+          if(ann_list.length > 0) {
+            var types = _.uniq( _.map(ann_list, function(ann){ return ann.get('type'); }) );
+            this.$el.tooltip('destroy');
+            this.$el.tooltip({
+              trigger: 'manual',
+              title: types.join(', ')
+            });
+            this.$el.tooltip('show');
+          }
+        }
       }
+    },
+
+    leaveHover : function(evt) {
+      this.$el.tooltip('destroy');
     },
 
     clickOrInitDrag : function() {
