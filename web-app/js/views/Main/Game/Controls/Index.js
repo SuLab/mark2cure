@@ -1,6 +1,9 @@
 define(['marionette', 'templates', 'vent',
+        //-- Models
+        'models/User',
         'underscore.string'],
         function (Marionette, templates, vent,
+                  User,
                   _s) {
   'use strict';
 
@@ -19,8 +22,11 @@ define(['marionette', 'templates', 'vent',
       //-- this.model == The Document
       //-- this.collection == The Collection of all Documents
       options.ann_list = _.uniq( this.model.get('annotations').pluck('text') ).sort();
+      options.user = User;
       this.listenTo(this.model.get('annotations'), "add", this.reRender, this);
       this.listenTo(this.model.get('annotations'), "remove", this.reRender, this);
+      this.listenTo(this.options.user, "change:advance", this.reRender, this);
+      this.listenTo(this.options.user, "change:sel_mode", this.reRender, this);
     },
 
     //
@@ -51,7 +57,7 @@ define(['marionette', 'templates', 'vent',
 
     changeSelectionType : function(evt) {
       var type = $(evt.target).data('type');
-      console.log(type);
+      this.options.user.set('sel_mode', type);
     }
 
     //

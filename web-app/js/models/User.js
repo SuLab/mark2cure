@@ -19,7 +19,10 @@ define(['backbone', 'vent',
       'feedback_3' : -1,
 
       'first_run'   : true,
-      'advance'     : true,
+
+      'advance'       : false,
+      'sel_mode'      : "disease",
+
       'api_key'     : null
     },
 

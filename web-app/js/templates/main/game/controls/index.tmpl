@@ -9,7 +9,7 @@
 <% } else { %>
   <div class="well span10">
     <div class="row">
-      <div class="span6">
+      <div class="span<%= user.get('advance') ? '6' : '8' %>">
         <p><span class="label label-info">Title</span> <%= title %></p>
         <p><span class="label label-info">Created</span> <%= moment(created).calendar() %></p>
         <% if(document_id) { %>
@@ -17,13 +17,17 @@
         <% } %>
         <p><span class="label label-info">Selected</span> <%= _.str.toSentence(ann_list) %></p>
       </div>
-      <div class="span4">
-        <div class="btn-group entity-sel">
-          <button type="button" class="btn btn-default" data-type="disease" >Disease</button>
-          <button type="button" class="btn btn-default" data-type="gene">Gene</button>
-          <button type="button" class="btn btn-default" data-type="protein">Protein</button>
+
+      <% if(user.get('advance')) { %>
+        <div class="span4">
+          <div class="btn-group entity-sel">
+            <button type="button" class="btn btn-default <%= user.get('sel_mode') == 'disease' ? 'active' : '' %>" data-type="disease" >Disease</button>
+            <button type="button" class="btn btn-default <%= user.get('sel_mode') == 'gene' ? 'active' : '' %>" data-type="gene">Gene</button>
+            <button type="button" class="btn btn-default <%= user.get('sel_mode') == 'protein' ? 'active' : '' %>" data-type="protein">Protein</button>
+          </div>
         </div>
-      </div>
+      <% } %>
+
     </div>
   </div>
   <div class="span1">

@@ -62,9 +62,7 @@ define(['marionette', 'templates', 'vent',
           ann_range =  annotations.getRange(),
           prexisting = _.contains(ann_range, this.model.get('start'));
 
-      if(User.get('advance')) {
-        
-      }
+      var type = User.get('sel_mode');
 
       if(dragged) {
         var sel = [last_model.get('start'), this.model.get('stop')],
@@ -81,7 +79,7 @@ define(['marionette', 'templates', 'vent',
 
         annotations.create({
           kind      : 0,
-          type      : 'disease',
+          type      : type,
           text      : doc.get('text').substring(start_i, stop_i),
           length    : stop_i - start_i,
           start     : start_i,
@@ -96,7 +94,7 @@ define(['marionette', 'templates', 'vent',
           //-- If the single annotation or range started on a prexisting annotation
           annotations.create({
             kind      : 0,
-            type      : 'disease',
+            type      : type,
             text      : self.model.get('text'),
             length    : self.model.get('length'),
             start     : self.model.get('start'),

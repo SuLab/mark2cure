@@ -24,7 +24,8 @@ define(['marionette', 'templates', 'vent',
 
       'change #user-experience'   : 'saveExperience',
       'blur #user-username'       : 'saveUserName',
-      'blur #user-email'          : 'saveEmail'
+      'blur #user-email'          : 'saveEmail',
+      'change #advance'           : 'changeAdvanceSettings'
     },
 
     initialize : function(options) {
@@ -48,6 +49,10 @@ define(['marionette', 'templates', 'vent',
     saveEmail : function(evt) {
       evt.preventDefault();
       this.model.save({'email' : this.ui.email.val()});
+    },
+
+    changeAdvanceSettings : function() {
+      this.model.save({'advance' : !this.model.get('advance')});
     }
 
   });
