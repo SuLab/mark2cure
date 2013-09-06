@@ -33,11 +33,7 @@ define(['marionette', 'templates', 'vent',
     submitAnnotations : function(evt) {
       evt.preventDefault();
       this.model.save({'complete': true});
-
-      // if( $('#network').length ) { vent.trigger('network:refresh', {}); }
-      // if( this.collection.completed().length == 5 ) {
-      //   vent.trigger('navigate:show_complete');
-      // };
+      vent.trigger('network:refresh', {});
     },
 
     nextDocument : function(evt) {
