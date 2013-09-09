@@ -3,9 +3,10 @@ from flask.ext.script import Manager, Command
 
 from models import *
 
-import settings, requests, re
+import settings, requests, re, csv
 import xml.etree.ElementTree as ET
 # from Bio import Entrez, Medline
+from bs4 import BeautifulSoup, NavigableString
 
 app = Flask(__name__)
 # configure your app
@@ -148,12 +149,35 @@ class Annotate(Command):
 #             db.session.add(doc)
 #           db.session.commit()
     # print "Import"
+def strip_tags(html, invalid_tags):
+    soup = BeautifulSoup(html)
 
+    for tag in soup.findAll(True):
+        if tag.name in invalid_tags:
+            s = ""
+
+            for c in tag.contents:
+                if not isinstance(c, NavigableString):
+                    c = strip_tags(unicode(c), invalid_tags)
+                s += unicode(c)
+
+            tag.replaceWith(s)
+
+    return soup
+
+class SolidGold(Command):
+    "Populate the documents with the NCBI SolidGold"
+
+    def run(self):
+      with open('NCBI_corpus_testing.txt','r') as f:
+        reader = csv.reader(f, delimiter='\t')
+        for num, title, text in reader:
+          print strip_tags(title, ['category'])
 
 manager.add_command('heatmap', Heatmap())
 manager.add_command('annotate', Annotate())
 manager.add_command('create', Create())
-# manager.add_command('import', Import())
+manager.add_command('gold', SolidGold())
 
 if __name__ == "__main__":
     manager.run()
