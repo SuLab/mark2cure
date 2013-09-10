@@ -82,6 +82,10 @@ define(['backbone', 'vent',
       if( this.collection.completed().length == 5 ) {
         vent.trigger('modal:show_complete', {});
       }
+
+      // this.collection.completed().length()/this.collection.length > .5 
+      // this.collection.fetchNext()
+
     }
 
   });
