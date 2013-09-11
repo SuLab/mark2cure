@@ -1,5 +1,5 @@
 from flask import Flask
-from flask.ext.script import Manager, Command
+from flask.ext.script import Manager, Command, Option
 
 from models import *
 
@@ -169,11 +169,14 @@ def strip_tags(html, invalid_tags):
 class SolidGold(Command):
     "Populate the documents with the NCBI SolidGold"
 
-    def run(self):
+    option_list = (
+        Option('--path', '-p', dest='path'),
+    )
+
+    def run(self, path):
       # Get the gold bot account to make the db entries
       user = db.session.query(User).get(2)
-
-      with open('../assets/NCBI_corpus/NCBI_corpus_testing.txt','r') as f:
+      with open('../assets/NCBI_corpus/'+ path +'.txt','r') as f:
         reader = csv.reader(f, delimiter='\t')
         for num, title, text in reader:
           text = text.replace('<category=', '<category type=')
@@ -188,7 +191,8 @@ class SolidGold(Command):
           doc = Document( int(num),
                           plain_text,
                           plain_title,
-                          datetime.datetime.utcnow() )
+                          datetime.datetime.utcnow(),
+                          path )
           db.session.add(doc)
           db.session.commit()
 

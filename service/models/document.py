@@ -16,17 +16,19 @@ class Document(db.Model):
 
     created     = db.Column(db.DateTime)
     cache       = db.Column(db.Text)
+    source      = db.Column(db.String(200))
 
     views       = db.relationship('View',         backref=db.backref('document',  lazy='select'))
     annotations = db.relationship('Annotation',   backref=db.backref('document',  lazy='select'))
 
-    def __init__(self, document_id, text, title, created):
+    def __init__(self, document_id, text, title, created, source):
         self.document_id  = document_id
         self.text         = text
         self.title        = title
         if created is None:
           self.created      = datetime.datetime.utcnow()
         self.created = created
+        self.source = source
 
     # Required for administrative interface
     def __unicode__(self):
