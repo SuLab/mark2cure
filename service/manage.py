@@ -3,7 +3,7 @@ from flask.ext.script import Manager, Command
 
 from models import *
 
-import settings, requests, re, csv
+import settings, requests, re, csv, datetime
 import xml.etree.ElementTree as ET
 # from Bio import Entrez, Medline
 from bs4 import BeautifulSoup, NavigableString
@@ -149,6 +149,7 @@ class Annotate(Command):
 #             db.session.add(doc)
 #           db.session.commit()
     # print "Import"
+
 def strip_tags(html, invalid_tags):
     soup = BeautifulSoup(html)
 
@@ -169,10 +170,46 @@ class SolidGold(Command):
     "Populate the documents with the NCBI SolidGold"
 
     def run(self):
-      with open('NCBI_corpus_testing.txt','r') as f:
+      # Get the gold bot account to make the db entries
+      user = db.session.query(User).get(2)
+
+      with open('../assets/NCBI_corpus/NCBI_corpus_testing.txt','r') as f:
         reader = csv.reader(f, delimiter='\t')
         for num, title, text in reader:
-          print strip_tags(title, ['category'])
+          text = text.replace('<category=', '<category type=')
+          plain_text = str(strip_tags(text, ['category']))
+
+          title = title.replace('<category=', '<category type=')
+          plain_title = str(strip_tags(title, ['category']))
+
+          soup = BeautifulSoup(text)
+
+          # Add the document to the database
+          doc = Document( int(num),
+                          plain_text,
+                          plain_title,
+                          datetime.datetime.utcnow() )
+          db.session.add(doc)
+          db.session.commit()
+
+          cats = set([cat.text for cat in soup.findAll('category')])
+          for cat in cats:
+            for m in re.finditer( cat, plain_text ):
+              # print( cat.text, cat['type'], m.start(), m.end() )
+              ann = Annotation( 0,
+                                'disease',
+                                cat,
+                                m.start(),
+                                len(cat),
+                                m.end(),
+                                user,
+                                doc,
+                                'gold_1.0',
+                                '',
+                                None );
+              db.session.add(ann)
+              # Save every document instead of once incase some doc crashes
+              db.session.commit()
 
 manager.add_command('heatmap', Heatmap())
 manager.add_command('annotate', Annotate())
