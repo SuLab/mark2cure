@@ -22,19 +22,22 @@ document_parser.add_argument('api_key',       type=str,   location='cookies')
 # Will serve 'heatmap' models in fetch based on word index sums
 
 class Documents(Resource):
-    def get(self):
+    def get(self, doc_id=None):
         args = document_parser.parse_args()
         user = db.session.query(User).filter_by(api_key = args['api_key']).first()
-
         # if args['q']:
         #   # http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search
         #   documents = Document.query.limit(1).all()
         #   # documents = Document.query.whoosh_search(args['q'])
         # else:
         #   # documents = Document.query.order_by( Document.created ).all()
-        documents = Document.query.limit(30).all()
 
-        return jsonify(objects=[i.json_view(user) for i in documents])
+        if doc_id:
+          document = db.session.query(Document).get(doc_id)
+          return jsonify(objects=[document.json_view(user)])
+        else:
+          documents = Document.query.limit(30).all()
+          return jsonify(objects=[i.json_view(user) for i in documents])
 
     def put(self, doc_id):
         args = document_parser.parse_args()
