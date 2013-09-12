@@ -215,10 +215,23 @@ class SolidGold(Command):
               # Save every document instead of once incase some doc crashes
               db.session.commit()
 
+class Compare(Command):
+    "F Score"
+
+    def run(self):
+      document = db.session.query(Document).get(28)
+      annotator_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 1).all()
+      gold_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 2).all()
+
+      print [ann.compare_view() for ann in annotator_annotations]
+      print
+      print [ann.compare_view() for ann in gold_annotations]
+
 manager.add_command('heatmap', Heatmap())
 manager.add_command('annotate', Annotate())
 manager.add_command('create', Create())
 manager.add_command('gold', SolidGold())
+manager.add_command('compare', Compare())
 
 if __name__ == "__main__":
     manager.run()

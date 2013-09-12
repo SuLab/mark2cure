@@ -22,6 +22,7 @@ class User(db.Model):
     views       = db.relationship('View',         backref=db.backref('user',  lazy='select'))
     messages    = db.relationship('Message',      backref=db.backref('user',  lazy='select'))
     annotations = db.relationship('Annotation',   backref=db.backref('user',  lazy='select'))
+    quests      = db.relationship('Quest',        backref=db.backref('user',  lazy='select'))
 
     # Required for administrative interface
     def __unicode__(self):

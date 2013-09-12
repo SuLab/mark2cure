@@ -53,3 +53,9 @@ class Annotation(db.Model):
                 'length'    : self.length,
                 'stop'      : self.stop,
                 'created'   : self.created.isoformat() }
+    def compare_view(self):
+      return {
+                'text'      : self.text,
+                'start'     : int(self.start),
+                'stop'      : int(self.stop),
+              }

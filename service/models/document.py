@@ -18,8 +18,9 @@ class Document(db.Model):
     cache       = db.Column(db.Text)
     source      = db.Column(db.String(200))
 
-    views       = db.relationship('View',         backref=db.backref('document',  lazy='select'))
-    annotations = db.relationship('Annotation',   backref=db.backref('document',  lazy='select'))
+    views       = db.relationship('View',             backref=db.backref('document',  lazy='select'))
+    annotations = db.relationship('Annotation',       backref=db.backref('document',  lazy='select'))
+    quest_relations = db.relationship('QuestRelation', backref=db.backref('document',  lazy='select'))
 
     def __init__(self, document_id, text, title, created, source):
         self.document_id  = document_id

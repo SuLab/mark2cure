@@ -74,3 +74,18 @@ An online text annotator to generate user annotations in fun and exploratory way
     kill -HUP $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
 
     date "+%F %T">>$LOGPATH
+
+
+#### Notes
+
+db = SQLAlchemy(app)
+admin = db.session.query(User).get(1)
+doc = db.session.query(Document).get(28)
+
+quest = Quest('super interesting list', admin)
+db.session.add(quest)
+db.session.commit()
+
+qr = QuestRelation(quest, db.session.query(Document).get(29))
+db.session.add(qr)
+db.session.commit()
