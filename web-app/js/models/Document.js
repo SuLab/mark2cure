@@ -20,6 +20,7 @@ define(['backbone', 'vent',
   //
 
   return Backbone.RelationalModel.extend({
+    url     : '/api/v1/documents',
     defaults: {
       title         : '',
       text          : '',
@@ -79,7 +80,7 @@ define(['backbone', 'vent',
     },
 
     checkProgress : function() {
-      if( this.collection.completed().length == 5 ) {
+      if( this.collection && this.collection.completed().length == 5 ) {
         vent.trigger('modal:show_complete', {});
       }
 

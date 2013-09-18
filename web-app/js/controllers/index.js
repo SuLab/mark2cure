@@ -19,8 +19,8 @@ define(['vent'],
       vent.trigger('navigate:message', {});
     },
 
-    showLibrary : function() {
-      vent.trigger('navigate:library', {});
+    showLibrary : function(quest) {
+      vent.trigger('navigate:library', {'quest': quest});
     },
 
     setFilter : function(param) {

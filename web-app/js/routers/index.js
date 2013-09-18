@@ -22,7 +22,8 @@ define(['marionette'],
       'message'   : 'sendMessage',
 
       //-- Pages
-      'library'  : 'showLibrary',
+      'library'         : 'showLibrary',
+      'library/:quest'  : 'showLibrary',
 
       //-- Etc
       '*filter'  : 'setFilter'

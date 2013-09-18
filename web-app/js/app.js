@@ -1,6 +1,6 @@
 define(['marionette', 'vent',
         //-- Models
-        'models/User',
+        'models/Document', 'models/User',
 
         //-- Collections
         'collections/DocumentList',
@@ -17,7 +17,7 @@ define(['marionette', 'vent',
 
    function(marionette, vent,
             //-- Models
-            User,
+            Document, User,
 
             //-- Collections
             DocumentList,
@@ -84,8 +84,27 @@ define(['marionette', 'vent',
       viewOptions.collection.fetch();
     });
 
-    vent.on('navigate:library', function() {
-      app.main.show( new Library(viewOptions) );
+    vent.on('navigate:library', function(obj) {
+      var quest = obj['quest'].trim();
+
+      if(quest && quest.length) {
+        $.ajax({
+          async: false,
+          url: '/api/v1/quest/'+quest,
+          success: function(jsonData) {
+            var docs = []
+            _.each(jsonData.objects, function(v) {
+              var doc = new Document({id: v.document_id});
+              docs.push(doc);
+            });
+            var doc_coll = new DocumentList(docs);
+            console.log(doc_coll);
+          }
+        });
+
+      } else {
+        app.main.show( new Library(viewOptions) );
+      }
     });
 
     vent.on('navigate:analytics', function(obj) {

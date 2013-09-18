@@ -16,4 +16,5 @@ class QuestRelation(db.Model):
     def json_view(self):
       return { 'document_id'  : self.document.id,
                 'quest_id'    : self.quest.id,
+                'quest_name'    : self.quest.name,
                 'created'     : self.created.isoformat()  }

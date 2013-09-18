@@ -35,7 +35,7 @@ api.add_resource(Annotations, '/api/v1/annotations',  '/api/v1/annotations/<int:
 api.add_resource(Documents,   '/api/v1/documents',    '/api/v1/documents/<int:doc_id>')
 api.add_resource(Network,     '/api/v1/network')
 api.add_resource(Gold,        '/api/v1/gm',           '/api/v1/gm/<int:doc_id>')
-api.add_resource(Quests,      '/api/v1/quest',        '/api/v1/quest/<int:quest_id>')
+api.add_resource(Quests,      '/api/v1/quest',        '/api/v1/quest/<int:quest_id>',     '/api/v1/quest/<string:quest_name>')
 
 #
 # Main App Center

@@ -14,3 +14,9 @@ class Quest(db.Model):
         self.name = name
         self.created    = datetime.datetime.utcnow()
         self.user       = user
+
+    def json_view(self):
+      return { 'name'       : self.name,
+               'quest_id'   : self.id,
+               'created'    : self.created.isoformat(),
+               'documents'  : len(self.quest_relations) }
