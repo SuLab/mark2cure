@@ -9,6 +9,7 @@ require.config({
 
     'backbone'          : 'lib/backbone',
     'relational'        : 'lib/backbone-relational',
+    'tastypie'          : 'lib/backbone-tastypie',
     'marionette'        : 'lib/backbone.marionette',
 
     //-- UI Core
@@ -39,6 +40,11 @@ require.config({
 
     'relational' : {
       exports : 'Relational',
+      deps: ['backbone', 'underscore']
+    },
+
+    'tastypie' : {
+      exports : 'Tastypie',
       deps: ['backbone', 'underscore']
     },
 

@@ -1,6 +1,6 @@
 define(['backbone', 
         //-- Models & Collections
-        'models/Document'],
+        'models/Document', 'tastypie'],
 
         function( Backbone, 
                   //-- Models & Collections
@@ -15,14 +15,10 @@ define(['backbone',
       // return -doc.get('created');
     // },
 
-    parse : function(resp, xhr) {
-      return resp.objects;
-    },
-
     completed : function() {
       // return this.reset( this.where({complete : true}) );
       return this.where({complete : true});
-    }
+    },
 
   });
 });

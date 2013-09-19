@@ -85,20 +85,21 @@ define(['marionette', 'vent',
     });
 
     vent.on('navigate:library', function(obj) {
-      var quest = obj['quest'].trim();
+      var quest = obj['quest']
 
-      if(quest && quest.length) {
+      if(quest && quest.trim().length) {
         $.ajax({
           async: false,
-          url: '/api/v1/quest/'+quest,
+          url: '/api/v1/quest/'+quest.trim(),
           success: function(jsonData) {
             var docs = []
             _.each(jsonData.objects, function(v) {
               var doc = new Document({id: v.document_id});
+              doc.fetch();
               docs.push(doc);
             });
-            var doc_coll = new DocumentList(docs);
-            console.log(doc_coll);
+            viewOptions.collection = new DocumentList(docs);
+            app.main.show( new Library(viewOptions) );
           }
         });
 

@@ -4,7 +4,7 @@ define(['backbone', 'vent',
         'models/Annotation', 'collections/AnnotationList',
         'models/User',
         //-- Utilities
-        'underscore.string'],
+        'underscore.string', 'tastypie'],
     function(Backbone, vent,
         //-- Data
         Word, WordList,
@@ -20,7 +20,9 @@ define(['backbone', 'vent',
   //
 
   return Backbone.RelationalModel.extend({
-    url     : '/api/v1/documents',
+    url     : function() {
+      return '/api/v1/documents/' + this.id;
+    },
     defaults: {
       title         : '',
       text          : '',
