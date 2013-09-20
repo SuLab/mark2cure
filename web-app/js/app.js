@@ -100,6 +100,17 @@ define(['marionette', 'vent',
             });
             viewOptions.collection = new DocumentList(docs);
             app.main.show( new Library(viewOptions) );
+
+            if(docs.length==0) {
+              Backbone.history.navigate( '#/library' );
+              vent.trigger('library', {});
+            }
+
+          },
+
+          error: function() {
+            Backbone.history.navigate( '#/library' );
+            vent.trigger('library', {});
           }
         });
 
