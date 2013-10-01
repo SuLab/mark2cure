@@ -40,7 +40,7 @@ define(['marionette', 'vent',
         };
 
     app.addRegions({
-      header    : '#header',
+      header    : 'header',
       analytics : SlideRegion.extend({el: "#analytics"}),
       main      : FadeRegion.extend({el: "#content"}),
       footer    : '#footer',

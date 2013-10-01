@@ -19,8 +19,8 @@ define(['marionette', 'templates', 'vent',
     },
 
     initialize : function(options) {
-      this.bindTo(this.model, 'change:selected', this.render);
-      this.bindTo(this.model, 'change:neighbor', this.render);
+      this.listenTo(this.model, 'change:selected', this.render);
+      this.listenTo(this.model, 'change:neighbor', this.render);
 
       //-- (TODO) Why is this method so slow?
       // var doc = this.model.get('parentDocument');

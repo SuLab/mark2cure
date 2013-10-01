@@ -11,6 +11,7 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.ItemView.extend({
     template : templates.modals.complete,
+    className : 'modal-dialog',
 
     ui : {
       'email' : 'input',

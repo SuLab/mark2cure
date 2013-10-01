@@ -14,7 +14,6 @@ require.config({
 
     //-- UI Core
     'bootstrap'         : 'lib/bootstrap',
-    'wizard'            : 'lib/wizard',
 
     //-- Utils
     'tpl'               : 'lib/tpl',

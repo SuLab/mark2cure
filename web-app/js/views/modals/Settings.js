@@ -12,6 +12,7 @@ define(['marionette', 'templates', 'vent',
   return Marionette.ItemView.extend({
     template : templates.modals.settings,
     templateHelpers : function() { return this.options; },
+    className : 'modal-dialog',
 
     ui : {
       'experience'  : '#user-experience',
@@ -30,7 +31,7 @@ define(['marionette', 'templates', 'vent',
 
     initialize : function(options) {
       this.model = options.user;
-      this.bindTo(this.model, 'sync', this.render, this);
+      this.listenTo(this.model, 'sync', this.render);
     },
 
     //

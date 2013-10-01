@@ -12,6 +12,7 @@ define(['marionette', 'templates', 'vent',
   return Marionette.ItemView.extend({
     template : templates.modals.message,
     templateHelpers : function() { return this.options; },
+    className : 'modal-dialog',
 
     ui : {
       'text'        : 'textarea#new_message',

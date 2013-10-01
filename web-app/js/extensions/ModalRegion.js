@@ -1,4 +1,4 @@
-define(['marionette', 'bootstrap'], 
+define(['marionette', 'bootstrap'],
         function(marionette, bootstrap) {
   'use strict'
 
@@ -6,10 +6,9 @@ define(['marionette', 'bootstrap'],
     el: '#modal',
 
     constructor: function(){
-      _.bindAll(this);
       marionette.Region.prototype.constructor.apply(this, arguments);
       //--  listens to the region’s “view”show” event, which is fired when a view’s contents are populated in to the `el` of the Region
-      this.on('view:show', this.showModal, this);
+      this.on('show', this.showModal, this);
     },
 
     getEl: function(selector){

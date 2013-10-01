@@ -1,4 +1,4 @@
-define(['backbone'],
+define(['backbone', 'relational'],
     function(Backbone){
   'use strict';
 

@@ -1,49 +1,51 @@
 <a href="#" class="close-btn">&times;</a>
 
-<div class="modal-header">
-  <h2 class="panel">Account Settings</h2>
-</div>
+<div class="modal-content">
+  <div class="modal-header">
+    <h2 class="panel">Account Settings</h2>
+  </div>
 
-<div class="modal-body">
-  <form class="form-horizontal span5">
-    <fieldset>
-      <div class="control-group">
-        <label class="control-label">Experience Level</label>
-        <div class="controls">
-          <select id="user-experience" class="selectpicker">
-            <% _.each(['Bio-Medical Scientist', 'Patient Advocate', 'Non-expert'], function(kind, i) { %>
-              <option value="<%= i %>" <%= experience == i ? 'selected' : '' %>><%= kind %></option>
-            <% }) %>
-          </select>
-        </div>
-      </div>
-
-      <div class="control-group">
-        <label class="control-label">Username</label>
-        <div class="controls">
-          <div class="row-fluid">
-            <input id="user-username" type="text" title="Username" required value="<%= username %>">
+  <div class="modal-body">
+    <form class="form-horizontal span5">
+      <fieldset>
+        <div class="control-group">
+          <label class="control-label">Experience Level</label>
+          <div class="controls">
+            <select id="user-experience" class="selectpicker">
+              <% _.each(['Bio-Medical Scientist', 'Patient Advocate', 'Non-expert'], function(kind, i) { %>
+                <option value="<%= i %>" <%= experience == i ? 'selected' : '' %>><%= kind %></option>
+              <% }) %>
+            </select>
           </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <label class="control-label">Email</label>
-        <div class="controls">
-          <div class="row-fluid">
-            <input id="user-email" type="text" title="Email" required value="<%= email %>">
+        <div class="control-group">
+          <label class="control-label">Username</label>
+          <div class="controls">
+            <div class="row-fluid">
+              <input id="user-username" type="text" title="Username" required value="<%= username %>">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <div class="controls">
-          <div class="row-fluid">
-            <input id="advance" type="checkbox" <%= user.get('advance') ? 'checked' : '' %>> Advanced Control
+        <div class="control-group">
+          <label class="control-label">Email</label>
+          <div class="controls">
+            <div class="row-fluid">
+              <input id="user-email" type="text" title="Email" required value="<%= email %>">
+            </div>
           </div>
         </div>
-      </div>
 
-    </fieldset>
-  </form>
+        <div class="control-group">
+          <div class="controls">
+            <div class="row-fluid">
+              <input id="advance" type="checkbox" <%= user.get('advance') ? 'checked' : '' %>> Advanced Control
+            </div>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div>
 </div>

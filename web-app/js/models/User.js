@@ -27,7 +27,7 @@ define(['backbone', 'vent',
     },
 
     initialize : function() {
-      if( this.isNew() ) { 
+      if( this.isNew() ) {
         this.bind('change:api_key', this.changeAPIKey);
       }
 

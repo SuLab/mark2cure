@@ -1,6 +1,6 @@
-define(['marionette'], 
-    function(marionette){
+define(['backbone', 'marionette'],
+    function(backbone, marionette){
   'use strict';
 
-  return new marionette.EventAggregator();
+  return new backbone.Wreqr.EventAggregator();
 });

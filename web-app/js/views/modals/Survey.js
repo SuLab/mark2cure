@@ -11,6 +11,7 @@ define(['marionette', 'templates', 'vent',
   return Marionette.ItemView.extend({
     template : templates.modals.survey,
     templateHelpers : function() { return this.options; },
+    className : 'modal-dialog',
 
     events : {
       'click .close-btn'    : function(e) { e.preventDefault(); vent.trigger('modal:close'); },

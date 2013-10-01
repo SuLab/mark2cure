@@ -1,4 +1,4 @@
-define(['marionette'], 
+define(['marionette'],
     function(marionette) {
   'use strict';
 
@@ -13,7 +13,7 @@ define(['marionette'],
       _gaq.push(['_trackPageview', "/" + url]);
     },
 
-    appRoutes:{
+    appRoutes : {
       //-- Modal Pages
       'settings'      : 'showSettings',
       'instructions'  : 'showInstructions',

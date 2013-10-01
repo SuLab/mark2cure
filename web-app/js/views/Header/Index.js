@@ -6,7 +6,7 @@ define(['marionette', 'templates', 'vent'],
   return Marionette.Layout.extend({
     template : templates.header.index,
     templateHelpers : function() { return this.options; },
-    className : 'navbar navbar-fixed-top',
+    className : 'navbar-inner',
 
     regions : {
       analytics : '#analytics-container'
@@ -19,8 +19,8 @@ define(['marionette', 'templates', 'vent'],
 
     initialize : function(options) {
       this.model = options.user;
-      this.bindTo(this.collection,  'change:complete', this.render, this);
-      this.bindTo(this.model,       'all', this.render, this);
+      this.listenTo(this.collection,  'change:complete', this.render);
+      this.listenTo(this.model,       'all', this.render);
     },
 
     //
