@@ -30,6 +30,8 @@ define(['backbone', 'vent',
 
       //-- for now, 'complete' can live entirely clientside
       complete      : false,
+
+      matches       : []
     },
 
     relations: [{
@@ -57,6 +59,7 @@ define(['backbone', 'vent',
     }],
 
     initialize : function() {
+      this.bind('change:complete', this.evaluateResults);
       this.bind('change:complete', this.checkProgress);
     },
 
@@ -86,9 +89,33 @@ define(['backbone', 'vent',
         vent.trigger('modal:show_complete', {});
       }
 
-      // this.collection.completed().length()/this.collection.length > .5 
+      // this.collection.completed().length()/this.collection.length > .5
       // this.collection.fetchNext()
 
+    },
+
+    evaluateResults : function() {
+      var self = this;
+
+      //-- If the model was just completed
+      if(this.get('complete') && this.hasChanged('complete') ) {
+        $.getJSON('/api/v1/gm/'+this.id, function(data) {
+          var gm = self.mapAnnotationsForComparision(data.objects);
+          var user = self.mapAnnotationsForComparision(self.get('annotations').toJSON());
+          var matches = _.intersectionObjects(gm, user);
+          if(gm.length && user.length && matches.length) {
+            self.set('matches', matches);
+          }
+        });
+
+      };
+    },
+
+    mapAnnotationsForComparision : function(arr) {
+      return _.map(arr, function(model) {
+        return {'text'  : model.text,
+                'start' : model.start}
+          })
     }
 
   });

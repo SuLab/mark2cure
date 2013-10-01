@@ -8,15 +8,14 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.Layout.extend({
     template : templates.main.library.index,
-
     className : 'library-view',
 
     regions : {
-      list   : '.library-items'
+      all   : '.library-list'
     },
 
     onRender : function() {
-      this.list.show( new List({collection: this.collection}) );
+      this.all.show( new List({collection: this.collection}) );
     }
 
   });

@@ -12,6 +12,7 @@ define(function(require) {
     main : {
       library : {
         index   : require('tpl!templates/main/library/index.tmpl'),
+        list   : require('tpl!templates/main/library/list.tmpl'),
         item    : require('tpl!templates/main/library/item.tmpl')
       },
 

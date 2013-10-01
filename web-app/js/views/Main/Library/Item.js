@@ -7,11 +7,10 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.ItemView.extend({
     template : templates.main.library.item,
-    templateHelpers : function() { return this.options; },
-    className: 'doc-item',
+    tagName: 'tr',
 
     events : {
-      'click' : 'clickLibItem'
+      // 'click' : 'clickLibItem'
     },
 
     initialize : function() {

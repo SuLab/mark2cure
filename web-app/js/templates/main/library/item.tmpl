@@ -1,4 +1,14 @@
-<% if(complete) { %>
-  <i class="icon-ok-sign"></i>
-<% } %>
-<p><%= _.str.prune(title, 140)  %></p>
+<td class="status">
+  <% if(complete) { %>
+    <span class="glyphicon glyphicon-ok text-center"></span>
+  <% } %>
+</td>
+<td>
+  <p><%= id %></p>
+</td>
+<td>
+  <p><a href="#/<%= id %>"><%= title %></a></p>
+</td>
+<td>
+  <p><%= annotations.length %></p>
+</td>

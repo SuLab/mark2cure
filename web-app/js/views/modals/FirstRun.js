@@ -17,10 +17,10 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'click #myTab a'      : 'tabEvent',
-      
+
       'change #experience'  : 'saveUserInfo',
       'blur #user-name'     : 'saveUserInfo',
-      
+
       'click button'  : 'finish'
     },
 

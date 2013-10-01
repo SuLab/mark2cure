@@ -25,6 +25,7 @@ define(['marionette', 'templates', 'vent',
       options.user = User;
       this.listenTo(this.model.get('annotations'), "add", this.reRender, this);
       this.listenTo(this.model.get('annotations'), "remove", this.reRender, this);
+      this.listenTo(this.model, "change:matches", this.reRender, this);
       this.listenTo(this.options.user, "change:advance", this.reRender, this);
       this.listenTo(this.options.user, "change:sel_mode", this.reRender, this);
     },

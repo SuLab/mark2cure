@@ -1,11 +1,12 @@
-define(['marionette', 
+define(['marionette', 'templates', 'vent',
         'views/Main/Library/Item'], 
-    function (Marionette, 
+    function (Marionette, templates, vent,
               LibItem) {
   'use strict';
 
-  return Marionette.CollectionView.extend({
+  return Marionette.CompositeView.extend({
+    template : templates.main.library.list,
     itemView: LibItem,
-
+    itemViewContainer : 'tbody'
   });
 });

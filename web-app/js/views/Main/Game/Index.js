@@ -13,6 +13,7 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.Layout.extend({
     template : templates.main.game.index,
+    className : 'game-view',
 
     regions : {
       game      : 'div.game',

@@ -23,43 +23,16 @@ svg {
         Library
 ========================= */
 
-.library-view {
-  margin: 10px;
-  overflow: hidden;
-}
-
-.library-view div.doc-item {
-  position: relative;
-  float: left;
-  height: 160px;
-  width: 160px;
-  background: #ededed;
-  padding: 12px;
-  margin: 2px;
-
-  border: 8px solid #c0e7fa;
-}
-
-.library-view div.doc-item i {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
-
-.library-view div.doc-item:hover {
-  border: 8px solid #78c0eb;
-  cursor: pointer;
-}
-
-.library-view li p {
-  font-size: 18px;
-  border-bottom: 2px solid #FFF8E7;
+.library-view td.status span {
+  font-size: 28px;
+  display: block;
+  margin-top: 6px;
 }
 
 /* =========================
     Entity Selection Game
 ========================= */
-/* Text Annotation View */
+
 .game p.paragraph {
   font-family: "Palatino Linotype", "Book Antiqua", "Palatino", "serif";
   line-height: 1.8em;
@@ -67,6 +40,8 @@ svg {
   font-style: normal;
   font-size: 20px;
 }
+
+/* Entity Tag */
 
 .game p.paragraph.entity_tag {
   /* (TODO) Why doesn't this work? */
@@ -93,6 +68,7 @@ svg {
   margin-right: 5px;
 }
 
+/* Community Consensus */
 .game p.paragraph.results span.selected {
   border-top: 3px solid #0cf;
   border-bottom: 3px solid #0cf;
@@ -155,10 +131,6 @@ div.popover.top {
   width: 22px;
   text-align: center;
   font-size: 22px;
-}
-
-.step-content {
-  padding: 12px;
 }
 
 .modal-body img.logo {
