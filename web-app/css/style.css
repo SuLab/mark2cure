@@ -78,21 +78,21 @@ svg {
       Analytics View
 ========================= */
 
-#analytics .node {
+.analytics-view .node {
   stroke: #fff;
   stroke-width: 1.5px;
 }
 
-#analytics .link {
+.analytics-view .link {
   stroke: #999;
   stroke-opacity: .6;
 }
 
-#network {
+.analytics-view #network {
   position: relative;
 }
 
-#network button.close {
+.analytics-view #network button.close {
   position: absolute;
   top: 60px;
   right: 120px;
@@ -100,14 +100,14 @@ svg {
   color: #000;
 }
 
-#network i.refresh {
+.analytics-view #network i.refresh {
   position: absolute;
   top: 64px;
   right: 150px;
 }
 
-#network i.refresh:hover,
-#network button.close:hover {
+.analytics-view #network i.refresh:hover,
+.analytics-view #network button.close:hover {
   cursor: pointer;
 }
 

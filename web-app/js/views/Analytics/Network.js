@@ -7,6 +7,7 @@ define(['marionette', 'templates', 'vent',
   return Marionette.ItemView.extend({
     template : templates.analytics.network,
     templateHelpers : function() { return this.options; },
+    className : 'analytics-view',
 
     ui : {
       network : '#network',
