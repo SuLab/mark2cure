@@ -2,8 +2,13 @@ from flask import Flask
 from flask.ext.restful import Api
 # import flask.ext.whooshalchemy as whooshalchemy
 
+# from flask.ext import admin, wtf
+# from flask.ext.admin.contrib import sqlamodel, fileadmin
+# from flask.ext.admin.base import MenuLink, Admin, BaseView, expose
+
 from api import *
 from models import *
+from admin import *
 import settings
 
 #
@@ -36,6 +41,12 @@ api.add_resource(Documents,   '/api/v1/documents',    '/api/v1/documents/<int:do
 api.add_resource(Network,     '/api/v1/network')
 api.add_resource(Gold,        '/api/v1/gm',           '/api/v1/gm/<int:doc_id>')
 api.add_resource(Quests,      '/api/v1/quest',        '/api/v1/quest/<int:quest_id>',     '/api/v1/quest/<string:quest_name>')
+
+#
+# API Resources
+#
+# admin = admin.Admin(app, 'Mark2Cure')
+# admin.add_view( MyQuestView(Quests, db.session) )
 
 #
 # Main App Center

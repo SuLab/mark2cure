@@ -21,7 +21,7 @@ An online text annotator to generate user annotations in fun and exploratory way
     virtualenv ENV
     . ENV/bin/activate
 
-    # Install all the python related dependencies 
+    # Install all the python related dependencies
     easy_install -U distribute
     pip install -r service/requirements.txt
 
@@ -89,3 +89,35 @@ db.session.commit()
 qr = QuestRelation(quest, db.session.query(Document).get(29))
 db.session.add(qr)
 db.session.commit()
+
+### AWS Notes
+
+
+
+//-- Make sure they're over 18
+<QualificationRequirement>
+  <QualificationTypeId>789RVWYBAZW00EXAMPLE</QualificationTypeId>
+  <Comparator>GreaterThan</Comparator>
+  <IntegerValue>18</IntegerValue>
+</QualificationRequirement>
+
+HIT
+ -- Expire in ~5min
+ -- Qualifications list. Over 18, Local EN, Masters?
+ -- External Question
+   // http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_ExternalQuestionArticle.html
+   // You can only use an external question as the question of a HIT. You cannot use an external question with a Qualification test.
+
+   // ExternalURL
+   // FrameHeight
+  <ExternalQuestion xmlns="[the ExternalQuestion schema URL]">
+    <ExternalURL>http://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523</ExternalURL>
+    <FrameHeight>400</FrameHeight>
+  </ExternalQuestion>
+
+  assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE
+
+  http://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
+  &hitId=123RVWYBAZW00EXAMPLE
+  &assignmentId=123RVWYBAZW00EXAMPLE456RVWYBAZW00EXAMPLE
+
