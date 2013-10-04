@@ -1,5 +1,6 @@
 from flask.ext.restful import reqparse, Resource
-from models import db, User
+from ..core import db
+from ..models import User
 
 import os, sys, random, base64, hashlib, string
 

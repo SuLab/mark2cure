@@ -6,13 +6,14 @@
     mark2cure api application package
 """
 
-from ..models import db
 from flask.ext.restful import Api
 
-from ..core import Mark2CureError, Mark2CureError
+from ..core import db
+from ..core import Mark2CureError, Mark2CureFormError
 from ..helpers import JSONEncoder
 from .. import factory
 
+# Import the api endpoints
 from .annotations import Annotations
 from .documents import Documents
 from .messages import Messages
@@ -25,15 +26,15 @@ from .quests import Quests
 def create_app(settings_override=None):
     """Returns the Mark2Cure API application instance"""
 
-    app = factory.create_app(__name__, __path__, settings_override)
+    app = factory.create_app(__name__, settings_override)
 
     # Set the default JSON encoder
-    app.json_encoder = JSONEncoder
+    # app.json_encoder = JSONEncoder
 
     # Register custom error handlers
-    app.errorhandler(OverholtError)(on_overholt_error)
-    app.errorhandler(OverholtFormError)(on_overholt_form_error)
-    app.errorhandler(404)(on_404)
+    # app.errorhandler(Mark2CureError)(on_overholt_error)
+    # app.errorhandler(Mark2CureFormError)(on_overholt_form_error)
+    # app.errorhandler(404)(on_404)
 
     api = Api(app)
 

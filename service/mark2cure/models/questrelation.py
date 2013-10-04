@@ -1,12 +1,12 @@
-from . import db
+from ..core import db
 import datetime
 
 class QuestRelation(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
     created     = db.Column(db.DateTime)
 
-    quest_id       = db.Column(db.Integer, db.ForeignKey('quest.id'))
-    document_id   = db.Column(db.Integer, db.ForeignKey('document.id'))
+    quest_id    = db.Column(db.Integer, db.ForeignKey('quest.id'))
+    document_id = db.Column(db.Integer, db.ForeignKey('document.id'))
 
     def __init__(self, quest, document):
         self.created    = datetime.datetime.utcnow()
@@ -16,5 +16,5 @@ class QuestRelation(db.Model):
     def json_view(self):
       return { 'document_id'  : self.document.id,
                 'quest_id'    : self.quest.id,
-                'quest_name'    : self.quest.name,
+                'quest_name'  : self.quest.name,
                 'created'     : self.created.isoformat()  }

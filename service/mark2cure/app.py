@@ -18,15 +18,9 @@ app = Flask(__name__,
             static_url_path = '',
             static_folder = '../web-app')
 app.config['SQLALCHEMY_DATABASE_URI'] = settings.DB_URI
-db.init_app(app)
-with app.app_context():
-  db.create_all()
 
 # Secret key to use sessions
 app.config['SECRET_KEY'] = '\xc0\x19\x94\x19v\xf3\x85mul9[y\xd6\xc7\xf4\xc6sz\x03U09\x05'
-
-# set the location for the whoosh index
-# app.config['WHOOSH_BASE'] = 'whoosh'
 
 #
 # API Resources

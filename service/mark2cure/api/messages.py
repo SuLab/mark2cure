@@ -1,5 +1,6 @@
 from flask.ext.restful import reqparse, Resource
-from models import db, User, Message
+from ..core import db
+from ..models import User, Message
 
 message_parser = reqparse.RequestParser()
 message_parser.add_argument('message',  type=str, location='form')

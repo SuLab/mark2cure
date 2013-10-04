@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+    manage
+    ~~~~~~
+
+    Manager module
+"""
+
 from flask.ext.script import Manager
 
 from mark2cure.api import create_app

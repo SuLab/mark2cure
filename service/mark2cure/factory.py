@@ -13,8 +13,6 @@ from flask import Flask
 
 from .core import db, mail
 from .middleware import HTTPMethodOverrideMiddleware
-from .models import User, Role
-
 
 def create_app(package_name, settings_override=None):
     """Returns a :class:`Flask` application instance configured with common

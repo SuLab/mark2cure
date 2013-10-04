@@ -1,4 +1,4 @@
-from . import db
+from ..core import db
 
 from .view import View
 from .annotation import Annotation

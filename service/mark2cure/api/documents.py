@@ -7,7 +7,8 @@ from flask.ext.restful import reqparse, Resource
 # from sqlalchemy.sql.expression import ClauseElement
 # from collections import OrderedDict
 
-from models import db, User, Document, Annotation, View
+from ..models import User, Document, Annotation, View
+from ..core import db
 
 document_parser = reqparse.RequestParser()
 document_parser.add_argument('document_id',   type=int,   location='json')

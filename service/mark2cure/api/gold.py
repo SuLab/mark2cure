@@ -1,7 +1,8 @@
 from flask import jsonify
 from flask.ext.restful import reqparse, Resource
 
-from models import db, User, Annotation
+from ..core import db
+from ..models import User, Annotation
 
 import re
 

@@ -1,4 +1,4 @@
-from . import db
+from ..core import db
 
 class Concept(db.Model):
     id          = db.Column(db.Integer, primary_key=True)

@@ -1,7 +1,8 @@
 from flask import jsonify
 from flask.ext.restful import reqparse, Resource
 
-from models import db, Quest
+from ..core import db
+from ..models import Quest
 
 class Quests(Resource):
   def get(self, quest_id=None, quest_name=None):
