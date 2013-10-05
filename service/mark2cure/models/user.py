@@ -2,8 +2,9 @@ from ..core import db
 import datetime
 
 class User(db.Model):
-    id          = db.Column(db.Integer,     primary_key=True)
+    id          = db.Column(db.Integer, primary_key=True)
 
+    kind        = db.Column(db.String(12))
     username    = db.Column(db.String(120), unique=True)
     email       = db.Column(db.String(120))
     experience  = db.Column(db.Integer())

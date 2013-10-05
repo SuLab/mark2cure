@@ -29,7 +29,6 @@ class Documents(Resource):
         # if args['q']:
         #   # http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-x-full-text-search
         #   documents = Document.query.limit(1).all()
-        #   # documents = Document.query.whoosh_search(args['q'])
         # else:
         #   # documents = Document.query.order_by( Document.created ).all()
 

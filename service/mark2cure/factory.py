@@ -21,7 +21,9 @@ def create_app(package_name, settings_override=None):
     :param package_name: application package name
     :param settings_override: a dictionary of settings to override
     """
-    app = Flask(package_name, instance_relative_config=True)
+    app = Flask(package_name, instance_relative_config=True,
+        static_url_path = '',
+        static_folder = '../../../web-app')
 
     app.config.from_object('mark2cure.settings')
     app.config.from_object(settings_override)

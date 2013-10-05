@@ -7,20 +7,23 @@
 """
 
 from flask.ext.script import Command, prompt, prompt_pass
-
-import settings, requests, re, csv, datetime
-
+from mark2cure.settings import *
 from boto.mturk.connection import MTurkConnection, ExternalQuestion
 
+import requests
+
+
+def make_connection():
+  return MTurkConnection(aws_access_key_id = AWS_ACCESS_ID,
+                          aws_secret_access_key = AWS_SECRET_KEY,
+                          host = AWS_HOST)
 
 
 class Turk(Command):
   "Add a mturk to a document"
 
   def run(self):
-    mtc = MTurkConnection(aws_access_key_id = settings.AWS_ACCESS_ID,
-                          aws_secret_access_key = settings.AWS_SECRET_KEY,
-                          host = settings.HOST)
+    mtc = self.make_connection()
     title = 'Help annotate scientific articles'
     description = ('Visit a website and highlight diseases that are present in a paragraph.')
     keywords = 'science, annotation, disease'
@@ -34,10 +37,24 @@ class Turk(Command):
                duration = 60*5,
                reward = 0.01)
 
+
     # http://beta.mark2cure.org/#/22?
     #    assignmentId=2FKW6NG1FS3N2YP7T6SF2SZL3JWKY2
     #    &hitId=22DWJ5OPB0YVKAEUHN27HP9UE9K5XV
     #    &workerId=A296YJ2WQNOSKY
     #    &turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
+
+    # assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE
+
+# Click Done:
+#   Submits their Annotations to our server
+#   Hit GM API to get pass / result value
+#   Update their score: http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_UpdateQualificationScoreOperation.html
+
+    # 
+# form must include assignmentId for tracking, nothing else is needed
+
+
+
     return hit
 

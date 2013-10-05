@@ -102,10 +102,12 @@ define(['backbone', 'vent',
         $.getJSON('/api/v1/gm/'+this.id, function(data) {
           var gm = self.mapAnnotationsForComparision(data.objects);
           var user = self.mapAnnotationsForComparision(self.get('annotations').toJSON());
+
           var matches = _.intersectionObjects(gm, user);
           if(gm.length && user.length && matches.length) {
             self.set('matches', matches);
           }
+          // self.aws();
         });
 
       };
@@ -116,6 +118,16 @@ define(['backbone', 'vent',
         return {'text'  : model.text,
                 'start' : model.start}
           })
+    },
+
+    aws : function() {
+      //-- Tell amazon they completed the hit
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: "https://www.mturk.com/mturk/externalSubmit",
+        data: {assignmentId : '', document_id : self.id, annotations: ''}
+      });
     }
 
   });

@@ -4,11 +4,8 @@ from .view import View
 from .annotation import Annotation
 
 import datetime
-# import flask.ext.whooshalchemy
 
 class Document(db.Model):
-    # __searchable__ = ['text', 'title']
-
     id          = db.Column(db.Integer,   primary_key=True)
     document_id = db.Column(db.Integer)
     text        = db.Column(db.Text)
