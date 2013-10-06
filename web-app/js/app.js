@@ -34,7 +34,7 @@ define(['marionette', 'vent',
     'use strict';
 
     var app = new marionette.Application(),
-        viewOptions = {
+        opts = {
           collection : new DocumentList(),
           user : User
         };
@@ -59,75 +59,54 @@ define(['marionette', 'vent',
           });
       };
 
-      viewOptions.collection.fetch({success : function() {
-        app.header.show(  new Header(viewOptions)  );
-        app.main.show(    new Library(viewOptions) );
-        app.footer.show(  new Footer(viewOptions)  );
+      //-- If the user changes, refetch their docs
+      this.listenTo(opts.user, 'change:api_key', opts.collection.fetch());
 
-        if( viewOptions.user.get('first_run') ) {
-          app.main.close();
-          app.footer.close();
-
-          //-- This set the modal so it can't be closed
-          viewOptions.static = true;
-          app.modal.show(   new FirstRun(viewOptions) )
-        }
-      }});
-
+      app.header.show(  new Header(opts)  );
+      app.main.show(    new Library(opts) );
+      app.footer.show(  new Footer(opts)  );
     });
 
-    vent.on('navigate', function(param) {
-      if( viewOptions.user.get('first_run') ) {
-        // app.header.close();
-      }
+    vent.on('navigate:document', function(param) {
+      var id = Number(param.doc_id),
+          found_model = opts.collection.findWhere({id: id});
 
-      var found_model = viewOptions.collection.findWhere({id: Number(param) });
       if(found_model) {
-        viewOptions['model'] = found_model;
-        app.main.show( new Game(viewOptions) );
+        opts['model'] = found_model;
+        app.main.show( new Game(opts) );
+
       } else {
-        Backbone.history.navigate( '#/library' );
-        vent.trigger('library', {});
+        //-- If the Doc wasn't already available
+        // var single_doc = new Document({id: id});
+
+        // single_doc.fetch({success : function() {
+        //   opts['model'] = single_doc;
+        //   app.main.show( new Game(opts) );
+        // }, error : function() {
+        //   vent.trigger('library', {});
+        // }});
+
       }
     });
 
-    vent.on('userchanged', function() {
-      viewOptions.collection.fetch();
-    });
+    vent.on('navigate:library', function() {
+      //-- Update URL
+      Backbone.history.navigate( '#/library' );
 
-    vent.on('navigate:library', function(obj) {
-      var quest = obj['quest']
+      //-- Do user checking here (prevents AMT from getting popup)
+      if( !opts.user.authenticated() ) {
+        opts.user.save();
 
-      if(quest && quest.trim().length) {
-        $.ajax({
-          async: false,
-          url: '/api/v1/quest/'+quest.trim(),
-          success: function(jsonData) {
-            var docs = []
-            _.each(jsonData.objects, function(v) {
-              var doc = new Document({id: v.document_id});
-              doc.fetch();
-              docs.push(doc);
-            });
-            viewOptions.collection = new DocumentList(docs);
-            app.main.show( new Library(viewOptions) );
+        app.header.close();
+        app.main.close();
+        app.footer.close();
 
-            if(docs.length==0) {
-              Backbone.history.navigate( '#/library' );
-              vent.trigger('library', {});
-            }
-
-          },
-
-          error: function() {
-            Backbone.history.navigate( '#/library' );
-            vent.trigger('library', {});
-          }
-        });
-
-      } else {
-        app.main.show( new Library(viewOptions) );
+        //-- This set the modal so it can't be closed
+        opts.static = true;
+        app.modal.show(   new FirstRun(opts) )
       }
+
+      app.main.show( new Library(opts) );
     });
 
     vent.on('navigate:analytics', function(obj) {
@@ -138,33 +117,59 @@ define(['marionette', 'vent',
       }
     });
 
+    // vent.on('navigate:quest:search', function() {
+    //   var quest = obj['quest']
+    //   if(quest && quest.trim().length) {
+    //     $.ajax({
+    //       async: false,
+    //       url: '/api/v1/quest/'+quest.trim(),
+    //       success: function(jsonData) {
+    //         var docs = []
+    //         _.each(jsonData.objects, function(v) {
+    //           var doc = new Document({id: v.document_id});
+    //           doc.fetch();
+    //           docs.push(doc);
+    //         });
+    //         viewOptions.collection = new DocumentList(docs);
+    //         app.main.show( new Library(viewOptions) );
+    //         if(docs.length==0) {
+    //           vent.trigger('library', {});
+    //         }
+    //       },
+    //       error: function() {
+    //         Backbone.history.navigate( '#/library' );
+    //         vent.trigger('library', {});
+    //       }
+    //     });
+    // });
+
     //
     //-- Display Modals
     //
     vent.on('navigate:message', function() {
-      app.modal.show( new Message(viewOptions) );
+      app.modal.show( new Message(opts) );
     });
 
     vent.on('navigate:survey', function() {
-      app.modal.show( new Survey(viewOptions) );
+      app.modal.show( new Survey(opts) );
     });
 
     vent.on('navigate:settings', function() {
-      app.modal.show(   new Settings(viewOptions) )
+      app.modal.show(   new Settings(opts) )
     });
 
     vent.on('navigate:instructions', function() {
-      app.modal.show(   new Instructions(viewOptions) )
+      app.modal.show(   new Instructions(opts) )
     });
 
     //-- Oneoff modals really...
     vent.on('modal:show_complete', function() {
       viewOptions['swap'] = true;
-      app.modal.show( new Complete(viewOptions) );
+      app.modal.show( new Complete(opts) );
     });
 
     vent.on('modal:welcome', function() {
-      app.modal.show( new FirstRun(viewOptions) );
+      app.modal.show( new FirstRun(opts) );
     });
 
     vent.on('modal:close', function() {

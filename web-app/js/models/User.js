@@ -18,11 +18,10 @@ define(['backbone', 'vent',
       'feedback_2' : -1,
       'feedback_3' : -1,
 
-      'first_run'   : true,
-
       'advance'       : false,
       'sel_mode'      : "disease",
 
+      'mturk'       : false,
       'api_key'     : null
     },
 
@@ -34,8 +33,6 @@ define(['backbone', 'vent',
       if( this.authenticated() ) {
         this.set('api_key', $.cookie('api_key'))
         this.fetch();
-      } else {
-        this.save();
       }
     },
 
@@ -45,7 +42,6 @@ define(['backbone', 'vent',
 
     changeAPIKey : function () {
       $.cookie('api_key', this.get('api_key') );
-      vent.trigger('userchanged', '');
     }
 
   });

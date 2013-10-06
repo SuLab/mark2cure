@@ -40,12 +40,8 @@ define(['marionette', 'templates', 'vent',
       this.saveUserInfo();
 
       var doc = this.collection.at(0)
-      Backbone.history.navigate( '#/'+ doc.id );
-      vent.trigger('navigate', doc.id );
-
-      //-- Completed training, hide background
-      this.model.save({'first_run' : false});
-      this.close();
+      Backbone.history.navigate( '#/document/'+ doc.id );
+      vent.trigger('navigate:document', doc.id );
     },
 
     saveUserInfo : function(evt) {

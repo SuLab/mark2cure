@@ -37,13 +37,6 @@ class Turk(Command):
                duration = 60*5,
                reward = 0.01)
 
-
-    # http://beta.mark2cure.org/#/22?
-    #    assignmentId=2FKW6NG1FS3N2YP7T6SF2SZL3JWKY2
-    #    &hitId=22DWJ5OPB0YVKAEUHN27HP9UE9K5XV
-    #    &workerId=A296YJ2WQNOSKY
-    #    &turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
-
     # assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE
 
 # Click Done:

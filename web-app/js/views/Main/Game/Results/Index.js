@@ -52,7 +52,8 @@ define(['marionette', 'templates', 'vent',
     buildItemView: function(item, ItemViewType) {
       // build the final list of options for the item view type
       var options = _.extend({model: item}, { color_scale : this.options.color_scale,
-                                              ann_range : this.options.ann_range });
+                                              ann_range : this.options.ann_range,
+                                              hide_consensus : this.options.hide_consensus });
       // create the item view instance
       var view = new ItemViewType(options);
       return view;

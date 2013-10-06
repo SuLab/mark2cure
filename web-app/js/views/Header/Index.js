@@ -19,7 +19,7 @@ define(['marionette', 'templates', 'vent'],
 
     initialize : function(options) {
       this.model = options.user;
-      this.listenTo(this.collection,  'change:complete', this.render);
+      this.listenTo(this.collection,  'all', this.render);
       this.listenTo(this.model,       'all', this.render);
     },
 
