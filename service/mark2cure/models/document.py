@@ -37,7 +37,6 @@ class Document(db.Model):
 
     def json_view(self, user):
         print user
-
         if user.is_anonymous():
           viewed = False
           annotations = []

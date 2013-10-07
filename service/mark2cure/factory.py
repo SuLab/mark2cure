@@ -33,6 +33,11 @@ def create_app(package_name, settings_override=None):
     mail.init_app(app)
     login_manager.init_app(app)
 
+    # Create user loader function
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.query(User).get(user_id)
+
     app.wsgi_app = HTTPMethodOverrideMiddleware(app.wsgi_app)
 
     return app

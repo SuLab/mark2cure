@@ -102,8 +102,6 @@ define(['marionette', 'vent',
 
       //-- Do user checking here (prevents AMT from getting popup)
       if( !opts.user.authenticated() ) {
-      //   opts.user.save();
-
         app.header.close();
         app.main.close();
         app.footer.close();
@@ -111,6 +109,8 @@ define(['marionette', 'vent',
         //-- This set the modal so it can't be closed
         opts.static = true;
         app.modal.show(   new FirstRun(opts) )
+      } else {
+        opts.collection.fetch();
       }
 
       app.main.show( new Library(opts) );

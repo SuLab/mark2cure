@@ -20,23 +20,21 @@ user_parser.add_argument('first_run',   type=bool,  location='json')
 
 class Users(Resource):
     def get(self, **kwargs):
-        args = user_parser.parse_args()
-        user = db.session.query(User).filter_by(api_key = args['api_key']).first()
-        if not user:
+        print current_user
+        if current_user.is_anonymous():
             return {'error' : 'no_user'}, 200
         else:
             # (TODO) return single User object in objects attr?
-            return user.json_view(), 200
+            return current_user.json_view(), 200
 
     def put(self, **kwargs):
         args = user_parser.parse_args()
-        user = db.session.query(User).filter_by(api_key = args['api_key']).first()
-        if not user:
+        print current_user
+
+        if current_user.is_anonymouse():
             return {'error' : 'no_user'}, 200
         else:
-            prev_user = db.session.query(User).filter_by(username = args['username']).first()
-            if prev_user:
-              user = prev_user
+            user = current_user
 
             # Set the user keys via the passed Args
             # (TODO) With Args being parsed, can I directly iterate over keys to update?
@@ -65,8 +63,7 @@ class Users(Resource):
             db.session.add(user)
             db.session.commit()
 
-        print current_user
-        login_user(user)
+        login_user(user, remember=True)
         print current_user
 
         return user.json_view(), 201
