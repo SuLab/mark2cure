@@ -1,4 +1,6 @@
 from flask.ext.restful import reqparse, Resource
+from flask_login import login_user, current_user
+
 from ..core import db
 from ..models import User
 
@@ -15,7 +17,6 @@ user_parser.add_argument('feedback_2',  type=int,   location='json')
 user_parser.add_argument('feedback_3',  type=int,   location='json')
 
 user_parser.add_argument('first_run',   type=bool,  location='json')
-user_parser.add_argument('api_key',     type=str,   location='cookies')
 
 class Users(Resource):
     def get(self, **kwargs):
@@ -56,10 +57,16 @@ class Users(Resource):
     def post(self, **kwargs):
         # What gets called as soon as we get a new User model
         args = user_parser.parse_args()
-        user = User(args['username'],
-                    args['email'],
-                    args['experience'],
-                    base64.b64encode(hashlib.sha256( str(random.getrandbits(256)) ).digest(), random.choice(['rA','aZ','gQ','hH','hG','aR','DD'])).rstrip('=='))
-        db.session.add(user)
-        db.session.commit()
+        user = db.session.query(User).filter_by(username = args['username']).first()
+        if user is None:
+            user = User(args['username'],
+                        args['email'],
+                        args['experience'])
+            db.session.add(user)
+            db.session.commit()
+
+        print current_user
+        login_user(user)
+        print current_user
+
         return user.json_view(), 201

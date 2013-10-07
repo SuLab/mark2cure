@@ -12,6 +12,7 @@ from celery import Celery
 from flask import Flask
 
 from .core import db, mail, login_manager
+from .models import User
 from .middleware import HTTPMethodOverrideMiddleware
 
 def create_app(package_name, settings_override=None):

@@ -22,7 +22,6 @@ class Email(Resource):
         user = User(args['email'],
                     args['email'],
                     0,
-                    base64.b64encode(hashlib.sha256( str(random.getrandbits(256)) ).digest(), random.choice(['rA','aZ','gQ','hH','hG','aR','DD'])).rstrip('=='),
                     beta
                     )
         db.session.add(user)

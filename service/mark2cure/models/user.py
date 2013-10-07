@@ -4,7 +4,6 @@ import datetime
 class User(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
 
-    kind        = db.Column(db.String(12))
     username    = db.Column(db.String(120), unique=True)
     email       = db.Column(db.String(120))
     experience  = db.Column(db.Integer())
@@ -17,19 +16,41 @@ class User(db.Model):
     feedback_3  = db.Column(db.Integer())
 
     first_run   = db.Column(db.Boolean())
-    api_key     = db.Column(db.Text)
     email_bool  = db.Column(db.Boolean())
+
+    mturk     = db.Column(db.Boolean())
+    admin     = db.Column(db.Boolean())
+    active    = db.Column(db.Boolean())
 
     views       = db.relationship('View',         backref=db.backref('user',  lazy='select'))
     messages    = db.relationship('Message',      backref=db.backref('user',  lazy='select'))
     annotations = db.relationship('Annotation',   backref=db.backref('user',  lazy='select'))
     quests      = db.relationship('Quest',        backref=db.backref('user',  lazy='select'))
 
+    # Flask-Login integration
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def set_email(self, email):
+        self.email = email
+
     # Required for administrative interface
     def __unicode__(self):
         return self.email
 
-    def __init__(self, username, email, experience, api, email_bool=False):
+    def __repr__(self):
+        return '<User %r>' % self.id
+
+    def __init__(self, username, email, experience, email_bool=False):
         self.username   = username
         self.email      = email
         self.experience = experience
@@ -41,11 +62,7 @@ class User(db.Model):
         self.feedback_3 = -1
 
         self.first_run  = True
-        self.api_key    = api
         self.email_bool = email_bool
-
-    def __repr__(self):
-        return '<User %r>' % self.id
 
     def json_view(self):
       return {  'id'          : self.id,
@@ -60,5 +77,4 @@ class User(db.Model):
                 'feedback_3'  : self.feedback_3,
 
                 # Dont need to return feedback as we don't show the defaults anyway
-                'first_run'   : self.first_run,
-                'api_key'     : self.api_key }
+                'first_run'   : self.first_run }

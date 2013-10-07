@@ -60,7 +60,7 @@ define(['marionette', 'vent',
       };
 
       //-- If the user changes, refetch their docs
-      this.listenTo(opts.user, 'change:api_key', opts.collection.fetch());
+      // this.listenTo(opts.user, 'change:api_key', opts.collection.fetch());
 
       app.header.show(  new Header(opts)  );
       app.main.show(    new Library(opts) );
@@ -102,7 +102,7 @@ define(['marionette', 'vent',
 
       //-- Do user checking here (prevents AMT from getting popup)
       if( !opts.user.authenticated() ) {
-        opts.user.save();
+      //   opts.user.save();
 
         app.header.close();
         app.main.close();

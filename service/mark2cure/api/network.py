@@ -1,5 +1,6 @@
 from flask import jsonify
 from flask.ext.restful import reqparse, Resource
+from flask_login import current_user
 
 from ..core import db
 from ..models import User, Annotation
@@ -10,12 +11,9 @@ def clean(text):
   word = re.sub(r'\W+', ' ', text).lower().strip()
   return word[:-1] if word in ['cancers', 'chordomas'] else word
 
-network_parser = reqparse.RequestParser()
-network_parser.add_argument('api_key',       type=str,   location='cookies')
 class Network(Resource):
   def get(self):
-    args = network_parser.parse_args();
-    user = db.session.query(User).filter_by(api_key = args['api_key']).first()
+    user = current_user
 
     #
     # THIS ALGO IMPLEMENTS ALL USER ANNOTATIONS ACCROSS ALL DOCS

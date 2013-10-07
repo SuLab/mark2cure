@@ -30,7 +30,7 @@ define(['marionette'],
       'document/:doc_id?assignmentId=:var1' : 'showDocument',
       'document/:doc_id' : 'showDocument',
 
-      '*filter'         : 'showLibrary'
+      // '*filter'         : 'showLibrary'
     }
 
   });

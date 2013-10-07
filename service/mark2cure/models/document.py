@@ -36,8 +36,15 @@ class Document(db.Model):
         return '<Document %r>' % self.document_id
 
     def json_view(self, user):
-        viewed = True if db.session.query(View).filter_by(user = user).filter_by(document = self).first() else False
-        annotations = db.session.query(Annotation).filter_by(user = user).filter_by(document = self).all()
+        print user
+
+        if user.is_anonymous():
+          viewed = False
+          annotations = []
+        else:
+          viewed = True if db.session.query(View).filter_by(user = user).filter_by(document = self).first() else False
+          annotations = db.session.query(Annotation).filter_by(user = user).filter_by(document = self).all()
+
         popularity = self.cache.split(", ") if self.cache else ["0"]
 
         return {  'id'          : self.id,

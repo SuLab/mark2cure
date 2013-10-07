@@ -39,9 +39,11 @@ define(['marionette', 'templates', 'vent',
     finish : function(evt) {
       this.saveUserInfo();
 
-      var doc = this.collection.at(0)
-      Backbone.history.navigate( '#/document/'+ doc.id );
-      vent.trigger('navigate:document', doc.id );
+      this.collection.fetch();
+
+      // var doc = this.collection.at(0)
+      // Backbone.history.navigate( '#/document/'+ doc.id );
+      // vent.trigger('navigate:document', doc.id );
     },
 
     saveUserInfo : function(evt) {

@@ -13,6 +13,8 @@ from ..core import Mark2CureError, Mark2CureFormError
 from ..helpers import JSONEncoder
 from .. import factory
 
+from ..routes import *
+
 # Import the api endpoints
 from .annotations import Annotations
 from .documents import Documents
@@ -35,6 +37,7 @@ def create_app(settings_override=None):
     # app.errorhandler(Mark2CureError)(on_overholt_error)
     # app.errorhandler(Mark2CureFormError)(on_overholt_form_error)
     # app.errorhandler(404)(on_404)
+
 
     api = Api(app)
 
