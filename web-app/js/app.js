@@ -77,14 +77,21 @@ define(['marionette', 'vent',
 
       } else {
         //-- If the Doc wasn't already available
-        // var single_doc = new Document({id: id});
+        var single_doc = new Document({id: id});
 
-        // single_doc.fetch({success : function() {
-        //   opts['model'] = single_doc;
-        //   app.main.show( new Game(opts) );
-        // }, error : function() {
-        //   vent.trigger('library', {});
-        // }});
+        single_doc.fetch({success : function() {
+          opts['model'] = single_doc;
+
+          console.log(opts);
+          if(opts.user.get('mturk')) {
+            app.header.close();
+            app.footer.close();
+          }
+
+          app.main.show( new Game(opts) );
+        }, error : function() {
+          vent.trigger('library', {});
+        }});
 
       }
     });

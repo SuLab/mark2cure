@@ -11,7 +11,7 @@ import os
 from celery import Celery
 from flask import Flask
 
-from .core import db, mail
+from .core import db, mail, login_manager
 from .middleware import HTTPMethodOverrideMiddleware
 
 def create_app(package_name, settings_override=None):
@@ -30,6 +30,7 @@ def create_app(package_name, settings_override=None):
 
     db.init_app(app)
     mail.init_app(app)
+    login_manager.init_app(app)
 
     app.wsgi_app = HTTPMethodOverrideMiddleware(app.wsgi_app)
 

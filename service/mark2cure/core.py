@@ -8,6 +8,7 @@
 
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 #: Flask-SQLAlchemy extension instance
 db = SQLAlchemy()
@@ -15,6 +16,8 @@ db = SQLAlchemy()
 #: Flask-Mail extension instance
 mail = Mail()
 
+#: User managment
+login_manager = LoginManager()
 
 class Mark2CureError(Exception):
     """Base application error class."""

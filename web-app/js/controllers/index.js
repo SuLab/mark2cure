@@ -13,13 +13,13 @@ define(['vent', 'models/User'],
     },
 
     showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub ) {
-      console.log('showDocument', doc_id, assignment_id, hit_id, worker_id, turk_sub );
-
       if(assignment_id==undefined) {
         //-- Normal user asking for specific document
         vent.trigger('navigate:document', {doc_id: doc_id});
       } else {
         //-- If via AMT, get that user started
+        User.set('username', worker_id);
+        User.set('mturk', true);
         User.save();
       }
 

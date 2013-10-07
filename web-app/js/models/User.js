@@ -37,7 +37,9 @@ define(['backbone', 'vent',
     },
 
     authenticated: function() {
-      return Boolean( $.cookie('api_key') );
+      //-- Consider them logged in if they are a turker or if
+      //-- they have a cookie
+      return ( this.get('mturk') || Boolean( $.cookie('api_key') ) );
     },
 
     changeAPIKey : function () {
