@@ -12,25 +12,36 @@ define(['vent', 'models/User'],
       vent.trigger('navigate:library', {'quest': quest});
     },
 
-    showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub ) {
-      if(assignment_id==undefined) {
+    showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
+      console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
+      User.set('assignment_id', null);
+
+      switch(assignment_id) {
+      case undefined:
         //-- Normal user asking for specific document
         vent.trigger('navigate:document', {doc_id: doc_id});
-      } else {
-        //-- If via AMT, get that user started
-        User.set('username', worker_id);
-        User.set('mturk', true);
-        User.save();
-      }
-
-      if(assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE') {
+        break;
+      case 'ASSIGNMENT_ID_NOT_AVAILABLE':
         //-- Preview mode
         vent.trigger('navigate:document', {doc_id: doc_id});
+        break;
+      default:
+        //-- If via AMT, get that user started if not auth'd already
+        User.set('assignment_id', assignment_id);
 
-      } else {
-        vent.trigger('navigate:document', {doc_id: doc_id});
-
+        if( User.authenticated() && User.get('mturk') ) {
+          vent.trigger('navigate:document', {doc_id: doc_id});
+        } else {
+          User.set('username', worker_id);
+          User.set('mturk', true);
+          User.save(null, {success: function() {
+            //-- After our user is saved, go ahead to get the document
+            vent.trigger('navigate:document', {doc_id: doc_id});
+          }});
+        }
+        break;
       }
+
     },
 
   };

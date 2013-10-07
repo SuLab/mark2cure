@@ -1,5 +1,7 @@
-define(['marionette', 'templates', 'vent'],
-    function (Marionette, templates, vent) {
+define(['marionette', 'templates', 'vent',
+        'models/User'],
+    function (Marionette, templates, vent,
+             User) {
   'use strict';
 
   return Marionette.ItemView.extend({
@@ -8,7 +10,7 @@ define(['marionette', 'templates', 'vent'],
 
     onRender : function() {
 
-      if(this.options.hide_consensus != true) {
+      if(!User.get('mturk')) {
         //-- Draw the community consensus
         var pop = this.model.get('parentDocument').get('popularity')[ this.model.collection.indexOf( this.model ) ];
         if(pop >= 1) {

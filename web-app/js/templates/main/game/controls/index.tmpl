@@ -1,4 +1,6 @@
 <% if(complete) { %>
+<% if( !user.get('mturk') ) { %>
+
   <div class="well col-md-10">
     <p>Congratulations, you completed the document!</p>
     <% if(matches.length) { %>
@@ -10,6 +12,7 @@
     <button class="btn btn-success btn-large navigate" type="button">Next</button>
   </div>
 
+<% } %>
 <% } else { %>
   <div class="well col-md-10">
     <div class="row">
@@ -35,6 +38,8 @@
     </div>
   </div>
   <div class="col-md-1">
-    <button class="btn btn-primary btn-large done" type="button">Done</button>
+    <% if(!user.get('mturk') || (user.get('mturk') && ann_list.length) ) { %>
+      <button class="btn btn-primary btn-large done" type="button">Done</button>
+    <% } %>
   </div>
 <% } %>

@@ -26,7 +26,7 @@ define(['marionette', 'templates', 'vent',
     },
 
     onRender : function() {
-      if( this.collection.parentDocument.collection.completed().length === 1 ) {
+      if( this.collection.parentDocument.collection && this.collection.parentDocument.collection.completed().length === 1 ) {
         var $navigate = $('button.navigate');
         $navigate.popover({  title   : 'Congrats! You annotated your first document!',
                                     content : templates.snippets.paragraph_info({}),

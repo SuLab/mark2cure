@@ -16,6 +16,8 @@ user_parser.add_argument('feedback_1',  type=int,   location='json')
 user_parser.add_argument('feedback_2',  type=int,   location='json')
 user_parser.add_argument('feedback_3',  type=int,   location='json')
 
+user_parser.add_argument('mturk',  type=bool,   location='json')
+
 class Users(Resource):
     def get(self, **kwargs):
         if current_user.is_anonymous():
@@ -53,7 +55,9 @@ class Users(Resource):
         if user is None:
             user = User(args['username'],
                         args['email'],
-                        args['experience'])
+                        args['experience'],
+                        False,
+                        args['mturk'])
             db.session.add(user)
             db.session.commit()
 

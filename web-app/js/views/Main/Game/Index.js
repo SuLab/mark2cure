@@ -1,14 +1,10 @@
 define(['marionette', 'templates', 'vent',
         //-- Views
-        'views/Main/Game/EntityTag/Index',
-        'views/Main/Game/Results/Index',
-        'views/Main/Game/Controls/Index'],
+        'views/Main/Game/EntityTag/Index', 'views/Main/Game/Results/Index', 'views/Main/Game/Controls/Index'],
 
         function (Marionette, templates, vent,
                   //-- Views
-                  EntityTag, 
-                  Results, 
-                  Controls) {
+                  EntityTag, Results, Controls) {
   'use strict';
 
   return Marionette.Layout.extend({
@@ -43,16 +39,13 @@ define(['marionette', 'templates', 'vent',
       this.controls.show( new Controls({model: this.model, collection: this.collection}) );
 
       if( this.model.get('complete') ) {
+        //-- If you're showing the results and you're a turker, let amazon know to pay
+        this.model.aws();
         this.game.show( new Results({collection: this.model.get('words')}) );
       } else {
         this.game.show( new EntityTag({collection: this.model.get('words')}) );
       }
     }
-
-    //
-    //-- Events
-    //
-
 
   });
 });

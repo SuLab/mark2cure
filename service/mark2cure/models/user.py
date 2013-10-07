@@ -50,7 +50,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.id
 
-    def __init__(self, username, email, experience, email_bool=False):
+    def __init__(self, username, email, experience, email_bool=False, mturk=False):
         self.username   = username
         self.email      = email
         self.experience = experience
@@ -63,6 +63,7 @@ class User(db.Model):
 
         self.first_run  = True
         self.email_bool = email_bool
+        self.mturk = mturk
 
     def json_view(self):
       return {  'id'          : self.id,
@@ -77,4 +78,4 @@ class User(db.Model):
                 'feedback_3'  : self.feedback_3,
 
                 # Dont need to return feedback as we don't show the defaults anyway
-                'first_run'   : self.first_run }
+                'mturk'   : self.mturk }

@@ -22,8 +22,6 @@ document_parser.add_argument('annotations',   type=list,  location='json')
 
 class Documents(Resource):
     def get(self, doc_id=None):
-        print "current user"
-        print current_user
         if doc_id:
           document = db.session.query(Document).get(doc_id)
           return jsonify(objects=[document.json_view(current_user)])
