@@ -22,11 +22,7 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'click .close-btn' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
-
-      'change #user-experience'   : 'saveExperience',
-      'blur #user-username'       : 'saveUserName',
-      'blur #user-email'          : 'saveEmail',
-      'change #advance'           : 'changeAdvanceSettings'
+      'click button' : 'saveUser'
     },
 
     initialize : function(options) {
@@ -37,24 +33,17 @@ define(['marionette', 'templates', 'vent',
     //
     //-- Events
     //
-    saveExperience : function(evt) {
+    saveUser : function(evt) {
       evt.preventDefault();
-      this.model.save({'experience' : Number(this.ui.experience.val()) });
+      this.model.set({'experience' : Number(this.ui.experience.val()) });
+      this.model.set({'username' : this.ui.user_name.val()});
+      this.model.set({'email' : this.ui.email.val()});
+      this.model.set({'advance' : !this.model.get('advance')});
+      this.model.save(null, {success: function() {
+        vent.trigger('modal:close');
+      }});
     },
 
-    saveUserName : function(evt) {
-      evt.preventDefault();
-      this.model.save({'username' : this.ui.user_name.val()});
-    },
-
-    saveEmail : function(evt) {
-      evt.preventDefault();
-      this.model.save({'email' : this.ui.email.val()});
-    },
-
-    changeAdvanceSettings : function() {
-      this.model.save({'advance' : !this.model.get('advance')});
-    }
 
   });
 });

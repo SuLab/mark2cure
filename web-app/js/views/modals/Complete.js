@@ -1,8 +1,7 @@
 define(['marionette', 'templates', 'vent',
         //-- Models
         'models/User',
-        //-- libs
-        ], 
+        ],
 
         function ( Marionette, templates, vent,
                    //-- Models
@@ -20,7 +19,6 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'click .close-btn' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
-      'click .close-link' : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
 
       'blur input'       : 'submitEmail',
       'click .btn.btn-success' : function(e) { e.preventDefault(); this.ui.email_btn.removeClass('btn-success').addClass('btn-info'); }

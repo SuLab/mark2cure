@@ -22,16 +22,10 @@ define(['backbone', 'vent',
       'sel_mode'      : "disease",
 
       'mturk'       : false,
-      'api_key'     : null
     },
 
     initialize : function() {
-      if( this.isNew() ) {
-        this.bind('change:api_key', this.changeAPIKey);
-      }
-
-      if( this.authenticated() ) {
-        this.set('api_key', $.cookie('api_key'))
+      if(this.authenticated) {
         this.fetch();
       }
     },
@@ -39,13 +33,9 @@ define(['backbone', 'vent',
     authenticated: function() {
       //-- Consider them logged in if they are a turker or if
       //-- they have a cookie
-      console.log('auth auth :: ', $.cookie('remember_token'));
+      console.log('auth :: ', $.cookie('remember_token'));
       return ( Boolean( $.cookie('remember_token') ) );
     },
-
-    changeAPIKey : function () {
-      $.cookie('api_key', this.get('api_key') );
-    }
 
   });
 

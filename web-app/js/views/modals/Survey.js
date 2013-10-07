@@ -15,9 +15,8 @@ define(['marionette', 'templates', 'vent',
 
     events : {
       'click .close-btn'    : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
-      'click .btn-success'  : function(e) { e.preventDefault(); vent.trigger('modal:close'); },
 
-      'change input' : 'changeInput'
+      'change select' : 'changeInput'
     },
 
     initialize : function(options) {

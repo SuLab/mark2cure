@@ -13,8 +13,6 @@ def clean(text):
 
 class Network(Resource):
   def get(self):
-    user = current_user
-
     #
     # THIS ALGO IMPLEMENTS ALL USER ANNOTATIONS ACCROSS ALL DOCS
     #
@@ -22,7 +20,7 @@ class Network(Resource):
     link_list = []
 
     # (TODO) Refine to X # of articles, X days ago, ...
-    annotations = db.session.query(Annotation).filter_by(user = user).all()
+    annotations = db.session.query(Annotation).filter_by(user = current_user).all()
 
     # Saving the unique arrays of annotations and documents
     ann_arr = list(set( [clean(ann.text)  for ann in annotations] ))
@@ -35,7 +33,7 @@ class Network(Resource):
     # For each of the documents with annotations
     for doc_idx, doc in enumerate( doc_arr ):
       # Collect all of the cleaned annotations for that document by the current user
-      doc_ann = [clean(ann.text) for ann in doc.annotations if ann.user is user]
+      doc_ann = [clean(ann.text) for ann in doc.annotations if ann.user is current_user]
 
       for ann in list(set(doc_ann)):
         # For this document, connect the doc to the annotation and weight appropriately

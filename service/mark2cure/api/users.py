@@ -16,11 +16,8 @@ user_parser.add_argument('feedback_1',  type=int,   location='json')
 user_parser.add_argument('feedback_2',  type=int,   location='json')
 user_parser.add_argument('feedback_3',  type=int,   location='json')
 
-user_parser.add_argument('first_run',   type=bool,  location='json')
-
 class Users(Resource):
     def get(self, **kwargs):
-        print current_user
         if current_user.is_anonymous():
             return {'error' : 'no_user'}, 200
         else:
@@ -29,9 +26,8 @@ class Users(Resource):
 
     def put(self, **kwargs):
         args = user_parser.parse_args()
-        print current_user
 
-        if current_user.is_anonymouse():
+        if current_user.is_anonymous():
             return {'error' : 'no_user'}, 200
         else:
             user = current_user
@@ -46,8 +42,6 @@ class Users(Resource):
             user.feedback_1 = args['feedback_1']
             user.feedback_2 = args['feedback_2']
             user.feedback_3 = args['feedback_3']
-
-            user.first_run  = args['first_run']
 
             db.session.commit()
             return user.json_view(), 200

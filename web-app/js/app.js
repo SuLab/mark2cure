@@ -97,9 +97,6 @@ define(['marionette', 'vent',
     });
 
     vent.on('navigate:library', function() {
-      //-- Update URL
-      Backbone.history.navigate( '#/library' );
-
       //-- Do user checking here (prevents AMT from getting popup)
       if( !opts.user.authenticated() ) {
         app.header.close();
@@ -112,6 +109,11 @@ define(['marionette', 'vent',
       } else {
         opts.collection.fetch();
       }
+
+      //-- If first time / do training
+      // var doc = this.collection.at(0)
+      // Backbone.history.navigate( '#/document/'+ doc.id );
+      // vent.trigger('navigate:document', doc.id );
 
       app.main.show( new Library(opts) );
     });
@@ -171,7 +173,7 @@ define(['marionette', 'vent',
 
     //-- Oneoff modals really...
     vent.on('modal:show_complete', function() {
-      viewOptions['swap'] = true;
+      opts['swap'] = true;
       app.modal.show( new Complete(opts) );
     });
 

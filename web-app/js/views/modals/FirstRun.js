@@ -37,21 +37,15 @@ define(['marionette', 'templates', 'vent',
     },
 
     finish : function(evt) {
-      this.saveUserInfo();
+      evt.preventDefault();
 
-      this.collection.fetch();
-
-      // var doc = this.collection.at(0)
-      // Backbone.history.navigate( '#/document/'+ doc.id );
-      // vent.trigger('navigate:document', doc.id );
-    },
-
-    saveUserInfo : function(evt) {
-      if(evt) { evt.preventDefault(); }
       this.model.set('experience',  Number(this.ui.experience.val()) );
       this.model.set('username',    this.ui.user_name.val()  );
-      this.model.save();
-    }
+      this.model.save(null, {success : function() {
+        location.reload();
+      }});
+    },
+
 
   });
 });

@@ -1,24 +1,22 @@
+<div class="modal-content">
 <a href="#" class="close-btn">&times;</a>
 
-<div class="modal-content">
   <div class="modal-header">
     <h3>Want to send a note to the developers?</h3>
   </div>
 
   <div class="modal-body">
-    <form accept-charset="UTF-8" action="" method="POST">
+    <form class="form-horizontal span5">
       <div class="form-group">
-        <div class="col-md-5">
+        <div class="col-lg-2">
           <textarea class="form-control" id="new_message" name="new_message" placeholder="Type in your message" rows="5"></textarea>
         </div>
       </div>
-
-      <div class="form-group">
-        <h6><span id="char_count"><%= char_limit %></span> characters remaining</h6>
-        <button class="btn btn-info" type="submit">Post New Message</button>
-      </div>
-
+      <h6><span id="char_count"><%= char_limit %></span> characters remaining</h6>
     </form>
   </div>
 
+  <div class="modal-footer">
+    <button class="btn btn-success" type="submit">Post New Message</button>
+  </div>
 </div>

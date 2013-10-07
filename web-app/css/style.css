@@ -122,7 +122,8 @@ div.popover.top {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 13px;
 }
-.close-btn {
+
+a.close-btn {
   display: block;
   position: absolute;
   top: 0; right: 4px;

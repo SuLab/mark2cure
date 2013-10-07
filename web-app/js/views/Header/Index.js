@@ -14,7 +14,6 @@ define(['marionette', 'templates', 'vent'],
 
     events : {
       'click a.network'   : 'showNetwork',
-      'click a.welcome'   : 'showWelcome',
     },
 
     initialize : function(options) {
@@ -29,11 +28,6 @@ define(['marionette', 'templates', 'vent'],
     showNetwork : function(evt) {
       evt.preventDefault();
       vent.trigger('navigate:analytics', {toggle: true});
-    },
-
-    showWelcome : function(evt) {
-      evt.preventDefault();
-      vent.trigger('modal:welcome', {});
     }
 
   });
