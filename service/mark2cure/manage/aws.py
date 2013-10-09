@@ -33,7 +33,7 @@ class Turk(Command):
     description = ('Visit a website and highlight diseases that are present in a paragraph.')
     keywords = 'science, annotation, disease'
 
-    q = ExternalQuestion("https://mark2cure.org/mturk/#/document/18", 600)
+    q = ExternalQuestion("https://mark2cure.org/mturk/#/document/17", 600)
     hit = mtc.create_hit(question = q,
                max_assignments = 5,
                title = title,
