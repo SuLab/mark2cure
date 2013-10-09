@@ -28,26 +28,24 @@ class Turk(Command):
     description = ('Visit a website and highlight diseases that are present in a paragraph.')
     keywords = 'science, annotation, disease'
 
-    q = ExternalQuestion("http://beta.mark2cure.org/#/22", 800)
+    q = ExternalQuestion("https://dev.biogps.org/auth/login", 600)
+
     hit = mtc.create_hit(question = q,
-               max_assignments = 1,
+               max_assignments = 5,
                title = title,
                description = description,
                keywords = keywords,
-               duration = 60*5,
-               reward = 0.01)
-
-    # assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE
-
-# Click Done:
-#   Submits their Annotations to our server
-#   Hit GM API to get pass / result value
-#   Update their score: http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_UpdateQualificationScoreOperation.html
-
-    # 
-# form must include assignmentId for tracking, nothing else is needed
+               duration = 60*60*12,
+               reward = 0.06)
 
 
+
+    q = ExternalQuestion("http://beta.mark2cure.org/#/document/22", 800)
+
+    # Click Done:
+    #   Submits their Annotations to our server
+    #   Hit GM API to get pass / result value
+    #   Update their score: http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_UpdateQualificationScoreOperation.html
 
     return hit
 

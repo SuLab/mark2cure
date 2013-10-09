@@ -15,6 +15,8 @@ class Document(db.Model):
     cache       = db.Column(db.Text)
     source      = db.Column(db.String(200))
 
+    validate    = db.Column(db.Boolean())
+
     views       = db.relationship('View',             backref=db.backref('document',  lazy='select'))
     annotations = db.relationship('Annotation',       backref=db.backref('document',  lazy='select'))
     quest_relations = db.relationship('QuestRelation', backref=db.backref('document',  lazy='select'))

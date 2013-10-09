@@ -52,8 +52,22 @@ class Documents(Resource):
                             None
                           );
           db.session.add(ann)
-
         db.session.commit()
+
+        # Check document and mturk status
+        # if document.validate:
+        if True:
+          # This is a document that requires validation
+          user_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = current_user).all()
+          gold_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 2).all()
+
+          user_annotations = [ann.compare_view() for ann in user_annotations]
+          gold_annotations = [ann.compare_view() for ann in gold_annotations]
+
+          user_matches = len([ann for ann in user_annotations if ann in gold_annotations])
+
+          print user_matches, ( len(user_annotations) - user_matches), len(user_annotations), len(gold_annotations)
+
         return args, 201
 
 
