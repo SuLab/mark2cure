@@ -55,8 +55,7 @@ class Documents(Resource):
         db.session.commit()
 
         # Check document and mturk status
-        # if document.validate:
-        if True:
+        if document.validate:
           # This is a document that requires validation
           user_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = current_user).all()
           gold_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 2).all()

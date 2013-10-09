@@ -27,7 +27,7 @@ define(['marionette'],
 
       //-- Specific Document
       'document/:doc_id' : 'showDocument',
-      'document/:doc_id?assignmentId=:var1' : 'showDocument',
+      'document/:doc_id?assignmentId=:var1&hitId=:var2' : 'showDocument',
       'document/:doc_id?assignmentId=:var1&hitId=:var2&workerId=:var3&turkSubmitTo=:var4' : 'showDocument',
 
       '*filter'         : 'showLibrary'

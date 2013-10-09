@@ -18,6 +18,11 @@ def make_connection():
                           aws_secret_access_key = AWS_SECRET_KEY,
                           host = AWS_HOST)
 
+def clear_all():
+  mtc = make_connection()
+  for hit in mtc.get_all_hits():
+      mtc.disable_hit( hit.HITId )
+
 
 class Turk(Command):
   "Add a mturk to a document"
@@ -28,15 +33,14 @@ class Turk(Command):
     description = ('Visit a website and highlight diseases that are present in a paragraph.')
     keywords = 'science, annotation, disease'
 
-    q = ExternalQuestion("https://dev.biogps.org/auth/login", 600)
-
+    q = ExternalQuestion("https://mark2cure.org/mturk/#/document/25", 600)
     hit = mtc.create_hit(question = q,
                max_assignments = 5,
                title = title,
                description = description,
                keywords = keywords,
-               duration = 60*60*12,
-               reward = 0.06)
+               duration = 60*8,
+               reward = 0.04)
 
 
 
