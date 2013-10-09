@@ -14,6 +14,13 @@ define(['vent', 'models/User'],
 
     showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
       console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
+      window.aws = {};
+      window.aws.turk_sub = turk_sub;
+      window.aws.worker_id = worker_id;
+      window.aws.hit_id = hit_id;
+      window.aws.assignment_id = assignment_id;
+      window.aws.document_id = doc_id;
+
       User.set('assignment_id', null);
 
       switch(assignment_id) {

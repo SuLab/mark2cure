@@ -19,6 +19,7 @@ define(function(require) {
       game : {
         index : require('tpl!templates/main/game/index.tmpl'),
         controls : require('tpl!templates/main/game/controls/index.tmpl'),
+        form : require('tpl!templates/main/game/controls/form.tmpl'),
 
         entity_tag : {
           worditem  : require('tpl!templates/main/game/entity_tag/worditem.tmpl')

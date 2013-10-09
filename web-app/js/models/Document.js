@@ -121,6 +121,7 @@ define(['backbone', 'vent',
 
     aws : function() {
       var self = this;
+      console.log('aws :: ', User);
       if(User.authenticated() && User.get('mturk') && User.get('assignment_id')) {
         //-- Tell amazon they completed the hit
         $.ajax({

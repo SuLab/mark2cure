@@ -1,0 +1,5 @@
+<form action="<%= aws.turk_sub %>" method="POST">
+  <input type="hidden" name="assignment_id" value="<%= aws.assignment_id %>">
+  <input type="text" name="document_id" value="<%= aws.document_id %>">
+  <input type="text" name="document_id" value="<%= _.pluck(annotations, 'text').join(', ') %>">
+</form>
