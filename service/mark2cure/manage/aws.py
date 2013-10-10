@@ -23,6 +23,18 @@ def clear_all():
   for hit in mtc.get_all_hits():
       mtc.disable_hit( hit.HITId )
 
+def make_qualification_test():
+  create_qualification_type(name,
+                            description,
+                            status, keywords=None,
+                            retry_delay=None,
+                            test=None,
+                            answer_key=None,
+                            answer_key_xml=None,
+                            test_duration=None,
+                            auto_granted=False,
+                            auto_granted_value=1)
+
 
 class Turk(Command):
   "Add a mturk to a document"
@@ -33,7 +45,7 @@ class Turk(Command):
     description = ('Visit a website and highlight diseases that are present in a paragraph.')
     keywords = 'science, annotation, disease'
 
-    q = ExternalQuestion("https://mark2cure.org/mturk/#/document/17", 600)
+    q = ExternalQuestion("https://mark2cure.org/mturk/#/document/16", 800)
     hit = mtc.create_hit(question = q,
                max_assignments = 5,
                title = title,
@@ -43,8 +55,24 @@ class Turk(Command):
                reward = 0.04)
 
 
+    hit = mtc.create_hit( hit_type=None, 
+        question=None, 
+        hit_layout=None, 
+        lifetime=datetime.timedelta(7), 
+        max_assignments=1, 
+        title=None, 
+        description=None, 
+        keywords=None, 
+        reward=None, 
+        duration=datetime.timedelta(7), 
+        approval_delay=None, 
+        annotation=None, 
+        questions=None, 
+        qualifications=None, 
+        layout_params=None, 
+        response_groups=None)¶
 
-    q = ExternalQuestion("http://beta.mark2cure.org/#/document/22", 800)
+
 
     # Click Done:
     #   Submits their Annotations to our server
