@@ -48,7 +48,13 @@ class Turk(Command):
       qc1 = QuestionContent()
       qc1.append_field('Title','Colorectal cancer occurs when tumors form in the lining of the large intestine. The risk of developing colorectal cancer rises after age 50. You\'re also more likely to get it if you have colorectal polyps, a family history of colorectal cancer, ulcerative colitis or Crohn\'s disease, eat a diet high in fat, or smoke.')
 
-      fta2 = FreeTextAnswer()
+
+      c1 = "Colorectal cancer, Crohn\'s disease, colorectal polyps"
+      c2 = "Polyps, smoke, lining, Colorectal cancer"
+      c3 = "Colorectal cancer, ulcerative colitis, Crohn\'s disease"
+      c4 = "Ulcerative colitis, polyps, cancer"
+
+      # fta2 = FreeTextAnswer()
 
       q1 = Question(identifier = 'ann_selection',
                     content = qc1,
