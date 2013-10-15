@@ -13,15 +13,9 @@ define(['vent', 'models/User'],
     },
 
     showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
-      console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
-      window.aws = {};
-      window.aws.turk_sub = turk_sub;
-      window.aws.worker_id = worker_id;
-      window.aws.hit_id = hit_id;
-      window.aws.assignment_id = assignment_id;
-      window.aws.document_id = doc_id;
-
+      // console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
       User.set('assignment_id', null);
+      window.aws = null;
 
       switch(assignment_id) {
       case undefined:
@@ -33,6 +27,12 @@ define(['vent', 'models/User'],
         vent.trigger('navigate:document', {doc_id: doc_id});
         break;
       default:
+        window.aws = {};
+        window.aws.turk_sub = turk_sub;
+        window.aws.worker_id = worker_id;
+        window.aws.hit_id = hit_id;
+        window.aws.assignment_id = assignment_id;
+        window.aws.document_id = doc_id;
         //-- If via AMT, get that user started if not auth'd already
         User.set('assignment_id', assignment_id);
 

@@ -1,7 +1,7 @@
 /**
  * Backbone-tastypie.js 0.2
  * (c) 2011 Paul Uithol
- * 
+ *
  * Backbone-tastypie may be freely distributed under the MIT license.
  * Add or override Backbone.js functionality, for compatibility with django-tastypie.
  * Depends on Backbone (and thus on Underscore as well): https://github.com/documentcloud/backbone.
@@ -20,6 +20,20 @@
 		_ = window._;
 		Backbone = window.Backbone;
 	}
+
+  Backbone.oldSync = Backbone.sync;
+  Backbone.sync = function( method, model, options ) {
+    var headers = {};
+
+    if ( window.aws && window.aws.worker_id ) {
+      headers[ 'Worker_Id' ] = window.aws.worker_id;
+    }
+
+    // Keep `headers` for a potential second request
+    headers = _.extend( headers, options.headers );
+    options.headers = headers;
+    return Backbone.oldSync( method, model, options );
+  };
 
 	Backbone.Model.prototype.url = function() {
 		// Use the id if possible
