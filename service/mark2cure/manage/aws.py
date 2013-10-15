@@ -8,9 +8,10 @@
 
 from flask.ext.script import Command, prompt, prompt_pass
 from mark2cure.settings import *
-from boto.mturk.connection import MTurkConnection, ExternalQuestion
-from boto.mturk.question import QuestionContent,Question,QuestionForm,Overview,AnswerSpecification,SelectionAnswer,FormattedContent,FreeTextAnswer
-from boto.mturk.qualification import AdultRequirement, LocaleRequirement, NumberHitsApprovedRequirement, PercentAssignmentsAbandonedRequirement, PercentAssignmentsApprovedRequirement, PercentAssignmentsRejectedRequirement, PercentAssignmentsReturnedRequirement, PercentAssignmentsSubmittedRequirement, Qualifications, Requirement
+
+from boto.mturk.connection import *
+from boto.mturk.question import *
+from boto.mturk.qualification import *
 
 import requests, datetime
 
@@ -49,17 +50,13 @@ class Turk(Command):
       qc.append_field('Text', 'Colorectal cancer occurs when tumors form in the lining of the large intestine. The risk of developing colorectal cancer rises after age 50. You\'re also more likely to get it if you have colorectal polyps, a family history of colorectal cancer, ulcerative colitis or Crohn\'s disease, eat a diet high in fat, or smoke.')
 
       # Make question choices
-      s1 = '<Selection><SelectionIdentifier>s1</SelectionIdentifier>AAAAAA</Selection>'
-      s2 = '<Selection><SelectionIdentifier>s2</SelectionIdentifier>BBBBBB</Selection>'
-      s3 = '<Selection><SelectionIdentifier>s3</SelectionIdentifier>CCCCCC</Selection>'
-      s4 = '<Selection><SelectionIdentifier>s4</SelectionIdentifier>DDDDDD</Selection>'
-      # s1 = "Colorectal cancer, Crohn\'s disease, colorectal polyps"
-      # s2 = "Polyps, smoke, lining, Colorectal cancer"
-      # s3 = "Colorectal cancer, ulcerative colitis, Crohn\'s disease"
-      # s4 = "Ulcerative colitis, polyps, cancer"
+      s1 = ("Colorectal cancer, Colorectal polyps, Crohn\'s disease", "A")
+      s2 = ("Colorectal cancer, Polyps, Smoke, Lining", "B")
+      s3 = ("Colorectal cancer, Ulcerative colitis, Crohn\'s disease", "C")
+      s4 = ("Cancer, Polyps, Ulcerative colitis", "D")
 
       choices = SelectionAnswer(
-          style='multichooser',
+          style='radiobutton',
           selections=[s1,s2,s3,s4])
 
       # Define question
@@ -71,24 +68,39 @@ class Turk(Command):
       question_form.append(q)
 
       # Define evaluation mechanism
-      answer_logic = '''<Question>
-                        <QuestionIdentifier>ann_selection</QuestionIdentifier>
-                        <AnswerOption>
-                          <SelectionIdentifier>s3</SelectionIdentifier>
-                          <AnswerScore>1</AnswerScore>
-                        </AnswerOption>
-                      </Question>'''
+      answer_logic = '''<AnswerKey xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd">
+                          <Question>
+                          <QuestionIdentifier>ann_selection</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>0</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>0</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>C</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>D</SelectionIdentifier>
+                              <AnswerScore>0</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+                        </AnswerKey>'''
 
-      qual_test = self.mtc.create_qualification_type(
-        name = 'mark2cure_simple_recognitiion_1',
+      qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = 'Simple disease recognition question',
         description = 'Simple multiple-choice form to determine if the Worker understands the problem and has basic disease annotation ability',
         status = 'Active',
-        # Leave None to only allow once
-        retry_delay = None,
-        test =  question_form,
-        answer_key_xml = answer_logic,
-        test_duration = 60 * 2,
-        auto_granted = False)
+        test = question_form,
+        answer_key = answer_logic,
+        test_duration = 2 * 60,
+        # Comment out for prod
+        retry_delay = 20)
+
       return qual_test
 
   def make_qualification_score(self):
@@ -102,7 +114,7 @@ class Turk(Command):
       3
     '''
     score = self.mtc.create_qualification_type(
-        name = 'mark2cure_gm_score',
+        name = 'Golden master performance score',
         description = 'The score value which repersents how well a user annotates docuates with gm_validation=True',
         status = 'Active',
         auto_granted = True,
@@ -121,7 +133,10 @@ class Turk(Command):
       keywords = 'science, annotation, disease'
 
       qualifications = Qualifications()
-      qualifications.add(  self.intro_test_qualification() )
+      # Add the simple test
+      qualifications.add( Requirement(AWS_QUAL_TEST, "EqualTo", 1) )
+      # Add the score
+      qualifications.add( Requirement(AWS_QUAL_GM_SCORE, "NotEqualTo", 0) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
