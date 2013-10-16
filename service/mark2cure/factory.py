@@ -9,11 +9,12 @@
 import os
 
 from celery import Celery
-from flask import Flask
+from flask import Flask, redirect
 
 from .core import db, mail, login_manager
 from .models import User
 from .middleware import HTTPMethodOverrideMiddleware
+from flask.ext.login import login_user, logout_user, current_user, login_required
 
 def create_app(package_name, settings_override=None):
     """Returns a :class:`Flask` application instance configured with common
@@ -37,6 +38,12 @@ def create_app(package_name, settings_override=None):
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.query(User).get(user_id)
+
+    @app.route("/logout")
+    @login_required
+    def logout():
+        logout_user()
+        return redirect("/")
 
     app.wsgi_app = HTTPMethodOverrideMiddleware(app.wsgi_app)
 

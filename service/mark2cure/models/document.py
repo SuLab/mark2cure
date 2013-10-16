@@ -28,6 +28,7 @@ class Document(db.Model):
         if created is None:
           self.created      = datetime.datetime.utcnow()
         self.created = created
+        self.validate = False
         self.source = source
 
     # Required for administrative interface

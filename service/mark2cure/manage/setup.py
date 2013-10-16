@@ -8,6 +8,8 @@
 
 from flask.ext.script import Command, prompt, prompt_pass
 from ..models import *
+from ..core import db
+
 from mark2cure.settings import *
 
 import requests

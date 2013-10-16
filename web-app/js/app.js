@@ -82,9 +82,10 @@ define(['marionette', 'vent',
         single_doc.fetch({success : function() {
           opts['model'] = single_doc;
 
-          console.log(opts);
           if(opts.user.get('mturk')) {
             app.header.close();
+            app.header.$el.hide();
+            $('body').css({'padding-top':'20px'});
             app.footer.close();
           }
 

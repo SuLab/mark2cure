@@ -46,8 +46,13 @@ define(['marionette', 'templates', 'vent',
 
       if( this.model.get('complete') ) {
         //-- If you're showing the results and you're a turker, let amazon know to pay
-        // this.model.aws();
-        if(User.authenticated() && User.get('mturk') && User.get('assignment_id')) {
+        var highlighted = this.model.get('words').where({'selected': true});
+
+        if( User.authenticated() &&
+            User.get('mturk') &&
+            User.get('assignment_id') &&
+            highlighted.length
+          ) {
           this.submission.show( new Form({model: this.model}) );
         }
 

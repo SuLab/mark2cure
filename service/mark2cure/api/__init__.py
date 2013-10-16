@@ -50,7 +50,5 @@ def create_app(settings_override=None):
     api.add_resource(Gold,        '/api/v1/gm',           '/api/v1/gm/<int:doc_id>')
     api.add_resource(Quests,      '/api/v1/quest',        '/api/v1/quest/<int:quest_id>',
                                                           '/api/v1/quest/<string:quest_name>')
-
     return app
-
 

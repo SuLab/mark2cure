@@ -33,7 +33,7 @@ class Network(Resource):
     # For each of the documents with annotations
     for doc_idx, doc in enumerate( doc_arr ):
       # Collect all of the cleaned annotations for that document by the current user
-      doc_ann = [clean(ann.text) for ann in doc.annotations if ann.user is current_user]
+      doc_ann = [clean(ann.text) for ann in doc.annotations if ann.user.id is current_user.id]
 
       for ann in list(set(doc_ann)):
         # For this document, connect the doc to the annotation and weight appropriately
