@@ -12,7 +12,8 @@ from mark2cure.settings import *
 from boto.mturk.connection import *
 from boto.mturk.question import *
 from boto.mturk.qualification import *
-
+from ..models import *
+from ..core import db
 import requests, datetime
 
 class Turk(Command):
@@ -46,7 +47,7 @@ class Turk(Command):
 
       # Define question content
       qc = QuestionContent()
-      qc.append_field('Title', 'Select which of the follow options contains the most disease terms')
+      qc.append_field('Title', 'Select which of the follow options contains the most disease terms from the following sentence.')
       qc.append_field('Text', 'Colorectal cancer occurs when tumors form in the lining of the large intestine. The risk of developing colorectal cancer rises after age 50. You\'re also more likely to get it if you have colorectal polyps, a family history of colorectal cancer, ulcerative colitis or Crohn\'s disease, eat a diet high in fat, or smoke.')
 
       # Make question choices
@@ -97,9 +98,7 @@ class Turk(Command):
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        test_duration = 2 * 60,
-        # Comment out for prod
-        retry_delay = 20)
+        test_duration = 2 * 60)
 
       return qual_test
 
@@ -113,23 +112,18 @@ class Turk(Command):
       2 -- Starting value
       3
     '''
-    score = self.mtc.create_qualification_type(
-        name = 'Golden master performance score',
+    score = self.mtc.update_qualification_type(AWS_QUAL_GM_SCORE,
+    # score = self.mtc.create_qualification_type(
+        # name = 'Golden master performance score',
         description = 'The score value which repersents how well a user annotates docuates with gm_validation=True',
         status = 'Active',
         auto_granted = True,
-        auto_granted_value = 2)
+        auto_granted_value = 1)
     return score
-
-  def score_qualification(self, qualification_type_id, worker_id):
-    pass
-
-  def intro_test_qualification(self):
-    pass
 
   # Actionable methods
   def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.04, minutes = 8, title="Annotate scientific articles"):
-      description = ('Visit a website and highlight diseases that are present in a paragraph.')
+      description = ('Highlight by clicking or draging over multiple words in the following paragraph that are diseases. Do *not* select symptoms, conditions or any other non disease term. When available, highlight multi-word disease together by click and dragging.')
       keywords = 'science, annotation, disease'
 
       qualifications = Qualifications()
@@ -159,11 +153,6 @@ class Turk(Command):
       return hit
 
   def run(self):
-    documents = db.session.query(Document).all()
+    documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
     for doc in documents:
-        self.hit_for_document(doc.id)
-
-    # Click Done:
-    #   Submits their Annotations to our server
-    #   Hit GM API to get pass / result value
-    #   Update their score: http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_UpdateQualificationScoreOperation.html
+      self.hit_for_document( doc.id )
