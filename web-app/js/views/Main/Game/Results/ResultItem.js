@@ -10,7 +10,7 @@ define(['marionette', 'templates', 'vent',
 
     onRender : function() {
 
-      if(!User.get('mturk') || User.get('assignment_id')) {
+      if(!User.get('mturk') && !window.aws && !window.aws.assignment_id) {
         //-- Draw the community consensus
         var pop = this.model.get('parentDocument').get('popularity')[ this.model.collection.indexOf( this.model ) ];
         if(pop >= 1) {

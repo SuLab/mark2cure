@@ -58,11 +58,11 @@ class Documents(Resource):
           db.session.add(ann)
         db.session.commit()
 
-        if current_user.mturk:
-            # Just email me for fun...
-            msg = Message(recipients=["dragon@puff.me.uk"],
-                          subject="MTurk Submission")
-            mail.send(msg)
+        # if current_user.mturk:
+        #     # Just email me for fun...
+        #     msg = Message(recipients=["dragon@puff.me.uk"],
+        #                   subject="MTurk Submission")
+        #     mail.send(msg)
 
         # Check document and mturk status
         if document.validate and current_user.mturk:

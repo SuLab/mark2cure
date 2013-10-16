@@ -82,7 +82,7 @@ define(['marionette', 'vent',
         single_doc.fetch({success : function() {
           opts['model'] = single_doc;
 
-          if(opts.user.get('mturk')) {
+          if(opts.user.get('mturk') || window.aws && window.aws.assignment_id) {
             app.header.close();
             app.header.$el.hide();
             $('body').css({'padding-top':'20px'});
