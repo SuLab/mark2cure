@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask.ext.restful import reqparse, Resource
 from flask_login import login_user, current_user
+from flask_mail import Message
 
 # from sqlalchemy import *
 # from sqlalchemy.orm import *
@@ -9,8 +10,10 @@ from flask_login import login_user, current_user
 # from collections import OrderedDict
 
 from ..models import User, Document, Annotation, View
-from ..core import db
+from ..core import db, mail
 from mark2cure.settings import *
+from mark2cure.manage.analysis import user_vs_gold
+from mark2cure.manage.aws import Turk
 
 document_parser = reqparse.RequestParser()
 document_parser.add_argument('document_id',   type=int,   location='json')
@@ -55,30 +58,18 @@ class Documents(Resource):
           db.session.add(ann)
         db.session.commit()
 
+        if current_user.mturk:
+            # Just email me for fun...
+            msg = Message(recipients=["dragon@puff.me.uk"],
+                          subject="MTurk Submission")
+            mail.send(msg)
+
         # Check document and mturk status
         if document.validate and current_user.mturk:
-          # This is a document that requires validation
-          user_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = current_user).all()
-          gold_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 2).all()
-
-          user_annotations = [ann.compare_view() for ann in user_annotations]
-          gold_annotations = [ann.compare_view() for ann in gold_annotations]
-
-          user_matches = len([ann for ann in user_annotations if ann in gold_annotations])
-
-          print user_matches, ( len(user_annotations) - user_matches), len(user_annotations), len(gold_annotations)
-
-          # mtc = MTurkConnection( aws_access_key_id = AWS_ACCESS_ID,
-          #                        aws_secret_access_key = AWS_SECRET_KEY,
-          #                        host = AWS_HOST)
-
-          # score = int(mtc.get_qualification_score(AWS_QUAL_GM_SCORE, worker))
-          # if(len(user_matches) > 0):
-          #   score += 1
-          # else:
-          #   score -= 1
-
-          # mtc.update_qualification_score(AWS_QUAL_GM_SCORE, worker, score)
+            truth = user_vs_gold(current_user, document)
+            score = 1 if truth[0] > 0 else 0
+            t = Turk()
+            t.mtc.update_qualification_score(AWS_QUAL_GM_SCORE, current_user.username, score)
 
         return args, 201
 
