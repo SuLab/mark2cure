@@ -21,20 +21,6 @@
 		Backbone = window.Backbone;
 	}
 
-  Backbone.oldSync = Backbone.sync;
-  Backbone.sync = function( method, model, options ) {
-    var headers = {};
-
-    if ( window.aws && window.aws.worker_id ) {
-      headers[ 'Worker_Id' ] = window.aws.worker_id;
-    }
-
-    // Keep `headers` for a potential second request
-    headers = _.extend( headers, options.headers );
-    options.headers = headers;
-    return Backbone.oldSync( method, model, options );
-  };
-
 	Backbone.Model.prototype.url = function() {
 		// Use the id if possible
 		var url = this.id;

@@ -62,6 +62,5 @@ class Users(Resource):
             db.session.commit()
 
         login_user(user, remember=True)
-        print current_user
 
         return user.json_view(), 201

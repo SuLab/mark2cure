@@ -56,8 +56,7 @@ class Documents(Resource):
         db.session.commit()
 
         # Check document and mturk status
-        worker = True
-        if document.validate and worker:
+        if document.validate and current_user.mturk:
           # This is a document that requires validation
           user_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = current_user).all()
           gold_annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user_id = 2).all()
@@ -67,19 +66,19 @@ class Documents(Resource):
 
           user_matches = len([ann for ann in user_annotations if ann in gold_annotations])
 
-          # print user_matches, ( len(user_annotations) - user_matches), len(user_annotations), len(gold_annotations)
+          print user_matches, ( len(user_annotations) - user_matches), len(user_annotations), len(gold_annotations)
 
-          mtc = MTurkConnection( aws_access_key_id = AWS_ACCESS_ID,
-                                 aws_secret_access_key = AWS_SECRET_KEY,
-                                 host = AWS_HOST)
+          # mtc = MTurkConnection( aws_access_key_id = AWS_ACCESS_ID,
+          #                        aws_secret_access_key = AWS_SECRET_KEY,
+          #                        host = AWS_HOST)
 
-          score = int(mtc.get_qualification_score(AWS_QUAL_GM_SCORE, worker))
-          if(len(user_matches) > 0):
-            score += 1
-          else:
-            score -= 1
+          # score = int(mtc.get_qualification_score(AWS_QUAL_GM_SCORE, worker))
+          # if(len(user_matches) > 0):
+          #   score += 1
+          # else:
+          #   score -= 1
 
-          mtc.update_qualification_score(AWS_QUAL_GM_SCORE, worker, score)
+          # mtc.update_qualification_score(AWS_QUAL_GM_SCORE, worker, score)
 
         return args, 201
 

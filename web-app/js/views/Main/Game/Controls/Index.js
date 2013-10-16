@@ -40,7 +40,7 @@ define(['marionette', 'templates', 'vent',
 
     submitAnnotations : function(evt) {
       evt.preventDefault();
-      this.model.save({'complete': true});
+      this.model.save({'complete': true}, {wait: true});
       vent.trigger('network:refresh', {});
     },
 

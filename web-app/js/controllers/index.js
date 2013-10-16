@@ -24,6 +24,7 @@ define(['vent', 'models/User'],
         break;
       case 'ASSIGNMENT_ID_NOT_AVAILABLE':
         //-- Preview mode
+        User.set('assignment_id', assignment_id);
         vent.trigger('navigate:document', {doc_id: doc_id});
         break;
       default:

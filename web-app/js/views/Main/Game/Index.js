@@ -58,7 +58,11 @@ define(['marionette', 'templates', 'vent',
 
         this.game.show( new Results({collection: this.model.get('words')}) );
       } else {
-        this.game.show( new EntityTag({collection: this.model.get('words')}) );
+        if( User.get('assignment_id') == 'ASSIGNMENT_ID_NOT_AVAILABLE' ) {
+          this.game.show( new Results({collection: this.model.get('words')}) );
+        } else {
+          this.game.show( new EntityTag({collection: this.model.get('words')}) );
+        }
       }
     }
 
