@@ -14,7 +14,7 @@ from boto.mturk.question import *
 from boto.mturk.qualification import *
 from ..models import *
 from ..core import db
-import requests, datetime
+import requests, datetime, random
 
 class Turk(Command):
   "Add a mturk to a document"
@@ -91,9 +91,9 @@ class Turk(Command):
                           </Question>
                         </AnswerKey>'''
 
-      qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
-      # qual_test = self.mtc.create_qualification_type(
-        # name = 'Simple disease recognition question',
+      # qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
+      qual_test = self.mtc.create_qualification_type(
+        name = 'Simple disease recognition question',
         description = 'Simple multiple-choice form to determine if the Worker understands the problem and has basic disease annotation ability',
         status = 'Active',
         test = question_form,
@@ -112,9 +112,9 @@ class Turk(Command):
       2 -- Starting value
       3
     '''
-    score = self.mtc.update_qualification_type(AWS_QUAL_GM_SCORE,
-    # score = self.mtc.create_qualification_type(
-        # name = 'Golden master performance score',
+    # score = self.mtc.update_qualification_type(AWS_QUAL_GM_SCORE,
+    score = self.mtc.create_qualification_type(
+        name = 'Golden master performance score',
         description = 'The score value which repersents how well a user annotates docuates with gm_validation=True',
         status = 'Active',
         auto_granted = True,
@@ -154,5 +154,7 @@ class Turk(Command):
 
   def run(self):
     documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
-    for doc in documents:
-      self.hit_for_document( doc.id )
+    doc_ids = [doc.id for doc in documents]
+    random.shuffle(doc_ids)
+    for doc_id in doc_ids:
+      self.hit_for_document( doc_id )

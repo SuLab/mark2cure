@@ -82,15 +82,5 @@ An online text annotator to generate user annotations in fun and exploratory way
 
 
 #### Notes
-
-HIT
- -- Expire in ~5min
- -- Qualifications list. Over 18, Local EN, Masters?
-
-
-Add bool to gm docs to say use this doc for validation (10%) out of development dataset
-keep score 0, 1, 2(init), 3
-NO MATTER WHAT REQUIRE THAT A USER PUTS IN A ANNOTATION
-
-
-localhost:5000/index-dev.html#/document/25?assignmentId=291O9Z6KW4ZMEANDMICFT0ONOJX5ES&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3&workerId=A296YJ2WQNOSKY&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
+  localhost:5000/index-dev.html#/document/25?assignmentId=291O9Z6KW4ZMEANDMICFT0ONOJX5ES&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3&workerId=A296YJ2WQNOSKY&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
+  localhost:5000/index-dev.html#/document/25?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3
