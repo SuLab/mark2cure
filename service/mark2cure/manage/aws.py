@@ -47,7 +47,7 @@ class Turk(Command):
 
       # Define question content
       qc = QuestionContent()
-      qc.append_field('Title', 'Select which of the follow options contains the most disease terms from the following sentence.')
+      qc.append_field('Title', 'Select which of the options contains the most disease terms from the following sentence.')
       qc.append_field('Text', 'Colorectal cancer occurs when tumors form in the lining of the large intestine. The risk of developing colorectal cancer rises after age 50. You\'re also more likely to get it if you have colorectal polyps, a family history of colorectal cancer, ulcerative colitis or Crohn\'s disease, eat a diet high in fat, or smoke.')
 
       # Make question choices
@@ -122,9 +122,9 @@ class Turk(Command):
     return score
 
   # Actionable methods
-  def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.04, minutes = 8, title="Annotate scientific articles"):
-      description = ('Highlight by clicking or draging over multiple words in the following paragraph that are diseases. Do *not* select symptoms, conditions or any other non disease term. When available, highlight multi-word disease together by click and dragging.')
-      keywords = 'science, annotation, disease'
+  def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
+      description = ('Highlight by clicking or dragging over multiple words in the following paragraph that are diseases. Do *not* select symptoms, conditions or any other non-disease term. When available, highlight multi-word disease together by click and dragging. When you accept the HIT, you will be allowed to start highlighting and a submit button will appear.')
+      keywords = 'science, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
       qualifications = Qualifications()
       # Add the simple test

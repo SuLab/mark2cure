@@ -12,7 +12,7 @@ from flask_mail import Message
 from ..models import User, Document, Annotation, View
 from ..core import db, mail
 from mark2cure.settings import *
-from mark2cure.manage.analysis import user_vs_gold
+from mark2cure.manage.analysis import gold_matches
 from mark2cure.manage.aws import Turk
 
 document_parser = reqparse.RequestParser()
@@ -66,8 +66,8 @@ class Documents(Resource):
 
         # Check document and mturk status
         if document.validate and current_user.mturk:
-            truth = user_vs_gold(current_user, document)
-            score = 1 if truth[0] > 0 else 0
+            matches = gold_matches(current_user, document)
+            score = 1 if matches > 0 else 0
             t = Turk()
             t.mtc.update_qualification_score(AWS_QUAL_GM_SCORE, current_user.username, score)
 

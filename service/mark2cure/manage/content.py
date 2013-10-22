@@ -5,8 +5,7 @@
 
     user management commands
 """
-from flask.ext.script import Command, prompt, prompt_pass
-from flask.ext.script import Manager, Command, Option
+from flask.ext.script import Command, Option, prompt, prompt_pass
 from mark2cure.settings import *
 from ..models import *
 from ..core import db
@@ -33,7 +32,7 @@ from bs4 import BeautifulSoup, NavigableString
 class Import(Command):
 
     def run(self):
-  
+
         pass
 #     MAX_COUNT = 100
 #     Entrez.email = 'nanis@scripps.edu'
