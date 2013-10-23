@@ -38,9 +38,13 @@ class Documents(Resource):
         document = Document.query.get(doc_id)
         env =  request.environ
 
-        view = View(current_user, document);
-        db.session.add(view)
-        db.session.commit()
+        views = db.session.query(View).filter_by(user = current_user).filter_by( document = document ).all()
+        if len(views):
+            raise ValueError("Cannot submit a document twice")
+        else:
+          view = View(current_user, document);
+          db.session.add(view)
+          db.session.commit()
 
         for ann in args['annotations']:
           ann = Annotation( ann['kind'],
