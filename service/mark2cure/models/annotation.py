@@ -57,5 +57,4 @@ class Annotation(db.Model):
       return {
                 'text'      : self.text,
                 'start'     : int(self.start),
-                'stop'      : int(self.stop),
               }

@@ -16,6 +16,11 @@ define(function(require) {
         item    : require('tpl!templates/main/library/item.tmpl')
       },
 
+      relationgame : {
+        index : require('tpl!templates/main/relationgame/index.tmpl'),
+        objectitem : require('tpl!templates/main/relationgame/objectitem.tmpl'),
+      },
+
       game : {
         index : require('tpl!templates/main/game/index.tmpl'),
         controls : require('tpl!templates/main/game/controls/index.tmpl'),

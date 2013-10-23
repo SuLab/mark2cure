@@ -12,6 +12,10 @@ define(['vent', 'models/User'],
       vent.trigger('navigate:library', {'quest': quest});
     },
 
+    showDocRelationship : function(doc_id) {
+      vent.trigger('navigate:document:relationship', {doc_id: doc_id});
+    },
+
     showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
       // console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
       User.set('assignment_id', null);

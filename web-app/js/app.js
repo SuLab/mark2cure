@@ -7,7 +7,7 @@ define(['marionette', 'vent',
 
         //-- Views
         'views/Header/Index', 'views/Footer/Index',
-        'views/Main/Game/Index', 'views/Main/Library/Index',
+        'views/Main/Game/Index', 'views/Main/RelationGame/Index', 'views/Main/Library/Index',
         'views/Analytics/Network',
         'views/modals/FirstRun', 'views/modals/Complete', 'views/modals/Message', 'views/modals/Survey',
         'views/modals/Settings', 'views/modals/Instructions',
@@ -24,7 +24,7 @@ define(['marionette', 'vent',
 
             //-- Views
             Header, Footer,
-            Game, Library,
+            Game, RelationGame, Library,
             Network,
             FirstRun, Complete, Message, Survey,
             Settings, Instructions,
@@ -65,6 +65,29 @@ define(['marionette', 'vent',
       app.header.show(  new Header(opts)  );
       app.main.show(    new Library(opts) );
       app.footer.show(  new Footer(opts)  );
+    });
+
+    vent.on('navigate:document:relationship', function(param) {
+      var id = Number(param.doc_id),
+          found_model = opts.collection.findWhere({id: id});
+
+      if(found_model) {
+        opts['model'] = found_model;
+        app.main.show( new RelationGame(opts) );
+
+      } else {
+        //-- If the Doc wasn't already available
+        var single_doc = new Document({id: id});
+
+        single_doc.fetch({success : function() {
+          opts['model'] = single_doc;
+
+          app.main.show( new RelationGame(opts) );
+        }, error : function() {
+          vent.trigger('library', {});
+        }});
+
+      }
     });
 
     vent.on('navigate:document', function(param) {

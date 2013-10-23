@@ -25,7 +25,7 @@ class Turk(Command):
                               host = AWS_HOST)
 
   # Utility Methods
-  def delete_all(self):
+  def disable_all(self):
       for hit in self.mtc.get_all_hits():
           self.mtc.disable_hit( hit.HITId )
 
@@ -157,4 +157,5 @@ class Turk(Command):
     doc_ids = [doc.id for doc in documents]
     random.shuffle(doc_ids)
     for doc_id in doc_ids:
+      print doc_id
       self.hit_for_document( doc_id )

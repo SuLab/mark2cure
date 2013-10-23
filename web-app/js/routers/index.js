@@ -25,6 +25,9 @@ define(['marionette'],
       'library/'         : 'showLibrary',
       'library'         : 'showLibrary',
 
+      //-- Specific Doc for relationships
+      'document/:doc_id/relationship' : 'showDocRelationship',
+
       //-- Specific Document
       'document/:doc_id?assignmentId=:var1&hitId=:var2&workerId=:var3&turkSubmitTo=:var4' : 'showDocument',
       'document/:doc_id?assignmentId=:var1&hitId=:var2' : 'showDocument',
