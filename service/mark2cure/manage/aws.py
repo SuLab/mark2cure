@@ -98,7 +98,7 @@ class Turk(Command):
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        test_duration = 2 * 60)
+        test_duration = 5 * 60)
 
       return qual_test
 
