@@ -96,51 +96,85 @@ define(['marionette', 'templates', 'vent',
           stop_i = last_model.get('stop')+1;
         }
 
-        annotations.create({
-          kind      : 0,
-          type      : type,
-          text      : doc.get('text').substring(start_i, stop_i),
-          length    : stop_i - start_i,
-          start     : start_i,
-          stop      : stop_i
-        });
-
+        self.createAnns(start_i, stop_i)
       } else {
         if( prexisting ) {
           //-- If the single annotation or range started on a prexisting annotation
           _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
         } else {
           //-- If the single annotation or range started on a prexisting annotation
-          annotations.create({
-            kind      : 0,
-            type      : type,
-            text      : self.model.get('text'),
-            length    : self.model.get('length'),
-            start     : self.model.get('start'),
-            stop      : self.model.get('stop')
-          });
+          self.createAnns(self.model.get('start'), self.model.get('stop')+1);
         }
       }
 
       this.selectWordsOfAnnotations();
       this.selectNeighborsOfAnnotations();
 
-      // console.log('/ / / / / / / / / / / /   ::   ', range);
-      // _.each(annotations.models, function(ann) {
-      //   console.log(ann.get('text'), " :: ", ann.get('length'))
-      // });
+      console.log('/ / / / / / / / / / / /');
+      _.each(annotations.models, function(ann) {
+        console.log(ann.get('text'), " :: ", ann.get('length'), ann.get('start'));
+      });
+    },
+
+    createAnns : function(start, stop) {
+      var self = this,
+          doc = this.model.get('parentDocument'),
+          annotations = doc.get('annotations'),
+          text = doc.get('text').substring(start, stop),
+          //-- Get the "pure" text
+          text = text.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+      var type = User.get('sel_mode');
+
+      _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
+        annotations.create({
+          kind      : 0,
+          type      : type,
+          text      : text,
+          length    : text.length,
+          start     : v,
+          stop      : v+text.length
+        });
+      })
+
     },
 
     //-- Utilities for view
+    getIndicesOf : function(searchStr, str, caseSensitive) {
+      var startIndex = 0, searchStrLen = searchStr.length;
+      var index, indices = [];
+      if (!caseSensitive) {
+          str = str.toLowerCase();
+          searchStr = searchStr.toLowerCase();
+      }
+      while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+          indices.push(index);
+          startIndex = index + searchStrLen;
+      }
+      return indices;
+    },
+
     selectWordsOfAnnotations : function() {
-      var ann_range =  this.model.get('parentDocument').get('annotations').getRange();
+      var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) {
+        return {
+          'start' : m.get('start'),
+          'text' : m.get('text')
+        }
+      });
+
       this.model.collection.clear('selected');
       this.model.collection.each(function(word) {
         //- If the word is part of an annotation
-        if( _.contains(ann_range, word.get('start')) ) {
+        var found = _.filter(ann_range, function(ann) {
+          return  word.get('text').length <= ann.text.length &&
+                  word.get('start') >= ann.start &&
+                  word.get('start') < (ann.start+ann.text.length);
+        });
+
+        if( found.length ) {
           word.set('selected', true);
         }
       });
+
     },
 
     selectNeighborsOfAnnotations : function() {

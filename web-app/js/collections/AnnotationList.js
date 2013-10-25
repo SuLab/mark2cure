@@ -1,4 +1,4 @@
-define(['backbone', 'models/Annotation'], 
+define(['backbone', 'models/Annotation'],
 
         function(Backbone, Annotation) {
   'use strict';
@@ -15,16 +15,25 @@ define(['backbone', 'models/Annotation'],
     },
 
     findContaining : function(index) {
-      return this.filter(function(annotation) { 
+      return this.filter(function(annotation) {
         return index >= annotation.get('start') && index <= annotation.get('stop');
       });
     },
 
     exactMatch : function(word) {
-      return this.filter(function(annotation) { 
+      return this.filter(function(annotation) {
         return  word.get('start') == annotation.get('start') &&
                 word.get('stop') == annotation.get('stop');
       });
+    },
+
+    add : function(ann) {
+      //-- Prevent duplicate annotations from being submitted
+      var isDupe = this.any(function(_ann) {
+          return _ann.get('text') === ann.get('text') && _ann.get('start') === ann.get('start');
+      });
+      if (isDupe) { return false; }
+      Backbone.Collection.prototype.add.call(this, ann);
     }
 
   });
