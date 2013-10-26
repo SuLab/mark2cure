@@ -1,8 +1,5 @@
 define(['marionette', 'templates', 'vent',
-        //-- Models
-        'models/User',
-        //-- ETC
-        'moment'],
+        'models/User', 'moment'],
     function (Marionette, templates, vent,
               User) {
   'use strict';
@@ -15,7 +12,7 @@ define(['marionette', 'templates', 'vent',
       'mousedown'   : 'clickOrInitDrag',
       'mouseup'     : 'releaseDrag',
       'mouseover'   : 'hover',
-      'mouseout'    : 'leaveHover'
+      'mouseout'    : function() { this.$el.tooltip('destroy'); }
     },
 
     initialize : function(options) {
@@ -37,19 +34,24 @@ define(['marionette', 'templates', 'vent',
     //-- Event actions
     //
     hover : function(evt) {
+      //-- If you're dragging with the mouse down to make a large selection
       if(evt.which) {
+
         var last_model = this.model.collection.findWhere({latest: true}),
             sel = [last_model.get('start'), this.model.get('start')],
             range = [_.min(sel), _.max(sel)],
             highlight_list = this.model.collection.selectBetweenRange(range[0], range[1]+1);
         this.selectWordsOfAnnotations();
-
         _.each(highlight_list, function(word) { word.set('selected', true); });
+
       } else {
+
+        //-- If you hover over a word that is highlighted
         if(this.model.get('selected')) {
           var anns = this.model.get('parentDocument').get('annotations'),
               ann_list = anns.findContaining(this.model.get('start'));
           if(ann_list.length > 0) {
+            //-- What annotation types does that particular word have? Show them w/ Bootstrap tooltip
             var types = _.uniq( _.map(ann_list, function(ann){ return ann.get('type'); }) );
             this.$el.tooltip('destroy');
             this.$el.tooltip({
@@ -62,17 +64,17 @@ define(['marionette', 'templates', 'vent',
       }
     },
 
-    leaveHover : function(evt) {
-      this.$el.tooltip('destroy');
-    },
-
     clickOrInitDrag : function() {
+      //-- onmousedown we just set the word to be the latest so that we can refernce it later
+      //-- whent he user releases after staying put or moving around
       this.model.collection.clear('latest');
       this.model.set('latest', true);
       this.model.set('selected', true);
     },
 
     releaseDrag : function(evt) {
+      //-- onmouseup from the user
+
       var self = this,
           last_model = this.model.collection.findWhere({latest: true}),
           doc = this.model.get('parentDocument'),
@@ -112,7 +114,7 @@ define(['marionette', 'templates', 'vent',
 
       console.log('/ / / / / / / / / / / /');
       _.each(annotations.models, function(ann) {
-        console.log(ann.get('text'), " :: ", ann.get('length'), ann.get('start'));
+        console.log(ann.get('text'), " || ", ann.get('text').substring(ann.get('start'), ann.get('start')+ann.get('length') ),  " :: ", ann.get('length'), ann.get('start'));
       });
     },
 
@@ -140,6 +142,8 @@ define(['marionette', 'templates', 'vent',
 
     //-- Utilities for view
     getIndicesOf : function(searchStr, str, caseSensitive) {
+
+
       var startIndex = 0, searchStrLen = searchStr.length;
       var index, indices = [];
       if (!caseSensitive) {
@@ -147,9 +151,13 @@ define(['marionette', 'templates', 'vent',
           searchStr = searchStr.toLowerCase();
       }
       while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-          indices.push(index);
+          var sliced = str.substring(index - 1, index + searchStr.length + 1),
+              sliced = sliced.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+          // console.log(sliced, searchStr);
+          if(sliced === searchStr) { indices.push(index); }
           startIndex = index + searchStrLen;
       }
+      // console.log(indices);
       return indices;
     },
 
@@ -165,10 +173,13 @@ define(['marionette', 'templates', 'vent',
       this.model.collection.each(function(word) {
         //- If the word is part of an annotation
         var found = _.filter(ann_range, function(ann) {
-          return  word.get('text').length <= ann.text.length &&
+          var text = word.get('text').replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+          return  text.length <= ann.text.length &&
                   word.get('start') >= ann.start &&
-                  word.get('start') < (ann.start+ann.text.length);
+                  word.get('start') < (ann.start+text.length);
         });
+
+        // console.log('Found :: ', found, ' :: ', word.attributes);
 
         if( found.length ) {
           word.set('selected', true);

@@ -1,5 +1,4 @@
-define(['backbone', 'models/Word'], 
-    
+define(['backbone', 'models/Word'],
         function(Backbone, Word) {
   'use strict';
 
