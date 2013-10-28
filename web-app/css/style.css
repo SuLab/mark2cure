@@ -61,6 +61,18 @@ svg {
 
 .game p.paragraph.entity_tag span.selected {
   background-color: #0cf;
+  animation:highlight .25s;
+  -webkit-animation:highlight .25s;
+}
+
+@keyframes highlight {
+  from {background:#fff;}
+  to {background:#0cf;}
+}
+
+@-webkit-keyframes highlight {
+  from {background:#fff;}
+  to {background:#0cf;}
 }
 
 .game p.paragraph.entity_tag span.neighbor,

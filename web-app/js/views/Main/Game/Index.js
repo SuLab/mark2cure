@@ -14,6 +14,7 @@ define(['marionette', 'templates', 'vent',
 
   return Marionette.Layout.extend({
     template : templates.main.game.index,
+    templateHelpers : function() { return this.options; },
     className : 'game-view',
 
     regions : {
@@ -32,6 +33,7 @@ define(['marionette', 'templates', 'vent',
       //-- this.model == The Document
       //-- this.collection == The Collection of all Documents
       //-- options.user == The Currently Logged in User
+      options.user = User;
 
       if(!this.model.get('words').length) { this.model.parseText(); }
       this.listenTo(this.model, "change:complete", this.reRender, this);

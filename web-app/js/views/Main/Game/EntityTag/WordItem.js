@@ -18,11 +18,7 @@ define(['marionette', 'templates', 'vent',
     initialize : function(options) {
       this.listenTo(this.model, 'change:selected', this.render);
       this.listenTo(this.model, 'change:neighbor', this.render);
-
-      //-- (TODO) Why is this method so slow?
-      // var doc = this.model.get('parentDocument');
-      // this.listenTo(doc.get('annotations'), "add", this.selectWordsOfAnnotations, this);
-      // this.listenTo(doc.get('annotations'), "remove", this.selectWordsOfAnnotations, this);
+      options['auto_select_all'] = true;
     },
 
     onRender : function() {
@@ -34,7 +30,8 @@ define(['marionette', 'templates', 'vent',
     //-- Event actions
     //
     hover : function(evt) {
-      //-- If you're dragging with the mouse down to make a large selection
+      //-- If you're dragging with the m.25use down to make a large selection
+      console.log(evt);
       if(evt.which) {
 
         var last_model = this.model.collection.findWhere({latest: true}),
@@ -68,24 +65,23 @@ define(['marionette', 'templates', 'vent',
       //-- onmousedown we just set the word to be the latest so that we can refernce it later
       //-- whent he user releases after staying put or moving around
       this.model.collection.clear('latest');
-      this.model.set('latest', true);
-      this.model.set('selected', true);
+      this.model.set({'latest': true, 'selected': true});
     },
 
     releaseDrag : function(evt) {
       //-- onmouseup from the user
-
+      console.log('releaseDrag');
       var self = this,
           last_model = this.model.collection.findWhere({latest: true}),
-          doc = this.model.get('parentDocument'),
-          dragged = last_model != this.model,
-          annotations = doc.get('annotations'),
-          ann_range =  annotations.getRange(),
-          prexisting = _.contains(ann_range, this.model.get('start'));
+          annotations = this.model.get('parentDocument').get('annotations'),
+          ann_range =  annotations.getRange();
 
       var type = User.get('sel_mode');
 
-      if(dragged) {
+      if( last_model != this.model ) {
+        //
+        //-- If the user just finished making a drag selection
+        //
         var sel = [last_model.get('start'), this.model.get('stop')],
             range = [_.min(sel), _.max(sel)],
             start_i = range[0],
@@ -100,7 +96,10 @@ define(['marionette', 'templates', 'vent',
 
         self.createAnns(start_i, stop_i)
       } else {
-        if( prexisting ) {
+        //
+        //-- If it was a single click
+        //
+        if( _.contains(ann_range, this.model.get('start')) ) {
           //-- If the single annotation or range started on a prexisting annotation
           _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
         } else {
@@ -114,76 +113,90 @@ define(['marionette', 'templates', 'vent',
 
       console.log('/ / / / / / / / / / / /');
       _.each(annotations.models, function(ann) {
-        console.log(ann.get('text'), " || ", ann.get('text').substring(ann.get('start'), ann.get('start')+ann.get('length') ),  " :: ", ann.get('length'), ann.get('start'));
+        console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
       });
     },
 
     createAnns : function(start, stop) {
       var self = this,
+          type = User.get('sel_mode'),
           doc = this.model.get('parentDocument'),
           annotations = doc.get('annotations'),
-          text = doc.get('text').substring(start, stop),
-          //-- Get the "pure" text
-          text = text.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-      var type = User.get('sel_mode');
+          text = doc.get('text').substring(start, stop);
 
-      _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
+      if(this.options.auto_select_all) {
+        //-- Get the "pure" text
+        text = this.clean(text);
+        _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
+          annotations.create({
+            kind      : 0,
+            type      : type,
+            text      : text,
+            length    : text.length,
+            start     : v,
+            stop      : v+text.length
+          });
+        });
+      } else {
         annotations.create({
           kind      : 0,
           type      : type,
           text      : text,
           length    : text.length,
-          start     : v,
-          stop      : v+text.length
+          start     : start,
+          stop      : stop
         });
-      })
-
+      }
     },
 
     //-- Utilities for view
-    getIndicesOf : function(searchStr, str, caseSensitive) {
+    getIndicesOf : function(needle, haystack, caseSensitive) {
+      var startIndex = 0,
+          needleLen = needle.length,
+          index,
+          indices = [];
 
-
-      var startIndex = 0, searchStrLen = searchStr.length;
-      var index, indices = [];
       if (!caseSensitive) {
-          str = str.toLowerCase();
-          searchStr = searchStr.toLowerCase();
+          haystack = haystack.toLowerCase();
+          needle = needle.toLowerCase();
       }
-      while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-          var sliced = str.substring(index - 1, index + searchStr.length + 1),
-              sliced = sliced.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-          // console.log(sliced, searchStr);
-          if(sliced === searchStr) { indices.push(index); }
-          startIndex = index + searchStrLen;
+
+      while ((index = haystack.indexOf(needle, startIndex)) > -1) {
+          var sliced = this.clean( haystack.substring(index - 1, index + needleLen + 1) );
+
+          console.log(sliced, needle);
+          if(sliced === needle) { indices.push(index); }
+          startIndex = index + needleLen;
       }
+
       // console.log(indices);
       return indices;
     },
 
-    selectWordsOfAnnotations : function() {
-      var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) {
-        return {
-          'start' : m.get('start'),
-          'text' : m.get('text')
-        }
-      });
+    clean : function(text) {
+      return _.str.clean(text).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+    },
 
-      this.model.collection.clear('selected');
-      this.model.collection.each(function(word) {
-        //- If the word is part of an annotation
-        var found = _.filter(ann_range, function(ann) {
-          var text = word.get('text').replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-          return  text.length <= ann.text.length &&
-                  word.get('start') >= ann.start &&
-                  word.get('start') < (ann.start+text.length);
+    selectWordsOfAnnotations : function() {
+      var self = this,
+          offset = 0,
+          clean_word;
+      var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) {
+          return { 'start' : m.get('start'), 'stop' : m.get('stop') }
         });
 
-        // console.log('Found :: ', found, ' :: ', word.attributes);
+      //-- Iterate over the words and see if they are contained within any of the documents annotations
+      this.model.collection.clear('selected');
+      this.model.collection.each(function(word) {
+        // (TODO) Cache this!
+        clean_word = self.clean( word.get('text') );
+        //-- Get the offset so we know that finding the annotation in the word will work!
+        if(word.get('text') !== clean_word) { offset = word.get('text').indexOf(clean_word); }
 
-        if( found.length ) {
-          word.set('selected', true);
-        }
+        //- If the word is within annotation
+        var found = _.filter(ann_range, function(ann) { return  word.get('start')+offset >= ann.start && word.get('stop') <= ann.stop; });
+        // console.log('Found :: ', found, ' :: ', word.attributes);
+        if( found.length ) { word.set('selected', true); }
       });
 
     },

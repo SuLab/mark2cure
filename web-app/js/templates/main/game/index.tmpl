@@ -1,3 +1,26 @@
 <div class="submission row" style="display:none;"></div>
+
+<% if( !user.get('mturk') ) { %>
+  <div class="instructions row">
+    <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#instructions">
+      Instructions
+    </button>
+  </div>
+
+  <div id="instructions" class="collapse row" style="margin-top: 6px;">
+    <ul class="list-group col-md-6">
+      <li class="list-group-item">Highlight words that are <strong>diseases</strong>, select as many occurrences as possible</li>
+      <li class="list-group-item">Select the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong> forms of the disease</li>
+      <li class="list-group-item">Select the same disease <strong>as many times as possible</strong></li>
+      <li class="list-group-item">If possible, <strong>drag-highlight</strong> (by holding down click) to highlight a disease that spans multiple words</li>
+      <li class="list-group-item">Feel free to use Google or other resource to differentiate between diseases and things like symptoms.</li>
+    </ul>
+
+    <div class="col-md-6">
+      <img src="/img/highlighting.gif" class="img-rounded" />
+    </div>
+  </div>
+<% } %>
+
 <div class="game row"></div>
 <div class="controls row"><div>

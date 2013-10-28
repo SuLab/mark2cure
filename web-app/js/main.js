@@ -1,7 +1,7 @@
 require.config({
   paths : {
     //-- jQuery Core
-    'jquery'            : 'lib/jquery-1.9.1',
+    'jquery'            : 'lib/jquery-1.10.2',
 
     //-- System Core
     'underscore'        : 'lib/underscore',
