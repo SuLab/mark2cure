@@ -8,6 +8,7 @@ from flask_mail import Message
 # from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.sql.expression import ClauseElement
 # from collections import OrderedDict
+from sqlalchemy import desc
 
 from ..models import User, Document, Annotation, View
 from ..core import db, mail
@@ -40,7 +41,10 @@ class Documents(Resource):
 
         views = db.session.query(View).filter_by(user = current_user).filter_by( document = document ).all()
         if len(views):
-            raise ValueError("Cannot submit a document twice")
+          if current_user.mturk:
+            t = Turk()
+            t.mtc.block_worker(current_user.username, "Attempted to submit same document multiple times.")
+          raise ValueError("Cannot submit a document twice")
         else:
           view = View(current_user, document);
           db.session.add(view)
@@ -62,18 +66,15 @@ class Documents(Resource):
           db.session.add(ann)
         db.session.commit()
 
-        # if current_user.mturk:
-        #     # Just email me for fun...
-        #     msg = Message(recipients=["dragon@puff.me.uk"],
-        #                   subject="MTurk Submission")
-        #     mail.send(msg)
-
-        # Check document and mturk status
         if document.validate and current_user.mturk:
-            matches = gold_matches(current_user, document)
-            score = 1 if matches > 0 else 0
-            t = Turk()
-            t.mtc.update_qualification_score(AWS_QUAL_GM_SCORE, current_user.username, score)
+            # If this is a validate document, check the user's history, if it's their 3rd submission
+            # or more run test to potentially fail if poor performance
+            valid_views = db.session.query(View).filter_by(user = current_user).filter( View.document.has(validate=1) ).order_by( desc(View.created) ).limit(3).all()
+            if len(valid_views) is 3:
+              if sum(1 for x in valid_views if gold_matches(x.user, x.document) >= 1) is not 3:
+                print "failed"
+                t = Turk()
+                t.mtc.block_worker(current_user.username, "Failed to properly answer golden master performance documents")
 
         return args, 201
 
