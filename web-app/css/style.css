@@ -66,13 +66,13 @@ svg {
 }
 
 @keyframes highlight {
-  from {background:#fff;}
-  to {background:#0cf;}
+  from {background-color:#fff;}
+  to {background-color:#0cf;}
 }
 
 @-webkit-keyframes highlight {
-  from {background:#fff;}
-  to {background:#0cf;}
+  from {background-color:#fff;}
+  to {background-color:#0cf;}
 }
 
 .game p.paragraph.entity_tag span.neighbor,

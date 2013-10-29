@@ -19,6 +19,7 @@ define(['marionette', 'templates', 'vent',
       this.listenTo(this.model, 'change:selected', this.render);
       this.listenTo(this.model, 'change:neighbor', this.render);
       options['auto_select_all'] = true;
+      options['firefox'] = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
     },
 
     onRender : function() {
@@ -30,9 +31,9 @@ define(['marionette', 'templates', 'vent',
     //-- Event actions
     //
     hover : function(evt) {
-      //-- If you're dragging with the m.25use down to make a large selection
-      console.log(evt);
-      if(evt.which) {
+      var dragging = this.options.firefox ? 0 : evt.which;
+      //-- If you're dragging with the mouse down to make a large selection
+      if( dragging ) {
 
         var last_model = this.model.collection.findWhere({latest: true}),
             sel = [last_model.get('start'), this.model.get('start')],
@@ -70,7 +71,6 @@ define(['marionette', 'templates', 'vent',
 
     releaseDrag : function(evt) {
       //-- onmouseup from the user
-      console.log('releaseDrag');
       var self = this,
           last_model = this.model.collection.findWhere({latest: true}),
           annotations = this.model.get('parentDocument').get('annotations'),
@@ -162,14 +162,9 @@ define(['marionette', 'templates', 'vent',
       }
 
       while ((index = haystack.indexOf(needle, startIndex)) > -1) {
-          var sliced = this.clean( haystack.substring(index - 1, index + needleLen + 1) );
-
-          console.log(sliced, needle);
-          if(sliced === needle) { indices.push(index); }
+          if(this.clean( haystack.substring(index - 1, index + needleLen + 1) ) === needle) { indices.push(index); }
           startIndex = index + needleLen;
       }
-
-      // console.log(indices);
       return indices;
     },
 
