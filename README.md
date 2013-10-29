@@ -19,7 +19,7 @@ An online text annotator to generate user annotations in fun and exploratory way
 
     # Make the python virtual environment and activate it
     virtualenv ENV
-    . ENV/bin/activate
+    . /var/www/virtualenvs/mark2cure-pro/bin/activate
 
     # Install all the python related dependencies
     easy_install -U distribute
