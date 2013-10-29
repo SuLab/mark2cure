@@ -111,10 +111,10 @@ define(['marionette', 'templates', 'vent',
       this.selectWordsOfAnnotations();
       this.selectNeighborsOfAnnotations();
 
-      console.log('/ / / / / / / / / / / /');
-      _.each(annotations.models, function(ann) {
-        console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
-      });
+      // console.log('/ / / / / / / / / / / /');
+      // _.each(annotations.models, function(ann) {
+        // console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
+      // });
     },
 
     createAnns : function(start, stop) {

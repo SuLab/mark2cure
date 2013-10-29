@@ -23,9 +23,7 @@ def gold_matches(current_user, document):
     user_annotations = [ann.compare_view() for ann in user_annotations]
     gold_annotations = [ann.compare_view() for ann in gold_annotations]
 
-    matches = len([ann for ann in user_annotations if ann in gold_annotations])
-
-    return len(matches)
+    return len([ann for ann in user_annotations if ann in gold_annotations])
 
 class Compare(Command):
     "F Score"

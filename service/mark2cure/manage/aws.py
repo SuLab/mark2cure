@@ -45,6 +45,19 @@ class Turk(Command):
       # Define question form
       question_form = QuestionForm()
 
+      # Give a short overview and GIF
+      overview = Overview()
+      overview.append_field('Title', 'General Instructions')
+      overview.append(FormattedContent( '<ul>'
+                                          '<li>Highlight words that are <strong>diseases</strong>, select as many occurrences as possible</li>'
+                                          '<li>Select the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong> forms of the disease</li>'
+                                          '<li>Select the same disease <strong>as many times as possible</strong></li>'
+                                          '<li>If possible, <strong>drag-highlight</strong> (by holding down click) to highlight a disease that spans multiple words</li>'
+                                          '<li>Feel free to use Google or other resource to differentiate between diseases and things like symptoms.</li>'
+                                        '</ul>'
+                                        '<h2>Example:</h2>'
+                                        '<img alt="Example of highlight behavior" src="http://beta.mark2cure.org/img/highlighting.gif" />'))
+
       # Define question content
       qc = QuestionContent()
       qc.append_field('Title', 'Select which of the options contains the most disease terms from the following sentence.')
@@ -66,6 +79,8 @@ class Turk(Command):
                     answer_spec = AnswerSpecification(choices),
                     is_required = True)
 
+      # Add the content to the questionform
+      question_form.append(overview)
       question_form.append(q)
 
       # Define evaluation mechanism
@@ -91,13 +106,14 @@ class Turk(Command):
                           </Question>
                         </AnswerKey>'''
 
-      # qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
-      qual_test = self.mtc.create_qualification_type(
-        name = 'Simple disease recognition question',
+      qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = 'Simple disease recognition question',
         description = 'Simple multiple-choice form to determine if the Worker understands the problem and has basic disease annotation ability',
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
+        # retry_delay = 10,
         test_duration = 5 * 60)
 
       return qual_test
@@ -130,7 +146,7 @@ class Turk(Command):
       # Add the simple test
       qualifications.add( Requirement(AWS_QUAL_TEST, "EqualTo", 1) )
       # Add the score
-      qualifications.add( Requirement(AWS_QUAL_GM_SCORE, "NotEqualTo", 0) )
+      # qualifications.add( Requirement(AWS_QUAL_GM_SCORE, "NotEqualTo", 0) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
