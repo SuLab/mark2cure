@@ -67,7 +67,8 @@ class Annotate(Command):
                 }
 
       # Go over all the documents
-      documents = Document.query.all()
+      # documents = Document.query.all()
+      documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
       for document in documents:
         # If the current document doesn't have at least 4 annotations from the bot, try to get more...
         if db.session.query(Annotation).filter_by(document = document).filter_by(user = user).count() <= 3:
