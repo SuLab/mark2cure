@@ -14,7 +14,7 @@ from ..models import User, Document, Annotation, View
 
 from nltk.metrics import *
 
-import requests, re
+import requests, re, collections
 
 def gold_matches(current_user, document):
     '''
@@ -28,6 +28,18 @@ def gold_matches(current_user, document):
 
     return len([ann for ann in user_annotations if ann in gold_annotations])
 
+def make_hashable(d):
+    return (frozenset(x.iteritems()) for x in d)
+
+def subtract(a, b):
+    """ Remove the keys in b from a. """
+    for k in b:
+        if k in a:
+            if isinstance(b[k], dict):
+                subtract(a[k], b[k])
+            else:
+                del a[k]
+
 class Compare(Command):
     "F Score"
     option_list = (
@@ -35,7 +47,11 @@ class Compare(Command):
         Option('--user', '-u', dest='user'),
     )
 
+    def __init__(self):
+      self.error_aggreements = {'false_positives': [], 'false_negatives': []}
+
     def process_annotations(self, user=None, document=None, view=None):
+
       if user is not None and document is not None:
         annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = user).all()
       elif view is not None:
@@ -53,29 +69,33 @@ class Compare(Command):
 
     def exact(self, gm_ann, user_anns):
         '''
-          Exact or Coextensive match finding for annotations.
+          Exact or Coextensive match finding for annotations. Works off start of annotation and cleaned length both being equal
 
-          Works off start of annotation and cleaned length both being equal
+          Returns True is any of the user annotations are equal to this GM Annotation
 
         '''
-
-        gm_end = gm_ann['start'] + len( gm_ann['text'].strip() )
+        gm_len = len(gm_ann['text'])
         for user_ann in user_anns:
-          if gm_ann['start'] is user_ann['start'] and gm_end is user_ann['start'] + len( user_ann['text'].strip() ):
-            return True
+          if gm_ann['start'] == user_ann['start']:
+            if gm_len == len(user_ann['text']):
+              return True
+
         return False
 
-    def partial(self, needle_ann, haystack_anns):
-        # print needle_ann
-        # print haystack_anns
-        # print ""
+    def partial(self, gm_ann, user_anns):
+        '''
+          Overlap (Partial) match finding for annotations.
 
-        for compare_ann in haystack_anns:
-          if distance.edit_distance( needle_ann.get('text'), compare_ann.get('text') ) <= 2:
-            # If the user annotation is in one of the
-            return True
-          elif needle_ann.get('text') in compare_ann.get('text'):
-            return True
+          Works off start of annotation and cleaned length enclosing a user annotation
+
+        '''
+        gm_len = len( gm_ann['text'])
+        gm_start = gm_ann['start']
+
+        for user_ann in user_anns:
+          if gm_start <= user_ann['start'] <= gm_start + gm_len:
+              return True
+
         return False
 
     def calc_score(self, annotations_a, annotations_b, algo=0):
@@ -100,25 +120,34 @@ class Compare(Command):
       # print "GM: {}".format( [( x.get('text'), x.get('start') ) for x in annotations_b] )
 
       # Correct annotations the user submitted
+      # TP is the # of GM annotations that the user had as well
       if algo is 0:
         # For each of the GMs, check to see if the user has a coextensive match
-        true_positive = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
       elif algo is 1:
-        true_positive = [ann for ann in annotations_a if self.partial(ann, annotations_b)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.partial(gm_ann, annotations_a)]
       else:
-        true_positive = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
 
-      true_positive = min(len(annotations_b), len(true_positive))
+      # In order to make our comparisons we need to do the conversion to a list of tuples
+      true_positives = [tuple(sorted(item.items())) for item in true_positives]
+      annotations_a = [tuple(sorted(item.items())) for item in annotations_a]
+      annotations_b = [tuple(sorted(item.items())) for item in annotations_b]
 
       # Annotations the user submitted that were wrong
-      false_positive = len(annotations_a) - true_positive
+      false_positives = set(annotations_a) - set(true_positives)
 
-      # Because of the potential for more true positive than false neg we need to
-      # limit to 0, could also cap true-pos count of gm annotation
-      false_negative = max(0, len(annotations_b) - true_positive )
+      # Annotations the user missed
+      false_negatives = set(annotations_b) - set(true_positives)
 
-      # print "TP: {} FP: {} FN: {}  || User Ann: {} GM Ann: {}".format(true_positive, false_positive, false_negative, len(annotations_a), len(annotations_b))
-      return (true_positive, false_positive, false_negative)
+      for fp in false_positives:
+        self.error_aggreements['false_positives'].append(fp[1][1])
+
+      for fn in false_negatives:
+        self.error_aggreements['false_negatives'].append(fn[1][1])
+
+      # print "TP: {} \nFP: {} \nFN: {} \n|| \nUser Ann: {} \nGM Ann: {} \n\n-----\n\n".format(true_positive, false_positive, false_negative, annotations_a, annotations_b)
+      return ( len(true_positives), len(false_positives), len(false_negatives) )
 
     def determine_f(self, true_positive, false_positive, false_negative):
       if true_positive + false_positive is 0:
@@ -135,89 +164,117 @@ class Compare(Command):
       else:
         return (0,0,0)
 
-    def figure_one(self, document):
-      print "Document {}\t Exact \t\t Partial\n".format(document.document_id)
-      print "\t".join(['user          ', 'p', 'r', 'f', 'p', 'r', 'f'])
+    def figure_two(self, documents, match):
+      '''
+        Generates a table of NCBO vs K1-5 users annotations for the list of input Documents
 
-      gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
-      ncbo_annotations = self.process_annotations(user=User.query.get(1), document=document)
-
-      exact_truth_table = self.calc_score(ncbo_annotations, gm_annotations, 0)
-      exact_scores = self.determine_f( exact_truth_table[0], exact_truth_table[1], exact_truth_table[2] )
-
-      partial_truth_table = self.calc_score(ncbo_annotations, gm_annotations, 1)
-      partial_scores = self.determine_f( partial_truth_table[0], partial_truth_table[1], partial_truth_table[2] )
-      print "\t".join(["NCBO          ", "%.2f"%exact_scores[0], "%.2f"%exact_scores[1], "%.2f"%exact_scores[2], "%.2f"%partial_scores[0], "%.2f"%partial_scores[1], "%.2f"%partial_scores[2]])
-
-
-      worker_views = db.session.query(View).filter( View.created >= '2013-10-27' ).filter( View.user.has(mturk=1) ).filter_by( document = document ).all()
-      for k in worker_views:
-        annotations = self.process_annotations(view=k)
-        exact_truth_table = self.calc_score(annotations, gm_annotations, 0)
-        exact_scores = self.determine_f( exact_truth_table[0], exact_truth_table[1], exact_truth_table[2] )
-
-        partial_truth_table = self.calc_score(annotations, gm_annotations, 1)
-        partial_scores = self.determine_f( partial_truth_table[0], partial_truth_table[1], partial_truth_table[2] )
-        print "\t".join([k.user.username, "%.2f"%exact_scores[0], "%.2f"%exact_scores[1], "%.2f"%exact_scores[2], "%.2f"%partial_scores[0], "%.2f"%partial_scores[1], "%.2f"%partial_scores[2]])
-
-      print "--------------------------------------------------------\n"
-
-
-    def figure_two(self):
-      documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
-
-      ncbo_list = []
-      ncbo_part_list = []
-      mturk_list = []
-      mturk_part_list = []
+        Input:
+          documents - List of SQLAlchemy Document models
+          match - int for type of matching algorithmn to be used. 0 = Exact, 1 = Partial
+        Output: none (prints ASCII Table)
+      '''
+      # Setup the results dictionary witch will store all the annotations we're comparing
+      results = {'ncbo':[]}
+      for item in range(0,6): results[item] = []
 
       for document in documents:
+        # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
         gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
         ncbo_annotations = self.process_annotations(user=User.query.get(1), document=document)
+        results['ncbo'].append( self.calc_score(ncbo_annotations, gm_annotations, match) )
 
-        ncbo_list.append(       self.calc_score(ncbo_annotations, gm_annotations, 0) )
-        ncbo_part_list.append(  self.calc_score(ncbo_annotations, gm_annotations, 1) )
+        # Collect all of the MTurk workers that viewed this document
+        worker_views = db.session.query(View).\
+                        filter( View.created >= '2013-10-27' ).\
+                        filter( View.user.has(mturk=1) ).\
+                        filter_by( document = document ).\
+                        all()
 
-        worker_views = db.session.query(View).filter( View.created >= '2013-10-27' ).filter( View.user.has(mturk=1) ).filter_by( document = document ).all()
-        for k in worker_views:
-          annotations = self.process_annotations(view=k)
-          mturk_list.append(      self.calc_score(annotations, gm_annotations, 0) )
-          mturk_part_list.append( self.calc_score(annotations, gm_annotations, 1) )
+        workers_culmulative = []
+        for worker_view in worker_views:
+          annotations = self.process_annotations(view=worker_view)
+          workers_culmulative.append( annotations )
+        # Flatten the list
+        workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
 
+        # looping through the uniq anns to get their counts
+        b = {}
+        for item in range(0,6):
+          b[item] = []
 
-      ncbo_list = map(sum,zip(*ncbo_list))
-      ncbo_part_list = map(sum,zip(*ncbo_part_list))
-      mturk_list = map(sum,zip(*mturk_list))
-      mturk_part_list = map(sum,zip(*mturk_part_list))
+        for ann in [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]:
+          for item in range(0, workers_culmulative.count(ann)):
+            b[ item ].append( ann )
 
-      ncbo_list = self.determine_f( ncbo_list[0], ncbo_list[1], ncbo_list[2] )
-      ncbo_part_list = self.determine_f( ncbo_part_list[0], ncbo_part_list[1], ncbo_part_list[2] )
-      mturk_list = self.determine_f( mturk_list[0], mturk_list[1], mturk_list[2] )
-      mturk_part_list = self.determine_f( mturk_part_list[0], mturk_part_list[1], mturk_part_list[2] )
-
-      # ncbo_list = [x/len(ncbo_list) for x in map(sum,zip(*ncbo_list))]
-      # ncbo_part_list = [x/len(ncbo_part_list) for x in map(sum,zip(*ncbo_part_list))]
-      # mturk_list = [x/len(mturk_list) for x in map(sum,zip(*mturk_list))]
-      # mturk_part_list = [x/len(mturk_part_list) for x in map(sum,zip(*mturk_part_list))]
-      # self.determine_f()
+        # take the document results and put them into the global results
+        for item in range(0,6):
+          results[item].append( self.calc_score(b[item], gm_annotations, match) )
 
       print "--------------------------------------------------------\n"
-      print "\t".join(['user ', 'p', 'r', 'f', 'p', 'r', 'f'])
-      print "\t".join(["NCBO ", "%.2f"%ncbo_list[0], "%.2f"%ncbo_list[1], "%.2f"%ncbo_list[2], "%.2f"%ncbo_part_list[0], "%.2f"%ncbo_part_list[1], "%.2f"%ncbo_part_list[2]])
-      print "\t".join(["MTURK", "%.2f"%mturk_list[0], "%.2f"%mturk_list[1], "%.2f"%mturk_list[2], "%.2f"%mturk_part_list[0], "%.2f"%mturk_part_list[1], "%.2f"%mturk_part_list[2]])
+      print "\t".join(['user ', 'p', 'r', 'f'])
+      for i in results.iterkeys():
+        results[i] = map(sum,zip(*results[i]))
+        results[i] = self.determine_f( results[i][0], results[i][1], results[i][2] )
+        print "\t".join(["{} ".format(i), "%.2f"%results[i][0], "%.2f"%results[i][1], "%.2f"%results[i][2]])
       print "--------------------------------------------------------\n"
 
     def select_worker_results(self):
-      worker_views = db.session.query(View).filter( View.created >= '2013-10-27' ).filter( View.user.has(mturk=1) ).all()
+      worker_views = db.session.query(View).\
+          filter( View.created >= '2013-10-27' ).\
+          filter( View.user.has(mturk=1) ).\
+          all()
       return len(worker_views)
 
+    def show_missed_results(self):
+      '''
+        Prints out the ordered list of the top False Positives and False Negatives
+        that have been encountered globally when running the analysis
+      '''
+      print 'False_positives:'
+      print collections.Counter(self.error_aggreements['false_positives'])
+      print '\n\nFalse_negatives:'
+      print collections.Counter(self.error_aggreements['false_negatives'])
+
     def run(self, document, user):
-      # [self.figure_one(document) for document in db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()]
-      # self.figure_two()
-      print self.select_worker_results()
+      documents = db.session.query(Document).\
+          filter_by(source = 'NCBI_corpus_development').\
+          limit(10).\
+          all()
+      self.figure_two(documents, 0)
+
+      # self.show_missed_results()
+      # print self.select_worker_results()
       return ":)"
 
     ############################################################
+
+    # def figure_one(self, document):
+    #   print "Document {}\t Exact \t\t Partial\n".format(document.document_id)
+    #   print "\t".join(['user          ', 'p', 'r', 'f', 'p', 'r', 'f'])
+
+    #   gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
+    #   ncbo_annotations = self.process_annotations(user=User.query.get(1), document=document)
+
+    #   exact_truth_table = self.calc_score(ncbo_annotations, gm_annotations, 0)
+    #   exact_scores = self.determine_f( exact_truth_table[0], exact_truth_table[1], exact_truth_table[2] )
+
+    #   partial_truth_table = self.calc_score(ncbo_annotations, gm_annotations, 1)
+    #   partial_scores = self.determine_f( partial_truth_table[0], partial_truth_table[1], partial_truth_table[2] )
+    #   print "\t".join(["NCBO          ", "%.2f"%exact_scores[0], "%.2f"%exact_scores[1], "%.2f"%exact_scores[2], "%.2f"%partial_scores[0], "%.2f"%partial_scores[1], "%.2f"%partial_scores[2]])
+
+
+    #   worker_views = db.session.query(View).filter( View.created >= '2013-10-27' ).filter( View.user.has(mturk=1) ).filter_by( document = document ).all()
+    #   for k in worker_views:
+    #     annotations = self.process_annotations(view=k)
+    #     exact_truth_table = self.calc_score(annotations, gm_annotations, 0)
+    #     exact_scores = self.determine_f( exact_truth_table[0], exact_truth_table[1], exact_truth_table[2] )
+
+    #     partial_truth_table = self.calc_score(annotations, gm_annotations, 1)
+    #     partial_scores = self.determine_f( partial_truth_table[0], partial_truth_table[1], partial_truth_table[2] )
+    #     print "\t".join([k.user.username, "%.2f"%exact_scores[0], "%.2f"%exact_scores[1], "%.2f"%exact_scores[2], "%.2f"%partial_scores[0], "%.2f"%partial_scores[1], "%.2f"%partial_scores[2]])
+
+    #   print "--------------------------------------------------------\n"
+
     # def all_for_user(self, user_id):
     #   documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
     #   user = db.session.query(User).get( int(user_id) )

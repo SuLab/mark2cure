@@ -53,8 +53,11 @@ class Annotation(db.Model):
                 'length'    : self.length,
                 'stop'      : self.stop,
                 'created'   : self.created.isoformat() }
+
     def compare_view(self):
+      # Returns back the text dictionary for comparision
+      offset = len(self.text) - len(self.text.lstrip())
       return {
-                'text'      : self.text,
-                'start'     : int(self.start),
+                'text'      : self.text.strip().lower(),
+                'start'     : int(self.start)+offset,
               }
