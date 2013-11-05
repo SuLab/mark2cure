@@ -28,18 +28,6 @@ def gold_matches(current_user, document):
 
     return len([ann for ann in user_annotations if ann in gold_annotations])
 
-def make_hashable(d):
-    return (frozenset(x.iteritems()) for x in d)
-
-def subtract(a, b):
-    """ Remove the keys in b from a. """
-    for k in b:
-        if k in a:
-            if isinstance(b[k], dict):
-                subtract(a[k], b[k])
-            else:
-                del a[k]
-
 class Compare(Command):
     "F Score"
     option_list = (
@@ -50,8 +38,11 @@ class Compare(Command):
     def __init__(self):
       self.error_aggreements = {'false_positives': [], 'false_negatives': []}
 
-    def process_annotations(self, user=None, document=None, view=None):
-
+    def process_annotations(self, user=None, document=None, view=None, strict=False):
+      '''
+        This function returns all the dictionary annotations for a particular user and document or
+        for a given View Model
+      '''
       if user is not None and document is not None:
         annotations = db.session.query(Annotation).filter_by(document = document).filter_by(user = user).all()
       elif view is not None:
@@ -59,13 +50,20 @@ class Compare(Command):
       else:
         raise ValueError("Not enough information given to retrieve annotations")
 
-      # if len(annotations) is 0:
-        # raise ValueError( "No user ({}) annotations available for this document ({})".format(user.username, document.document_id) )
+      if strict and len(annotations) is 0:
+        raise ValueError( "No annotations available for this document")
 
+      # Convert all of the Anotation SQLAlchemy models to cleaned up dictionaries with
+      # cleaned whitespace and offsets
       annotations = [ann.compare_view() for ann in annotations]
-      # (TODO) FIGURE THIS OUT
-      # Return back a uniq list of dictionaries
-      return [dict(y) for y in set(tuple(x.items()) for x in annotations)]
+      uniq_annotations = [dict(y) for y in set(tuple(x.items()) for x in annotations)]
+
+      # if len(annotations) is not len(uniq_annotations):
+      #   print annotations
+      #   print uniq_annotations
+      #   print ' - - - - - - - - - - '
+
+      return uniq_annotations
 
     def exact(self, gm_ann, user_anns):
         '''
@@ -76,10 +74,7 @@ class Compare(Command):
         '''
         gm_len = len(gm_ann['text'])
         for user_ann in user_anns:
-          if gm_ann['start'] == user_ann['start']:
-            if gm_len == len(user_ann['text']):
-              return True
-
+          if gm_ann['start'] == user_ann['start'] and gm_len == len(user_ann['text']): return True
         return False
 
     def partial(self, gm_ann, user_anns):
@@ -112,15 +107,11 @@ class Compare(Command):
         The F1 score can be interpreted as a weighted average of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
 
        tp  fp
-       fn  tn
+       fn  *tn
 
       '''
-
-      # print "Theirs: {}".format( [( x.get('text'), x.get('start') ) for x in annotations_a] )
-      # print "GM: {}".format( [( x.get('text'), x.get('start') ) for x in annotations_b] )
-
-      # Correct annotations the user submitted
-      # TP is the # of GM annotations that the user had as well
+      # Calculate the correct annotations the user submitted TP is the # of GM
+      # annotations that the user had as well
       if algo is 0:
         # For each of the GMs, check to see if the user has a coextensive match
         true_positives = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
@@ -134,17 +125,16 @@ class Compare(Command):
       annotations_a = [tuple(sorted(item.items())) for item in annotations_a]
       annotations_b = [tuple(sorted(item.items())) for item in annotations_b]
 
-      # Annotations the user submitted that were wrong
+      # Annotations the user submitted that were wrong (the User set without their True Positives)
       false_positives = set(annotations_a) - set(true_positives)
 
-      # Annotations the user missed
+      # Annotations the user missed (the GM set without their True Positives)
       false_negatives = set(annotations_b) - set(true_positives)
 
-      for fp in false_positives:
-        self.error_aggreements['false_positives'].append(fp[1][1])
-
-      for fn in false_negatives:
-        self.error_aggreements['false_negatives'].append(fn[1][1])
+      # Add the False Positives and False Negatives to a global array to keep track which
+      # annotations are commonly incorrect
+      for fp in false_positives: self.error_aggreements['false_positives'].append(fp[1][1])
+      for fn in false_negatives: self.error_aggreements['false_negatives'].append(fn[1][1])
 
       # print "TP: {} \nFP: {} \nFN: {} \n|| \nUser Ann: {} \nGM Ann: {} \n\n-----\n\n".format(true_positive, false_positive, false_negative, annotations_a, annotations_b)
       return ( len(true_positives), len(false_positives), len(false_negatives) )
@@ -181,41 +171,46 @@ class Compare(Command):
         # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
         gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
         ncbo_annotations = self.process_annotations(user=User.query.get(1), document=document)
-        results['ncbo'].append( self.calc_score(ncbo_annotations, gm_annotations, match) )
 
-        # Collect all of the MTurk workers that viewed this document
+        ncbo_score = self.calc_score(ncbo_annotations, gm_annotations, match)
+        results['ncbo'].append( ncbo_score )
+
+        # Collect all of the MTurk workers that viewed this document and assemble a list of all
+        # the annotations across the MTurk Workers for this document in the experiment
         worker_views = db.session.query(View).\
                         filter( View.created >= '2013-10-27' ).\
                         filter( View.user.has(mturk=1) ).\
                         filter_by( document = document ).\
                         all()
-
         workers_culmulative = []
         for worker_view in worker_views:
           annotations = self.process_annotations(view=worker_view)
           workers_culmulative.append( annotations )
-        # Flatten the list
+        # Flatten the list so we just have an array of all the combined workers annotations
         workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
 
-        # looping through the uniq anns to get their counts
-        b = {}
-        for item in range(0,6):
-          b[item] = []
-
+        # Build dictionary to store different K scores
+        k = {}
+        for item in range(0,6): k[item] = []
+        # Looping through all the unique annotations to get their counts to actual
+        # submitted annotations for the workers results
         for ann in [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]:
-          for item in range(0, workers_culmulative.count(ann)):
-            b[ item ].append( ann )
+          # Put that annotation into the k for the # that it matches (how many times did workers agree on that
+          # particular annotation) and everything below it
+          # Ex: If an annotation matches 3 times, it also matches 2 times
+          for item in range(0, workers_culmulative.count(ann)): k[ item ].append( ann )
 
-        # take the document results and put them into the global results
-        for item in range(0,6):
-          results[item].append( self.calc_score(b[item], gm_annotations, match) )
+        # Put the document K score annotations and append their TP/FP/FN counts to the K results
+        for i in range(0,6): results[i].append( self.calc_score(k[i], gm_annotations, match) )
 
+      # We've now built up the results dictionary for our K scores and NCBO annotator for all the documents.
+      # Sum all the scores up, calculate their P/R/F and print it out
       print "--------------------------------------------------------\n"
       print "\t".join(['user ', 'p', 'r', 'f'])
-      for i in results.iterkeys():
-        results[i] = map(sum,zip(*results[i]))
-        results[i] = self.determine_f( results[i][0], results[i][1], results[i][2] )
-        print "\t".join(["{} ".format(i), "%.2f"%results[i][0], "%.2f"%results[i][1], "%.2f"%results[i][2]])
+      for group in sorted(results.iterkeys()):
+        results[group] = map(sum,zip(*results[group]))
+        results[group] = self.determine_f( results[group][0], results[group][1], results[group][2] )
+        print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
       print "--------------------------------------------------------\n"
 
     def select_worker_results(self):
@@ -236,12 +231,11 @@ class Compare(Command):
       print collections.Counter(self.error_aggreements['false_negatives'])
 
     def run(self, document, user):
-      documents = db.session.query(Document).\
-          filter_by(source = 'NCBI_corpus_development').\
-          limit(10).\
-          all()
-      self.figure_two(documents, 0)
+      # documents = db.session.query(Document).\
+      #     filter_by(source = 'NCBI_corpus_development').\
+      #     all()
+      # self.figure_two(documents, 0)
 
       # self.show_missed_results()
-      # print self.select_worker_results()
+      print self.select_worker_results()
       return ":)"
