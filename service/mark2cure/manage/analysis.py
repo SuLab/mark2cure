@@ -148,7 +148,7 @@ class Compare(Command):
 
       # print "Precision: {} Recall: {}".format(precision, recall)
 
-      if int(precision+recall) is not 0:
+      if precision+recall > 0.0:
         f = ( 2 * precision * recall ) / ( precision + recall )
         return (precision, recall, f)
       else:
