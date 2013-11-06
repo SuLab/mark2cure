@@ -19,6 +19,7 @@ class Annotation(db.Model):
 
     user_agent  = db.Column(db.String(150))
     player_ip   = db.Column(db.String(30))
+    experiment = db.Column(db.Integer)
 
     def __init__(self, kind, type, text, start, length, stop, user, document, ua, pip, concept):
         self.kind     = kind

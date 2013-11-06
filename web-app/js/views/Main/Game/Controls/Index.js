@@ -40,8 +40,16 @@ define(['marionette', 'templates', 'vent',
 
     submitAnnotations : function(evt) {
       evt.preventDefault();
-      this.model.save({'complete': true}, {wait: true});
-      vent.trigger('network:refresh', {});
+      var c = true;
+
+      if( this.options.ann_list.length ==  0) {
+        c = confirm("Are you positive this document doesn't have any annotations?");
+      }
+
+      if(c) {
+        this.model.save({'complete': true}, {wait: true});
+        vent.trigger('network:refresh', {});
+      }
     },
 
     nextDocument : function(evt) {

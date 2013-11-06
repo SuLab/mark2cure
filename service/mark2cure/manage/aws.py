@@ -47,16 +47,44 @@ class Turk(Command):
 
       # Give a short overview and GIF
       overview = Overview()
-      overview.append_field('Title', 'General Instructions')
-      overview.append(FormattedContent( '<ul>'
-                                          '<li>Highlight words that are <strong>diseases</strong>, select as many occurrences as possible</li>'
-                                          '<li>Select the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong> forms of the disease</li>'
-                                          '<li>Select the same disease <strong>as many times as possible</strong></li>'
-                                          '<li>If possible, <strong>drag-highlight</strong> (by holding down click) to highlight a disease that spans multiple words</li>'
-                                          '<li>Feel free to use Google or other resource to differentiate between diseases and things like symptoms.</li>'
-                                        '</ul>'
-                                        '<h2>Example:</h2>'
-                                        '<img alt="Example of highlight behavior" src="http://beta.mark2cure.org/img/highlighting.gif" />'))
+      overview.append_field('Title', 'Instructions')
+      overview.append(FormattedContent( '<p>You will be presented with paragraphs from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words or phrases in that text which are diseases. Terms like breast cancer, juvenile diabetes, and others can be very difficult for a computer to recognize and we think people can do a better job!</p>'
+                                        '<h2>Steps</h2>'
+                                        '<ol>'
+                                          '<li>'
+                                            '<h3>Click to highlight as many <strong>diseases</strong> as you can.</h3>'
+                                            '<img alt="Example of highlight behavior" src="https://mark2cure.org/img/instructions/1.gif" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Highlight each time a disease is mentioned.</h3>'
+                                            '<img alt="Example of highlighting each disease mention behavior" src="https://mark2cure.org/img/instructions/2.gif" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Highlight diseases when mentioned as the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong>.</h3>'
+                                            '<img alt="Example of highlighting full name, abbreviations, and acronyms" src="https://mark2cure.org/img/instructions/3.gif" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>For diseases that span multiple words, <strong>click-and-drag</strong> to highlight all words together rather than clicking the words individually.</h3>'
+                                            '<img alt="Example of highlighting using click-and-drag behavior" src="https://mark2cure.org/img/instructions/4.gif" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                        '</ol>'
+                                        '<p>Use <strong>Google</strong>, <strong>Wikipedia</strong> or <strong>other resources</strong> to differentiate between diseases and other related words (like symptoms and genes).</p>'))
 
       # Define question content
       qc = QuestionContent()
@@ -106,14 +134,14 @@ class Turk(Command):
                           </Question>
                         </AnswerKey>'''
 
-      qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST,
-      # qual_test = self.mtc.create_qualification_type(
-        # name = 'Simple disease recognition question',
-        description = 'Simple multiple-choice form to determine if the Worker understands the problem and has basic disease annotation ability',
+      # qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST_2,
+      qual_test = self.mtc.create_qualification_type(
+        name = 'Disease recognition and UI Steps',
+        description = 'Instructions and main steps to correctly use the highlighting behavior. Simple multiple-choice question to determine if the Worker understands the problem and has disease annotation ability.',
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        # retry_delay = 10,
+        # retry_delay = None,
         test_duration = 5 * 60)
 
       return qual_test

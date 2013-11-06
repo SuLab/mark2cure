@@ -62,7 +62,12 @@ class Documents(Resource):
                             env.get('HTTP_USER_AGENT'),
                             env.get('REMOTE_ADDR'),
                             None
-                          );
+                            );
+
+          # This makes it easier to track in the DB later on
+          if(current_user.mturk):
+            ann.experiment = 2
+
           db.session.add(ann)
         db.session.commit()
 

@@ -48,6 +48,13 @@ define(['marionette', 'vent',
     });
 
     app.addInitializer(function() {
+      var firefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1,
+          explorer = navigator.userAgent.toLowerCase().indexOf("explorer") > -1;
+
+      if(firefox || explorer) {
+        alert("Google Chrome or Safari are recommended.");
+      }
+
       _.intersectionObjects = _.intersect = function(array) {
         var slice = Array.prototype.slice; // added this line as a utility
         var rest = slice.call(arguments, 1);

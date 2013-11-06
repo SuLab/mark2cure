@@ -16,6 +16,18 @@ from nltk.metrics import *
 
 import requests, re, collections
 
+def exact(self, gm_ann, user_anns):
+    '''
+      Exact or Coextensive match finding for annotations. Works off start of annotation and cleaned length both being equal
+
+      Returns True is any of the user annotations are equal to this GM Annotation
+
+    '''
+    gm_len = len(gm_ann['text'])
+    for user_ann in user_anns:
+      if gm_ann['start'] == user_ann['start'] and gm_len == len(user_ann['text']): return True
+    return False
+
 def gold_matches(current_user, document):
     '''
       Used on the document API to check for good performance from users
@@ -25,8 +37,9 @@ def gold_matches(current_user, document):
 
     user_annotations = [ann.compare_view() for ann in user_annotations]
     gold_annotations = [ann.compare_view() for ann in gold_annotations]
+    true_positives = [gm_ann for gm_ann in gold_annotations if exact(gm_ann, user_annotations)]
 
-    return len([ann for ann in user_annotations if ann in gold_annotations])
+    return len(true_positives)
 
 class Compare(Command):
     "F Score"
@@ -239,3 +252,6 @@ class Compare(Command):
       # self.show_missed_results()
       print self.select_worker_results()
       return ":)"
+
+
+    # if submits 2+ docs with 0 annotation : BLOCK
