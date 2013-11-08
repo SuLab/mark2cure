@@ -74,7 +74,11 @@ class Documents(Resource):
         if document.validate and current_user.mturk:
             # If this is a validate document, check the user's history, if it's their 3rd submission
             # or more run test to potentially fail if poor performance
-            valid_views = db.session.query(View).filter_by(user = current_user).filter( View.document.has(validate=1) ).order_by( desc(View.created) ).limit(3).all()
+            valid_views = db.session.query(View).\
+                filter_by(user = current_user).\
+                filter( View.document.has(validate=1) ).\
+                order_by( desc(View.created) ).\
+                limit(3).all()
             if len(valid_views) is 3:
               if sum(1 for x in valid_views if gold_matches(x.user, x.document) >= 1) is not 3:
                 print "failed"

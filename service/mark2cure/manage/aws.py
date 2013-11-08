@@ -171,10 +171,8 @@ class Turk(Command):
       keywords = 'science, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
       qualifications = Qualifications()
-      # Add the simple test
-      qualifications.add( Requirement(AWS_QUAL_TEST, "EqualTo", 1) )
-      # Add the score
-      # qualifications.add( Requirement(AWS_QUAL_GM_SCORE, "NotEqualTo", 0) )
+      # Add the step instructions and basic test
+      qualifications.add( Requirement(AWS_QUAL_TEST_2, "EqualTo", 1) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
@@ -197,7 +195,9 @@ class Turk(Command):
       return hit
 
   def run(self):
-    documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
+    documents = db.session.query(Document).\
+        filter_by(source = 'NCBI_corpus_development').\
+        all()
     doc_ids = [doc.id for doc in documents]
     random.shuffle(doc_ids)
     for doc_id in doc_ids:

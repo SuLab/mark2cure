@@ -14,7 +14,7 @@ from ..models import User, Document, Annotation, View
 
 from nltk.metrics import *
 
-import requests, re, collections
+import requests, re, collections, datetime
 
 def exact(self, gm_ann, user_anns):
     '''
@@ -226,17 +226,23 @@ class Compare(Command):
         print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
       print "--------------------------------------------------------\n"
 
-    def select_worker_results(self):
+    def util_count_total_views(self):
       worker_views = db.session.query(View).\
           filter( View.created >= '2013-10-27' ).\
+          filter( View.created <= '2013-11-6' ).\
           filter( View.user.has(mturk=1) ).\
           all()
+      print [worker_view.created.isoformat() for worker_view in worker_views]
       return len(worker_views)
+
+    def util_count_total_annotations(self):
+      return True
+
 
     def show_missed_results(self):
       '''
         Prints out the ordered list of the top False Positives and False Negatives
-        that have been encountered globally when running the analysis
+        that have been encountered globally whn running the analysis
       '''
       print 'False_positives:'
       print collections.Counter(self.error_aggreements['false_positives'])
