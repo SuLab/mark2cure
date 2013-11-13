@@ -10,8 +10,7 @@ from mark2cure.settings import *
 from ..models import *
 from ..core import db
 
-import requests, re, csv, datetime
-import xml.etree.ElementTree as ET
+
 # from Bio import Entrez, Medline
 from bs4 import BeautifulSoup, NavigableString
 

@@ -15,7 +15,7 @@ manager = Manager(create_app())
 manager.add_command('heatmap', Heatmap())
 manager.add_command('annotate', Annotate())
 manager.add_command('gold', SolidGold())
-manager.add_command('compare', Compare())
+manager.add_command('analysis', Analysis())
 manager.add_command('turk', Turk())
 
 if __name__ == "__main__":

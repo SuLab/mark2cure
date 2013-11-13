@@ -12,8 +12,6 @@ from ..core import db
 
 from mark2cure.settings import *
 
-import requests
-
 class Heatmap(Command):
     "Calculates the heatmap array"
 
@@ -46,71 +44,4 @@ class Heatmap(Command):
         db.session.commit()
       print "Complete"
 
-class Annotate(Command):
-    "Populate the documents with the NCBI Annotator"
-
-    def run(self):
-      # Get the annotator bot account to make the db entries
-      user = db.session.query(User).get(1)
-
-      # NCBO Annotator http request
-      payload = { 'apikey'                    : NCBO_API_KEY,
-                  'stopWords'                 : STOP_WORDS,
-                  'minTermSize'               : 5,
-                  'withSynonyms'              : 'true',
-                  # 1009 = Human disease ontology
-                  'ontologiesToKeepInResult'  : '1009',
-                  'isVirtualOntologyId'       : 'true',
-                  # T047 -- Disease or Syndrome
-                  # 'semanticTypes'             : 'T047',
-                  'textToAnnotate'            : '',
-                }
-
-      # Go over all the documents
-      # documents = Document.query.all()
-      documents = db.session.query(Document).filter_by(source = 'NCBI_corpus_development').all()
-      for document in documents:
-        # If the current document doesn't have at least 4 annotations from the bot, try to get more...
-        if db.session.query(Annotation).filter_by(document = document).filter_by(user = user).count() <= 3:
-          print "Running document {0}".format( document.document_id )
-          payload['textToAnnotate'] = document.text
-          r = requests.post("http://rest.bioontology.org/obs/annotator", data=payload)
-
-          if r.ok:
-            try:
-              root = ET.fromstring( r.text.decode('utf-8') )
-              # Make array of all relevant NCBO results
-              for ann in root.iter('annotationBean'):
-                ctx = ann.find('context')
-                start = int(ctx.find('from').text)-1
-                stop = int(ctx.find('to').text)
-                annotation = document.text[start:stop]
-                concept_url =  ctx.find('term').find('concept').find('fullId').text
-
-                concept = db.session.query(Concept).filter_by(concept_id = concept_url).first()
-                if concept is None:
-                  concept = Concept(concept_url)
-                  db.session.add(concept)
-                  db.session.commit()
-
-                # Find those results in the original abstract we had
-                ann = Annotation( 0,
-                                  'disease',
-                                  annotation,
-                                  start,
-                                  len(annotation),
-                                  stop,
-                                  user,
-                                  document,
-                                  'annotator_bot_1.0',
-                                  '',
-                                  concept
-                                );
-                db.session.add(ann)
-
-              # Save every document instead of once incase some doc crashes
-              db.session.commit()
-            except Exception:
-              pass
-      print ":)"
 

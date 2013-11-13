@@ -41,15 +41,21 @@ def gold_matches(current_user, document):
 
     return len(true_positives)
 
-class Compare(Command):
-    "F Score"
+class Analysis(Command):
+    '''
+      Class to return experimental data and perform analysis on them
+    '''
     option_list = (
         Option('--document', '-d', dest='document'),
         Option('--user', '-u', dest='user'),
     )
 
     def __init__(self):
-      self.error_aggreements = {'false_positives': [], 'false_negatives': []}
+      self.error_aggreements = {
+          'true_positives' : [],
+          'false_positives': [],
+          'false_negatives': [] }
+
 
     def process_annotations(self, user=None, document=None, view=None, strict=False):
       '''
@@ -78,7 +84,8 @@ class Compare(Command):
 
       return uniq_annotations
 
-    def exact(self, gm_ann, user_anns):
+
+    def match_exact(self, gm_ann, user_anns):
         '''
           Exact or Coextensive match finding for annotations. Works off start of annotation and cleaned length both being equal
 
@@ -90,7 +97,8 @@ class Compare(Command):
           if gm_ann['start'] == user_ann['start'] and gm_len == len(user_ann['text']): return True
         return False
 
-    def partial(self, gm_ann, user_anns):
+
+    def match_partial(self, gm_ann, user_anns):
         '''
           Overlap (Partial) match finding for annotations.
 
@@ -105,6 +113,7 @@ class Compare(Command):
               return True
 
         return False
+
 
     def calc_score(self, annotations_a, annotations_b, algo=0):
       '''
@@ -127,16 +136,16 @@ class Compare(Command):
       # annotations that the user had as well
       if algo is 0:
         # For each of the GMs, check to see if the user has a coextensive match
-        true_positives = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.match_exact(gm_ann, annotations_a)]
       elif algo is 1:
-        true_positives = [gm_ann for gm_ann in annotations_b if self.partial(gm_ann, annotations_a)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.match_partial(gm_ann, annotations_a)]
       else:
-        true_positives = [gm_ann for gm_ann in annotations_b if self.exact(gm_ann, annotations_a)]
+        true_positives = [gm_ann for gm_ann in annotations_b if self.match_exact(gm_ann, annotations_a)]
 
       # In order to make our comparisons we need to do the conversion to a list of tuples
       true_positives = [tuple(sorted(item.items())) for item in true_positives]
-      annotations_a = [tuple(sorted(item.items())) for item in annotations_a]
-      annotations_b = [tuple(sorted(item.items())) for item in annotations_b]
+      annotations_a  = [tuple(sorted(item.items())) for item in annotations_a]
+      annotations_b  = [tuple(sorted(item.items())) for item in annotations_b]
 
       # Annotations the user submitted that were wrong (the User set without their True Positives)
       false_positives = set(annotations_a) - set(true_positives)
@@ -146,8 +155,9 @@ class Compare(Command):
 
       # Add the False Positives and False Negatives to a global array to keep track which
       # annotations are commonly incorrect
-      for fp in false_positives: self.error_aggreements['false_positives'].append(fp[1][1])
-      for fn in false_negatives: self.error_aggreements['false_negatives'].append(fn[1][1])
+      for tp in true_positives:  self.error_aggreements['true_positives' ].append( tp[1][1] )
+      for fp in false_positives: self.error_aggreements['false_positives'].append( fp[1][1] )
+      for fn in false_negatives: self.error_aggreements['false_negatives'].append( fn[1][1] )
 
       # print "TP: {} \nFP: {} \nFN: {} \n|| \nUser Ann: {} \nGM Ann: {} \n\n-----\n\n".format(true_positive, false_positive, false_negative, annotations_a, annotations_b)
       return ( len(true_positives), len(false_positives), len(false_negatives) )
@@ -161,13 +171,13 @@ class Compare(Command):
 
       # print "Precision: {} Recall: {}".format(precision, recall)
 
-      if precision+recall > 0.0:
+      if precision + recall > 0.0:
         f = ( 2 * precision * recall ) / ( precision + recall )
         return (precision, recall, f)
       else:
         return (0,0,0)
 
-    def figure_two(self, documents, match):
+    def figure_two(self, documents, match=0, experiment=2):
       '''
         Generates a table of NCBO vs K1-5 users annotations for the list of input Documents
 
@@ -190,11 +200,7 @@ class Compare(Command):
 
         # Collect all of the MTurk workers that viewed this document and assemble a list of all
         # the annotations across the MTurk Workers for this document in the experiment
-        worker_views = db.session.query(View).\
-                        filter( View.created >= '2013-10-27' ).\
-                        filter( View.user.has(mturk=1) ).\
-                        filter_by( document = document ).\
-                        all()
+        worker_views = self.get_experiment_hits(experiment, document)
         workers_culmulative = []
         for worker_view in worker_views:
           annotations = self.process_annotations(view=worker_view)
@@ -204,59 +210,140 @@ class Compare(Command):
 
         # Build dictionary to store different K scores
         k = {}
-        for item in range(0,6): k[item] = []
+        for item in range(0,8): k[item] = [] # This is higher b/c some anns might have higher agreements than # of users
         # Looping through all the unique annotations to get their counts to actual
         # submitted annotations for the workers results
-        for ann in [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]:
+        uniq_anns = [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]
+        for ann in uniq_anns:
           # Put that annotation into the k for the # that it matches (how many times did workers agree on that
           # particular annotation) and everything below it
           # Ex: If an annotation matches 3 times, it also matches 2 times
           for item in range(0, workers_culmulative.count(ann)): k[ item ].append( ann )
 
         # Put the document K score annotations and append their TP/FP/FN counts to the K results
-        for i in range(0,6): results[i].append( self.calc_score(k[i], gm_annotations, match) )
+        for i in range(0, 5): results[i].append( self.calc_score(k[i], gm_annotations, match) )
 
       # We've now built up the results dictionary for our K scores and NCBO annotator for all the documents.
       # Sum all the scores up, calculate their P/R/F and print it out
-      print "--------------------------------------------------------\n"
       print "\t".join(['user ', 'p', 'r', 'f'])
-      for group in sorted(results.iterkeys()):
+      for group in range(0,5):
         results[group] = map(sum,zip(*results[group]))
         results[group] = self.determine_f( results[group][0], results[group][1], results[group][2] )
         print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
-      print "--------------------------------------------------------\n"
 
-    def util_count_total_views(self):
-      worker_views = db.session.query(View).\
-          filter( View.created >= '2013-10-27' ).\
-          filter( View.created <= '2013-11-6' ).\
-          filter( View.user.has(mturk=1) ).\
+
+    def get_experiment_hits(self, experiment=2, document=None):
+      '''
+        Returns all the HITs (aka Views) for an experiment
+      '''
+      if experiment is 1:
+        worker_views = db.session.query(View).\
+            filter( View.created >= '2013-10-29' ).\
+            filter( View.created < '2013-11-6' ).\
+            filter( View.user.has(mturk=1) )
+      elif experiment is 2:
+        worker_views = db.session.query(View).\
+            filter( View.created >= '2013-11-6' ).\
+            filter( View.user.has(mturk=1) )
+
+      if document:
+        return worker_views.filter_by( document = document ).all()
+      else:
+        return worker_views.all()
+
+
+    def get_experiment_annotations(self, experiment=2):
+      '''
+        Returns all the Annotations for an experiment
+      '''
+      if experiment is 1:
+        annotations = db.session.query(Annotation).\
+          filter( Annotation.user.has(mturk=1) ).\
+          filter( Annotation.created < '2013-11-6' ).\
+          filter_by( experiment = None ).\
           all()
-      print [worker_view.created.isoformat() for worker_view in worker_views]
-      return len(worker_views)
+      else:
+        annotations = db.session.query(Annotation).\
+            filter( Annotation.user.has(mturk=1) ).\
+            filter_by( experiment = experiment ).\
+            all()
 
-    def util_count_total_annotations(self):
+      return annotations
+
+
+    def util_worker_overlap(self):
+      pass
+
+    def util_ip_lookup(self, experiment=2):
+      annotations = self.get_experiment_annotations(experiment)
+      annotations = [ann.player_ip for ann in annotations]
+
+      res = collections.Counter( annotations )
+      total =  sum( res.values() )
+
+      for location, count in res.items():
+        percent = (count/ float(total)) * 100
+        r = requests.get('http://api.hostip.info/get_json.php?ip='+ location[0] +'&position=true').json()
+        print percent, r.get('city'), r.get('country_name'), r.get('country_code'), location[0]
       return True
 
 
-    def show_missed_results(self):
-      '''
-        Prints out the ordered list of the top False Positives and False Negatives
-        that have been encountered globally whn running the analysis
-      '''
-      print 'False_positives:'
-      print collections.Counter(self.error_aggreements['false_positives'])
-      print '\n\nFalse_negatives:'
-      print collections.Counter(self.error_aggreements['false_negatives'])
+    # def util_global_score(self, documents):
+    #   '''
+    #     Calculates the fp/fn/tp
+    #   '''
+    #   for document in documents:
+    #     gm_annotations = self.process_annotations(user = User.query.get(2), document = document)
+
+    #     # Collect all of the MTurk workers that viewed this document and assemble a list of all
+    #     # the annotations across the MTurk Workers for this document in the experiment
+    #     worker_views = db.session.query(View).\
+    #                     filter( View.created >= '2013-11-6' ).\
+    #                     filter( View.user.has(mturk=1) ).\
+    #                     filter_by( document = document ).\
+    #                     all()
+    #     workers_culmulative = []
+    #     for worker_view in worker_views:
+    #       annotations = self.process_annotations(view=worker_view)
+    #       workers_culmulative.append( annotations )
+    #     # Flatten the list so we just have an array of all the combined workers annotations
+    #     workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
+
+    #     # Build dictionary to store different K scores
+    #     k = {}
+    #     for item in range(0,6): k[item] = []
+    #     # Looping through all the unique annotations to get their counts to actual
+    #     # submitted annotations for the workers results
+    #     for ann in [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]:
+    #       # Put that annotation into the k for the # that it matches (how many times did workers agree on that
+    #       # particular annotation) and everything below it
+    #       # Ex: If an annotation matches 3 times, it also matches 2 times
+    #       for item in range(0, workers_culmulative.count(ann)): k[ item ].append( ann )
+
+    #     # Put the document K score annotations and append their TP/FP/FN counts to the K results
+    #     for i in range(0,6): results[i].append( self.calc_score(k[i], gm_annotations, match) )
+
+    # def show_missed_results(self):
+    #   '''
+    #     Prints out the ordered list of the top False Positives and False Negatives
+    #     that have been encountered globally whn running the analysis
+    #   '''
+    #   print 'False_positives:'
+    #   print collections.Counter(self.error_aggreements['false_positives'])
+    #   print '\n\nFalse_negatives:'
+    #   print collections.Counter(self.error_aggreements['false_negatives'])
+
+
 
     def run(self, document, user):
-      # documents = db.session.query(Document).\
-      #     filter_by(source = 'NCBI_corpus_development').\
-      #     all()
-      # self.figure_two(documents, 0)
+      documents = db.session.query(Document).\
+          filter_by(source = 'NCBI_corpus_development').\
+          all()
+      self.figure_two(documents, 0, 2)
+      # self.util_ip_lookup(2)
 
       # self.show_missed_results()
-      print self.select_worker_results()
+      # print self.util_count_total_views()
       return ":)"
 
 

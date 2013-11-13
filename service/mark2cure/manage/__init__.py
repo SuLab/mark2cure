@@ -10,3 +10,4 @@ from .setup import *
 from .aws import *
 from .analysis import *
 from .content import *
+from .annotate import *
