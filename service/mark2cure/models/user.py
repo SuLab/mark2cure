@@ -23,6 +23,7 @@ class User(db.Model):
     active    = db.Column(db.Boolean())
 
     views       = db.relationship('View',         backref=db.backref('user',  lazy='select'))
+    ncbos       = db.relationship('Ncbo',         backref=db.backref('user',  lazy='select'))
     messages    = db.relationship('Message',      backref=db.backref('user',  lazy='select'))
     annotations = db.relationship('Annotation',   backref=db.backref('user',  lazy='select'))
     quests      = db.relationship('Quest',        backref=db.backref('user',  lazy='select'))
@@ -50,7 +51,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.id
 
-    def __init__(self, username, email, experience, email_bool=False, mturk=False):
+    def __init__(self, username, email=None, experience=0, email_bool=False, mturk=False):
         self.username   = username
         self.email      = email
         self.experience = experience

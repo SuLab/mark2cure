@@ -66,7 +66,7 @@ class Documents(Resource):
 
           # This makes it easier to track in the DB later on
           if(current_user.mturk):
-            ann.experiment = 2
+            ann.experiment = 0
 
           db.session.add(ann)
         db.session.commit()

@@ -10,7 +10,7 @@ from flask.ext.script import Command, Option, prompt, prompt_pass
 from mark2cure.settings import *
 
 from ..core import db
-from ..models import User, Document, Annotation, View
+from ..models import User, Document, Annotation, View, Ncbo
 
 from nltk.metrics import *
 
@@ -56,6 +56,9 @@ class Analysis(Command):
           'false_positives': [],
           'false_negatives': [] }
 
+
+    def flatten(self, iterables):
+      return (elem for iterable in iterables for elem in iterable)
 
     def process_annotations(self, user=None, document=None, view=None, strict=False):
       '''
@@ -201,12 +204,7 @@ class Analysis(Command):
         # Collect all of the MTurk workers that viewed this document and assemble a list of all
         # the annotations across the MTurk Workers for this document in the experiment
         worker_views = self.get_experiment_hits(experiment, document)
-        workers_culmulative = []
-        for worker_view in worker_views:
-          annotations = self.process_annotations(view=worker_view)
-          workers_culmulative.append( annotations )
-        # Flatten the list so we just have an array of all the combined workers annotations
-        workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
+        workers_culmulative = self.get_workers_culmulative_annotations(worker_views)
 
         # Build dictionary to store different K scores
         k = {}
@@ -231,10 +229,22 @@ class Analysis(Command):
         results[group] = self.determine_f( results[group][0], results[group][1], results[group][2] )
         print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
 
+    def get_workers_culmulative_annotations(self, worker_views):
+        # Collect all of the MTurk workers that viewed this document and assemble a list of all
+        # the annotations across the MTurk Workers for this document in the experiment
+        workers_culmulative = []
+        for worker_view in worker_views:
+          annotations = self.process_annotations(view=worker_view)
+          workers_culmulative.append( annotations )
+        # Flatten the list so we just have an array of all the combined workers annotations
+        workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
+        return workers_culmulative
+
 
     def get_experiment_hits(self, experiment=2, document=None):
       '''
         Returns all the HITs (aka Views) for an experiment
+        (TODO) Confirm they source documents for the correct experiment GM set
       '''
       if experiment is 1:
         worker_views = db.session.query(View).\
@@ -255,6 +265,7 @@ class Analysis(Command):
     def get_experiment_annotations(self, experiment=2):
       '''
         Returns all the Annotations for an experiment
+        (TODO) Confirm they source documents for the correct experiment GM set
       '''
       if experiment is 1:
         annotations = db.session.query(Annotation).\
@@ -274,77 +285,120 @@ class Analysis(Command):
     def util_worker_overlap(self):
       pass
 
-    def util_ip_lookup(self, experiment=2):
+    def util_annotation_length(self, experiment=2):
       annotations = self.get_experiment_annotations(experiment)
-      annotations = [ann.player_ip for ann in annotations]
+      annotations = [ann.compare_view() for ann in annotations]
+      annotations = [len(ann['text']) for ann in annotations]
+      total = float(len(annotations))
+      annotations = collections.Counter( annotations )
 
-      res = collections.Counter( annotations )
-      total =  sum( res.values() )
+      print "\t".join(["Annotation Length", "Occurances", "Percentage"])
+      for ann_len in annotations.items():
+        print "\t".join([str(ann_len[0]), str(ann_len[1]), "%.2f"%(ann_len[1]/total)])
 
-      for location, count in res.items():
-        percent = (count/ float(total)) * 100
+    def util_worker_contribution_counts(self, experiment=2):
+      hits = self.get_experiment_hits(experiment)
+
+      total = float(len(hits))
+
+      users = [hit.user.username for hit in hits]
+      users = collections.Counter( users )
+      users = dict((str(k), v) for k, v in users.iteritems())
+      print "\t".join(["User", "Submissions", "Percentage"])
+      for user in users:
+        print "\t".join([user, str(users[user]), "%.2f"%(users[user]/total) ])
+
+
+    def util_time_comparison(self):
+      hits = self.get_experiment_hits()
+      users = [hit.user.username for hit in hits]
+      hits = [{'user': hit.user.username, 'created': hit.created.isoformat()} for hit in hits]
+      res = collections.Counter( users )
+      print res
+
+
+    def util_demographic(self, experiment=2):
+      annotations = self.get_experiment_annotations(experiment)
+      ips = [ann.player_ip for ann in annotations]
+      total = float(len(annotations))
+      ips = collections.Counter( ips )
+
+      print "\t".join(["IP", "Occurances", "Percentage", "City", "Country"])
+      for location in ips.items():
+        percent = (location[1]/ float(total)) * 100
         r = requests.get('http://api.hostip.info/get_json.php?ip='+ location[0] +'&position=true').json()
-        print percent, r.get('city'), r.get('country_name'), r.get('country_code'), location[0]
+        print "\t".join([location[0], str(location[1]), "%.2f"%(location[1]/total), str(r.get('city', "None")), str(r.get('country_name', "None"))])
+
       return True
 
 
-    # def util_global_score(self, documents):
-    #   '''
-    #     Calculates the fp/fn/tp
-    #   '''
-    #   for document in documents:
-    #     gm_annotations = self.process_annotations(user = User.query.get(2), document = document)
+    def util_ncbo_specturm(self, documents, match=0):
+      ncbos = db.session.query(Ncbo).all()
+      print "\t".join(["Score", "Min Term Size", "P", "R", "R"])
+      for ncbo in ncbos:
+        results = []
+        for document in documents:
+          # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
+          gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
+          ncbo_annotations = self.process_annotations(user = ncbo.user, document=document)
 
-    #     # Collect all of the MTurk workers that viewed this document and assemble a list of all
-    #     # the annotations across the MTurk Workers for this document in the experiment
-    #     worker_views = db.session.query(View).\
-    #                     filter( View.created >= '2013-11-6' ).\
-    #                     filter( View.user.has(mturk=1) ).\
-    #                     filter_by( document = document ).\
-    #                     all()
-    #     workers_culmulative = []
-    #     for worker_view in worker_views:
-    #       annotations = self.process_annotations(view=worker_view)
-    #       workers_culmulative.append( annotations )
-    #     # Flatten the list so we just have an array of all the combined workers annotations
-    #     workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
+          ncbo_score = self.calc_score(ncbo_annotations, gm_annotations, match)
+          results.append( ncbo_score )
 
-    #     # Build dictionary to store different K scores
-    #     k = {}
-    #     for item in range(0,6): k[item] = []
-    #     # Looping through all the unique annotations to get their counts to actual
-    #     # submitted annotations for the workers results
-    #     for ann in [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]:
-    #       # Put that annotation into the k for the # that it matches (how many times did workers agree on that
-    #       # particular annotation) and everything below it
-    #       # Ex: If an annotation matches 3 times, it also matches 2 times
-    #       for item in range(0, workers_culmulative.count(ann)): k[ item ].append( ann )
+        results = map(sum,zip(*results))
+        results = self.determine_f( results[0], results[1], results[2] )
+        print "\t".join([str(ncbo.score), str(ncbo.min_term_size), "%.2f"%results[0], "%.2f"%results[1], "%.2f"%results[2]])
 
-    #     # Put the document K score annotations and append their TP/FP/FN counts to the K results
-    #     for i in range(0,6): results[i].append( self.calc_score(k[i], gm_annotations, match) )
 
-    # def show_missed_results(self):
-    #   '''
-    #     Prints out the ordered list of the top False Positives and False Negatives
-    #     that have been encountered globally whn running the analysis
-    #   '''
-    #   print 'False_positives:'
-    #   print collections.Counter(self.error_aggreements['false_positives'])
-    #   print '\n\nFalse_negatives:'
-    #   print collections.Counter(self.error_aggreements['false_negatives'])
+    def util_global_score(self, documents, experiment=2):
+      '''
+        Calculates the fp/fn/tp for a selection of user submissions
+      '''
+      for document in documents:
+        gm_annotations = self.process_annotations(user = User.query.get(2), document = document)
 
+        # Collect all of the MTurk workers that viewed this document and assemble a list of all
+        # the annotations across the MTurk Workers for this document in the experiment
+        worker_views = self.get_experiment_hits(experiment, document)
+        workers_culmulative = self.get_workers_culmulative_annotations( worker_views )
+        uniq_workers_culmulative = [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]
+
+        # Runs the comparision between the workers and the gold master, saving to our class vars in the process
+        self.calc_score(uniq_workers_culmulative, gm_annotations)
+
+
+      shared_keys = []
+      for key in self.error_aggreements.keys():
+        self.error_aggreements[key] = collections.Counter(self.error_aggreements[key])
+        self.error_aggreements[key] = dict((str(k), v) for k, v in self.error_aggreements[key].iteritems())
+        shared_keys.append( self.error_aggreements[key].keys() )
+
+      shared_keys = list(set( self.flatten(shared_keys) ))
+      shared_keys.sort()
+      for key in shared_keys:
+        tp = str( self.error_aggreements['true_positives'].get(key, 0) )
+        fp = str( self.error_aggreements['false_positives'].get(key, 0) )
+        fn = str( self.error_aggreements['false_negatives'].get(key, 0) )
+        print "\t".join([key, tp, fp, fn])
 
 
     def run(self, document, user):
       documents = db.session.query(Document).\
           filter_by(source = 'NCBI_corpus_development').\
           all()
-      self.figure_two(documents, 0, 2)
+      # self.util_demographic(1)
+      # self.util_annotation_length(1)
+      # self.util_worker_contribution_counts()
+      # self.util_time_comparison()
+      # self.util_ncbo_specturm(documents)
+      # self.util_global_score(documents, 1)
+      self.figure_two(documents, 0, 1)
       # self.util_ip_lookup(2)
 
       # self.show_missed_results()
       # print self.util_count_total_views()
-      return ":)"
 
 
     # if submits 2+ docs with 0 annotation : BLOCK
+
+    # These docs appear to have highest remaining assignments: 358, 348
