@@ -18,7 +18,7 @@ define(['marionette', 'templates', 'vent',
     initialize : function(options) {
       this.listenTo(this.model, 'change:selected', this.render);
       this.listenTo(this.model, 'change:neighbor', this.render);
-      options['auto_select_all'] = true;
+      options['auto_select_all'] = false;
       options['firefox'] = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
     },
 
