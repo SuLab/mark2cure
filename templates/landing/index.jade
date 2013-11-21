@@ -1,0 +1,123 @@
+  <body>
+
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Scientific communication is broken.</h1>
+        <p>Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.</p>
+
+          <p>To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row input">
+        <div class="col-md-6 col-md-offset-3">
+          <div class="alert alert-info" style="display: none;">
+            <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
+          </div>
+
+          <div class="alert alert-danger" style="display: none;">
+            <strong>Oops!</strong> We recieved your information but an error occured. We may have already had that email address added...
+          </div>
+
+          <form class="form-horizontal" role="form">
+            <p class="lead text-center">If you'd like to be notified when we launch Mark2Cure, please provide your email address below.</p>
+
+            <div class="form-group">
+              <div class="col-lg-8 col-lg-offset-2">
+                <label class="sr-only" for="email_input">Email address</label>
+                <input type="email" class="form-control" id="email_input" placeholder="Enter email">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-6 col-lg-offset-3">
+                <label class="text-center">
+                  <input type="checkbox" id="beta_bool"> I'd like to beta-test early versions of Mark2Cure
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-4 col-lg-offset-4">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row" style="margin-top: 6px;">
+        <div class="col-md-2 col-md-offset-4">
+          <div class="fb-like" data-href="http://mark2cure.org/" data-width="450" data-layout="button_count" data-show-faces="true" data-send="true"></div>
+        </div>
+        <div class="col-md-2">
+          <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://mark2cure.org" data-text="Help fix scientific communication!" data-hashtags="mark2cure" data-dnt="true">Tweet</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer" class="container">
+      <div class="col-md-3 col-md-offset-1">
+        <p><a href="http://sulab.org"><span class="pink">The Su Laboratory</span></a></p>
+        <p>Project Team: <a href="https://twitter.com/x0xMaximus" target="_blank">Max Nanis</a>, <a href="https://twitter.com/andrewsu" target="_blank">Andrew Su</a></p>
+        <p>An <a href="https://bitbucket.org/sulab/mark2cure">Open Source</a> Project</p>
+      </div>
+
+      <div class="col-md-3 col-md-offset-4">
+        <p><a href="http://www.scripps.edu/"><span class="pink">The Scripps Research Institute</span></a></p>
+        <p>10550 North Torrey Pines Road</p>
+        <p>La Jolla, CA 92037</p>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+      $('button').click(function(e) {
+        e.preventDefault();
+        var email = $('#email_input').val().trim(),
+            beta = $('#beta_bool').is(':checked');
+
+        if(email.length) {
+          $.ajax({
+            type: "POST",
+            url: '/api/v1/email',
+            data: {'email': email, 'email_bool': beta},
+            success: function(a, b, c) {
+              $('form').fadeOut();
+              $('.alert-info').fadeIn();
+            },
+            error : function() {
+              $('form').fadeOut();
+              $('.alert-danger').fadeIn();
+            },
+            dataType: "json"
+          });
+        }
+
+      });
+    </script>
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=590750244309284";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-43341013-1']);
+      _gaq.push(['_setDomainName', 'mark2cure.org']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>

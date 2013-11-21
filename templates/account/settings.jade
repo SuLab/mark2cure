@@ -1,0 +1,97 @@
+extends base
+
+- load template_extras
+- load widget_tweaks
+- load humanize
+
+
+block content
+
+    .row
+        .col-md-12
+            h1
+              | Account Settings
+            h3
+              | Hello {{user.username}}
+    .row.breathe-top
+        .col-md-3
+            .row
+                .col-md-12
+                    a(href="/account/change/").btn.btn-info.full-width
+                        | Change Password
+
+            - if user.is_staff
+                .row.breathe-top-mid
+                    .col-md-12
+                        a(href="/account/create/").btn.btn-info.full-width
+                          | Create Account
+        .col-md-3
+            .row
+                a(href="/account/logout/").btn.btn-warning.full-width
+                    | Logout
+
+    hr
+    .row
+        .col-md-3
+            .row
+                .col-md-12.breathe-top-mid
+                    form(method="post", action="/account/{{user.profile.pk}}/profile/")
+                        - csrf_token
+                        .form-group
+                            p.lead
+                                | Timezone
+                            #{profileForm.timezone|add_class:"form-control"}
+                        p.lead
+                            | Other Settings
+                        .checkbox
+                            label
+                                #{profileForm.instructions_enabled}
+                                #{profileForm.instructions_enabled.label}
+                        input(type="submit", value="Update Settings").btn.btn-primary.full-width.breathe-top-mid
+
+
+    hr
+    .row
+        .col-md-4
+            - if user.is_staff and user.children.all|length > 0
+                .row
+                    .col-md-12
+                        h3
+                            | Managing Accounts
+
+                .row
+                    .col-md-12
+                        - for child in user.children.all
+                            .row
+                                .col-md-12
+                                    h3
+                                        | #{child.user.username}
+
+                                    .row
+                                        .col-md-4
+                                            - if child.user.is_active
+                                                form(action="/account/{{child.user.pk}}/inactivate/", method="post")
+                                                    {% csrf_token %}
+                                                    input(type="submit", value="Inactivate").btn.btn-warning.full-width
+                                            - else
+                                                form(action="/account/{{child.user.pk}}/activate/", method="post")
+                                                    {% csrf_token %}
+                                                    input(type="submit", value="Activate").btn.btn-primary.full-width
+
+
+                                        .col-md-4
+                                            - if child.user.is_staff
+                                                form(action="/account/{{child.user.pk}}/destaffify/", method="post")
+                                                    {% csrf_token %}
+                                                    input(type="submit", value="Revoke Admin").btn.btn-warning.full-width
+                                            - else
+                                                form(action="/account/{{child.user.pk}}/staffify/", method="post")
+                                                    {% csrf_token %}
+                                                    input(type="submit", value="Make Admin").btn.btn-primary.full-width
+
+
+                                        .col-md-4
+                                            form(action="/account/{{child.user.pk}}/destaffify/", method="post")
+                                                {% csrf_token %}
+                                                input(type="submit", value="Delete").btn.btn-danger.full-width
+
