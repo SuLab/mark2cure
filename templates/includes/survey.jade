@@ -1,26 +1,22 @@
-<div class="modal-content">
-  <a href="#" class="close-btn">&times;</a>
+.modal-content
+  a(href="#").close-btn
+    | &times;
 
-  <div class="modal-header">
-    <h3>How did you feel about Mark2Cure?</h3>
-  </div>
+  .modal-header
+    h3
+      | How did you feel about Mark2Cure?
 
-  <div class="modal-body">
-    <div class="row">
+  .modal-body
+    .row
       <% _.each(questions, function(question, question_i) { %>
-        <div class="col-md-6">
+        .col-md-6
           <h5><%= question %>:</h5>
-          <select name="<%= question_i %>" class="form-control">
+          <select name="<%= question_i %>" class="form-control
             <% _.each(['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'], function(option, option_i) { %>
               <option value="<%= option_i %>" <%= user.get('feedback_'+question_i) === option_i ? 'selected' : '' %> ><%= option %></option>
             <% }) %>
-          </select>
-        </div>
       <% }) %>
-    </div>
-  </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-success close-btn">Done</button>
-  </div>
-</div>
+  .modal-footer
+    button(type="button").btn.btn-success.close-btn
+      | Done

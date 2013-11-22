@@ -1,22 +1,17 @@
-<div class="modal-content">
-<a href="#" class="close-btn">&times;</a>
+.modal-content
+  a(href="#").close-btn
+    | &times;
 
-  <div class="modal-header">
-    <h3>Want to send a note to the developers?</h3>
-  </div>
+  .modal-header
+    h3
+      | Want to send a note to the developers?
 
-  <div class="modal-body">
-    <form class="form-horizontal span5">
-      <div class="form-group">
-        <div class="col-lg-12">
-          <textarea class="form-control" id="new_message" name="new_message" placeholder="Type in your message" rows="5"></textarea>
-        </div>
-      </div>
-      <h6><span id="char_count"><%= char_limit %></span> characters remaining</h6>
-    </form>
-  </div>
+  .modal-body
+    form.form-horizontal.col-md-5
+      .form-group
+        .col-lg-12
+          textarea#new_message(name="new_message", placeholder="Type in your message", rows="5").form-control
 
-  <div class="modal-footer">
-    <button class="btn btn-success" type="submit">Post New Message</button>
-  </div>
-</div>
+  .modal-footer
+    button(type="submit").btn.btn-success
+      | Post New Message

@@ -1,16 +1,19 @@
-<div class="modal-content">
-  <a href="#" class="close-btn">&times;</a>
+.modal-content
+  a(href="#").close-btn
+    | &times;
 
-  <div class="modal-header">
-    <h2 class="panel">Account Settings</h2>
-  </div>
+  .modal-header
+    h2.panel
+      | Account Settings
 
-  <div class="modal-body">
-    <form class="form-horizontal span5">
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Experience Level</label>
-        <div class="col-lg-5">
-          <select id="user-experience" class="form-control">
+
+  .modal-body
+    form.form-horizontal.col-md-5
+      .form-group
+        label.col-lg-2.control-label
+          | Experience Level
+        .col-lg-5
+          select#user-experience.form-control
             <% _.each(['Bio-Medical Scientist', 'Patient Advocate', 'Non-expert'], function(kind, i) { %>
               <option value="<%= i %>" <%= experience == i ? 'selected' : '' %>><%= kind %></option>
             <% }) %>
@@ -18,30 +21,23 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Username</label>
-        <div class="col-lg-5">
-            <input id="user-username" class="form-control" type="text" title="Username" value="<%= username %>" required>
-        </div>
-      </div>
+      .form-group
+        label.col-lg-2.control-label
+          | Username
+        .col-lg-5
+          input#user-username(type="text" title="Username" value="<%= username %>" required).form-control
 
-      <div class="form-group">
-        <label class="col-lg-2 control-label">Email</label>
-        <div class="col-lg-5">
-          <input id="user-email" class="form-control" type="text" title="Email" value="<%= email %>" required>
-        </div>
-      </div>
+      .form-group
+        label.col-lg-2.control-label
+          | Email
+        .col-lg-5
+          input#user-email(type="text", title="Email", value="<%= email %>" required).form-control
 
-      <div class="checkbox">
-        <label>
-          <input id="advance" type="checkbox" <%= user.get('advance') ? 'checked' : '' %>> Advanced Control
-        </label>
-      </div>
-    </form>
-  </div>
+      .checkbox
+        .label
+          input#advance(type="checkbox", <%= user.get('advance') ? 'checked' : '' %>)
+            |Advanced Control
 
-  <div class="modal-footer">
-    <button class="btn btn-success">Save</button>
-  </div>
-
-</div>
+  .modal-footer
+    button.btn.btn-success
+      | Save
