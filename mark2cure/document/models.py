@@ -12,7 +12,7 @@ from copy import copy
 import requests, random, datetime
 
 class Document(models.Model):
-    document_id = models.IntegerField()
+    document_id = models.IntegerField(blank=True)
     text        = models.TextField(blank=False)
     title       = models.TextField(blank=False)
 
@@ -23,6 +23,8 @@ class Document(models.Model):
     source      = models.CharField(max_length=200, blank=True)
 
     validate    = models.BooleanField(default = False, blank = True)
+
+    objects = DocumentManager()
 
     # views           = db.relationship('View',             backref=db.backref('document',  lazy='select'))
     # annotations     = db.relationship('Annotation',       backref=db.backref('document',  lazy='select'))

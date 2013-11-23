@@ -18,8 +18,12 @@ class Heatmap(Command):
     def run(self):
       for document in Document.query.all():
         print "Running document {0}".format( document.document_id )
+
+
         # Select all the annotations for this document
         annotations = db.session.query(Annotation).filter_by(document = document)
+
+
         step = 0
         length = 0
         pop_arr = []
