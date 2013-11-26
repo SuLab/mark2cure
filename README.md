@@ -84,3 +84,5 @@ An online text annotator to generate user annotations in fun and exploratory way
 #### Notes
   localhost:5000/index-dev.html#/document/25?assignmentId=291O9Z6KW4ZMEANDMICFT0ONOJX5ES&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3&workerId=A296YJ2WQNOSKY&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
   localhost:5000/index-dev.html#/document/25?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3
+
+  python manage.py graph_models -a -o myapp_models.png

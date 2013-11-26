@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-from mark2cure.document.utils import get_pubmed_documents, import_document
+from mark2cure.document.models import Document
+from mark2cure.document.utils import get_pubmed_documents
 
 get_pubmed_documents()
-import_document()
+# Document.objects.create_from_pubmed_id('24260557')

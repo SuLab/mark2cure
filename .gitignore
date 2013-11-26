@@ -62,3 +62,5 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+/myapp_models.png

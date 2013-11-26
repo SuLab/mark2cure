@@ -13,12 +13,9 @@ from mark2cure.document.models import Document
 
 from datetime import datetime, timedelta
 
-@login_required
+# @login_required
 def home(request):
-    doc_list = Document.objects.all()
-    docs = Paginator(doc_list, 20).page(1)
+    # doc_list = Document.objects.all()
+    # docs = Paginator(doc_list, 20).page(1)
 
-    return render_to_response('library/index.jade',
-                              {'docs': docs},
-                              context_instance=RequestContext(request))
-
+    return render_to_response('landing/index.jade', context_instance=RequestContext(request))
