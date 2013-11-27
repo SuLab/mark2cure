@@ -2,6 +2,8 @@ extends base
 
 - load widget_tweaks
 
+block header
+
 block content
 
     .row
@@ -23,3 +25,8 @@ block content
                     a(href="/account/reset/")
                         | Forgot password?
                 input(type="hidden", name="next", value="#{next}").button.small.radius
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

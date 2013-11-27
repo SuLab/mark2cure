@@ -1,0 +1,13 @@
+extends base
+
+- load humanize
+
+block content
+
+  p
+    | {{ document.text }}
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

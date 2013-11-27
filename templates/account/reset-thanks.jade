@@ -1,8 +1,15 @@
 extends base
 
+block header
+
 block content
   .row
       .col-md-6.col-md-offset-3
           h2 Thanks!
           p.lead
-              | A password reset link has been emailed to you.
+            | A password reset link has been emailed to you.
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

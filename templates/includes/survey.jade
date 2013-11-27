@@ -14,8 +14,6 @@
           <select name="<%= question_i %>" class="form-control
             <% _.each(['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'], function(option, option_i) { %>
               <option value="<%= option_i %>" <%= user.get('feedback_'+question_i) === option_i ? 'selected' : '' %> ><%= option %></option>
-            <% }) %>
-      <% }) %>
 
   .modal-footer
     button(type="button").btn.btn-success.close-btn

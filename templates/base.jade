@@ -10,8 +10,8 @@ head
 
     title Mark2Cure
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap.min.css')
+    link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-theme.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
-    // link(rel='stylesheet', href="css/style_training.css')
     link(rel="stylesheet", href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css")
 
 body
@@ -40,5 +40,15 @@ body
         script(src='#{STATIC_URL}js/libs/moment.js')
         script(src='#{STATIC_URL}js/libs/webtoolkit.base64.js')
 
+        script.
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-43341013-1']);
+          _gaq.push(['_setDomainName', 'mark2cure.org']);
+          _gaq.push(['_trackPageview']);
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
 
     block post-footer

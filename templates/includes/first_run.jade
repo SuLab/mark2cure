@@ -1,56 +1,52 @@
-<div class="modal-content">
-  <div class="modal-body">
+.modal-content
+  .modal-body
 
-    <ul class="nav nav-tabs" id="myTab">
-      <li><a href="#why">Why</a></li>
-      <li><a href="#how">How</a></li>
-      <li><a href="#who">Who</a></li>
-    </ul>
+    ul class="nav nav-tabs" id="myTab
+      li
+        a(href="#why")
+          | Why
+      li
+        a(href="#how")
+          | How
+      li
+        a(href="#who")
+          | Who
 
-    <div class="tab-content">
+    .tab-content
 
-      <div class="tab-pane active" id="why">
-        <img src="/img/mark2cure.png" class="img-rounded logo" />
-        <p class="lead"><strong>Scientific communication is broken.</strong></p>
-        <p>Progress in science is all about slowly and incrementally building off of the work of others. <strong>Currently</strong>, it takes far too long for one scientist's work to reach all the other scientists that would benefit. <strong>Mark2Cure will make scientific communication more efficient for everyone.</strong></p>
-      </div>
+      #why.tab-pane.active
+        img(src="/img/mark2cure.png").img-rounded.logo
+        p.lead
+          | <strong>Scientific communication is broken.</strong>
+        p
+          | Progress in science is all about slowly and incrementally building off of the work of others. <strong>Currently</strong>, it takes far too long for one scientist's work to reach all the other scientists that would benefit. <strong>Mark2Cure will make scientific communication more efficient for everyone.</strong>
 
-      <div class="tab-pane" id="how">
-        <p class="lead">How does it work? <strong>Simply highlight words that are diseases. That's it!</strong></p>
-        <img src="/img/highlighting.gif" class="img-rounded" />
-      </div>
+      #how.tab-pane"
+        p.lead
+          | How does it work? <strong>Simply highlight words that are diseases. That's it!</strong>
+        img(src="/img/highlighting.gif").img-rounded
 
-      <div class="tab-pane" id="who">
-        <form class="form-horizontal">
-          <legend>Who are you?</legend>
+      #who.tab-pane
+        form.form-horizontal
+          legend
+            | Who are you?
 
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Experience Level</label>
-            <div class="col-lg-5">
-              <select id="experience" class="form-control">
-                <% _.each(['Bio-Medical Scientist', 'Patient Advocate', 'Non-expert'], function(kind, i) { %>
-                  <option value="<%= i %>" <%= experience == i ? 'selected' : '' %>><%= kind %></option>
-                <% }) %>
-              </select>
-            </div>
-          </div>
+          .form-group
+            label.col-lg-2.control-label
+              | Experience Level
+            .col-lg-5
+              select#experience.form-control
+                - for kind, i in ['Bio-Medical Scientist', 'Patient Advocate', 'Non-expert']:
+                  option(value="{{ i }}")
+                    | {{ kind }}
 
-          <div class="form-group">
-            <label class="col-lg-2 control-label">Username</label>
-            <div class="col-lg-5">
-              <input id="user-name" class="form-control" type="text" title="Username" required value="<%= username %>">
-            </div>
-          </div>
+          .form-group
+            label.col-lg-2.control-label
+              | Username
+            .col-lg-5
+              input#user-name(type="text", title="Username", value="{{user.username}}", required).form-control
 
-          <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-3">
-              <button type="submit" class="btn btn-default">Start!</button>
-            </div>
-          </div>
-        </form>
-      </div>
-
-    </div>
-
-  </div>
-</div>
+          .form-group
+            .col-lg-offset-2.col-lg-3
+              button(type="submit").btn.btn-default
+                | Start!

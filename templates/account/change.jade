@@ -2,6 +2,8 @@ extends base
 
 - load widget_tweaks
 
+block header
+
 block content
     .row
         .col-md-6.col-md-offset-3
@@ -20,3 +22,8 @@ block content
                 p #{form.new_password2|add_class:"form-control"}
                 input(type="submit", value="save new password").btn.btn-primary.full-width.radius
                 input(type="hidden", name="next", value="{{next}}").button.small.radius
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

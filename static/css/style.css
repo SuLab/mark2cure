@@ -1,3 +1,36 @@
+/* =========================
+        Landing
+========================= */
+
+body.landing {
+  background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;
+}
+
+body.landing .jumbotron {
+  margin-top: 40px;
+  background-color: #fff;
+  background-color: rgba(238, 238, 238, .85);
+}
+
+body.landing .jumbotron h1 {
+  font-size: 40px;
+}
+
+body.landing form {
+  padding: 12px;
+  background-color: #fff;
+  background-color: rgba(238, 238, 238, .85);
+}
+
+body.landing .input label {
+  font-weight: normal;
+}
+
+body.landing #footer {
+  margin-top: 200px;
+  height: 120px;
+}
+
 body { padding-top: 70px; }
 
 svg {
@@ -130,6 +163,9 @@ div.popover.top {
   z-index: 10001;
 }
 
+.head-space { margin-top: 20px; }
+.head-space-xl { margin-top: 60px; }
+
 .tooltip {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -203,6 +239,9 @@ a.close-btn {
   color: #333;
 }
 
+#footer a {
+  text-decoration: none;
+  color: #B2365F;
+}
+
 /* Analytics View */
-
-
