@@ -3,11 +3,13 @@ extends base
 - load humanize
 
 block content
-
-  p
-    | {{ document.text }}
+    - for sec in doc.section_set.all
+        .row
+            .col-md-10.col-md-offset-1.head-space
+                p
+                    | #{ sec.text }
 
 block post-footer
     script.
       // CSS Toggle for landing page & background
-      $('body').addClass('landing');
+      // $('body').addClass('landing');

@@ -13,6 +13,7 @@ from django.db.models import Q
 
 from mark2cure.document.models import Document, Annotation, View
 from mark2cure.document.forms import DocumentForm
+from mark2cure.document.utils import create_from_pubmed_id
 from mark2cure.common.utils import get_timezone_offset
 
 from copy import copy
@@ -43,6 +44,9 @@ def read(request, doc_id):
 
     doc = get_object_or_404(Document, pk=doc_id)
 
+    for sec in doc.section_set.all():
+      view, created = View.objects.get_or_create(section = sec, user = request.user)
+
     return render_to_response('document/read.jade',
                               {"doc": doc},
                               context_instance=RequestContext(request))
@@ -62,8 +66,5 @@ def delete(request, doc_id):
 def create(request):
     form = DocumentForm(request.POST)
     if form.is_valid():
-      doc_id = request.POST['document_id']
-
-      Document.objects.create_from_pubmed_id( doc_id )
-
-      return redirect('/document/'+ doc_id)
+      doc = create_from_pubmed_id( request.POST['document_id'] )
+      return redirect('/document/'+ str(doc.pk) )

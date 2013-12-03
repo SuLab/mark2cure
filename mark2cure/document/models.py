@@ -12,6 +12,52 @@ from copy import copy
 
 import requests, random, datetime
 
+class Document(models.Model):
+    document_id = models.IntegerField(blank=True)
+    title       = models.TextField(unique=True, blank=False)
+    authors     = models.TextField(blank=False)
+
+    updated     = models.DateTimeField(auto_now=True)
+    created     = models.DateTimeField(auto_now_add=True)
+    source      = models.CharField(max_length=200, blank=True)
+
+    objects = DocumentManager()
+
+    def __unicode__(self):
+        return self.title
+
+
+class Section(models.Model):
+    SECTION_KIND_CHOICE = (
+      ('t', 'Title'),
+      ('a', 'Abstract'),
+      ('p', 'Paragraph'),
+      ('f', 'Figure'),
+    )
+    kind = models.CharField(max_length=1, choices=SECTION_KIND_CHOICE)
+
+    text        = models.TextField(blank=False)
+    source      = models.ImageField(blank=True, upload_to="media/images/", default = 'images/figure.jpg')
+
+    validate    = models.BooleanField(default = False, blank = True)
+    cache       = models.TextField(blank=True)
+
+    updated     = models.DateTimeField(auto_now=True)
+    created     = models.DateTimeField(auto_now_add=True)
+
+    document = models.ForeignKey(Document)
+
+    def __unicode__(self):
+        return self.text
+
+class View(models.Model):
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    section = models.ForeignKey(Section)
+    user = models.ForeignKey(User)
+
+
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
       ('e', 'Entities'),
@@ -35,47 +81,9 @@ class Annotation(models.Model):
     player_ip   = models.GenericIPAddressField()
     experiment  = models.IntegerField()
 
-
-class View(models.Model):
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    user = models.ForeignKey(User)
-    annotation = models.ForeignKey(Annotation)
-
-
-class Section(models.Model):
-    SECTION_KIND_CHOICE = (
-      ('p', 'Paragraph'),
-      ('f', 'Figure'),
-      ('t', 'Table'),
-    )
-    kind = models.CharField(max_length=1, choices=SECTION_KIND_CHOICE)
-
-    text        = models.TextField(blank=False)
-    source      = models.ImageField(blank=True, upload_to="media/images/", default = 'images/figure.jpg')
-
-    validate    = models.BooleanField(default = False, blank = True)
-    cache       = models.TextField(blank=True)
-
     view = models.ForeignKey(View)
 
 
-class Document(models.Model):
-    document_id = models.IntegerField(blank=True)
-    title       = models.TextField(unique=True, blank=False)
-    authors     = models.TextField(blank=False)
-
-    updated     = models.DateTimeField(auto_now=True)
-    created     = models.DateTimeField(auto_now_add=True)
-    source      = models.CharField(max_length=200, blank=True)
-
-    section = models.ForeignKey(Section)
-
-    objects = DocumentManager()
-
-    def __unicode__(self):
-        return self.title
 
 
 # def json_view(self, user):

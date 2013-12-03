@@ -27,6 +27,7 @@ def home(request):
 def library(request):
     doc_list = Document.objects.all()
     docs = Paginator(doc_list, 20).page(1)
+
     return render_to_response('library/index.jade', {'docs' : docs}, context_instance=RequestContext(request))
 
 @require_http_methods(["POST"])

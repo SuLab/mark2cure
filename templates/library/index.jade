@@ -9,10 +9,36 @@ block content
       h2
         | Library:
       .library-list
+        table.table.table-striped
+          - if twitter_users.paginator.count == 0
+            tr
+              td
+                | No documents
+          - else
+            tr
+              th
+                | Title
+              th
+                | Sections
+
+            - for doc in docs
+              tr.show-on-hover-container
+                td
+                  a(href="/document/{{doc.pk}}")
+                    | #{ doc.title }
+                td
+                  | #{ doc.section_set.count }
+
 
     .col-sm-4
       h2
         | Player Stats:
+      .row.well
+        p
+          | Coming soon...
+
+      h2
+        | History
       .row.well
         p
           | Coming soon...
