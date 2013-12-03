@@ -56,3 +56,14 @@ def delete(request, doc_id):
     # doc = get_object_or_404(Document, pk=doc_id)
     # doc.delete()
     return redirect('/document/')
+
+@login_required
+@require_http_methods(["POST"])
+def create(request):
+    form = DocumentForm(request.POST)
+    if form.is_valid():
+      doc_id = request.POST['document_id']
+
+      Document.objects.create_from_pubmed_id( doc_id )
+
+      return redirect('/document/'+ doc_id)

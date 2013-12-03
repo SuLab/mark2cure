@@ -2,6 +2,8 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
+# from mark2cure.document.models import Section
+
 from pytz import timezone
 from Bio import Entrez, Medline
 
@@ -28,10 +30,15 @@ class DocumentManager(models.Manager):
             for record in records:
               if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
                 doc.document_id = record.get('PMID')
+                doc.title = record.get('TI')
+                doc.created = datetime.datetime.strptime(record.get('CRDT')[0], '%Y/%m/%d %H:%M')
+                doc.source = "pubmed"
+                doc.save()
+
+                # sec = Section()
+
                 # doc.title = record.get('TI')
                 # doc.text = record.get('AB')
-                # doc.created = datetime.datetime.strptime(record.get('CRDT')[0], '%Y/%m/%d %H:%M')
-                # doc.save()
               break
 
         return doc

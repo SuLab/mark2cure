@@ -18,15 +18,15 @@ header(class="navbar navbar-inverse navbar-fixed-top bs-docs-nav", role="banner"
       //- if collection.completed().length ) { %>
       - if user
         li.dropdown
-          a(href="#", data-toggle="user-feedback-dropdown").dropdown-toggle
+          a(data-toggle="dropdown", href="#").dropdown-toggle
             | Feedback <b class="caret"></b>
 
-          ul#user-feedback-dropdown.dropdown-menu
+          ul.dropdown-menu
             li
-              a(href="#/message")
+              a(href="message")
                 | Message
             li
-              a(href="#/survey")
+              a(href="survey")
                 | Survey
 
         li
@@ -39,16 +39,17 @@ header(class="navbar navbar-inverse navbar-fixed-top bs-docs-nav", role="banner"
 
       - if user
         li.dropdown
-          a(href="#", data-toggle="user-account-dropdown").dropdown-toggle
+          a(data-toggle="dropdown", href="#").dropdown-toggle
             | {{user.username}} <b class="caret"></b>
-        ul#user-account-dropdown.dropdown-menu
-          li
-            a(href="#/settings")
-              | Settings
-          li
-            a(href="/account/logout")
-              | Logout
-          li.divider
-          li
-            a(href="#/instructions")
-              | Instructions
+
+          ul.dropdown-menu
+            li
+              a(href="settings")
+                | Settings
+            li
+              a(href="/account/logout")
+                | Logout
+            li.divider
+            li
+              a(href="instructions")
+                | Instructions

@@ -9,4 +9,5 @@ urlpatterns = patterns('mark2cure.document.views',
     url(r'^$', r'list'),
     url(r'^page/(?P<page_num>\d+)/$', r'list'),
     url(r'^(?P<doc_id>\d+)/$', r'read'),
+    url(r'^create/$', r'create'),
 )

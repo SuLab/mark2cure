@@ -22,3 +22,11 @@ block content
       .row.well
         p
           | Coming soon...
+
+      h2
+        | Add Document
+      .row.well
+        form(method="post", action="/document/create/")
+          {% csrf_token %}
+          input(type="text", name="document_id").form-control
+          input(type="submit", value="save").button.btn.btn-primary.full-width
