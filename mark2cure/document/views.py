@@ -44,6 +44,7 @@ def read(request, doc_id):
 
     doc = get_object_or_404(Document, pk=doc_id)
 
+
     for sec in doc.section_set.all():
       view, created = View.objects.get_or_create(section = sec, user = request.user)
 

@@ -5,8 +5,11 @@ extends base
 block content
     - for sec in doc.section_set.all
         .row
-            .col-md-10.col-md-offset-1.head-space
-                p
+            .col-md-10.col-md-offset-1
+                h4
+                  | #{ sec.get_kind_display }
+            .col-md-10.col-md-offset-1.head-space.game
+                p.paragraph
                     | #{ sec.text }
 
 block post-footer
