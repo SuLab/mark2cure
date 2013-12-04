@@ -9,10 +9,37 @@ block content
                 h4
                   | #{ sec.get_kind_display }
             .col-md-10.col-md-offset-1.head-space.game
-                p.paragraph
-                    | #{ sec.text }
+              div(id="{{ sec.pk }}").paragraph.entity_tag
+                  p
+                      | #{ sec.text }
 
 block post-footer
+
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
     script.
-      // CSS Toggle for landing page & background
-      // $('body').addClass('landing');
+        YPet.addInitializer(function(options) {
+          var sections = {};
+          var section_selectors = {};
+
+          $( ".game .paragraph" ).each(function( index ) {
+            var section_id = $(this).attr('id'),
+                section_text = $(this).text();
+
+            sections[ section_id ] = section_text;
+            section_selectors[ section_id ] = '#'+section_id;
+          });
+
+          // Create our regions
+          YPet.addRegions(section_selectors);
+
+          // Add our views for each section
+          _.each( _.keys(sections), function(key) {
+            var p = new Paragraph({'text': sections[key] })
+            p.parseText();
+            var view = new WordCollectionView({collection: p.get('words')});
+            YPet[key].show( view );
+          })
+
+        });
+
+        YPet.start();

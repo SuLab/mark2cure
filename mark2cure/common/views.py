@@ -47,9 +47,9 @@ def library(request, page_num=1):
 
     return render_to_response('library/index.jade', {'docs' : docs, 'recent': recent_docs}, context_instance=RequestContext(request))
 
+
 @require_http_methods(["POST"])
 def create(request):
-    print request.POST
     form = UserForm(request.POST)
     if form.is_valid():
       user = form.save()

@@ -52,6 +52,16 @@ def read(request, doc_id):
                               {"doc": doc},
                               context_instance=RequestContext(request))
 
+
+@require_http_methods(["POST"])
+@login_required
+def submit_annotations(request, section_id):
+    views = Document.objects\
+        .filter(section__view__user = request.user)\
+        .order_by('-created')\
+        .distinct()[3:]
+
+
 @login_required
 def delete(request, doc_id):
     ###############
@@ -65,6 +75,10 @@ def delete(request, doc_id):
 @login_required
 @require_http_methods(["POST"])
 def create(request):
+    '''
+      Takes the document_id from POST and directs the
+      user to that pubmed document, downloading it if nessesary
+    '''
     form = DocumentForm(request.POST)
     if form.is_valid():
       doc = create_from_pubmed_id( request.POST['document_id'] )

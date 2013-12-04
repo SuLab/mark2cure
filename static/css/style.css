@@ -66,7 +66,7 @@ svg {
     Entity Selection Game
 ========================= */
 
-.game p.paragraph {
+.game .paragraph p {
   font-family: "Palatino Linotype", "Book Antiqua", "Palatino", "serif";
   line-height: 1.8em;
   font-weight: normal;
@@ -76,7 +76,7 @@ svg {
 
 /* Entity Tag */
 
-.game p.paragraph.entity_tag {
+.game .paragraph.entity_tag {
   /* (TODO) Why doesn't this work? */
   cursor: pointer;
   -webkit-touch-callout: none;
@@ -87,12 +87,12 @@ svg {
   user-select: none;
 }
 
-.game p.paragraph.entity_tag span:hover {
+.game .paragraph.entity_tag p span:hover {
   cursor: pointer;
   color: steelblue;
 }
 
-.game p.paragraph.entity_tag span.selected {
+.game .paragraph.entity_tag p span.selected {
   background-color: #0cf;
   animation:highlight .25s;
   -webkit-animation:highlight .25s;
@@ -108,13 +108,13 @@ svg {
   to {background-color:#0cf;}
 }
 
-.game p.paragraph.entity_tag span.neighbor,
-.game p.paragraph.results span.neighbor {
+.game .paragraph.entity_tag p span.neighbor,
+.game .paragraph.results p span.neighbor {
   margin-right: 5px;
 }
 
 /* Community Consensus */
-.game p.paragraph.results span.selected {
+.game .paragraph.results p span.selected {
   border-top: 3px solid #0cf;
   border-bottom: 3px solid #0cf;
 }
