@@ -26,6 +26,8 @@ class Document(models.Model):
     def __unicode__(self):
         return self.title
 
+    def submitted(self):
+        return self.section_set
 
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
@@ -57,6 +59,8 @@ class View(models.Model):
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
 
+    def __unicode__(self):
+      return "Doc:"+ str(self.section.document.pk) +", Sec:"+ str(self.section.pk) +" by "+ self.user.username
 
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
@@ -77,13 +81,14 @@ class Annotation(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    user_agent  = models.CharField(max_length=150, blank=True)
-    player_ip   = models.GenericIPAddressField()
-    experiment  = models.IntegerField()
+    user_agent  = models.CharField(max_length=150, blank=True, null=True)
+    player_ip   = models.GenericIPAddressField(blank=True, null=True)
+    experiment  = models.IntegerField(blank=True, null=True)
 
     view = models.ForeignKey(View)
 
-
+    def __unicode__(self):
+        return self.text
 
 
 # def json_view(self, user):

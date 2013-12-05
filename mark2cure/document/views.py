@@ -11,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db.models import Q
 
-from mark2cure.document.models import Document, Annotation, View
-from mark2cure.document.forms import DocumentForm
+from mark2cure.document.models import Document, Annotation, View, Section
+from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import create_from_pubmed_id
 from mark2cure.common.utils import get_timezone_offset
 
@@ -41,25 +41,19 @@ def list(request, page_num=1):
 
 @login_required
 def read(request, doc_id):
+    if request.method == 'POST':
+      # Move on
+      doc = Document.objects.get_random_document()
+      return redirect('/document/'+ str(doc.pk) )
+    else:
+      doc = get_object_or_404(Document, pk=doc_id)
+      for sec in doc.section_set.all():
+        view, created = View.objects.get_or_create(section = sec, user = request.user)
 
-    doc = get_object_or_404(Document, pk=doc_id)
+      return render_to_response('document/read.jade',
+                                {"doc": doc},
+                                context_instance=RequestContext(request))
 
-
-    for sec in doc.section_set.all():
-      view, created = View.objects.get_or_create(section = sec, user = request.user)
-
-    return render_to_response('document/read.jade',
-                              {"doc": doc},
-                              context_instance=RequestContext(request))
-
-
-@require_http_methods(["POST"])
-@login_required
-def submit_annotations(request, section_id):
-    views = Document.objects\
-        .filter(section__view__user = request.user)\
-        .order_by('-created')\
-        .distinct()[3:]
 
 
 @login_required
@@ -72,6 +66,7 @@ def delete(request, doc_id):
     # doc.delete()
     return redirect('/document/')
 
+
 @login_required
 @require_http_methods(["POST"])
 def create(request):
@@ -83,3 +78,25 @@ def create(request):
     if form.is_valid():
       doc = create_from_pubmed_id( request.POST['document_id'] )
       return redirect('/document/'+ str(doc.pk) )
+
+
+@login_required
+@require_http_methods(["POST"])
+def createannotation(request, doc_id, section_id):
+    section = get_object_or_404(Section, pk=section_id)
+    view, created = View.objects.get_or_create(section = section, user = request.user)
+
+    form = AnnotationForm(request.POST)
+    if form.is_valid():
+      ann = form.save(commit=False)
+
+      ann.view = view
+      ann.type = "disease"
+      ann.user_agent = request.META['HTTP_USER_AGENT']
+      ann.player_ip = request.META['REMOTE_ADDR']
+
+      ann.save()
+
+      return HttpResponse("Success")
+    return HttpResponse("Failed")
+

@@ -20,6 +20,8 @@ block content
                 | Title
               th
                 | Sections
+              th
+                | Complete?
 
             - for doc in docs
               tr.show-on-hover-container
@@ -28,6 +30,8 @@ block content
                     | #{ doc.title|truncatewords:10 }
                 td
                   | #{ doc.section_set.count }
+                td
+                  | #{ doc.objects.submitted }
 
 
         .row

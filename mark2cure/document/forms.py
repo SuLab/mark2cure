@@ -18,3 +18,19 @@ class DocumentForm(forms.ModelForm):
         model = Document
 
         fields = ['document_id']
+
+class AnnotationForm(forms.ModelForm):
+    class Meta:
+        model = Annotation
+
+        fields = ['kind', 'text', 'start']
+
+    # def __init__(self, *args, **kwargs):
+    #     v = kwargs.pop('userview', None)
+    #     print "\n\n View is here: ", v
+
+    #     super(AnnotationForm, self).__init__(*args, **kwargs)
+    #     # forms.ModelForm.__init__(self, *args, **kwargs)
+    #     self.view = v
+
+

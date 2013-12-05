@@ -18,6 +18,7 @@ Word = Backbone.RelationalModel.extend({
 
 Annotation = Backbone.RelationalModel.extend({
   defaults: {
+    kind    : "e",
     text    : '',
     length  : null,
     start   : null,
@@ -89,7 +90,6 @@ Paragraph = Backbone.RelationalModel.extend({
     collectionType: AnnotationList,
 
     reverseRelation : {
-      key : 'parentDocument',
       includeInJSON: true,
     }
   }, {
@@ -151,7 +151,7 @@ WordView = Backbone.Marionette.ItemView.extend({
   initialize : function(options) {
     this.listenTo(this.model, 'change:selected', this.render);
     this.listenTo(this.model, 'change:neighbor', this.render);
-    options['auto_select_all'] = true;
+    options['auto_select_all'] = false;
     options['firefox'] = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
   },
 
@@ -248,7 +248,6 @@ WordView = Backbone.Marionette.ItemView.extend({
       });
     } else {
       annotations.create({
-        kind      : 0,
         text      : text,
         length    : text.length,
         start     : start,
