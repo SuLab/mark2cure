@@ -6,7 +6,7 @@ from timezone_field import TimeZoneField
 import datetime
 
 class UserProfile(models.Model):
-    user                  = models.OneToOneField(User)
+    user                  = models.OneToOneField(User, unique=True)
 
     created_by            = models.ForeignKey(User, null=True, blank=True, related_name="children")
     timezone              = TimeZoneField(default='America/Los_Angeles')
@@ -23,7 +23,6 @@ class UserProfile(models.Model):
     email_notify  = models.BooleanField(default = False, blank = True)
 
     mturk     = models.BooleanField(default = False, blank = True)
-    messages  = models.ForeignKey(Message)
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username

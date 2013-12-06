@@ -14,6 +14,7 @@ from django.http import HttpResponse
 
 # from mark2cure.common.forms import UserForm
 from mark2cure.document.models import Document
+from mark2cure.common.forms import MessageForm
 
 from datetime import datetime, timedelta
 
@@ -25,6 +26,9 @@ def home(request):
 
 @login_required
 def library(request, page_num=1):
+
+    # print "\n\n GET PROFILE"
+    # print request.user.profile
 
     query = request.GET.get('search')
     if query:
@@ -59,12 +63,24 @@ def signup(request):
       u, created = User.objects.get_or_create(username=email, email=email)
       if created:
         u.set_password('')
-        u.email_notify = notify
+        profile = u.profile
+        profile.email_notify = notify
+        profile.save()
       u.save()
 
       return redirect('/')
     return HttpResponse('Unauthorized', status=401)
 
+
+@require_http_methods(["POST"])
+@login_required
+def message(request):
+    form = MessageForm(request.POST)
+    if form.is_valid():
+      message = form.save(commit=False)
+      message.user = request.user
+      message.save()
+      return HttpResponse("Success")
 
 def network(request):
     pass

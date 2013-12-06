@@ -1,17 +1,36 @@
-.modal-content
-  a(href="#").close-btn
-    | &times;
+div(id="myModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      a(data-dismiss="modal").close-btn
+        | &times;
 
-  .modal-header
-    h3
-      | Want to send a note to the developers?
+      .modal-header
+        h3
+          | Want to send a note to the developers?
 
-  .modal-body
-    form.form-horizontal.col-md-5
-      .form-group
-        .col-lg-12
-          textarea#new_message(name="new_message", placeholder="Type in your message", rows="5").form-control
+      .modal-body
+        form(action="/message/", method="post")
+          {% csrf_token %}
+          .form-group
+            .col-lg-12
+              textarea#new_message(name="message", placeholder="Type in your message", rows="5").form-control
 
-  .modal-footer
-    button(type="submit").btn.btn-success
-      | Post New Message
+          .form-group
+            button(type="submit").btn.btn-success
+              | Post New Message
+
+      .modal-footer
+        button(data-dismiss="modal").btn.btn-warning
+          | Close
+
+script.
+  $("#myModal").bind('submit', function(evt) {
+    evt.preventDefault()
+    $.post( '/message/',
+            $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, { 'message' : $('textarea#new_message').val() }),
+            function() {
+              $('textarea#new_message').val('');
+              $("#myModal").modal('hide');
+              }
+      );
+  })
