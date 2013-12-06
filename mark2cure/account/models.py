@@ -10,6 +10,7 @@ class UserProfile(models.Model):
 
     created_by            = models.ForeignKey(User, null=True, blank=True, related_name="children")
     timezone              = TimeZoneField(default='America/Los_Angeles')
+
     instructions_enabled  = models.BooleanField(default=True, verbose_name="Display Extra Instructions")
 
     experience  = models.IntegerField(default=0)
@@ -19,10 +20,17 @@ class UserProfile(models.Model):
     feedback_3  = models.IntegerField(default=0)
 
     first_run   = models.BooleanField(default = False, blank = True)
-    email_bool  = models.BooleanField(default = False, blank = True)
+    email_notify  = models.BooleanField(default = False, blank = True)
 
     mturk     = models.BooleanField(default = False, blank = True)
     messages  = models.ForeignKey(Message)
+
+    def __unicode__(self):
+        return u'Profile of user: %s' % self.user.username
+
+
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+
 
 class Ncbo(models.Model):
     updated = models.DateTimeField(auto_now=True)
@@ -31,5 +39,3 @@ class Ncbo(models.Model):
     min_term_size = models.IntegerField()
     score         = models.IntegerField()
 
-
-User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
