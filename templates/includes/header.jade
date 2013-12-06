@@ -1,0 +1,55 @@
+header(class="navbar navbar-inverse navbar-fixed-top bs-docs-nav", role="banner")
+  .container
+
+  .navbar-header
+    button(type="button", data-toggle="collapse", data-target="bs-navbar-collapse").navbar-toggle
+    span.sr-only
+      p
+        | Toggle navigation
+    span.icon-bar
+    span.icon-bar
+    span.icon-bar
+
+    a.navbar-brand(href="/")
+      | Mark2Cure
+
+  nav(role="navigation").collapse.navbar-collapse.bs-navbar-collapse
+    ul.nav.navbar-nav
+      //- if collection.completed().length ) { %>
+      - if user
+        li.dropdown
+          a(data-toggle="dropdown", href="#").dropdown-toggle
+            | Feedback <b class="caret"></b>
+
+          ul.dropdown-menu
+            li
+              a(data-toggle="modal", data-target="#myModal", href="#")
+                | Message
+            li
+              a(href="survey")
+                | Survey
+
+        li
+          a(href="#").network
+            img(src="#{STATIC_URL}images/network_icon.png")
+      - else
+        li
+          a(href="#/instructions")
+            | Instructions
+
+      - if user
+        li.dropdown
+          a(data-toggle="dropdown", href="#").dropdown-toggle
+            | {{user.username}} <b class="caret"></b>
+
+          ul.dropdown-menu
+            li
+              a(href="settings")
+                | Settings
+            li
+              a(href="/account/logout")
+                | Logout
+            li.divider
+            li
+              a(href="instructions")
+                | Instructions

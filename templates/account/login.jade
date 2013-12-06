@@ -1,0 +1,32 @@
+extends base
+
+- load widget_tweaks
+
+block header
+
+block content
+
+    .row
+        .col-md-2.col-md-offset-4
+            h1 Sign In
+
+    .row
+        .col-md-4.col-md-offset-4
+            - if form.errors
+                p Your username and password didn't match. Please try again.
+                #{form.errors}
+
+            form(method="post", action="")
+                {% csrf_token %}
+                p #{form.username|add_class:"form-control"|attr:"placeholder:username"}
+                p #{form.password|add_class:"form-control"|attr:"placeholder:password"}
+                input(type="submit", value="Sign In").button.btn-primary.radius.form-control
+                p.text-right.breathe-top-mid
+                    a(href="/account/reset/")
+                        | Forgot password?
+                input(type="hidden", name="next", value="#{next}").button.small.radius
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

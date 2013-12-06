@@ -1,0 +1,82 @@
+extends base
+
+- load humanize
+
+block content
+
+  .row
+    .col-sm-8
+      h2
+        | Library:
+      .library-list
+        table.table.table-striped
+          - if twitter_users.paginator.count == 0
+            tr
+              td
+                | No documents
+          - else
+            tr
+              th
+                | Title
+              th
+                | Sections
+              th
+                | Complete?
+
+            - for doc in docs
+              tr.show-on-hover-container
+                td
+                  a(href="/document/{{doc.pk}}")
+                    | #{ doc.title|truncatewords:10 }
+                td
+                  | #{ doc.section_set.count }
+                td
+                  | #{ doc.objects.submitted }
+
+
+        .row
+          ul.pagination
+            - if docs.has_previous
+              li
+                a(href="/library/page/{{docs.previous_page_number}}")
+                  | &laquo;
+
+            li
+              a(href="#")
+                | Page {{ docs.number }} of {{ docs.paginator.num_pages }}
+
+            - if docs.has_next
+              li
+                a(href="/library/page/{{docs.next_page_number}}")
+                  | &raquo;
+
+
+    .col-sm-4
+      h2
+        | Player Stats:
+      .row.well
+        p
+          | Coming soon...
+
+      h2
+        | History
+      .row.well
+        ul
+          - for doc in recent
+            li
+              a(href="/document/{{doc.pk}}")
+                | #{ doc.title }
+
+      h2
+        | Search:
+      .row.well
+        p
+          | Coming soon...
+
+      h2
+        | Add Document
+      .row.well
+        form(method="post", action="/document/create/")
+          {% csrf_token %}
+          input(type="text", name="document_id").form-control
+          input(type="submit", value="save").button.btn.btn-primary.full-width

@@ -1,0 +1,50 @@
+extends base
+
+- load widget_tweaks
+
+block content
+    .row
+        .col-md-6.col-md-offset-3
+            .row
+                block form-header
+                    .col-md-8.columns
+                        h1
+                            | Create User
+            .row
+                .col-md-6
+                    form(method="post").breathe-top
+                        {% csrf_token %}
+                        #{form.errors}
+                        .row
+                            .col-md-12
+                                label
+                                    | username
+                                #{form.username|add_class:"form-control"}
+                        .row
+                            .col-md-12
+                                label
+                                    | First Name
+                                #{form.first_name|add_class:"form-control"}
+                        .row
+                            .col-md-12
+                                label
+                                    | Last Name
+                                #{form.last_name|add_class:"form-control"}
+                        .row
+                            .col-md-12
+                                label
+                                    | Email
+                                #{form.email|add_class:"form-control"}
+                        .row
+                            .col-md-12
+                                label
+                                    | Password
+                                #{form.password|add_class:"form-control"|attr:"type:password"}
+                        block form-submit
+                            .form-submit
+                                .row.breathe-top-mid
+                                    .col-md-12
+                                        input(type="submit", value="Submit").btn.btn-primary.form-control
+                                        br
+                                        a(href="#cancel").btn.btn-default.full-width.action-back.breathe-top-mid
+                                            | Cancel

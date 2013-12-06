@@ -1,0 +1,61 @@
+.modal-content">
+  a(href="#").close-btn
+    | &times;
+
+  .modal-header
+    h3.panel
+      | Instructions
+
+  .modal-body
+    p
+      | You will be presented with paragraphs from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words or phrases in that text which are diseases. Terms like breast cancer, juvenile diabetes, and others can be very difficult for a computer to recognize and we think people can do a better job!</p>
+
+    h4
+      | Steps
+
+    div#accordion(style="margin-bottom: 10px;").panel-group
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseOne")
+              | Click to highlight as many <strong>diseases</strong> as you can.
+        #collapseOne.panel-collapse.collapse.in
+          .panel-body
+            img(src="/img/instructions/1.gif").img-rounded
+
+      .panel panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseTwo")
+              | Highlight each time a disease is mentioned.
+
+        #collapseTwo.panel-collapse.collapse
+          .panel-body
+            img(src="/img/instructions/2.gif").img-rounded
+
+      .panel panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseThree")
+              | Highlight diseases when mentioned as the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong>.
+        #collapseThree.panel-collapse.collapse
+          .panel-body
+            img(src="/img/instructions/3.gif").img-rounded
+
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseFour")
+              | For diseases that span multiple words, <strong>click-and-drag</strong> to highlight all words together rather than clicking the words individually.
+
+        #collapseFour.panel-collapse.collapse
+          .panel-body
+            img(src="/img/instructions/4.gif").img-rounded
+
+    p
+      | Use <strong>Google</strong>, <strong>Wikipedia</strong> or <strong>other resources</strong> to differentiate between diseases and other related words (like symptoms and genes).
+
+
+  .modal-footer
+    button(type="button").btn.btn-success.close-btn
+      | Done

@@ -1,0 +1,37 @@
+.modal-content
+  a(href="#").close-btn
+    | &times;
+
+  .modal-header
+    h3
+      | Thanks! Your feedback is incredibly valuable<span class="follow-up">... So, what's next?</span>
+
+  .modal-body
+    ul.unstyled
+      li
+        p
+          | If you're interested in following this project, please enter your email here:
+
+      <br />
+
+      .col-lg-2
+        .input-group
+          input(type="text", placeholder="Email address" value="<%= email %>").form-control"
+          span.input-group-btn
+            button(type="button").btn.btn-default
+              | Submit
+
+      <br />
+      p
+        | We'll contact you periodically when we have news to report or when we need your help again.
+
+      li
+        p
+          | If you have feedback you'd like the developers to see, <a href="#/survey">let us know!</a>
+      li
+        p
+          | If you'd like to repeat the disease identification task on more scientific papers, <a href="#" class="close-link">keep going!</a>
+
+  .modal-footer
+    button.btn.btn-success.close-btn
+      | Close

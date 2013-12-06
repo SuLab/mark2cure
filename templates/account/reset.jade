@@ -1,0 +1,18 @@
+extends base
+
+block header
+
+block content
+    .row
+        .col-md-6.col-md-offset-3
+            h2 Forgot Your Password?
+            form(method="post")
+                {% csrf_token %}
+                #{form.email.label_tag}
+                #{form.email}
+                input(type="submit", value="Email Reset Link").button.radius
+
+block post-footer
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

@@ -1,0 +1,85 @@
+extends base
+
+block header
+
+block jumbotron
+  .jumbotron
+    .container
+      h1
+        | Scientific communication is broken.
+      p
+        | Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
+
+      p
+        | To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+
+block content
+  .row.input
+    .col-md-6.col-md-offset-3
+      div(style="display: none;").alert.alert-info
+        p
+          | <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
+
+      div(style="display: none;").alert.alert-danger
+        p
+          | <strong>Oops!</strong> We recieved your information but an error occured. We may have already had that email address added...
+
+      form(role="form", action="/signup/", method="post").form-horizontal
+        {% csrf_token %}
+        p.lead.text-center
+          | If you'd like to be notified when we launch Mark2Cure, please provide your email address below.
+
+        .form-group
+          .col-lg-8.col-lg-offset-2
+            label(for="email_input Email address").sr-only
+            input(type="email", id="email_input", name="email", placeholder="Enter email").form-control
+
+        .form-group
+          .col-lg-6.col-lg-offset-3
+            label.text-center
+              input(type="checkbox", name="email_notify", id="email_notify")
+              |  I'd like to beta-test early versions of Mark2Cure
+
+        .form-group
+          .col-lg-4.col-lg-offset-4
+            button(type="submit").btn.btn-primary.btn-lg.btn-block
+              | Submit
+
+  .container
+    div(style="margin-top: 6px;").row
+      .col-md-2.col-md-offset-4
+        div(data-href="http://mark2cure.org/", data-width="450", data-layout="button_count", data-show-faces="true", data-send="true").fb-like
+
+      .col-md-2
+        a(href="https://twitter.com/share", data-url="http://mark2cure.org", data-text="Help fix scientific communication!", data-hashtags="mark2cure", data-dnt="true Tweet").twitter-share-button
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+block post-footer
+    #fb-root
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');
+
+      // JS for submissions
+      // $('button').click(function(e) {
+      //   e.preventDefault();
+      //   var email = $('#email_input').val().trim(),
+      //       beta = $('#beta_bool').is(':checked');
+
+      //   if(email.length) {
+      //     $.ajax({
+      //       type: "POST",
+      //       url: '/signup/',
+      //       data: {'email': email, 'email_bool': beta},
+      //       success: function(a, b, c) {
+      //         $('form').fadeOut();
+      //         $('.alert-info').fadeIn();
+      //       },
+      //       error : function() {
+      //         $('form').fadeOut();
+      //         $('.alert-danger').fadeIn();
+      //       },
+      //       dataType: "json"
+      //     });
+      //   }
+      // });
