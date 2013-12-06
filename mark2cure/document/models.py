@@ -14,7 +14,7 @@ import requests, random, datetime
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
-    title       = models.TextField(unique=True, blank=False)
+    title       = models.TextField(blank=False)
     authors     = models.TextField(blank=False)
 
     updated     = models.DateTimeField(auto_now=True)

@@ -78,5 +78,8 @@ block content
       .row.well
         form(method="post", action="/document/create/")
           {% csrf_token %}
-          input(type="text", name="document_id").form-control
-          input(type="submit", value="save").button.btn.btn-primary.full-width
+          .input-group
+            input(type="text", name="document_id", placeholder="Pubmed Identifier").form-control
+            .input-group-btn
+              button(type="submit").btn.btn-default
+                | Import

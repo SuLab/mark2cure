@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from mark2cure.document.models import Document, Annotation
 
 class Concept(models.Model):
-    concept_id = models.TextField(unique=True, blank=False)
+    concept_id = models.TextField(blank=False)
     annotation = models.ForeignKey(Annotation)
 
 
