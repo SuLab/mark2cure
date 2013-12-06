@@ -86,5 +86,3 @@ An online text annotator to generate user annotations in fun and exploratory way
   localhost:5000/index-dev.html#/document/25?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3
 
   python manage.py graph_models -a -o myapp_models.png
-
-  Google analytics: UA-43341013-1

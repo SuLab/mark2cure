@@ -9,5 +9,5 @@ urlpatterns = patterns('',
     url(r'^document/', include('mark2cure.document.urls')),
 
     url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls))
 )
