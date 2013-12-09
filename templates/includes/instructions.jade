@@ -1,61 +1,73 @@
-.modal-content">
-  a(href="#").close-btn
-    | &times;
-
-  .modal-header
-    h3.panel
-      | Instructions
-
-  .modal-body
+.row
+  .col-md-10.col-md-offset-1.well
     p
-      | You will be presented with paragraphs from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words or phrases in that text which are diseases. Terms like breast cancer, juvenile diabetes, and others can be very difficult for a computer to recognize and we think people can do a better job!</p>
+      | <strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>
+
+    p
+      b
+        | Here are some examples of correctly highlighted text.  Please study these before attempting to take the qualification test.  Please also feel free to refer back to these examples if you are uncertain.
 
     h4
-      | Steps
+      | Instructions (Click to highlight single words or click and drag spans of text)
 
-    div#accordion(style="margin-bottom: 10px;").panel-group
+    div#accordion.bottom-space.panel-group
+
       .panel.panel-default
         .panel-heading
           h4.panel-title
             a(data-toggle="collapse", data-parent="#accordion", href="#collapseOne")
-              | Click to highlight as many <strong>diseases</strong> as you can.
+              strong
+                | Highlight <u>all</u> diseases and disease abbreviations
         #collapseOne.panel-collapse.collapse.in
           .panel-body
-            img(src="/img/instructions/1.gif").img-rounded
+            img(src="/img/experiment/3/instructions/1.gif").img-rounded
 
-      .panel panel-default
+      .panel.panel-default
         .panel-heading
           h4.panel-title
             a(data-toggle="collapse", data-parent="#accordion", href="#collapseTwo")
-              | Highlight each time a disease is mentioned.
-
+              strong
+                | Highlight the longest span of text specific to a disease
         #collapseTwo.panel-collapse.collapse
           .panel-body
-            img(src="/img/instructions/2.gif").img-rounded
+            img(src="/img/experiment/3/instructions/2.gif").img-rounded
 
-      .panel panel-default
+      .panel.panel-default
         .panel-heading
           h4.panel-title
             a(data-toggle="collapse", data-parent="#accordion", href="#collapseThree")
-              | Highlight diseases when mentioned as the <strong>full name</strong>, <strong>abbreviation</strong> or <strong>acronym</strong>.
+              strong
+                | Highlight disease conjunctions as single, long spans.
         #collapseThree.panel-collapse.collapse
           .panel-body
-            img(src="/img/instructions/3.gif").img-rounded
+            img(src="/img/experiment/3/instructions/3.gif").img-rounded
 
       .panel.panel-default
         .panel-heading
           h4.panel-title
             a(data-toggle="collapse", data-parent="#accordion", href="#collapseFour")
-              | For diseases that span multiple words, <strong>click-and-drag</strong> to highlight all words together rather than clicking the words individually.
-
+              strong
+                | Highlight symptoms - physical results of having a disease
         #collapseFour.panel-collapse.collapse
           .panel-body
-            img(src="/img/instructions/4.gif").img-rounded
+            img(src="/img/experiment/3/instructions/4.gif").img-rounded
 
-    p
-      | Use <strong>Google</strong>, <strong>Wikipedia</strong> or <strong>other resources</strong> to differentiate between diseases and other related words (like symptoms and genes).
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseFive")
+              strong
+                | Highlight <u>all</u> occurrences of disease terms
+        #collapseFive.panel-collapse.collapse
+          .panel-body
+            img(src="/img/experiment/3/instructions/5.gif").img-rounded
 
-
-  .modal-footer
-    button(type="button").btn.btn-success.close-btn
-      | Done
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseSix")
+              strong
+                | Highlight <u>all</u> diseases, disease groups and key disease symptoms
+        #collapseSix.panel-collapse.collapse
+          .panel-body
+            img(src="/img/experiment/3/instructions/6.gif").img-rounded

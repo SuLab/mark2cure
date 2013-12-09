@@ -3,6 +3,8 @@ extends base
 - load humanize
 
 block content
+    include includes/instructions
+
     - for sec in doc.section_set.all
         .row
           - if user.is_authenticated and user.profile.mturk == False
