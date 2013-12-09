@@ -67,7 +67,6 @@ def signup(request):
         profile.email_notify = notify
         profile.save()
       u.save()
-
       return redirect('/')
     return HttpResponse('Unauthorized', status=401)
 
@@ -81,6 +80,8 @@ def message(request):
       message.user = request.user
       message.save()
       return HttpResponse("Success")
+
+    return HttpResponse('Unauthorized', status=401)
 
 def network(request):
     pass

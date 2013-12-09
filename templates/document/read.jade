@@ -5,13 +5,15 @@ extends base
 block content
     - for sec in doc.section_set.all
         .row
-            .col-md-10.col-md-offset-1
+          - if user.is_authenticated and user.profile.mturk == False
+              .col-md-10.col-md-offset-1
                 h4
                   | #{ sec.get_kind_display }
-            .col-md-10.col-md-offset-1.head-space.game
-              div(id="{{ sec.pk }}").paragraph.entity_tag
-                  p
-                    | #{ sec.text }
+
+          .col-md-10.col-md-offset-1.head-space.game
+            div(id="{{ sec.pk }}").paragraph.entity_tag
+              p
+                | #{ sec.text }
 
     - if False
       // complete and !mturk
@@ -26,6 +28,7 @@ block content
     - else
       .well.col-md-10.col-md-offset-1.head-space
         .row
+          - if user.is_authenticated and user.profile.mturk == False
             p
               span.label.label-info Title
               |  #{ doc.title }
@@ -33,19 +36,30 @@ block content
               span.label.label-info Created
               |  #{ doc.created|naturaltime }
 
-            form(method="post")
-              {% csrf_token %}
-              button.btn.btn-primary.btn-large.done
-                | Done
+          form(method="post")
+            {% csrf_token %}
+            button.btn.btn-primary.btn-large.done
+              | Done
+
+
+    form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit_form")
+      input(type="hidden", name="assignmentId", value="{{ assignmentId }}")
+      input(type="text", name="document_id", value="{{ doc.pk }}")
+
 
 block post-footer
 
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
-    script.
+    - if completed
+      script.
+        // If the document was completed forget the rest and submit the mturk ajax request to move the turker
+        $('#worker_submit_form').submit();
+
+    - else
+      script.
         var sections = {};
         var section_selectors = {};
         YPet.addInitializer(function(options) {
-
 
           $( ".game .paragraph" ).each(function( index ) {
             var section_id = $(this).attr('id'),

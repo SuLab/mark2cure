@@ -10,11 +10,13 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 from mark2cure.document.models import Document, Annotation, View, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import create_from_pubmed_id
-from mark2cure.common.utils import get_timezone_offset
+from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
 from copy import copy
 
@@ -39,19 +41,44 @@ def list(request, page_num=1):
                               context_instance=RequestContext(request))
 
 
-@login_required
+# @login_required
 def read(request, doc_id):
+    # If they're attempting to view or work on the document
+    doc = get_object_or_404(Document, pk=doc_id)
+
+    # If mTurk user not logged in, make a new account for them and set the session
+    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
+    hit_id = request.GET.get('hitId')
+    # Only available when accepted HIT
+    worker_id = request.GET.get('workerId')
+    turk_sub_location = request.GET.get('turkSubmitTo')
+
     if request.method == 'POST':
-      # Move on
-      doc = Document.objects.get_random_document()
-      return redirect('/document/'+ str(doc.pk) )
+      if worker_id:
+        return render_to_response('document/read.jade',
+                                  { "doc": doc,
+                                    "completed": True,
+                                    "turk_sub_location": turk_sub_location,
+                                    "assignmentId": assignment_id},
+                                  context_instance=RequestContext(request))
+      else:
+        # Move on to another document
+        doc = Document.objects.get_random_document()
+        return redirect('/document/'+ str(doc.pk) )
     else:
-      doc = get_object_or_404(Document, pk=doc_id)
-      for sec in doc.section_set.all():
-        view, created = View.objects.get_or_create(section = sec, user = request.user)
+
+      if worker_id and not request.user.is_authenticated():
+        # If it's accepted and a worker that doesn't have an account
+        user = get_mturk_account(worker_id)
+        user = authenticate(username=user.username, password='')
+        login(request, user)
+
+      if request.user.is_authenticated():
+        for sec in doc.section_set.all():
+          view, created = View.objects.get_or_create(section = sec, user = request.user)
 
       return render_to_response('document/read.jade',
-                                {"doc": doc},
+                                {"doc": doc, "completed": False},
                                 context_instance=RequestContext(request))
 
 # showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
@@ -159,7 +186,7 @@ def createannotation(request, doc_id, section_id):
       ann.player_ip = request.META['REMOTE_ADDR']
 
       ann.save()
-
       return HttpResponse("Success")
+
     return HttpResponse("Failed")
 

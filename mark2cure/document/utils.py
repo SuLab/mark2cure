@@ -74,3 +74,22 @@ def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
             sec.text = record.get('AB')
             sec.document = doc
             sec.save()
+
+
+def strip_tags(html, invalid_tags):
+    soup = BeautifulSoup(html)
+    # print soup
+
+    for tag in soup.findAll(True):
+        if tag.name in invalid_tags:
+            s = ""
+
+            for c in tag.contents:
+                if not isinstance(c, NavigableString):
+                    c = strip_tags(unicode(c), invalid_tags)
+                s += unicode(c)
+
+            tag.replaceWith(s)
+
+    return soup
+
