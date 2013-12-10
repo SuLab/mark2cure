@@ -152,7 +152,9 @@ class Turk():
       # Define question form
       question_form = QuestionForm()
 
-      # Give a short overview and GIF
+      #
+      # Instructions to train the Worker
+      #
       overview = Overview()
       overview.append_field('Title', 'Instructions')
       overview.append(FormattedContent( '<p><strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>'
@@ -209,63 +211,161 @@ class Turk():
                                           '</li>'
                                         '</ol>'))
 
-      # Define question content
+      #
+      # Questions to ask the Worker
+      #
+      instructions = "Select all and only the terms that should be highlighted for each text segment (don't select terms that overlap with each other in the text):"
+
+      # Question 1
       qc = QuestionContent()
-      qc.append_field('Title', 'Select which of the options contains the most disease terms from the following sentence.')
-      qc.append_field('Text', 'Colorectal cancer occurs when tumors form in the lining of the large intestine. The risk of developing colorectal cancer rises after age 50. You\'re also more likely to get it if you have colorectal polyps, a family history of colorectal cancer, ulcerative colitis or Crohn\'s disease, eat a diet high in fat, or smoke.')
+      qc.append_field('Title', instructions)
+      qc.append_field('Text', "Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . ")
 
       # Make question choices
-      s1 = ("Colorectal cancer, Colorectal polyps, Crohn\'s disease", "A")
-      s2 = ("Colorectal cancer, Polyps, Smoke, Lining", "B")
-      s3 = ("Colorectal cancer, Ulcerative colitis, Crohn\'s disease", "C")
-      s4 = ("Cancer, Polyps, Ulcerative colitis", "D")
+      s1 = ("Myotonic", "A")
+      s2 = ("dystrophy", "B")
+      s3 = ("Myotonic dystrophy", "C")
+      s4 = ("DM", "D")
+      s5 = ("CTG", "E")
+      s6 = ("trinucleotide repeat expansion", "F")
+      s7 = ("DMPK", "G")
 
       choices = SelectionAnswer(
-          style='radiobutton',
-          selections=[s1,s2,s3,s4])
+          style='multichooser',
+          max=2,
+          selections=[s1, s2, s3, s4, s5, s6, s7])
 
       # Define question
-      q = Question(identifier = 'ann_selection',
+      q1 = Question(identifier = 'term_selection_1',
+                    content = qc,
+                    answer_spec = AnswerSpecification(choices),
+                    is_required = True)
+
+      # Question 2
+      qc = QuestionContent()
+      qc.append_field('Title', instructions)
+      qc.append_field('Text', "Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products.")
+
+      # Make question choices
+      s1 = ("Germline mutations", "H")
+      s2 = ("inherited breast and ovarian cancer", "I")
+      s3 = ("breast", "J")
+      s4 = ("ovarian cancer", "K")
+      s5 = ("cancer", "L")
+      s6 = ("tumour", "M")
+      s7 = ("tumour suppressor", "N")
+
+      choices = SelectionAnswer(
+          style='multichooser',
+          max=2,
+          selections=[s1, s2, s3, s4, s5, s6, s7])
+
+      # Define question
+      q2 = Question(identifier = 'term_selection_2',
+                    content = qc,
+                    answer_spec = AnswerSpecification(choices),
+                    is_required = True)
+
+
+
+      # Question 3
+      qc = QuestionContent()
+      qc.append_field('Title', instructions)
+      qc.append_field('Text', "We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and...")
+
+      # Make question choices
+      s1 = ("age of 50 years", "O")
+      s2 = ("short stature", "P")
+      s3 = ("restricted joint mobility", "Q")
+      s4 = ("severely handicapped", "R")
+      s5 = ("short", "S")
+      s6 = ("blindness", "T")
+      s7 = ("dysplasia", "U")
+      s8 = ("Kniest dysplasia", "V")
+      s9 = ("molecular findings", "W")
+
+      choices = SelectionAnswer(
+          style='multichooser',
+          max=5,
+          selections=[s1,s2,s3,s4, s5, s6, s7, s8, s9])
+
+      # Define question
+      q3 = Question(identifier = 'term_selection_3',
                     content = qc,
                     answer_spec = AnswerSpecification(choices),
                     is_required = True)
 
       # Add the content to the questionform
       question_form.append(overview)
-      question_form.append(q)
+      question_form.append(q1)
+      question_form.append(q2)
+      question_form.append(q3)
 
       # Define evaluation mechanism
       answer_logic = '''<AnswerKey xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd">
+
                           <Question>
-                          <QuestionIdentifier>ann_selection</QuestionIdentifier>
-                            <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
-                              <AnswerScore>0</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
-                              <AnswerScore>0</AnswerScore>
-                            </AnswerOption>
+                          <QuestionIdentifier>term_selection_1</QuestionIdentifier>
                             <AnswerOption>
                               <SelectionIdentifier>C</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                             <AnswerOption>
                               <SelectionIdentifier>D</SelectionIdentifier>
-                              <AnswerScore>0</AnswerScore>
+                              <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_2</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>I</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>M</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_3</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>P</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>Q</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>R</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>T</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                            <AnswerOption>
+                              <SelectionIdentifier>V</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <PercentageMapping>
+                            <MaximumSummedScore>9</MaximumSummedScore>
+                          </PercentageMapping>
                         </AnswerKey>'''
 
-      # qual_test = self.mtc.update_qualification_type(AWS_QUAL_TEST_2,
-      qual_test = self.mtc.create_qualification_type(
-        name = 'Disease recognition and UI Steps',
-        description = 'Instructions and main steps to correctly use the highlighting behavior. Simple multiple-choice question to determine if the Worker understands the problem and has disease annotation ability.',
+      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = 'Annotation Instructions & Qualification Questions',
+        description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
-        answer_key = answer_logic,
-        # retry_delay = None,
-        test_duration = 5 * 60)
+        # answer_key = answer_logic,
+        retry_delay = 1,
+        test_duration = 20 * 60)
 
       return qual_test
 
@@ -276,7 +376,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      # qualifications.add( Requirement(AWS_QUAL_TEST_3, "EqualTo", 1) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 6) )
 
       hit = self.mtc.create_hit(
           hit_type = None,

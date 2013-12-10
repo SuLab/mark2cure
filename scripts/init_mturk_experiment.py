@@ -1,9 +1,9 @@
 from mark2cure.common.utils import Turk
 
 turk = Turk()
-print turk
 
-turk.hit_for_document(111)
+turk.hit_for_document(112)
+# turk.make_qualification_test()
 
 # documents = db.session.query(Document).\
 #     filter_by(source = 'NCBI_corpus_development').\
