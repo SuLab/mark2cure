@@ -59,6 +59,10 @@ block post-footer
 
     - else
       script.
+        $('#instructions_toggle').click(function() {
+          $('#instructions').toggle()
+        });
+
         var sections = {};
         var section_selectors = {};
         YPet.addInitializer(function(options) {

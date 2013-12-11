@@ -233,49 +233,49 @@ class Turk():
       q1 = Question(identifier = 'term_selection_1', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t1"), ("False", "f1")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'dystrophy')
       q2 = Question(identifier = 'term_selection_2', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t2"), ("False", "f2")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'Myotonic dystrophy')
       q3 = Question(identifier = 'term_selection_3', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t3"), ("False", "f3")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'DM')
       q4 = Question(identifier = 'term_selection_4', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t4"), ("False", "f4")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'CTG')
       q5 = Question(identifier = 'term_selection_5', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t5"), ("False", "f5")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'trinucleotide repeat expansion')
       q6 = Question(identifier = 'term_selection_6', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t6"), ("False", "f6")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'DMPK')
       q7 = Question(identifier = 'term_selection_7', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t7"), ("False", "f7")])))
 
       # # # # # # # # #
       #
@@ -288,49 +288,49 @@ class Turk():
       q8 = Question(identifier = 'term_selection_8', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t8"), ("False", "f8")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'inherited breast and ovarian cancer')
       q9 = Question(identifier = 'term_selection_9', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t9"), ("False", "f9")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'breast')
       q10 = Question(identifier = 'term_selection_10', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t10"), ("False", "f10")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'ovarian cancer')
       q11 = Question(identifier = 'term_selection_11', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t11"), ("False", "f11")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'cancer')
       q12 = Question(identifier = 'term_selection_12', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t12"), ("False", "f12")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'tumour')
       q13 = Question(identifier = 'term_selection_13', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t13"), ("False", "f13")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'tumour suppressor')
       q14 = Question(identifier = 'term_selection_14', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t14"), ("False", "f14")])))
 
 
       # # # # # # # # #
@@ -344,63 +344,63 @@ class Turk():
       q15 = Question(identifier = 'term_selection_15', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t15"), ("False", "f15")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'short stature')
       q16 = Question(identifier = 'term_selection_16', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t16"), ("False", "f16")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'restricted joint mobility')
       q17 = Question(identifier = 'term_selection_17', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t17"), ("False", "f17")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'severely handicapped')
       q18 = Question(identifier = 'term_selection_18', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t18"), ("False", "f18")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'short')
       q19 = Question(identifier = 'term_selection_19', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t19"), ("False", "f19")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'blindness')
       q20 = Question(identifier = 'term_selection_20', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t20"), ("False", "f20")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'dysplasia')
       q21 = Question(identifier = 'term_selection_21', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t21"), ("False", "f21")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'Kniest dysplasia')
       q22 = Question(identifier = 'term_selection_22', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t22"), ("False", "f22")])))
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'molecular findings')
       q23 = Question(identifier = 'term_selection_23', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
-            selections=[("True", "a"), ("False", "b")])))
+            selections=[("True", "t23"), ("False", "f23")])))
 
 
       # Add the content to the questionform
@@ -435,7 +435,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_1</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f1</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -443,7 +443,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_2</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f2</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -451,7 +451,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_3</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t3</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -459,7 +459,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_4</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t4</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -467,7 +467,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_5</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f5</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -475,7 +475,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_6</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f6</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -483,7 +483,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_7</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f7</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -491,7 +491,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_8</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f8</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -499,7 +499,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_9</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t9</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -507,7 +507,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_10</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f10</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -515,7 +515,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_11</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f11</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -523,7 +523,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_12</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f12</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -531,7 +531,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_13</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t13</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -539,7 +539,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_14</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f14</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -547,7 +547,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_15</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f15</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -555,7 +555,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_16</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t16</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -563,7 +563,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_17</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t17</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -571,7 +571,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_18</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t18</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -579,7 +579,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_19</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f19</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -587,7 +587,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_20</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t20</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -595,7 +595,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_21</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f21</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -603,7 +603,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_22</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <SelectionIdentifier>t22</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -611,16 +611,16 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_23</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <SelectionIdentifier>f23</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
 
                         </AnswerKey>'''
 
-      # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
-      qual_test = self.mtc.create_qualification_type(
-        name = 'TEST2 :: Annotation Instructions & Qualification Questions',
+      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = 'TEST2 :: Annotation Instructions & Qualification Questions',
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
@@ -637,7 +637,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 23) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 20) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
