@@ -215,91 +215,219 @@ class Turk():
       # Questions to ask the Worker
       #
       instructions = "Select all and only the terms that should be highlighted for each text segment (don't select terms that overlap with each other in the text):"
+      paragraph1 = "Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . "
+      paragraph2 = "Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products."
+      paragraph3 = "We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and..."
 
-      # Question 1
+      # # # # # # # # #
+      #
+      # Paragraph 1
+      #
+      # # # # # # # # #
+      #abcdefghijklmnopqrstuvwxyz
       qc = QuestionContent()
-      qc.append_field('Title', instructions)
-      qc.append_field('Text', "Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . ")
-
-      # Make question choices
-      s1 = ("Myotonic", "A")
-      s2 = ("dystrophy", "B")
-      s3 = ("Myotonic dystrophy", "C")
-      s4 = ("DM", "D")
-      s5 = ("CTG", "E")
-      s6 = ("trinucleotide repeat expansion", "F")
-      s7 = ("DMPK", "G")
-
-      choices = SelectionAnswer(
-          style='multichooser',
-          max=2,
-          selections=[s1, s2, s3, s4, s5, s6, s7])
-
-      # Define question
-      q1 = Question(identifier = 'term_selection_1',
-                    content = qc,
-                    answer_spec = AnswerSpecification(choices),
-                    is_required = True)
-
-      # Question 2
+      qc.append_field('Title', paragraph1)
+      qc.append_field('Title', "")
+      qc.append_field('Title', "Which of the following should be highlighted according to the instructions described above?")
+      qc.append_field('Text', 'Myotonic')
+      q1 = Question(identifier = 'term_selection_1', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
       qc = QuestionContent()
-      qc.append_field('Title', instructions)
-      qc.append_field('Text', "Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products.")
-
-      # Make question choices
-      s1 = ("Germline mutations", "H")
-      s2 = ("inherited breast and ovarian cancer", "I")
-      s3 = ("breast", "J")
-      s4 = ("ovarian cancer", "K")
-      s5 = ("cancer", "L")
-      s6 = ("tumour", "M")
-      s7 = ("tumour suppressor", "N")
-
-      choices = SelectionAnswer(
-          style='multichooser',
-          max=2,
-          selections=[s1, s2, s3, s4, s5, s6, s7])
-
-      # Define question
-      q2 = Question(identifier = 'term_selection_2',
-                    content = qc,
-                    answer_spec = AnswerSpecification(choices),
-                    is_required = True)
-
-
-
-      # Question 3
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'dystrophy')
+      q2 = Question(identifier = 'term_selection_2', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
       qc = QuestionContent()
-      qc.append_field('Title', instructions)
-      qc.append_field('Text', "We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and...")
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'Myotonic dystrophy')
+      q3 = Question(identifier = 'term_selection_3', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'DM')
+      q4 = Question(identifier = 'term_selection_4', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'CTG')
+      q5 = Question(identifier = 'term_selection_5', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'trinucleotide repeat expansion')
+      q6 = Question(identifier = 'term_selection_6', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'DMPK')
+      q7 = Question(identifier = 'term_selection_7', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
 
-      # Make question choices
-      s1 = ("age of 50 years", "O")
-      s2 = ("short stature", "P")
-      s3 = ("restricted joint mobility", "Q")
-      s4 = ("severely handicapped", "R")
-      s5 = ("short", "S")
-      s6 = ("blindness", "T")
-      s7 = ("dysplasia", "U")
-      s8 = ("Kniest dysplasia", "V")
-      s9 = ("molecular findings", "W")
+      # # # # # # # # #
+      #
+      # Paragraph 2
+      #
+      # # # # # # # # #
+      qc = QuestionContent()
+      qc.append_field('Title', paragraph2)
+      qc.append_field('Text', 'Germline mutations')
+      q8 = Question(identifier = 'term_selection_8', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'inherited breast and ovarian cancer')
+      q9 = Question(identifier = 'term_selection_9', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'breast')
+      q10 = Question(identifier = 'term_selection_10', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'ovarian cancer')
+      q11 = Question(identifier = 'term_selection_11', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'cancer')
+      q12 = Question(identifier = 'term_selection_12', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour')
+      q13 = Question(identifier = 'term_selection_13', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour suppressor')
+      q14 = Question(identifier = 'term_selection_14', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
 
-      choices = SelectionAnswer(
-          style='multichooser',
-          max=5,
-          selections=[s1,s2,s3,s4, s5, s6, s7, s8, s9])
 
-      # Define question
-      q3 = Question(identifier = 'term_selection_3',
-                    content = qc,
-                    answer_spec = AnswerSpecification(choices),
-                    is_required = True)
+      # # # # # # # # #
+      #
+      # Paragraph 3
+      #
+      # # # # # # # # #
+      qc = QuestionContent()
+      qc.append_field('Title', paragraph3)
+      qc.append_field('Text', 'age of 50 years')
+      q15 = Question(identifier = 'term_selection_15', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'short stature')
+      q16 = Question(identifier = 'term_selection_16', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'restricted joint mobility')
+      q17 = Question(identifier = 'term_selection_17', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'severely handicapped')
+      q18 = Question(identifier = 'term_selection_18', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'short')
+      q19 = Question(identifier = 'term_selection_19', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'blindness')
+      q20 = Question(identifier = 'term_selection_20', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'dysplasia')
+      q21 = Question(identifier = 'term_selection_21', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'Kniest dysplasia')
+      q22 = Question(identifier = 'term_selection_22', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'molecular findings')
+      q23 = Question(identifier = 'term_selection_23', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "a"), ("False", "b")])))
+
 
       # Add the content to the questionform
       question_form.append(overview)
       question_form.append(q1)
       question_form.append(q2)
       question_form.append(q3)
+      question_form.append(q4)
+      question_form.append(q5)
+      question_form.append(q6)
+      question_form.append(q7)
+      question_form.append(q8)
+      question_form.append(q9)
+      question_form.append(q10)
+      question_form.append(q11)
+      question_form.append(q12)
+      question_form.append(q13)
+      question_form.append(q14)
+      question_form.append(q15)
+      question_form.append(q16)
+      question_form.append(q17)
+      question_form.append(q18)
+      question_form.append(q19)
+      question_form.append(q20)
+      question_form.append(q21)
+      question_form.append(q22)
+      question_form.append(q23)
 
       # Define evaluation mechanism
       answer_logic = '''<AnswerKey xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd">
@@ -307,11 +435,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_1</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>C</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>D</SelectionIdentifier>
+                              <SelectionIdentifier>B</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -319,11 +443,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_2</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>I</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>M</SelectionIdentifier>
+                              <SelectionIdentifier>B</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -331,39 +451,180 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_3</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>P</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>Q</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>R</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>T</SelectionIdentifier>
-                              <AnswerScore>1</AnswerScore>
-                            </AnswerOption>
-                            <AnswerOption>
-                              <SelectionIdentifier>V</SelectionIdentifier>
+                              <SelectionIdentifier>A</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
 
-                          <PercentageMapping>
-                            <MaximumSummedScore>9</MaximumSummedScore>
-                          </PercentageMapping>
+                          <Question>
+                          <QuestionIdentifier>term_selection_4</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_5</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_6</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_7</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_8</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_9</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_10</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_11</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_12</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_13</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_14</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_15</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_16</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_17</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_18</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_19</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_20</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_21</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_22</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>A</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_23</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>B</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
                         </AnswerKey>'''
 
-      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
-      # qual_test = self.mtc.create_qualification_type(
-        # name = 'Annotation Instructions & Qualification Questions',
+      # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
+      qual_test = self.mtc.create_qualification_type(
+        name = 'TEST2 :: Annotation Instructions & Qualification Questions',
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
-        # answer_key = answer_logic,
+        answer_key = answer_logic,
         retry_delay = 1,
         test_duration = 20 * 60)
 
@@ -376,7 +637,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 6) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 23) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
