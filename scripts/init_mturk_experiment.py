@@ -2,7 +2,7 @@ from mark2cure.common.utils import Turk
 
 turk = Turk()
 
-turk.disable_all()
+# turk.disable_all()
 # turk.make_qualification_test()
 turk.hit_for_document(112)
 

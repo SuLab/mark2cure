@@ -24,8 +24,7 @@ Annotation = Backbone.RelationalModel.extend({
     start   : null,
     stop    : null,
   },
-
-  sync    : function () { return false; }
+  sync : function() { return false; }
 });
 
 WordList = Backbone.Collection.extend({
@@ -48,9 +47,12 @@ AnnotationList = Backbone.Collection.extend({
   url     : '/api/v1/annotations',
 
   getRange : function() {
-    //-- Returns back the indexes of the text which are part of a annotation
+    //-- Returns back an array of indexes that are occupied by annotations within the text
+    // example, 6 letter annotation: [14, 15, 16, 17, 18, 19]
     var range = []
-    this.each(function(annotation) { range.push( _.range(annotation.get('start'), annotation.get('stop')+1)  ); })
+    this.each(function(annotation) {
+      range.push( _.range(annotation.get('start'), annotation.get('stop')+1)  );
+    })
     return _.uniq( _.flatten(range) );
   },
 
@@ -70,7 +72,8 @@ AnnotationList = Backbone.Collection.extend({
   add : function(ann) {
     //-- Prevent duplicate annotations from being submitted
     var isDupe = this.any(function(_ann) {
-        return _ann.get('text') === ann.get('text') && _ann.get('start') === ann.get('start');
+        return  _ann.get('text') === ann.get('text') &&
+                _ann.get('start') === ann.get('start');
     });
     if (isDupe) { return false; }
     Backbone.Collection.prototype.add.call(this, ann);
@@ -120,18 +123,11 @@ Paragraph = Backbone.RelationalModel.extend({
           }
         });
 
-      _.each(self.get('words'), function(word) {
-        word.destroy();
-      });
+      //-- Remove any words if they previously existed and add the new ones
+      _.each(self.get('words'), function(word) { word.destroy(); });
       self.get('words').add(words);
-  },
+  }
 
-  mapAnnotationsForComparision : function(arr) {
-    return _.map(arr, function(model) {
-      return {'text'  : model.text,
-              'start' : model.start}
-        })
-  },
 });
 
 //
@@ -140,7 +136,16 @@ Paragraph = Backbone.RelationalModel.extend({
 
 WordView = Backbone.Marionette.ItemView.extend({
   template : '#word-template',
-  tagName : "span",
+  tagName : 'span',
+
+  className : function() {
+    var classArr = [],
+        self = this;
+    _.each(['selected', 'neighbor', 'latest'], function(v) {
+      if(self.model.get(v)) { classArr.push(v) }
+    });
+    return classArr.join(' ');
+  },
 
   events : {
     'mousedown'   : 'clickOrInitDrag',
@@ -156,13 +161,19 @@ WordView = Backbone.Marionette.ItemView.extend({
   },
 
   onRender : function() {
-    this.renderingClassSetting('selected');
-    this.renderingClassSetting('neighbor');
+    this.$el.attr('class', _.result(this, 'className'));
   },
 
   //
   //-- Event actions
   //
+  clickOrInitDrag : function() {
+    //-- onmousedown we just set the word to be the latest so that we can refernce it later
+    //-- whent he user releases after staying put or moving around
+    this.model.collection.clear('latest');
+    this.model.set({'latest': true, 'selected': true});
+  },
+
   hover : function(evt) {
     var dragging = this.options.firefox ? 0 : evt.which;
     //-- If you're dragging with the mouse down to make a large selection
@@ -176,24 +187,13 @@ WordView = Backbone.Marionette.ItemView.extend({
     }
   },
 
-  clickOrInitDrag : function() {
-    //-- onmousedown we just set the word to be the latest so that we can refernce it later
-    //-- whent he user releases after staying put or moving around
-    this.model.collection.clear('latest');
-    this.model.set({'latest': true, 'selected': true});
-  },
-
   releaseDrag : function(evt) {
     //-- onmouseup from the user
-    var self = this,
-        last_model = this.model.collection.findWhere({latest: true}),
-        annotations = this.model.get('parentDocument').get('annotations'),
-        ann_range =  annotations.getRange();
+    var last_model = this.model.collection.findWhere({latest: true}),
+        annotations = this.model.get('parentDocument').get('annotations');
 
+    //-- If the user just finished making a drag selection
     if( last_model != this.model ) {
-      //
-      //-- If the user just finished making a drag selection
-      //
       var sel = [last_model.get('start'), this.model.get('stop')],
           range = [_.min(sel), _.max(sel)],
           start_i = range[0],
@@ -206,17 +206,17 @@ WordView = Backbone.Marionette.ItemView.extend({
         stop_i = last_model.get('stop')+1;
       }
 
-      self.createAnns(start_i, stop_i)
+      this.createAnns(start_i, stop_i)
+
+    //-- If it was a single click
     } else {
-      //
-      //-- If it was a single click
-      //
-      if( _.contains(ann_range, this.model.get('start')) ) {
-        //-- If the single annotation or range started on a prexisting annotation
+      //-- If click was on preexisting annotation to delete it
+      if( _.contains(annotations.getRange(), this.model.get('start')) ) {
         _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
+
+      //-- If a new single annotation or range
       } else {
-        //-- If the single annotation or range started on a prexisting annotation
-        self.createAnns(self.model.get('start'), self.model.get('stop')+1);
+        this.createAnns(this.model.get('start'), this.model.get('stop')+1);
       }
     }
 
@@ -230,73 +230,90 @@ WordView = Backbone.Marionette.ItemView.extend({
   },
 
   createAnns : function(start, stop) {
-    var self = this,
-        doc = this.model.get('parentDocument'),
+    var doc = this.model.get('parentDocument'),
         annotations = doc.get('annotations'),
-        text = doc.get('text').substring(start, stop);
+        text = doc.get('text').substring(start, stop),
+        annotation = this.sanitizeAnnotation(text, start);
 
-    if(this.options.auto_select_all) {
-      //-- Get the "pure" text
-      text = this.clean(text);
-      _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
-        annotations.create({
-          text      : text,
-          length    : text.length,
-          start     : v,
-          stop      : v+text.length
-        });
-      });
-    } else {
+    // if(this.options.auto_select_all) {
+      // _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
+      //   annotations.create({
+      //     text      : text,
+      //     length    : text.length,
+      //     start     : v,
+      //     stop      : v+text.length
+      //   });
+      // });
+    // } else {
       annotations.create({
-        text      : text,
-        length    : text.length,
-        start     : start,
-        stop      : stop
+        text      : annotation.text,
+        length    : annotation.text.length,
+        start     : annotation.start,
+        stop      : annotation.start + annotation.text.length
       });
-    }
+    // }
   },
 
   //-- Utilities for view
-  getIndicesOf : function(needle, haystack, caseSensitive) {
-    var startIndex = 0,
-        needleLen = needle.length,
-        index,
-        indices = [];
+  // getIndicesOf : function(needle, haystack, caseSensitive) {
+  //   var startIndex = 0,
+  //       needleLen = needle.length,
+  //       index,
+  //       indices = [];
 
-    if (!caseSensitive) {
-        haystack = haystack.toLowerCase();
-        needle = needle.toLowerCase();
-    }
+  //   if (!caseSensitive) {
+  //       haystack = haystack.toLowerCase();
+  //       needle = needle.toLowerCase();
+  //   }
 
-    while ((index = haystack.indexOf(needle, startIndex)) > -1) {
-        if(this.clean( haystack.substring(index - 1, index + needleLen + 1) ) === needle) { indices.push(index); }
-        startIndex = index + needleLen;
-    }
-    return indices;
-  },
+  //   while ((index = haystack.indexOf(needle, startIndex)) > -1) {
+  //       if(this.clean( haystack.substring(index - 1, index + needleLen + 1) ) === needle) { indices.push(index); }
+  //       startIndex = index + needleLen;
+  //   }
+  //   return indices;
+  // },
 
-  clean : function(text) {
-    return _.str.clean(text).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+  sanitizeAnnotation : function(full_str, start) {
+    //-- Return the cleaned string and the (potentially) new start position
+    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+    return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
   selectWordsOfAnnotations : function() {
+    //-- Iterate over the words and see if they are contained within any of the documents annotations
     var self = this,
         offset = 0,
         clean_word;
-    var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) {
-        return { 'start' : m.get('start'), 'stop' : m.get('stop') }
-      });
 
-    //-- Iterate over the words and see if they are contained within any of the documents annotations
+    //-- Get an array of simplified annotation objects (they only have start and stop positions)
+    var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) { return { 'start' : m.get('start'), 'stop' : m.get('stop') } });
+
+    //-- Before we select the words to highlight, remove all the preexisting ones
     this.model.collection.clear('selected');
     this.model.collection.each(function(word) {
-      // (TODO) Cache this!
-      clean_word = self.clean( word.get('text') );
-      //-- Get the offset so we know that finding the annotation in the word will work!
-      if(word.get('text') !== clean_word) { offset = word.get('text').indexOf(clean_word); }
+      //- If the word is overlaps (equals, encompasses, or is emcompassed) an annotation
+      var found = _.filter(ann_range, function(ann) {
+        var word_length = word.get('text').length,
+            ann_length = (ann.stop - ann.start);
 
-      //- If the word is within annotation
-      var found = _.filter(ann_range, function(ann) { return  word.get('start')+offset >= ann.start && word.get('stop') <= ann.stop; });
+        if(word.get('start') == ann.start &&
+           word_length == ann_length) {
+          return true;
+        }
+
+        //-- If the word is larger than or equal to the annotation
+        if( word_length > ann_length ) {
+           return  word.get('start') <= ann.start &&
+                   word.get('stop') >= ann.stop;
+
+        //-- If the word is smaller than the annotation (span annotation block encompasses the word)
+        } else {
+          return  word.get('start') >= ann.start &&
+                  //-- bug here if the end of the annotatoin span has a ) or other removed char
+                  word.get('stop') <= ann.stop;
+        }
+       });
+
       // console.log('Found :: ', found, ' :: ', word.attributes);
       if( found.length ) { word.set('selected', true); }
     });
@@ -304,33 +321,19 @@ WordView = Backbone.Marionette.ItemView.extend({
   },
 
   selectNeighborsOfAnnotations : function() {
+    var self = this;
+        annotations = this.model.get('parentDocument').get('annotations');
     this.model.collection.clear('neighbor');
-    var anns = this.model.get('parentDocument').get('annotations');
-    this.model.collection.each(function(word, word_idx) {
-      //-- Is the person to your right selected?
-      var left_neighbor = word.collection.at(   word_idx - 1),
-          right_neighbor = word.collection.at(  word_idx + 1);
 
-      if(right_neighbor && !right_neighbor.get('selected') && word.get('selected')) {
-        word.set('neighbor', true);
-      }
-
-      if(anns.exactMatch(word).length > 0 && left_neighbor) {
-        if(left_neighbor.get('selected')) {
-          left_neighbor.set('neighbor', true);
+    _.each(annotations.models, function(ann) {
+      var found = self.model.collection.filter(function(word) {
+        if( ann.get('start') <= word.get('start') &&
+            ann.get('stop') >= word.get('stop')  ) {
+          return true;
         }
-        word.set('neighbor', true);
-      }
-
+      });
+      _.last(found).set('neighbor', true);
     });
-  },
-
-  renderingClassSetting : function(attrCheck) {
-    if( this.model.get(attrCheck) ) {
-      this.$el.addClass(attrCheck);
-    } else {
-      this.$el.removeClass(attrCheck);
-    }
   }
 
 });
