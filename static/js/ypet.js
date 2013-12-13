@@ -223,10 +223,10 @@ WordView = Backbone.Marionette.ItemView.extend({
     this.selectWordsOfAnnotations();
     this.selectNeighborsOfAnnotations();
 
-    // console.log('/ / / / / / / / / / / /');
-    // _.each(annotations.models, function(ann) {
-      // console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
-    // });
+    console.log('/ / / / / / / / / / / /');
+    _.each(annotations.models, function(ann) {
+      console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
+    });
   },
 
   createAnns : function(start, stop) {
@@ -282,46 +282,25 @@ WordView = Backbone.Marionette.ItemView.extend({
   selectWordsOfAnnotations : function() {
     //-- Iterate over the words and see if they are contained within any of the documents annotations
     var self = this,
-        offset = 0,
-        clean_word;
-
-    //-- Get an array of simplified annotation objects (they only have start and stop positions)
-    var ann_range =  this.model.get('parentDocument').get('annotations').map(function(m) { return { 'start' : m.get('start'), 'stop' : m.get('stop') } });
-
+        annotations = this.model.get('parentDocument').get('annotations');
     //-- Before we select the words to highlight, remove all the preexisting ones
     this.model.collection.clear('selected');
-    this.model.collection.each(function(word) {
-      //- If the word is overlaps (equals, encompasses, or is emcompassed) an annotation
-      var found = _.filter(ann_range, function(ann) {
-        var word_length = word.get('text').length,
-            ann_length = (ann.stop - ann.start);
 
-        if(word.get('start') == ann.start &&
-           word_length == ann_length) {
-          return true;
-        }
+    _.each(annotations.models, function(ann) {
+      var words_before = self.model.collection.filter(function(word) { return word.get('stop') < ann.get('start'); });
+          words_after = self.model.collection.filter(function(word) { return word.get('start') > ann.get('stop'); });
 
-        //-- If the word is larger than or equal to the annotation
-        if( word_length > ann_length ) {
-           return  word.get('start') <= ann.start &&
-                   word.get('stop') >= ann.stop;
+      words_before.push(words_after);
+      var non_words = _.flatten( words_before );
 
-        //-- If the word is smaller than the annotation (span annotation block encompasses the word)
-        } else {
-          return  word.get('start') >= ann.start &&
-                  //-- bug here if the end of the annotatoin span has a ) or other removed char
-                  word.get('stop') <= ann.stop;
-        }
-       });
-
-      // console.log('Found :: ', found, ' :: ', word.attributes);
-      if( found.length ) { word.set('selected', true); }
+      var words = self.model.collection.filter(function(obj){ return !_.findWhere(non_words, obj); });
+      _.each(words, function(word) { word.set('selected', true); })
     });
 
   },
 
   selectNeighborsOfAnnotations : function() {
-    var self = this;
+    var self = this,
         annotations = this.model.get('parentDocument').get('annotations');
     this.model.collection.clear('neighbor');
 
@@ -329,6 +308,7 @@ WordView = Backbone.Marionette.ItemView.extend({
       var found = self.model.collection.filter(function(word) {
         if( ann.get('start') <= word.get('start') &&
             ann.get('stop') >= word.get('stop')  ) {
+          // word.get('start') < ann.get('stop')
           return true;
         }
       });
