@@ -59,6 +59,7 @@ def read(request, doc_id):
                                   { "doc": doc,
                                     "completed": True,
                                     "turk_sub_location": turk_sub_location,
+                                    "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                     "assignmentId": assignment_id},
                                   context_instance=RequestContext(request))
       else:
@@ -78,13 +79,12 @@ def read(request, doc_id):
           view, created = View.objects.get_or_create(section = sec, user = request.user)
 
       return render_to_response('document/read.jade',
-                                {"doc": doc, "completed": False},
+                                { "doc": doc,
+                                  "completed": False,
+                                  "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
+                                  "assignmentId": assignment_id},
                                 context_instance=RequestContext(request))
 
-# showDocument : function(doc_id, assignment_id, hit_id, worker_id, turk_sub) {
-#   // console.log('showDocument :: ', doc_id, assignment_id, hit_id, worker_id, turk_sub);
-#   User.set('assignment_id', null);
-#   window.aws = null;
 
 #   switch(assignment_id) {
 #   case undefined:

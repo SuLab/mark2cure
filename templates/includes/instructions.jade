@@ -3,7 +3,7 @@
     button(id="instructions_toggle").btn.btn-success
       | Instructions
 
-  div(id="instructions", style="display:none;").col-md-10.col-md-offset-1.well.head-space
+  div(id="instructions", style="display:{{instruct_bool}}").col-md-10.col-md-offset-1.well.head-space
     p
       | <strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!
 
