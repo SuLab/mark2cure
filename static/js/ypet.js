@@ -221,7 +221,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     }
 
     this.selectWordsOfAnnotations();
-    this.selectNeighborsOfAnnotations();
 
     console.log('/ / / / / / / / / / / /');
     _.each(annotations.models, function(ann) {
@@ -276,6 +275,8 @@ WordView = Backbone.Marionette.ItemView.extend({
   sanitizeAnnotation : function(full_str, start) {
     //-- Return the cleaned string and the (potentially) new start position
     var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+
+    console.log(full_str, str);
     return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
@@ -285,6 +286,7 @@ WordView = Backbone.Marionette.ItemView.extend({
         annotations = this.model.get('parentDocument').get('annotations');
     //-- Before we select the words to highlight, remove all the preexisting ones
     this.model.collection.clear('selected');
+    this.model.collection.clear('neighbor');
 
     _.each(annotations.models, function(ann) {
       var words_before = self.model.collection.filter(function(word) { return word.get('stop') < ann.get('start'); });
@@ -295,25 +297,9 @@ WordView = Backbone.Marionette.ItemView.extend({
 
       var words = self.model.collection.filter(function(obj){ return !_.findWhere(non_words, obj); });
       _.each(words, function(word) { word.set('selected', true); })
+      _.last(words).set('neighbor', true);
     });
 
-  },
-
-  selectNeighborsOfAnnotations : function() {
-    var self = this,
-        annotations = this.model.get('parentDocument').get('annotations');
-    this.model.collection.clear('neighbor');
-
-    _.each(annotations.models, function(ann) {
-      var found = self.model.collection.filter(function(word) {
-        if( ann.get('start') <= word.get('start') &&
-            ann.get('stop') >= word.get('stop')  ) {
-          // word.get('start') < ann.get('stop')
-          return true;
-        }
-      });
-      _.last(found).set('neighbor', true);
-    });
   }
 
 });
