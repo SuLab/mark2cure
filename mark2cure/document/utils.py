@@ -1,12 +1,13 @@
 from django.conf import settings
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 
-from mark2cure.document.models import Document, Section
+from mark2cure.document.models import Document, Section, View, Annotation
 from Bio import Entrez, Medline
 from bs4 import BeautifulSoup, NavigableString
 
-import random, re, nltk, datetime
+import csv, random, re, nltk, datetime
 
 def create_from_pubmed_id(pubmed_id=None):
     pubmed_id = str(pubmed_id)
@@ -41,6 +42,53 @@ def create_from_pubmed_id(pubmed_id=None):
           break
 
     return doc
+
+
+def import_golden_documents():
+    path = "NCBI_corpus_development"
+    with open('assets/NCBI_corpus/'+ path +'.txt','r') as f:
+        reader = csv.reader(f, delimiter='\t')
+        for num, title, text in reader:
+            try:
+                doc = Document.objects.get(document_id = num)
+            except ObjectDoesNotExist:
+                doc = Document()
+
+                doc.document_id = num
+                doc.title = title
+                doc.source = path
+                doc.save()
+
+                sec = Section(kind = "t")
+                sec.text = title
+                sec.document = doc
+                sec.save()
+
+                sec = Section(kind = "a")
+                sec.text = text
+                sec.document = doc
+                sec.save()
+
+
+def annotate_golden_documents():
+    user, created = User.objects.get_or_create(username="goldenmaster")
+    if created:
+        user.set_password('')
+        user.save()
+
+    path = "NCBI_corpus_development"
+    with open('assets/NCBI_corpus/'+ path +'_annos.txt','rU') as f:
+        reader = csv.reader(f, delimiter='\t')
+        for doc_id, doc_field, kind, text, start, stop in reader:
+            doc = Document.objects.get(document_id = doc_id)
+            for section in doc.section_set.all():
+                if section.kind == doc_field[0]:
+                    view, created = View.objects.get_or_create(section = section, user = user)
+
+                    ann, created = Annotation.objects.get_or_create(view = view, text = text, start = start, type = kind)
+                    ann.kind = "e"
+                    ann.user_agent = "goldenmaster"
+                    ann.save()
 
 
 def get_pubmed_documents(terms = settings.ENTREZ_TERMS):

@@ -59,7 +59,7 @@ def read(request, doc_id):
                                   { "doc": doc,
                                     "completed": True,
                                     "turk_sub_location": turk_sub_location,
-                                    "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
+                                    "instruct_bool": "block" if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                     "assignmentId": assignment_id},
                                   context_instance=RequestContext(request))
       else:
@@ -81,7 +81,7 @@ def read(request, doc_id):
       return render_to_response('document/read.jade',
                                 { "doc": doc,
                                   "completed": False,
-                                  "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
+                                  "instruct_bool": "block" if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                   "assignmentId": assignment_id},
                                 context_instance=RequestContext(request))
 

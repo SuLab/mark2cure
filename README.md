@@ -30,59 +30,17 @@ An online text annotator to generate user annotations in fun and exploratory way
 
 ### Database Migrations
 
-`alembic revision --autogenerate -m "Init of AMT specific requirements"`
-`alembic upgrade head`
 
 ### Server Configuration
 
-    # /etc/nginx/sites-available/default
-    server {
-        listen 80;
-
-        root /var/www/mark2cure/web-app;
-        index index.html;
-
-        server_name mark2cure.org;
-
-        location /api {
-            include uwsgi_params;
-            uwsgi_pass 127.0.0.1:3031;
-        }
-    }
-
 ### Cron
 
-    */30 * * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py heatmap
-    0 */2 * * * /var/www/mark2cure/ENV/bin/python /var/www/mark2cure/service/manage.py annotate
 
 ### Control
 
-    # View the server log
-    tail -f /var/www/mark2cure/deploy/uwsgi.log
-    # Restart gracefully
-    kill -HUP $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
-    # Kill
-    kill -INT $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
-
-### Update
-
-    #!/bin/bash
-    LOGPATH=/home/ubuntu/gitpull.log
-
-    echo "Updating repo">>$LOGPATH
-    cd /var/www/mark2cure && git pull origin master
-
-    echo "Compiling Application">>$LOGPATH
-    cd /var/www/mark2cure/web-app && node r.js -o app.build.js
-
-    echo "Restarting uWSGI">>$LOGPATH
-    kill -HUP $(cat /var/www/mark2cure/deploy/uwsgi_master.pid)
-
-    date "+%F %T">>$LOGPATH
-
+. /var/www/virtualenvs/mark2cure-prod/bin/activate
+sudo python /var/www/mark2cure/manage.py run_gunicorn -w 4 -k gevent
 
 #### Notes
-  localhost:5000/index-dev.html#/document/25?assignmentId=291O9Z6KW4ZMEANDMICFT0ONOJX5ES&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3&workerId=A296YJ2WQNOSKY&turkSubmitTo=https%3A%2F%2Fworkersandbox.mturk.com
-  localhost:5000/index-dev.html#/document/25?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=2F6CCF0CP5KXT4OJD9OYJ4PMI26VW3
 
-  python manage.py graph_models -a -o myapp_models.png
+Print out a diagram of the database relationships: `python manage.py graph_models -a -o myapp_models.png`
