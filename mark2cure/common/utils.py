@@ -163,7 +163,8 @@ class Turk():
                                         '<ol>'
                                           '<li>'
                                             '<h3>Highlight <u>all</u> diseases and disease abbreviations</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/3/1.png" />'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/3/2.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -171,7 +172,8 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Highlight the longest span of text specific to a disease</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/3/3.png" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/3/4.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -179,7 +181,8 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Highlight disease conjunctions as single, long spans.</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/3/5.png" />'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/3/6.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -187,7 +190,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Highlight symptoms - physical results of having a disease</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight symptoms - physical results of having a disease" src="http://mark2cure.org/static/images/experiment/3/7.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -195,7 +198,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Highlight <u>all</u> occurrences of disease terms</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight all occurrences of disease terms" src="http://mark2cure.org/static/images/experiment/3/8.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -203,7 +206,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Highlight <u>all</u> diseases, disease groups and key disease symptoms</h3>'
-                                            '<img alt="TODO" src="https://mark2cure.org/img/experiment/3/instructions/6.gif" />'
+                                            '<img alt="Highlight all diseases, disease groups and key disease symptoms" src="http://mark2cure.org/static/images/experiment/3/9.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -632,8 +635,8 @@ class Turk():
 
   # Actionable methods
   def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
-      description = ('Highlight by clicking or dragging over multiple words in the following paragraph that are diseases. Do *not* select symptoms, conditions or any other non-disease term. When available, highlight multi-word disease together by click and dragging. When you accept the HIT, you will be allowed to start highlighting and a submit button will appear.')
-      keywords = 'science, annotation, disease, text, highlight, annotation, medicine, term recognition'
+      description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
+      keywords = 'science, abstract, primary literature, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
