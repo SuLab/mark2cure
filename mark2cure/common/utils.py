@@ -141,7 +141,7 @@ class Turk():
 
   def external_question(self, doc_id):
       # Would be cool to pull the length of the document to know the correct size of the window to show
-      return ExternalQuestion("https://mark2cure.org/document/"+str(doc_id), 800)
+      return ExternalQuestion("https://mark2cure.org/document/"+str(doc_id)+"/", 800)
 
   def make_qualification_test(self):
       '''
