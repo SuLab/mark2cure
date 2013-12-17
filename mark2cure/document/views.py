@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from mark2cure.document.models import Document, Annotation, View, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm
@@ -59,7 +59,7 @@ def read(request, doc_id):
                                   { "doc": doc,
                                     "completed": True,
                                     "turk_sub_location": turk_sub_location,
-                                    "instruct_bool": "block" if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
+                                    "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                     "assignmentId": assignment_id},
                                   context_instance=RequestContext(request))
       else:
@@ -67,6 +67,9 @@ def read(request, doc_id):
         doc = Document.objects.get_random_document()
         return redirect('/document/'+ str(doc.pk) )
     else:
+
+      if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE":
+        logout(request)
 
       if worker_id and not request.user.is_authenticated():
         # If it's accepted and a worker that doesn't have an account
@@ -81,7 +84,7 @@ def read(request, doc_id):
       return render_to_response('document/read.jade',
                                 { "doc": doc,
                                   "completed": False,
-                                  "instruct_bool": "block" if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
+                                  "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                   "assignmentId": assignment_id},
                                 context_instance=RequestContext(request))
 

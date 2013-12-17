@@ -623,7 +623,7 @@ class Turk():
 
       qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
       # qual_test = self.mtc.create_qualification_type(
-        # name = 'TEST2 :: Annotation Instructions & Qualification Questions',
+        # name = 'TEST3 :: Annotation Instructions & Qualification Questions',
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,

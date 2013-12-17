@@ -25,9 +25,6 @@ An online text annotator to generate user annotations in fun and exploratory way
     easy_install -U distribute
     pip install -r service/requirements.txt
 
-    # Start the server to start accepting connections
-    uwsgi --ini /var/www/mark2cure/deploy/uwsgi.ini --daemonize /var/www/mark2cure/deploy/uwsgi.log
-
 ### Database Migrations
 
 
