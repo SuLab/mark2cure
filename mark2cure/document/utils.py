@@ -91,6 +91,8 @@ def annotate_golden_documents():
                     ann.save()
 
 
+
+
 def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
     Entrez.email = settings.ENTREZ_EMAIL
 

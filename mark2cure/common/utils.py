@@ -159,10 +159,9 @@ class Turk():
       overview.append_field('Title', 'Instructions')
       overview.append(FormattedContent( '<p><strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>'
                                         '<p><strong>Here are some examples of correctly highlighted text.  Please study these before attempting to take the qualification test.  Please also feel free to refer back to these examples if you are uncertain.</strong></p>'
-                                        '<h2>Instructions</h2>'
-                                        '<ol>'
+                                        '<ul>'
                                           '<li>'
-                                            '<h3>Highlight <u>all</u> diseases and disease abbreviations</h3>'
+                                            '<h3>Rule #1: Highlight <u>all</u> diseases and disease abbreviations</h3>'
                                             '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/3/1.png" />'
                                             '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/3/2.png" />'
                                             '<br />'
@@ -171,7 +170,7 @@ class Turk():
                                             '<br />'
                                           '</li>'
                                           '<li>'
-                                            '<h3>Highlight the longest span of text specific to a disease</h3>'
+                                            '<h3>Rule #2: Highlight the longest span of text specific to a disease</h3>'
                                             '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/3/3.png" />'
                                             '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/3/4.png" />'
                                             '<br />'
@@ -180,7 +179,7 @@ class Turk():
                                             '<br />'
                                           '</li>'
                                           '<li>'
-                                            '<h3>Highlight disease conjunctions as single, long spans.</h3>'
+                                            '<h3>Rule #3: Highlight disease conjunctions as single, long spans.</h3>'
                                             '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/3/5.png" />'
                                             '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/3/6.png" />'
                                             '<br />'
@@ -189,7 +188,7 @@ class Turk():
                                             '<br />'
                                           '</li>'
                                           '<li>'
-                                            '<h3>Highlight symptoms - physical results of having a disease</h3>'
+                                          '<h3>Rule #4: Highlight symptoms - physical results of having a disease</h3>'
                                             '<img alt="Highlight symptoms - physical results of having a disease" src="http://mark2cure.org/static/images/experiment/3/7.png" />'
                                             '<br />'
                                             '<br />'
@@ -197,7 +196,7 @@ class Turk():
                                             '<br />'
                                           '</li>'
                                           '<li>'
-                                            '<h3>Highlight <u>all</u> occurrences of disease terms</h3>'
+                                            '<h3>Rule #5: Highlight <u>all</u> occurrences of disease terms</h3>'
                                             '<img alt="Highlight all occurrences of disease terms" src="http://mark2cure.org/static/images/experiment/3/8.png" />'
                                             '<br />'
                                             '<br />'
@@ -205,22 +204,22 @@ class Turk():
                                             '<br />'
                                           '</li>'
                                           '<li>'
-                                            '<h3>Highlight <u>all</u> diseases, disease groups and key disease symptoms</h3>'
+                                            '<h3>Rule #6: Highlight <u>all</u> diseases, disease groups and key disease symptoms</h3>'
                                             '<img alt="Highlight all diseases, disease groups and key disease symptoms" src="http://mark2cure.org/static/images/experiment/3/9.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
                                           '</li>'
-                                        '</ol>'))
+                                        '</ul>'))
 
       #
       # Questions to ask the Worker
       #
       instructions = "Select all and only the terms that should be highlighted for each text segment (don't select terms that overlap with each other in the text):"
-      paragraph1 = "Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . "
-      paragraph2 = "Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products."
-      paragraph3 = "We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and..."
+      paragraph1 = "Test Paragraph 1: \"Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . \""
+      paragraph2 = "Test Paragraph 2: \"Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products.\""
+      paragraph3 = "Test Paragraph 3: \"We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and...\""
 
       # # # # # # # # #
       #
@@ -229,6 +228,7 @@ class Turk():
       # # # # # # # # #
       #abcdefghijklmnopqrstuvwxyz
       qc = QuestionContent()
+      qc.append_field('Title', "Select the words that should be highlighted in the next three test paragraphs according to the rules above.")
       qc.append_field('Title', paragraph1)
       qc.append_field('Title', "")
       qc.append_field('Title', "Which of the following should be highlighted according to the instructions described above?")
@@ -635,7 +635,7 @@ class Turk():
 
   # Actionable methods
   def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
-      description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
+      description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
       keywords = 'science, abstract, primary literature, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
       qualifications = Qualifications()
@@ -646,7 +646,7 @@ class Turk():
           hit_type = None,
           question = self.external_question(doc_id),
           hit_layout = None,
-          lifetime = datetime.timedelta(7),
+          lifetime = datetime.timedelta(14),
           max_assignments = max_assignments,
           title = title,
           description = description,
