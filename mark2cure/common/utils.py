@@ -729,7 +729,7 @@ class Turk():
           keywords = keywords,
           reward = reward,
           duration = datetime.timedelta(minutes = minutes),
-          approval_delay = None,
+          approval_delay = 60 * 60 * 24,
           annotation = None,
           questions = None,
           qualifications = qualifications,

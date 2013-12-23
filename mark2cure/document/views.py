@@ -135,6 +135,9 @@ def createannotation(request, doc_id, section_id):
         ann.user_agent = request.META['HTTP_USER_AGENT']
         ann.player_ip = request.META['REMOTE_ADDR']
 
+        if request.user.profile.mturk:
+          ann.experiment = 3
+
         ann.save()
         return HttpResponse(200)
     return HttpResponse(500)
