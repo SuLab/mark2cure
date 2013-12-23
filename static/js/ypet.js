@@ -109,23 +109,22 @@ Paragraph = Backbone.RelationalModel.extend({
   }],
 
   parseText : function() {
-    var self = this,
-        step = 0,
-        length = 0,
-        words = _.map(_.string.words( self.get('text') ), function(word) {
-          length = word.length;
-          step = step + length + 1;
-          return {
+    var step = 0,
+        word_obj,
+        words = _.map(_.string.words( this.get('text') ), function(word) {
+          word_obj = {
             'text'      : word,
-            'length'    : length,
-            'start'     : step - length - 1,
-            'stop'      : step - 2
+            'length'    : word.length,
+            'start'     : step,
+            'stop'      : step + word.length
           }
+          step = step + word.length + 1;
+          return word_obj;
         });
 
       //-- Remove any words if they previously existed and add the new ones
-      _.each(self.get('words'), function(word) { word.destroy(); });
-      self.get('words').add(words);
+      _.each(this.get('words'), function(word) { word.destroy(); });
+      this.get('words').add(words);
   }
 
 });
@@ -178,7 +177,7 @@ WordView = Backbone.Marionette.ItemView.extend({
     var dragging = this.options.firefox ? 0 : evt.which;
     //-- If you're dragging with the mouse down to make a large selection
     if( dragging ) {
-      var last_model = this.model.collection.findWhere({latest: true}),
+      var last_model = this.model.collection.findWhere({latest: true}) || this.model.collection.at(0),
           sel = [last_model.get('start'), this.model.get('start')],
           range = [_.min(sel), _.max(sel)],
           highlight_list = this.model.collection.selectBetweenRange(range[0], range[1]+1);
@@ -189,7 +188,7 @@ WordView = Backbone.Marionette.ItemView.extend({
 
   releaseDrag : function(evt) {
     //-- onmouseup from the user
-    var last_model = this.model.collection.findWhere({latest: true}),
+    var last_model = this.model.collection.findWhere({latest: true})  || this.model.collection.at(0),
         annotations = this.model.get('parentDocument').get('annotations');
 
     //-- If the user just finished making a drag selection
@@ -222,10 +221,10 @@ WordView = Backbone.Marionette.ItemView.extend({
 
     this.selectWordsOfAnnotations();
 
-    console.log('/ / / / / / / / / / / /');
-    _.each(annotations.models, function(ann) {
-      console.log(ann.get('text'), " || ", ann.get('start'), ann.get('length'), ann.get('stop'));
-    });
+    // console.log('/ / / / / / / / / / / /');
+    // _.each(annotations.models, function(ann) {
+      // console.log(ann.get('text'), " || ", ann.get('start'), ann.get('stop'));
+    // });
   },
 
   createAnns : function(start, stop) {
@@ -275,31 +274,33 @@ WordView = Backbone.Marionette.ItemView.extend({
   sanitizeAnnotation : function(full_str, start) {
     //-- Return the cleaned string and the (potentially) new start position
     var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-
-    console.log(full_str, str);
+    // console.log(full_str, str);
     return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
   selectWordsOfAnnotations : function() {
     //-- Iterate over the words and see if they are contained within any of the documents annotations
     var self = this,
-        annotations = this.model.get('parentDocument').get('annotations');
+        annotations = this.model.get('parentDocument').get('annotations'),
+        word_index_average = 0;
+
     //-- Before we select the words to highlight, remove all the preexisting ones
     this.model.collection.clear('selected');
     this.model.collection.clear('neighbor');
 
     _.each(annotations.models, function(ann) {
-      var words_before = self.model.collection.filter(function(word) { return word.get('stop') < ann.get('start'); });
-          words_after = self.model.collection.filter(function(word) { return word.get('start') > ann.get('stop'); });
+      var words = self.model.collection.filter(function(word) {
+        word_index_average = (word.get('start') + word.get('stop')) / 2;
+        // console.log(word.get('text'), " // ", word_index_average, word.get('start'), word.get('stop'),  " // ", ann.get('start'), ann.get('stop') );
+        return ann.get('start') < word_index_average && word_index_average < ann.get('stop');
+      });
 
-      words_before.push(words_after);
-      var non_words = _.flatten( words_before );
+      if(words.length) {
+        _.each(words, function(word) { word.set('selected', true); })
+        _.last(words).set('neighbor', true);
+      }
 
-      var words = self.model.collection.filter(function(obj){ return !_.findWhere(non_words, obj); });
-      _.each(words, function(word) { word.set('selected', true); })
-      _.last(words).set('neighbor', true);
     });
-
   }
 
 });

@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from mark2cure.document.models import Document, Annotation, View, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm
-from mark2cure.document.utils import create_from_pubmed_id
+from mark2cure.document.utils import create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
 from copy import copy
@@ -41,6 +41,8 @@ def list(request, page_num=1):
                               context_instance=RequestContext(request))
 
 
+
+
 # @login_required
 def read(request, doc_id):
     # If they're attempting to view or work on the document
@@ -55,6 +57,10 @@ def read(request, doc_id):
 
     if request.method == 'POST':
       if worker_id:
+
+        if request.user.is_authenticated():
+          check_validation_status(request.user, doc)
+
         return render_to_response('document/read.jade',
                                   { "doc": doc,
                                     "completed": True,
@@ -89,65 +95,6 @@ def read(request, doc_id):
                                 context_instance=RequestContext(request))
 
 
-#   switch(assignment_id) {
-#   case undefined:
-#     //-- Normal user asking for specific document
-#     vent.trigger('navigate:document', {doc_id: doc_id});
-#     break;
-#   case 'ASSIGNMENT_ID_NOT_AVAILABLE':
-#     //-- Preview mode
-#     window.aws = {};
-#     window.aws.assignment_id = assignment_id;
-#     User.set('assignment_id', assignment_id);
-#     vent.trigger('navigate:document', {doc_id: doc_id});
-#     break;
-#   default:
-#     window.aws = {};
-#     window.aws.turk_sub = turk_sub;
-#     window.aws.worker_id = worker_id;
-#     window.aws.hit_id = hit_id;
-#     window.aws.assignment_id = assignment_id;
-#     window.aws.document_id = doc_id;
-#     //-- If via AMT, get that user started if not auth'd already
-#     User.set('assignment_id', assignment_id);
-
-#     if( User.authenticated() && User.get('mturk') ) {
-#       vent.trigger('navigate:document', {doc_id: doc_id});
-#     } else {
-#       User.set('username', worker_id);
-#       User.set('mturk', true);
-#       User.save(null, {success: function() {
-#         //-- After our user is saved, go ahead to get the document
-#         vent.trigger('navigate:document', {doc_id: doc_id});
-#       }});
-#     }
-#     break;
-#   }
-
-# },
-
-# views = db.session.query(View).filter_by(user = current_user).filter_by( document = document ).all()
-# if len(views):
-  # if current_user.mturk:
-    # t = Turk()
-    # t.mtc.block_worker(current_user.username, "Attempted to submit same document multiple times.")
-  # raise ValueError("Cannot submit a document twice")
-
-# if document.validate and current_user.mturk:
-#       # If this is a validate document, check the user's history, if it's their 3rd submission
-#       # or more run test to potentially fail if poor performance
-#       valid_views = db.session.query(View).\
-#           filter_by(user = current_user).\
-#           filter( View.document.has(validate=1) ).\
-#           order_by( desc(View.created) ).\
-#           limit(3).all()
-#       if len(valid_views) is 3:
-#         if sum(1 for x in valid_views if gold_matches(x.user, x.document) >= 1) is not 3:
-#           print "failed"
-#           t = Turk()
-#           t.mtc.block_worker(current_user.username, "Failed to properly answer golden master performance documents")
-#
-
 
 @login_required
 def delete(request, doc_id):
@@ -181,15 +128,14 @@ def createannotation(request, doc_id, section_id):
 
     form = AnnotationForm(request.POST)
     if form.is_valid():
-      ann = form.save(commit=False)
+        ann = form.save(commit=False)
 
-      ann.view = view
-      ann.type = "disease"
-      ann.user_agent = request.META['HTTP_USER_AGENT']
-      ann.player_ip = request.META['REMOTE_ADDR']
+        ann.view = view
+        ann.type = "disease"
+        ann.user_agent = request.META['HTTP_USER_AGENT']
+        ann.player_ip = request.META['REMOTE_ADDR']
 
-      ann.save()
-      return HttpResponse("Success")
-
-    return HttpResponse("Failed")
+        ann.save()
+        return HttpResponse(200)
+    return HttpResponse(500)
 

@@ -1,4 +1,5 @@
-from mark2cure.document.utils import import_golden_documents, annotate_golden_documents
+from mark2cure.document.utils import import_golden_documents, annotate_golden_documents, randomly_make_validation_documents
 
 import_golden_documents()
+randomly_make_validation_documents()
 annotate_golden_documents()

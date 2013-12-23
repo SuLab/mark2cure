@@ -38,13 +38,13 @@ block content
               span.label.label-info Created
               |  #{ doc.created|naturaltime }
 
-          form(method="post")
+          form(method="post", id="document_submit")
             {% csrf_token %}
             button.btn.btn-primary.btn-large.done
               | Done
 
 
-    form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit_form")
+    form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
       input(type="hidden", name="assignmentId", value="{{ assignmentId }}")
       input(type="text", name="document_id", value="{{ doc.pk }}")
 
@@ -55,7 +55,7 @@ block post-footer
     - if completed
       script.
         // If the document was completed forget the rest and submit the mturk ajax request to move the turker
-        $('#worker_submit_form').submit();
+        $('#worker_submit').submit();
 
     - else
       script.
@@ -90,14 +90,40 @@ block post-footer
 
         YPet.start();
 
-        $('button.done').click(function() {
-          //-- Submit the annotations
-          _.each( _.keys(sections), function(key) {
-            var ann_post_body = YPet[key].currentView.collection.parentDocument.get('annotations').toJSON(),
-                url = '/document/{{ doc.pk }}/section/'+ key +'/annotation/create/';
+        $('button.done').click(function(evt) {
+          //-- Submit the annotations to the server, then tell the server
+          //-- you're done with that document.
 
-            _.each(ann_post_body, function(annotation) {
-              $.post(url, $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, annotation));
+          //-- We prevent this or else Django gives broken pipe b/c we need to
+          //-- wait for the ajax submissions to close before reloading the page
+          evt.preventDefault();
+          var counter = 0,
+              ann_counter = 0;
+
+          //-- Iterate over each of the paragraphs or annotatable sections on the page
+          _.each( _.keys(sections), function(key) {
+            var annotations = YPet[key].currentView.collection.parentDocument.get('annotations').toJSON(),
+                url = '/document/{{ doc.pk }}/section/'+ key +'/annotation/create/';
+            ann_counter += annotations.length;
+
+            //-- Iterate over each of the annotations within that section
+            _.each(annotations, function(annotation) {
+              $.ajax({
+                type: 'POST',
+                url: url,
+                data: $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, annotation),
+                cache: false,
+                async: false,
+                success: function() { counter++; },
+              });
             });
           });
+
+          //-- If they all got sent to the server, let's move on
+          if(counter === ann_counter) {
+            $('#document_submit').submit();
+          } else {
+            alert('There was a problem submissing this document. Please try another.')
+          }
+
         });

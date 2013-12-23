@@ -237,6 +237,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t1"), ("False", "f1")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'dystrophy')
@@ -244,6 +245,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t2"), ("False", "f2")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'Myotonic dystrophy')
@@ -251,6 +253,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t3"), ("False", "f3")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'DM')
@@ -258,6 +261,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t4"), ("False", "f4")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'CTG')
@@ -265,6 +269,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t5"), ("False", "f5")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'trinucleotide repeat expansion')
@@ -272,13 +277,22 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t6"), ("False", "f6")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'DMPK')
+      qc.append_field('Text', 'kinase-encoding gene')
       q7 = Question(identifier = 'term_selection_7', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t7"), ("False", "f7")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'DMPK')
+      q8 = Question(identifier = 'term_selection_8', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t8"), ("False", "f8")])))
 
       # # # # # # # # #
       #
@@ -288,52 +302,66 @@ class Turk():
       qc = QuestionContent()
       qc.append_field('Title', paragraph2)
       qc.append_field('Text', 'Germline mutations')
-      q8 = Question(identifier = 'term_selection_8', content = qc, is_required = True,
-          answer_spec = AnswerSpecification(SelectionAnswer(
-            style='radiobutton',
-            selections=[("True", "t8"), ("False", "f8")])))
-      qc = QuestionContent()
-      qc.append_field('Title', "")
-      qc.append_field('Text', 'inherited breast and ovarian cancer')
       q9 = Question(identifier = 'term_selection_9', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t9"), ("False", "f9")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'breast')
+      qc.append_field('Text', 'BRCA1')
       q10 = Question(identifier = 'term_selection_10', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t10"), ("False", "f10")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'ovarian cancer')
+      qc.append_field('Text', 'breast')
       q11 = Question(identifier = 'term_selection_11', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t11"), ("False", "f11")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'cancer')
+      qc.append_field('Text', 'ovarian cancer')
       q12 = Question(identifier = 'term_selection_12', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t12"), ("False", "f12")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'tumour')
+      qc.append_field('Text', 'inherited breast and ovarian cancer')
       q13 = Question(identifier = 'term_selection_13', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t13"), ("False", "f13")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'tumour suppressor')
+      qc.append_field('Text', 'cancer')
       q14 = Question(identifier = 'term_selection_14', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t14"), ("False", "f14")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour')
+      q15 = Question(identifier = 'term_selection_15', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t15"), ("False", "f15")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour suppressor')
+      q16 = Question(identifier = 'term_selection_16', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t16"), ("False", "f16")])))
 
 
       # # # # # # # # #
@@ -344,24 +372,11 @@ class Turk():
       qc = QuestionContent()
       qc.append_field('Title', paragraph3)
       qc.append_field('Text', 'age of 50 years')
-      q15 = Question(identifier = 'term_selection_15', content = qc, is_required = True,
-          answer_spec = AnswerSpecification(SelectionAnswer(
-            style='radiobutton',
-            selections=[("True", "t15"), ("False", "f15")])))
-      qc = QuestionContent()
-      qc.append_field('Title', "")
-      qc.append_field('Text', 'short stature')
-      q16 = Question(identifier = 'term_selection_16', content = qc, is_required = True,
-          answer_spec = AnswerSpecification(SelectionAnswer(
-            style='radiobutton',
-            selections=[("True", "t16"), ("False", "f16")])))
-      qc = QuestionContent()
-      qc.append_field('Title', "")
-      qc.append_field('Text', 'restricted joint mobility')
       q17 = Question(identifier = 'term_selection_17', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t17"), ("False", "f17")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'severely handicapped')
@@ -369,6 +384,7 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t18"), ("False", "f18")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
       qc.append_field('Text', 'short')
@@ -376,35 +392,62 @@ class Turk():
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t19"), ("False", "f19")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'blindness')
+      qc.append_field('Text', 'short stature')
       q20 = Question(identifier = 'term_selection_20', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t20"), ("False", "f20")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'dysplasia')
+      qc.append_field('Text', 'restricted joint mobility')
       q21 = Question(identifier = 'term_selection_21', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t21"), ("False", "f21")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'Kniest dysplasia')
+      qc.append_field('Text', 'blindness')
       q22 = Question(identifier = 'term_selection_22', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t22"), ("False", "f22")])))
+
       qc = QuestionContent()
       qc.append_field('Title', "")
-      qc.append_field('Text', 'molecular findings')
+      qc.append_field('Text', 'mentally alert')
       q23 = Question(identifier = 'term_selection_23', content = qc, is_required = True,
           answer_spec = AnswerSpecification(SelectionAnswer(
             style='radiobutton',
             selections=[("True", "t23"), ("False", "f23")])))
 
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'molecular findings')
+      q24 = Question(identifier = 'term_selection_24', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t24"), ("False", "f24")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'Kniest dysplasia')
+      q25 = Question(identifier = 'term_selection_25', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t25"), ("False", "f25")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'dysplasia')
+      q26 = Question(identifier = 'term_selection_26', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t26"), ("False", "f26")])))
 
       # Add the content to the questionform
       question_form.append(overview)
@@ -431,6 +474,9 @@ class Turk():
       question_form.append(q21)
       question_form.append(q22)
       question_form.append(q23)
+      question_form.append(q24)
+      question_form.append(q25)
+      question_form.append(q26)
 
       # Define evaluation mechanism
       answer_logic = '''<AnswerKey xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd">
@@ -499,10 +545,14 @@ class Turk():
                             </AnswerOption>
                           </Question>
 
+
+
+
+
                           <Question>
                           <QuestionIdentifier>term_selection_9</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>t9</SelectionIdentifier>
+                              <SelectionIdentifier>f9</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -550,7 +600,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_15</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>f15</SelectionIdentifier>
+                              <SelectionIdentifier>t15</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -558,15 +608,17 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_16</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>t16</SelectionIdentifier>
+                              <SelectionIdentifier>f16</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
 
+
+
                           <Question>
                           <QuestionIdentifier>term_selection_17</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>t17</SelectionIdentifier>
+                              <SelectionIdentifier>f17</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -598,7 +650,7 @@ class Turk():
                           <Question>
                           <QuestionIdentifier>term_selection_21</QuestionIdentifier>
                             <AnswerOption>
-                              <SelectionIdentifier>f21</SelectionIdentifier>
+                              <SelectionIdentifier>t21</SelectionIdentifier>
                               <AnswerScore>1</AnswerScore>
                             </AnswerOption>
                           </Question>
@@ -619,17 +671,41 @@ class Turk():
                             </AnswerOption>
                           </Question>
 
+                          <Question>
+                          <QuestionIdentifier>term_selection_24</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f24</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_25</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t25</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_26</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f26</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
                         </AnswerKey>'''
 
-      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
-      # qual_test = self.mtc.create_qualification_type(
-        # name = 'TEST3 :: Annotation Instructions & Qualification Questions',
+      # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
+      qual_test = self.mtc.create_qualification_type(
+        name = 'Annotation Instructions & Qualification Questions',
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        retry_delay = 1,
-        test_duration = 20 * 60)
+        # retry_delay = 1,
+        test_duration = 25 * 60)
 
       return qual_test
 
@@ -640,7 +716,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 20) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 22) )
 
       hit = self.mtc.create_hit(
           hit_type = None,

@@ -4,10 +4,48 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.common.utils import Turk
+
 from Bio import Entrez, Medline
 from bs4 import BeautifulSoup, NavigableString
 
 import csv, random, re, nltk, datetime
+
+def gold_matches(current_user, document):
+    '''
+      Used on the document API to check for good performance from users
+
+      This is very "loose" but given how good turkers have been and how careful we want to be it's perfect
+    '''
+    user_annotations = Annotation.objects.filter(view__section__document = document, view__user = current_user).all()
+    gold_user, created = User.objects.get_or_create(username="goldenmaster")
+    gold_annotations = Annotation.objects.filter(view__section__document = document, view__user = gold_user).all()
+
+    user_annotations = [ann.text for ann in user_annotations]
+    gold_annotations = [ann.text for ann in gold_annotations]
+    true_positives = [gm_ann for gm_ann in gold_annotations if gm_ann in user_annotations]
+
+    return len(true_positives)
+
+
+def check_validation_status(user, document):
+    views = View.objects.filter(user = user, section__document = document ).all()
+    if len(views) > 2:
+      if user.profile.mturk:
+        t = Turk()
+        t.mtc.block_worker(user.username, "Attempted to submit same document multiple times.")
+      raise ValueError("Cannot submit a document twice")
+
+    if document.section_set.all()[:1].get().validate and user.profile.mturk:
+      # If this is a validate document, check the user's history, if it's their 3rd submission
+      # or more run test to potentially fail if poor performance
+      valid_views = View.objects.filter(user = user, section__validate = True).order_by('-created').all()[:6]
+
+      if len(valid_views) is 6:
+        if sum(1 for x in valid_views if gold_matches(x.user, x.section.document) >= 1) < 3:
+          t = Turk()
+          t.mtc.block_worker(user.username, "Failed to properly answer golden master performance documents")
+
 
 def create_from_pubmed_id(pubmed_id=None):
     pubmed_id = str(pubmed_id)
@@ -90,6 +128,25 @@ def annotate_golden_documents():
                     ann.user_agent = "goldenmaster"
                     ann.save()
 
+
+    # Now go back over and confirm they match
+    gm_anns = Annotation.objects.filter(view__user = user).all()
+    for annotation in gm_anns:
+      text = annotation.view.section.text
+      # length = len(annotation.text)
+      print annotation.text, " // ", text[annotation.start:]
+      print "\n - - - - - - \n"
+
+
+def randomly_make_validation_documents():
+    documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
+    doc_ids = [doc.id for doc in documents]
+    random.shuffle(doc_ids)
+    for doc_id in doc_ids[:10]:
+        document = Document.objects.get(pk = doc_id)
+        for section in document.section_set.all():
+          section.validate = True
+          section.save()
 
 
 
