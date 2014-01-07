@@ -133,8 +133,7 @@ def annotate_golden_documents():
     gm_anns = Annotation.objects.filter(view__user = user).all()
     for annotation in gm_anns:
       text = annotation.view.section.text
-      # length = len(annotation.text)
-      print annotation.text, " // ", text[annotation.start:]
+      print annotation.text, "::", text[annotation.start:]
       print "\n - - - - - - \n"
 
 

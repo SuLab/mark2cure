@@ -755,12 +755,6 @@ class Analysis():
           'false_negatives': [] }
 
 
-    def count_hits(self):
-      # views = View.objects.filter(user__userprofile__mturk = True).all()
-      annotations = Annotation.objects.filter(view__user__userprofile__mturk = True).all()
-      print annotations
-
-
 #
 #     def flatten(self, iterables):
 #       return (elem for iterable in iterables for elem in iterable)
