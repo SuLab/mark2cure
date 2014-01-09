@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.account.models import Ncbo
+from mark2cure.common.models import Concept
 
 import requests, re, csv, datetime
 import xml.etree.ElementTree as ET
@@ -29,11 +30,9 @@ class Command(BaseCommand):
 
             ncbo, created = Ncbo.objects.get_or_create(min_term_size=minsize, score=score, user=u)
 
-
         # Go over all the documents
         annotators = Ncbo.objects.filter(score = 5).all()
         documents = Document.objects.filter(source='NCBI_corpus_development').all()
-        self.stdout.write('MAX')
 
         for document in documents:
           for annotator in annotators:
@@ -42,6 +41,8 @@ class Command(BaseCommand):
 
             if current_anns <= 3:
               for section in document.section_set.all():
+                view, vc = View.objects.get_or_create(section = section, user = annotator.user)
+
                 # NCBO Annotator http request
                 payload = { 'apikey'             : settings.NCBO_API_KEY,
                             'stopWords'                 : settings.STOP_WORDS,
@@ -57,18 +58,17 @@ class Command(BaseCommand):
 
 
                 # Config settings to change per request
-                payload['textToAnnotate'] = section.text
+                payload['textToAnnotate'] = view.section.text
                 payload['minTermSize'] = annotator.min_term_size
 
-                r = requests.post("http://rest.bioontology.org/obs/annotator", data=self.payload)
-                handle_request(r, annotator, section)
+                r = requests.post("http://rest.bioontology.org/obs/annotator", data=payload)
+                self.handle_request(r, annotator, view)
 
-    def handle_request(self, request, annotator, section):
+    def handle_request(self, request, annotator, view):
       if request.ok:
         try:
           root = ET.fromstring( request.text.decode('utf-8') )
 
-          print request.text.decode('utf-8')
           # Make array of all relevant NCBO results
           for ann in root.iter('annotationBean'):
             ctx = ann.find('context')
@@ -76,34 +76,22 @@ class Command(BaseCommand):
             start = int(ctx.find('from').text)-1
             stop = int(ctx.find('to').text)
 
-            annotation = document.text[start:stop]
+            annotation = view.section.text[start:stop]
             concept_url =  ctx.find('term').find('concept').find('fullId').text
 
             if score >= annotator.score:
-              print annotation
-    #           concept = db.session.query(Concept).filter_by(concept_id = concept_url).first()
-    #           if concept is None:
-    #             concept = Concept(concept_url)
-    #             db.session.add(concept)
-    #             db.session.commit()
+              concept, cc = Concept.objects.get_or_create(concept_id = concept_url)
 
+              # Find those results in the original abstract we had
+              ann = Annotation()
+              ann.kind = 'e'
+              ann.type = 'disease'
+              ann.text = annotation
+              ann.start = start
+              ann.user_agent = 'ncbo'
+              ann.view = view
+              ann.concept = concept
+              ann.save()
 
-    #           # Find those results in the original abstract we had
-    #           ann = Annotation( 0,
-    #                             'disease',
-    #                             annotation,
-    #                             start,
-    #                             len(annotation),
-    #                             stop,
-    #                             annotator.user,
-    #                             document,
-    #                             annotator.user.username,
-    #                             '',
-    #                             concept
-    #                           );
-    #           db.session.add(ann)
-
-    #         # Save every document instead of once incase some doc crashes
-    #         db.session.commit()
-    #     except Exception:
-    #       pass
+        except Exception:
+          pass

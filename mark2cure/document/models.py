@@ -5,6 +5,7 @@ from django.utils.encoding import smart_text
 
 from mark2cure.document.managers import DocumentManager, AnnotationManager
 from django.contrib.auth.models import User
+from mark2cure.common.models import Concept
 
 from ttp import ttp
 from decimal import Decimal as D
@@ -86,6 +87,7 @@ class Annotation(models.Model):
     experiment  = models.IntegerField(blank=True, null=True)
 
     view = models.ForeignKey(View)
+    concept = models.ForeignKey(Concept, blank=True, null=True)
 
     def __unicode__(self):
         return self.text

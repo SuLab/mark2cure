@@ -1,10 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
-from mark2cure.document.models import Document, Annotation
 
 class Concept(models.Model):
     concept_id = models.TextField(blank=False)
-    annotation = models.ForeignKey(Annotation)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.concept_id
 
 
 class Message(models.Model):
@@ -24,5 +28,3 @@ class Quest(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
-    documents = models.ManyToManyField(Document)
