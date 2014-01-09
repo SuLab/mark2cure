@@ -74,7 +74,7 @@ class Annotation(models.Model):
     kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE)
 
     # Disease, Gene, Protein, et cetera...
-    type    = models.CharField(max_length=12, blank=True)
+    type    = models.CharField(max_length=40, blank=True)
 
     text    = models.TextField(blank=False)
     start   = models.IntegerField()

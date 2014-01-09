@@ -35,8 +35,9 @@ An online text annotator to generate user annotations in fun and exploratory way
 
 ### Control
 
-. /var/www/virtualenvs/mark2cure-prod/bin/activate
-sudo python /var/www/mark2cure/manage.py run_gunicorn -w 4 -k gevent
+`. /opt/mark2cure-venv/bin/activate`
+`cd webapps/mark2cure/ && git pull`
+`sudo supervisorctl restart mark2cure`
 
 #### Notes
 

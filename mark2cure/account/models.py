@@ -33,7 +33,7 @@ User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
 
 class Ncbo(models.Model):
-    user = models.OneToOneField(User, unique=True)
+    user = models.OneToOneField(User, unique=True, null=True)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
