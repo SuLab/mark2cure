@@ -9,7 +9,7 @@ from mark2cure.common.utils import Turk
 from Bio import Entrez, Medline
 from bs4 import BeautifulSoup, NavigableString
 
-import csv, random, re, nltk, datetime
+import re, nltk, datetime
 
 def gold_matches(current_user, document):
     '''
@@ -82,73 +82,6 @@ def create_from_pubmed_id(pubmed_id=None):
     return doc
 
 
-def import_golden_documents():
-    path = "NCBI_corpus_development"
-    with open('assets/NCBI_corpus/'+ path +'.txt','r') as f:
-        reader = csv.reader(f, delimiter='\t')
-        for num, title, text in reader:
-            try:
-                doc = Document.objects.get(document_id = num)
-            except ObjectDoesNotExist:
-                doc = Document()
-
-                doc.document_id = num
-                doc.title = title
-                doc.source = path
-                doc.save()
-
-                sec = Section(kind = "t")
-                sec.text = title
-                sec.document = doc
-                sec.save()
-
-                sec = Section(kind = "a")
-                sec.text = text
-                sec.document = doc
-                sec.save()
-
-
-def annotate_golden_documents():
-    user, created = User.objects.get_or_create(username="goldenmaster")
-    if created:
-        user.set_password('')
-        user.save()
-
-    path = "NCBI_corpus_development"
-    with open('assets/NCBI_corpus/'+ path +'_annos.txt','rU') as f:
-        reader = csv.reader(f, delimiter='\t')
-        for doc_id, doc_field, kind, text, start, stop in reader:
-            doc = Document.objects.get(document_id = doc_id)
-            for section in doc.section_set.all():
-                if section.kind == doc_field[0]:
-                    view, created = View.objects.get_or_create(section = section, user = user)
-
-                    ann, created = Annotation.objects.get_or_create(view = view, text = text, start = start, type = kind)
-                    ann.kind = "e"
-                    ann.user_agent = "goldenmaster"
-                    ann.save()
-
-
-    # Now go back over and confirm they match
-    gm_anns = Annotation.objects.filter(view__user = user).all()
-    for annotation in gm_anns:
-      text = annotation.view.section.text
-      print annotation.text, "::", text[annotation.start:]
-      print "\n - - - - - - \n"
-
-
-def randomly_make_validation_documents():
-    documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
-    doc_ids = [doc.id for doc in documents]
-    random.shuffle(doc_ids)
-    for doc_id in doc_ids[:10]:
-        document = Document.objects.get(pk = doc_id)
-        for section in document.section_set.all():
-          section.validate = True
-          section.save()
-
-
-
 def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
     Entrez.email = settings.ENTREZ_EMAIL
 
@@ -181,21 +114,4 @@ def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
             sec.document = doc
             sec.save()
 
-
-def strip_tags(html, invalid_tags):
-    soup = BeautifulSoup(html)
-    # print soup
-
-    for tag in soup.findAll(True):
-        if tag.name in invalid_tags:
-            s = ""
-
-            for c in tag.contents:
-                if not isinstance(c, NavigableString):
-                    c = strip_tags(unicode(c), invalid_tags)
-                s += unicode(c)
-
-            tag.replaceWith(s)
-
-    return soup
 

@@ -30,6 +30,7 @@ class Document(models.Model):
     def submitted(self):
         return self.section_set
 
+
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
       ('t', 'Title'),
@@ -53,6 +54,7 @@ class Section(models.Model):
     def __unicode__(self):
         return self.text
 
+
 class View(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -62,6 +64,7 @@ class View(models.Model):
 
     def __unicode__(self):
       return "Doc:"+ str(self.section.document.pk) +", Sec:"+ str(self.section.pk) +" by "+ self.user.username
+
 
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
