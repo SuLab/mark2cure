@@ -1,0 +1,95 @@
+breast cancer	10	
+hereditary breast cancer	5
+colorectal cancers	4
+pancreatic tumors	3
+ovarian cancer	3
+CHD	3
+IDDM	2
+APC	2
+G6PD deficiency	2
+HPT-JT syndrome	2
+autosomal dominant nocturnal frontal lobe epilepsy	2
+type IID von Willebrand disease	2
+PMD	2
+WAS	2
+type IV Ehlers-Danlos syndrome	2
+cerebral ALD	2
+non-papillary renal cell carcinomas	2
+sporadic Wilms tumours	1
+classical galactosemia	1
+Denys-Drash syndrome	1
+stage II colorectal cancer	1
+GLD	1
+breast carcinomas	1
+breast cancers	1
+desmoplastic small round cell tumour	1
+AO-2	1
+iris hypoplasia	1
+jaw tumor	1
+familial breast cancer	1
+DTDST chondrodysplasias	1
+colorectal cancer	1
+T-cell lymphomas	1
+HPRT-deficiency	1
+favism	1
+juvenile granulosa cell tumour	1
+Deficiency of terminal complement components	1
+Pyle disease	1
+non-papillary renal cell carcinoma	1
+Complete hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency	1
+stage III disease	1
+DCC-negative tumors	1
+renal hamartomas	1
+Duarte enzyme variant of galactosemia	1
+Type I C2 deficiency	1
+papillary renal cell tumours	1
+primary glioblastomas	1
+carcinosarcoma	1
+CETP deficiency	1
+sporadic renal cell carcinomas	1
+deficiency of aspartoacylase	1
+isolated thrombocytopenia	1
+Neisseria meningitidis	1
+Pelizaeus-Merzbacher disease	1
+atrophy	1
+Classical galactosemia	1
+primary HPT	1
+estrogen receptor-positive breast carcinomas	1
+complete deficiency of C9	1
+APRT deficiency	1
+X-Linked adrenoleukodystrophy	1
+fibre degeneration	1
+inherited breast cancer	1
+benign familial neonatal convulsions	1
+pancreatic cancers	1
+renal hamartomas 	1
+stage II colorectal carcinomas	1
+colorectal carcinoma	1
+ACG1B	1
+DTD	1
+acute radiation toxicity	1
+non-asbestos related mesothelioma	1
+C9 deficiency 	1
+deficiency of hepatic phenylalanine hydroxylase	1
+infertility	1
+parathyroid tumor	1
+deficiency of APRT	1
+malignant melanoma	1
+hereditary ovarian cancer	1
+IF-GLD	1
+deficiency of ASPA	1
+acute myeloid leukemia	1
+SJS  type 1A	1
+Combined subtotal deficiency of C6 and C7	1
+sporadic breast cancers	1
+SJS type 2	1
+LA variant of galactosemia	1
+Kniest dysplasia	1
+inherited C9 deficiency	1
+X-linked spastic paraplegia	1
+chronic nonspherocytic hemolytic anemia	1
+ovarian cancers	1
+oligodendroglioma	1
+neisseria infections	1
+SPG	1
+pancreatic cancer	1

@@ -1,0 +1,18 @@
+cancer, 28
+breast cancer, 20
+VHL, 14
+ovarian cancer, 12
+breast, 11
+galactosemia, 7
+RCC, 5
+ovarian, 5
+cancers, 4
+breast carcinomas, 2
+breast carcinoma, 2
+von Hippel-Lindau, 1
+phaeochromocytoma, 1
+retinoblastoma, 1
+haemangioblastoma, 1
+breast and / or ovarian cancer, 1
+pancreatic cancer, 1
+breast and ovarian cancer, 1

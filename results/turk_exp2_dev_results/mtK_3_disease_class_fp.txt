@@ -1,0 +1,72 @@
+cancer, 35
+breast cancer, 17
+HD, 11
+breast, 11
+ovarian cancer, 10
+WAS, 9
+A-T, 9
+ALD, 8
+DM, 8
+ovarian, 5
+HPT, 5
+renal cell carcinomas, 5
+ataxia-telangiectasia, 5
+ND, 5
+aniridia, 5
+Wiskott-Aldrich syndrome, 4
+C7D, 4
+HPT-JT, 3
+cancers, 3
+tumour, 3
+renal hamartomas, 3
+AAPC, 3
+Lesch-Nyhan syndrome, 3
+PKU, 3
+AMN, 3
+Addisons, 3
+pancreatic cancer, 3
+Adrenomyeloneuropathy, 2
+pancreatic, 2
+breast carcinomas, 2
+colorectal cancer, 2
+WT, 2
+Wilms, 2
+Wiskott-Aldrich, 2
+ALPS, 2
+tumours, 2
+PMD, 2
+Li-Fraumeni syndrome, 2
+breast carcinoma, 2
+galactosemia, 2
+Myotonic dystrophy, 2
+FAP, 2
+Kniest dysplasia, 2
+endometrial carcinoma, 2
+Huntington disease, 2
+endometrial carcinomas, 1
+lipomas, 1
+dementia, 1
+anxiety, 1
+chondrodystrophic myotonia, 1
+leukemia, 1
+HNPCC, 1
+renal cell carcinoma, 1
+retinoblastoma, 1
+autoimmune lymphoproliferative syndrome, 1
+Pelizaeus-Merzbacher disease, 1
+glioblastoma, 1
+mesothelioma, 1
+Norrie disease, 1
+thrombocytopenia, 1
+Hereditary hyperparathyroidism-jaw tumor syndrome, 1
+Schwartz-Jampel syndrome, 1
+phenylketonuria, 1
+hereditary nonpolyposis colorectal cancer, 1
+prostate cancer, 1
+Aniridia, 1
+polycystic kidney disease, 1
+AO-GLD, 1
+adrenoleukodystrophy, 1
+Autosomal dominant myotonia congenita, 1
+SPG, 1
+Familial adenomatous polyposis, 1

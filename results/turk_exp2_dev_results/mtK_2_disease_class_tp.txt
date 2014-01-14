@@ -1,0 +1,16 @@
+cancers, 4
+cancer, 3
+myotonia, 3
+bone dysplasia, 3
+tumours, 3
+chondrodysplasias, 1
+lipomas, 1
+meningitis, 1
+lymphadenopathy, 1
+chondrodysplasia, 1
+Adrenal insufficiency, 1
+anxiety, 1
+tumour, 1
+adrenal insufficiency, 1
+cystic kidney disease, 1
+splenomegaly, 1

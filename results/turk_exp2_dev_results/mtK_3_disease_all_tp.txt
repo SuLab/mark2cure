@@ -1,0 +1,87 @@
+HD, 17
+breast cancer, 16
+A-T, 14
+VHL, 13
+ataxia-telangiectasia, 13
+DM, 12
+ALD, 6
+WAS, 6
+galactosemia, 6
+cancer, 5
+IDDM, 5
+ND, 5
+Myotonic dystrophy, 5
+aniridia, 5
+Wiskott-Aldrich syndrome, 4
+ovarian cancer, 4
+C7D, 4
+PWS, 4
+AT, 4
+RCC, 4
+cancers, 3
+FMF, 3
+AAPC, 3
+Lesch-Nyhan syndrome, 3
+CHD, 3
+PKU, 3
+AMN, 3
+alkaptonuria, 2
+renal cell carcinomas, 2
+retinoblastoma, 2
+ALPS, 2
+myotonic dystrophy, 2
+Li-Fraumeni syndrome, 2
+breast carcinoma, 2
+VLCAD deficiency, 2
+FED, 2
+FAP, 2
+Kniest dysplasia, 2
+endometrial carcinoma, 2
+Huntington disease, 2
+pancreatic cancer, 2
+EDMD, 1
+Adrenomyeloneuropathy, 1
+endometrial carcinomas, 1
+breast carcinomas, 1
+breast / ovarian cancer, 1
+lipomas, 1
+Prostate cancer, 1
+HPT-JT, 1
+Pediatric alveolar rhabdomyosarcoma, 1
+colorectal cancer, 1
+chondrodysplasia, 1
+HPT, 1
+anxiety, 1
+WT, 1
+EMDM, 1
+Type II complement protein C2 deficiency, 1
+thymomas, 1
+chondrodystrophic myotonia, 1
+G6PD deficiency, 1
+HNPCC, 1
+meningitis, 1
+autoimmune lymphoproliferative syndrome, 1
+haemangioblastoma, 1
+C7 deficiency, 1
+cystic kidney disease, 1
+splenomegaly, 1
+tumours, 1
+glioblastoma, 1
+adrenomyeloneuropathy, 1
+Norrie disease, 1
+fish-eye disease, 1
+Hereditary hyperparathyroidism-jaw tumor syndrome, 1
+phenylketonuria, 1
+Schwartz-Jampel syndrome, 1
+hereditary nonpolyposis colorectal cancer, 1
+breast and / or ovarian cancer, 1
+Aniridia, 1
+prostate cancer, 1
+phaeochromocytoma, 1
+polycystic kidney disease, 1
+lymphadenopathy, 1
+AO-GLD, 1
+Prader-Willi syndrome, 1
+Emery-Dreifuss muscular dystrophy, 1
+Autosomal dominant myotonia congenita, 1
+Familial adenomatous polyposis, 1

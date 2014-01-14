@@ -1,0 +1,28 @@
+VHL, 13
+A-T, 9
+HD, 8
+DM, 6
+breast cancer, 5
+ataxia-telangiectasia, 5
+ND, 4
+AT, 4
+galactosemia, 3
+cancer, 2
+WAS, 2
+PWS, 2
+RCC, 2
+myotonic dystrophy, 2
+EDMD, 1
+glioblastoma, 1
+breast / ovarian cancer, 1
+alkaptonuria, 1
+hereditary nonpolyposis colorectal cancer, 1
+EMDM, 1
+FED, 1
+prostate cancer, 1
+HNPCC, 1
+AAPC, 1
+aniridia, 1
+retinoblastoma, 1
+Emery-Dreifuss muscular dystrophy, 1
+endometrial carcinoma, 1

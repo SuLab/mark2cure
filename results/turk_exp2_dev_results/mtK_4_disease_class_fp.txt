@@ -1,0 +1,37 @@
+breast cancer, 17
+cancer, 14
+HD, 11
+WAS, 9
+A-T, 9
+ovarian cancer, 9
+ALD, 8
+DM, 8
+ND, 5
+ataxia-telangiectasia, 5
+aniridia, 5
+HPT-JT, 3
+PKU, 3
+Addisons, 3
+Lesch-Nyhan syndrome, 3
+Adrenomyeloneuropathy, 2
+cancers, 2
+galactosemia, 2
+WT, 2
+FAP, 2
+Kniest dysplasia, 2
+ALPS, 2
+endometrial carcinoma, 2
+PMD, 2
+Li-Fraumeni syndrome, 1
+glioblastoma, 1
+phenylketonuria, 1
+Schwartz-Jampel syndrome, 1
+colorectal cancer, 1
+hereditary nonpolyposis colorectal cancer, 1
+prostate cancer, 1
+Aniridia, 1
+polycystic kidney disease, 1
+HNPCC, 1
+retinoblastoma, 1
+autoimmune lymphoproliferative syndrome, 1
+adrenoleukodystrophy, 1

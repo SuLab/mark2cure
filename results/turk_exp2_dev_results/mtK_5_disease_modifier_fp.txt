@@ -1,0 +1,17 @@
+DM, 13
+ataxia-telangiectasia, 7
+HD, 6
+aniridia, 5
+WAS, 5
+A-T, 5
+cancer, 4
+galactosemia, 4
+PKU, 3
+HPT-JT, 3
+breast cancer, 2
+PWS, 2
+ND, 1
+Li-Fraumeni syndrome, 1
+polycystic kidney disease, 1
+phenylketonuria, 1
+AT, 1

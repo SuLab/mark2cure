@@ -1,0 +1,3 @@
+A-T, 5
+ALPS, 2
+ataxia-telangiectasia, 1

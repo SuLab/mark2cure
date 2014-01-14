@@ -1,0 +1,296 @@
+cancer, 61
+breast, 49
+ovarian, 25
+breast cancer, 21
+ovarian cancer, 21
+disease, 13
+tumour, 11
+syndrome, 11
+HD, 11
+BRCA1, 10
+cell, 10
+A-T, 9
+WAS, 9
+ALD, 8
+tumors, 8
+carcinomas, 8
+renal, 8
+cancers, 8
+tumor, 8
+SJS, 8
+DM, 8
+pancreatic, 7
+bone, 6
+WASP, 6
+HPRT, 6
+DTD, 6
+dysplasia, 6
+sporadic, 6
+and, 6
+hereditary breast, 6
+AO2, 5
+HPT, 5
+renal cell carcinomas, 5
+ataxia-telangiectasia, 5
+JT, 5
+aniridia, 5
+hereditary, 5
+WT1, 5
+ND, 5
+deficiency, 5
+familial, 5
+papillary, 4
+eye, 4
+PAX3, 4
+breast and ovarian cancer, 4
+Wiskott-Aldrich, 4
+tumours, 4
+of, 4
+Wiskott-Aldrich syndrome, 4
+male breast cancer, 4
+polymorphism, 4
+PTEN, 4
+C7D, 4
+5-HTT, 4
+breast / ovarian cancer, 3
+HPT-JT, 3
+human, 3
+the, 3
+pancreatic tumors, 3
+HPRT-deficient, 3
+AMN, 3
+Addisons, 3
+pancreatic cancer, 3
+carcinoma, 3
+renal hamartomas, 3
+solid, 3
+Lesch-Nyhan, 3
+Addisons disease, 3
+APRT, 3
+huntingtin, 3
+Santamaria, 3
+Lesch-Nyhan syndrome, 3
+lipoma, 3
+PKU, 3
+endometrial, 3
+breast / ovarian, 3
+colorectal cancer, 3
+insufficiency, 3
+AAPC, 3
+non-papillary, 3
+colorectal cancers, 3
+kidney, 2
+breast cancers, 2
+breast carcinomas, 2
+Huntington, 2
+autoimmune, 2
+dystrophy, 2
+lymphomas, 2
+Small, 2
+Li-Fraumeni syndrome, 2
+breast carcinoma, 2
+adrenocortical, 2
+diastrophic dysplasia, 2
+coli, 2
+endometrial carcinoma, 2
+Adrenomyeloneuropathy, 2
+human breast cancer, 2
+alveolar, 2
+alveolar rhabdomyosarcoma, 2
+rhabdomyosarcoma, 2
+Myotonic, 2
+galactosemia, 2
+Myotonic dystrophy, 2
+breast and ovarian cancers, 2
+Kniest dysplasia, 2
+AO-GLD, 2
+Huntington disease, 2
+Small eye, 2
+adult, 2
+adenomatous, 2
+breast or ovarian cancer, 2
+idiopathic, 2
+paraplegia, 2
+ALPS, 2
+PMD, 2
+breast and / or ovarian cancer, 2
+polyposis, 2
+Adrenal, 2
+chromophobe, 2
+WT, 2
+Wilms, 2
+myotonia, 2
+colorectal, 2
+breast and, 2
+Li-Fraumeni, 2
+FAP, 2
+sporadic breast and ovarian, 1
+hereditary breast cancers, 1
+first, 1
+endometrial carcinomas, 1
+lipomas, 1
+hematopoietic and solid tumors, 1
+PLP-associated, 1
+inherited, 1
+Denys-Drash, 1
+attenuated, 1
+fibrosis, 1
+attenuated adenomatous polyposis coli, 1
+Norrie disease ( ND, 1
+spastic, 1
+G6PD deficient, 1
+infertile, 1
+tumorigenic, 1
+glioblastoma, 1
+leukocyte, 1
+breast-ovarian, 1
+familial breast and ovarian cancer, 1
+thrombocytopenia, 1
+nonpolyposis colorectal cancer ( HNPCC, 1
+renal cell tumours, 1
+class, 1
+hereditary nonpolyposis colorectal cancer, 1
+Krabbe, 1
+fatal, 1
+congenita, 1
+desmoplastic, 1
+prostate cancer, 1
+childhood, 1
+chondrodysplasias, 1
+primary, 1
+related, 1
+caused, 1
+type, 1
+X-linked spastic paraplegia, 1
+pancreatic tumour, 1
+phosphoribosyl-transferase ( HPRT ) deficiency, 1
+Alu, 1
+breast and ovarian, 1
+thymic lymphomas, 1
+heritable, 1
+desmoplastic small round cell tumour, 1
+skeletal myopathy, 1
+growth-retarded, 1
+dementia, 1
+Familial, 1
+leukemia, 1
+oncogenic, 1
+renal cell carcinoma, 1
+mental retardation, 1
+glioblastomas, 1
+short, 1
+retinoblastoma, 1
+Pelizaeus-Merzbacher disease, 1
+COL2A1 splice site mutations, 1
+small, 1
+APRT-HPRT-deficient, 1
+adult onset globoid cell leukodystrophy, 1
+mesothelioma, 1
+dominant, 1
+classic Li-Fraumeni syndrome, 1
+dystrophia, 1
+pediatric, 1
+adult renal hamartomas, 1
+bilateral, 1
+hereditary adult neuromuscular disease, 1
+tumourigenesis, 1
+polycystic kidney disease, 1
+prostate, 1
+phosphoribosyl-transferase, 1
+onset, 1
+personality disorders, 1
+Krabbe disease, 1
+SPG, 1
+X-Linked, 1
+disease ( HD, 1
+Familial adenomatous polyposis, 1
+lymphoreticular, 1
+hypoxanthine-guanine, 1
+Pelizaeus-Merzbacher, 1
+sporadic aniridia, 1
+globoid cell leukodystrophy, 1
+oncocytomas, 1
+leiomyosarcoma, 1
+neuromuscular, 1
+juvenile granulosa cell tumour, 1
+breast-ovarian cancer, 1
+chondrodystrophic myotonia, 1
+severe, 1
+Classical, 1
+lymphoreticular disease, 1
+Complement C7 deficiency, 1
+acute, 1
+kidney cancer, 1
+autoimmune lymphoproliferative syndrome, 1
+renal oncocytomas, 1
+parenchymal, 1
+Complement, 1
+atelosteogenesis type 2, 1
+leukodystrophy, 1
+C7, 1
+III, 1
+AO, 1
+atelosteogenesis type 2 ( AO2, 1
+Norrie disease, 1
+Hereditary hyperparathyroidism-jaw tumor syndrome, 1
+phenylketonuria, 1
+lymphoproliferative, 1
+manifestations, 1
+acetylcholine, 1
+Norrie, 1
+diastrophic dysplasia ( DTD, 1
+Aniridia, 1
+acute myeloid leukemia, 1
+spastic paraplegia, 1
+X-linked, 1
+myeloid, 1
+estrogen receptor-positive, 1
+iris, 1
+tumour of the proband, 1
+globoid, 1
+round, 1
+by, 1
+ovarian cancers, 1
+hypoxanthine-guanine phosphoribosyl-transferase, 1
+non-asbestos, 1
+Neisseria, 1
+hypoplasia, 1
+parenchymal tumours, 1
+Denys-Drash syndrome, 1
+nonpolyposis, 1
+Meiosis, 1
+meningitidis, 1
+hereditary retinoblastoma, 1
+anxiety, 1
+HPRT-APRT-deficient, 1
+HNPCC, 1
+T, 1
+familial breast and ovarian, 1
+myotonica, 1
+progressive skeletal myopathy, 1
+neuronal, 1
+Complete, 1
+human breast carcinomas, 1
+achondrogenesis type 1B, 1
+nicotinic, 1
+pancreatic cancers, 1
+hyperparathyroidism-jaw tumor syndrome, 1
+kinases, 1
+Schwartz-Jampel syndrome, 1
+Autosomal, 1
+dystrophia myotonica, 1
+inherited breast / ovarian cancer, 1
+Wilms tumour, 1
+hereditary breast or ovarian cancer, 1
+thymic, 1
+enzyme deficiency, 1
+synergistic, 1
+enzyme, 1
+human tumours, 1
+adrenoleukodystrophy, 1
+Autosomal dominant myotonia congenita, 1
+bilateral sporadic aniridia, 1
+cell-mediated, 1
+meiotic failure, 1
+breast and / or ovarian, 1
+hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency, 1

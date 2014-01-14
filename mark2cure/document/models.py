@@ -95,6 +95,9 @@ class Annotation(models.Model):
     def __unicode__(self):
         return self.text
 
+    def simple(self):
+      return (self.text, int(self.start))
+
 
 # def json_view(self, user):
 #     if user.is_anonymous():

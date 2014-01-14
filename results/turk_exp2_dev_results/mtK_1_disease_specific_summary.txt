@@ -1,0 +1,2 @@
+TP	FP	FN	precision	recall	F	consistency	exp 2, k = 1
+223.0	1126.0	128.0	0.16530764	0.63532764	0.26235294	30.196344

@@ -1,0 +1,89 @@
+cancer, 66
+breast, 55
+ovarian, 30
+VHL, 29
+ovarian cancer, 27
+breast cancer, 24
+and, 18
+cancers, 8
+tumour, 7
+galactosemia, 7
+C7, 6
+carcinoma, 5
+Hippel-Lindau, 5
+von, 5
+C6, 5
+von Hippel-Lindau, 5
+sporadic, 5
+RCC, 5
+of, 5
+familial, 5
+Classical, 4
+cell, 4
+male breast cancer, 4
+PAX3, 4
+breast and ovarian cancer, 4
+breast / ovarian, 3
+breast / ovarian cancer, 3
+tumor, 3
+renal cell carcinoma, 3
+disease, 3
+tumors, 3
+von Hippel-Lindau disease, 3
+Duarte, 3
+renal, 3
+hereditary, 2
+pancreatic, 2
+breast carcinomas, 2
+inherited, 2
+alveolar, 2
+tumours, 2
+breast carcinoma, 2
+alveolar rhabdomyosarcoma, 2
+rhabdomyosarcoma, 2
+solid, 2
+carcinomas, 2
+disease-associated, 2
+breast and, 2
+bilateral retinoblastoma, 1
+sporadic breast and ovarian, 1
+renal cell carcinoma and phaeochromocytoma, 1
+von Hippel-Lindau tumor, 1
+breast cancer and ovarian cancer, 1
+heritable, 1
+breast cancers, 1
+cerebellar, 1
+deficiency of C6 and C7, 1
+GALT, 1
+clear-cell, 1
+haemangioblastomas, 1
+oncogenic, 1
+familial breast and ovarian, 1
+retinoblastoma, 1
+young onset breast cancer and ovarian cancer, 1
+haemangioblastoma, 1
+von Hippel-Lindau ( VHL ) disease, 1
+sporadic renal cell carcinoma, 1
+tumorigenic, 1
+leukocyte, 1
+syndrome, 1
+deficiency, 1
+clear-cell renal cell carcinoma, 1
+Hippel-Lindau tumor, 1
+breast and / or ovarian cancer, 1
+pediatric, 1
+inherited breast / ovarian cancer, 1
+bilateral, 1
+breast and ovarian cancers, 1
+spinal, 1
+estrogen receptor-positive, 1
+phaeochromocytoma, 1
+tumourigenesis, 1
+early-onset breast and / or ovarian cancer, 1
+type, 1
+ovarian cancers, 1
+retinal, 1
+pancreatic tumour, 1
+pancreatic cancer, 1
+breast and / or ovarian, 1
+breast and ovarian, 1

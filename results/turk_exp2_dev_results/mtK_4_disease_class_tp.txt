@@ -1,0 +1,7 @@
+cancer, 2
+cancers, 1
+chondrodysplasia, 1
+anxiety, 1
+meningitis, 1
+splenomegaly, 1
+lymphadenopathy, 1

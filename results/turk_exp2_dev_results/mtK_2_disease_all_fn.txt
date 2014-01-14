@@ -1,0 +1,237 @@
+tumor, 12
+breast cancer, 11
+DM, 8
+tumour, 6
+tumors, 6
+hereditary breast cancer, 6
+AO2, 5
+ovarian cancer, 5
+WAS, 5
+CHD, 5
+VHL, 4
+APC, 4
+breast and ovarian cancer, 4
+Atm-deficient, 4
+tumours, 4
+cancer, 4
+colorectal cancers, 4
+pancreatic tumors, 3
+hereditary breast and ovarian cancer, 3
+Addisons disease, 3
+behavioral abnormalities, 3
+IDDM, 2
+autosomal dominant nocturnal frontal lobe epilepsy, 2
+HPRT-deficient, 2
+PAH-deficient, 2
+type IV Ehlers-Danlos syndrome, 2
+non-papillary renal cell carcinomas, 2
+short stature, 2
+HPT-JT syndrome, 2
+sporadic tumours, 2
+cancers, 2
+familial breast cancer, 2
+breast-ovarian cancer, 2
+breast or ovarian cancer, 2
+G6PD deficiency, 2
+PMD, 2
+ACG1B, 2
+cerebral ALD, 2
+colorectal cancer, 2
+type IID von Willebrand disease, 2
+bone dysplasia, 2
+prostatic adenocarcinoma, 2
+inherited breast cancer, 2
+inherited breast / ovarian cancer, 2
+autosomal recessive disorder, 2
+diminished GALC activity, 2
+hereditary breast cancers, 1
+stage III cancers, 1
+breast cancers, 1
+breast carcinomas, 1
+breast / ovarian cancer, 1
+hematopoietic and solid tumors, 1
+iris hypoplasia, 1
+inherited breast and ovarian cancer , 1
+parenchymal tumours of the kidney, 1
+neuromuscular disease, 1
+severely handicapped, 1
+semidominant developmental disorders, 1
+favism, 1
+tumor types, 1
+fibrosis, 1
+hypertrophic cardiomyopathy, 1
+papillary renal cell tumours, 1
+G6PD deficient, 1
+isolated thrombocytopenia, 1
+predisposition to WT, 1
+brain abnormalities, 1
+fibre degeneration, 1
+X-Linked adrenoleukodystrophy, 1
+familial breast and ovarian cancer, 1
+von Hippel-Lindau disease, 1
+idiopathic epilepsies, 1
+breast , ovarian , or other cancers, 1
+A-T, 1
+IF-GLD, 1
+MEN2, 1
+immunodeficiency, 1
+sporadic cancers, 1
+sporadic breast cancers, 1
+MEN1, 1
+inherited cancer syndrome, 1
+C7-deficient, 1
+X-linked spastic paraplegia, 1
+pancreatic tumour, 1
+pancreatic cancer, 1
+C6 or , 1
+sporadic Wilms tumours, 1
+classical galactosemia, 1
+stage II colorectal cancer, 1
+AO-2, 1
+desmoplastic small round cell tumour, 1
+autosomal dominant multisystem disorder, 1
+cancer-prone, 1
+solid tumor, 1
+DTDST chondrodysplasias, 1
+metastatic tumors, 1
+dementia, 1
+cellular abnormalities, 1
+X-linked immunodeficiency disease, 1
+nonocular tumors, 1
+non-papillary renal cell carcinoma, 1
+nystagmus, 1
+Duarte galactosemia, 1
+renal hamartomas, 1
+stage II or stage III colorectal cancer, 1
+X-linked thrombocytopenia, 1
+bacterial infections, 1
+cancer predisposition, 1
+mental retardation, 1
+carcinosarcoma, 1
+primary glioblastomas, 1
+CETP deficiency, 1
+cancer-associated diseases, 1
+Pelizaeus-Merzbacher disease, 1
+C7 deficiency, 1
+sporadic renal cell carcinoma, 1
+complete deficiency of C9, 1
+C6-deficient, 1
+APRT deficiency, 1
+APRT-HPRT-deficient, 1
+Type II C2 deficiency, 1
+hereditary cancer, 1
+benign familial neonatal convulsions, 1
+multiple endocrine neoplasia ( MEN ) types 1 and 2, 1
+DTD, 1
+infertility, 1
+parathyroid tumor, 1
+deficiency of APRT, 1
+deficiency of ASPA, 1
+adult renal hamartomas, 1
+breast and ovarian cancers, 1
+adenomatous polyposis coli, 1
+developmental defects, 1
+Kniest dysplasia, 1
+inherited C9 deficiency, 1
+familial or sporadic bilateral retinoblastoma, 1
+cerebellar degeneration, 1
+renal nephropathy, 1
+personality disorders, 1
+SPG, 1
+chromosome abnormalities, 1
+GLD, 1
+T-cell lymphomas, 1
+sporadic breast and ovarian cancers, 1
+stage II and III colorectal carcinomas, 1
+HPRT-deficiency, 1
+juvenile granulosa cell tumour, 1
+Deficiency of terminal complement components, 1
+Pyle disease, 1
+stage III disease, 1
+DCC-negative tumors, 1
+developmental abnormalities of the eye, 1
+kidney cancer, 1
+renal oncocytomas, 1
+deficiency of aspartoacylase, 1
+Classical galactosemia, 1
+atelosteogenesis type 2, 1
+fatal lymphoreticular disease, 1
+PLP-associated disease, 1
+estrogen receptor-positive breast carcinomas, 1
+cancer , 1
+genetic disease, 1
+colorectal carcinoma, 1
+stage II colorectal carcinomas, 1
+tremors, 1
+autosomal dominant disease, 1
+deficiencies of complement components, 1
+genetic disorder, 1
+breast and / or ovarian cancer, 1
+prostatic , pancreas , skin , and lung cancer, 1
+AT, 1
+acute myeloid leukemia, 1
+SJS  type 1A, 1
+spastic paraplegia, 1
+male breast cancer, 1
+insulin-dependent diabetes mellitus, 1
+breast and 79 ovarian cancer, 1
+stage II and stage III colorectal carcinomas, 1
+SJS type 2, 1
+LA variant of galactosemia, 1
+gonadal anomaly, 1
+ovarian cancers, 1
+glucose-6-phosphate dehydrogenase ( G6PD ) deficiency, 1
+oligodendroglioma, 1
+disorder of inappropriate apoptosis, 1
+neisseria infections, 1
+Immune defects, 1
+demyelination of the central nervous system, 1
+blindness, 1
+Denys-Drash syndrome, 1
+jaw tumor, 1
+hereditary retinoblastoma, 1
+renal lesions, 1
+adenomatous polyps, 1
+anxiety-related personality traits, 1
+recessively inherited condition, 1
+X-linked recessive neurological disorder, 1
+autoimmune manifestations, 1
+HPRT-APRT-deficient, 1
+Complete hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency, 1
+Duarte enzyme variant of galactosemia, 1
+Type I C2 deficiency, 1
+solid tumors, 1
+Neisseria meningitidis, 1
+sporadic renal cell carcinomas, 1
+atrophy, 1
+progressive skeletal myopathy, 1
+adrenocortical insufficiency, 1
+primary HPT, 1
+restricted joint mobility, 1
+achondrogenesis type 1B, 1
+pancreatic cancers, 1
+defective formation of type II collagen, 1
+renal hamartomas , 1
+familial aniridia, 1
+acute radiation toxicity, 1
+non-asbestos related mesothelioma, 1
+metastasis, 1
+C9 deficiency , 1
+inherited human disease, 1
+von Hippel-Lindau disease-associated and sporadic RCCs, 1
+deficiency of hepatic phenylalanine hydroxylase, 1
+primary lipomas, 1
+malignant melanoma, 1
+prostate adenocarcinoma, 1
+hereditary ovarian cancer, 1
+hereditary breast or ovarian cancer, 1
+autosomal dominant disorder, 1
+enzyme deficiency, 1
+classical and , 1
+inherited metabolic disorder, 1
+Combined subtotal deficiency of C6 and C7, 1
+RCC- and von Hippel-Lindau disease-associated tumors, 1
+chronic nonspherocytic hemolytic anemia, 1
+inherited disorder of skeletal muscle, 1
+bilateral sporadic aniridia, 1
+von Willebrand, 1

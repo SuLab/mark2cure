@@ -1,0 +1,126 @@
+breast cancer, 18
+HD, 17
+A-T, 14
+VHL, 13
+ataxia-telangiectasia, 13
+DM, 12
+cancer, 7
+WAS, 6
+ALD, 6
+SJS, 6
+galactosemia, 6
+Wiskott-Aldrich syndrome, 5
+IDDM, 5
+aniridia, 5
+ND, 5
+Canavan disease, 5
+DTD, 5
+Myotonic dystrophy, 5
+cancers, 4
+tumour, 4
+ovarian cancer, 4
+AT, 4
+RCC, 4
+male breast cancer, 4
+C9 deficiency, 4
+myotonia, 4
+C7D, 4
+PWS, 4
+breast / ovarian cancer, 3
+Lesch-Nyhan syndrome, 3
+lipoma, 3
+breast and / or ovarian cancer, 3
+FED, 3
+PKU, 3
+AMN, 3
+FMF, 3
+AAPC, 3
+bone dysplasia, 3
+tumours, 3
+CHD, 3
+Huntington disease, 3
+prostate carcinomas, 2
+alkaptonuria, 2
+renal cell carcinomas, 2
+JT, 2
+ALPS, 2
+Li-Fraumeni syndrome, 2
+breast carcinoma, 2
+diastrophic dysplasia, 2
+endometrial carcinoma, 2
+pancreatic cancer, 2
+breast and ovarian cancer, 2
+retinoblastoma, 2
+myotonic dystrophy, 2
+VLCAD deficiency, 2
+alveolar rhabdomyosarcoma, 2
+FAP, 2
+Kniest dysplasia, 2
+AO-GLD, 2
+EDMD, 1
+endometrial carcinomas, 1
+von Hippel-Lindau tumor, 1
+breast carcinomas, 1
+lipomas, 1
+HPT-JT, 1
+coronary heart disease, 1
+cerebellar ataxia, 1
+chondrodysplasia, 1
+HPT, 1
+leiomyosarcoma, 1
+adrenal insufficiency, 1
+breast-ovarian cancer, 1
+thymomas, 1
+chondrodystrophic myotonia, 1
+retinal , cerebellar and spinal haemangioblastomas, 1
+G6PD deficiency, 1
+attenuated adenomatous polyposis coli, 1
+male-infertility, 1
+Complement C7 deficiency, 1
+autoimmune lymphoproliferative syndrome, 1
+von Hippel-Lindau ( VHL ) disease, 1
+cystic kidney disease, 1
+glioblastoma, 1
+Norrie disease, 1
+adrenomyeloneuropathy, 1
+Hereditary hyperparathyroidism-jaw tumor syndrome, 1
+phenylketonuria, 1
+hereditary nonpolyposis colorectal cancer, 1
+prostate cancer, 1
+Aniridia, 1
+chondrodysplasias, 1
+phaeochromocytoma, 1
+thymic lymphomas, 1
+Adrenomyeloneuropathy, 1
+Prostate cancer, 1
+prostate carcinoma, 1
+Pediatric alveolar rhabdomyosarcoma, 1
+colorectal cancer, 1
+anxiety, 1
+WT, 1
+EMDM, 1
+Type II complement protein C2 deficiency, 1
+HNPCC, 1
+renal cell carcinoma, 1
+meningitis, 1
+haemangioblastoma, 1
+C7 deficiency, 1
+splenomegaly, 1
+cataract, 1
+adult onset globoid cell leukodystrophy, 1
+familial Mediterranean fever, 1
+clear-cell renal cell carcinoma, 1
+fish-eye disease, 1
+Schwartz-Jampel syndrome, 1
+dystrophia myotonica, 1
+Wilms tumour, 1
+breast and ovarian cancers, 1
+polycystic kidney disease, 1
+lymphadenopathy, 1
+Prader-Willi syndrome, 1
+Adrenal insufficiency, 1
+Emery-Dreifuss muscular dystrophy, 1
+Type II deficiency, 1
+Autosomal dominant myotonia congenita, 1
+Krabbe disease, 1
+Familial adenomatous polyposis, 1

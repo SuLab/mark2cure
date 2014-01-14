@@ -1,0 +1,114 @@
+breast cancer, 10
+AO2, 5
+hereditary breast cancer, 5
+ovarian cancer, 4
+colorectal cancers, 4
+Addisons disease, 3
+pancreatic tumors, 3
+CHD, 3
+IDDM, 2
+APC, 2
+G6PD deficiency, 2
+autosomal dominant nocturnal frontal lobe epilepsy, 2
+PMD, 2
+WAS, 2
+type IV Ehlers-Danlos syndrome, 2
+cerebral ALD, 2
+non-papillary renal cell carcinomas, 2
+HPT-JT syndrome, 2
+type IID von Willebrand disease, 2
+hereditary breast cancers, 1
+GLD, 1
+breast cancers, 1
+breast carcinomas, 1
+iris hypoplasia, 1
+familial breast cancer, 1
+T-cell lymphomas, 1
+HPRT-deficiency, 1
+favism, 1
+juvenile granulosa cell tumour, 1
+Deficiency of terminal complement components, 1
+Pyle disease, 1
+fibrosis, 1
+stage III disease, 1
+DCC-negative tumors, 1
+hypertrophic cardiomyopathy, 1
+papillary renal cell tumours, 1
+kidney cancer, 1
+isolated thrombocytopenia, 1
+deficiency of aspartoacylase, 1
+renal oncocytomas, 1
+Classical galactosemia, 1
+atelosteogenesis type 2, 1
+estrogen receptor-positive breast carcinomas, 1
+fibre degeneration, 1
+X-Linked adrenoleukodystrophy, 1
+stage II colorectal carcinomas, 1
+colorectal carcinoma, 1
+ACG1B, 1
+von Hippel-Lindau disease, 1
+IF-GLD, 1
+acute myeloid leukemia, 1
+SJS  type 1A, 1
+sporadic breast cancers, 1
+SJS type 2, 1
+LA variant of galactosemia, 1
+X-linked spastic paraplegia, 1
+ovarian cancers, 1
+glucose-6-phosphate dehydrogenase ( G6PD ) deficiency, 1
+oligodendroglioma, 1
+neisseria infections, 1
+pancreatic cancer, 1
+sporadic Wilms tumours, 1
+classical galactosemia, 1
+stage II colorectal cancer, 1
+Denys-Drash syndrome, 1
+desmoplastic small round cell tumour, 1
+AO-2, 1
+hereditary retinoblastoma, 1
+jaw tumor, 1
+DTDST chondrodysplasias, 1
+colorectal cancer, 1
+non-papillary renal cell carcinoma, 1
+Complete hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency, 1
+renal hamartomas, 1
+Duarte enzyme variant of galactosemia, 1
+X-linked thrombocytopenia, 1
+Type I C2 deficiency, 1
+carcinosarcoma, 1
+primary glioblastomas, 1
+CETP deficiency, 1
+sporadic renal cell carcinomas, 1
+Neisseria meningitidis, 1
+Pelizaeus-Merzbacher disease, 1
+atrophy, 1
+progressive skeletal myopathy, 1
+primary HPT, 1
+sporadic renal cell carcinoma, 1
+complete deficiency of C9, 1
+prostatic adenocarcinoma, 1
+APRT deficiency, 1
+Type II C2 deficiency, 1
+achondrogenesis type 1B, 1
+benign familial neonatal convulsions, 1
+inherited breast cancer, 1
+renal hamartomas , 1
+pancreatic cancers, 1
+DTD, 1
+acute radiation toxicity, 1
+non-asbestos related mesothelioma, 1
+C9 deficiency , 1
+infertility, 1
+deficiency of hepatic phenylalanine hydroxylase, 1
+parathyroid tumor, 1
+deficiency of APRT, 1
+malignant melanoma, 1
+hereditary ovarian cancer, 1
+deficiency of ASPA, 1
+adult renal hamartomas, 1
+Combined subtotal deficiency of C6 and C7, 1
+inherited C9 deficiency, 1
+Kniest dysplasia, 1
+chronic nonspherocytic hemolytic anemia, 1
+bilateral sporadic aniridia, 1
+SPG, 1

@@ -1,0 +1,30 @@
+DM, 8
+tumor, 7
+VHL, 4
+WAS, 3
+cancer, 2
+PAH-deficient, 2
+CHD, 2
+APC, 2
+breast-ovarian cancer, 2
+C6-deficient, 1
+inherited breast cancer, 1
+breast / ovarian cancer, 1
+ACG1B, 1
+breast cancer, 1
+multiple endocrine neoplasia ( MEN ) types 1 and 2, 1
+hereditary breast and ovarian cancer, 1
+familial breast cancer, 1
+familial aniridia, 1
+colorectal cancer, 1
+hereditary breast cancer, 1
+A-T, 1
+AT, 1
+breast or ovarian cancer, 1
+male breast cancer, 1
+MEN2, 1
+breast and 79 ovarian cancer, 1
+adenomatous polyposis coli, 1
+MEN1, 1
+G6PD deficient, 1
+von Willebrand, 1

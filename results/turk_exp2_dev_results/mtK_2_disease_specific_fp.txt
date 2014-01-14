@@ -1,0 +1,158 @@
+cancer, 57
+breast, 45
+breast cancer, 20
+VHL, 14
+disease, 14
+ovarian cancer, 12
+DM, 11
+A-T, 10
+cancers, 9
+ovarian, 9
+deficiency, 8
+HD, 8
+syndrome, 8
+galactosemia, 8
+G6PD, 7
+WAS, 7
+tumours, 7
+tumour, 6
+HPRT, 6
+pancreatic, 5
+von Hippel-Lindau, 5
+Wiskott-Aldrich, 5
+myotonia, 5
+Canavan, 5
+SJS, 5
+carcinomas, 5
+CHD, 5
+HPT, 4
+von, 4
+C9, 4
+IDDM2, 4
+Hippel-Lindau, 4
+ND, 4
+breast / ovarian cancer, 3
+renal cell carcinomas, 3
+Classical, 3
+JT, 3
+dystrophy, 3
+Duarte, 3
+RCC, 3
+male breast cancer, 3
+aniridia, 3
+type, 3
+C9 deficiency, 3
+Addisons, 3
+breast and ovarian cancer, 3
+renal hamartomas, 3
+bone dysplasia, 3
+Myotonic, 3
+cell, 3
+HPT-JT, 2
+Ehlers-Danlos syndrome, 2
+Huntington, 2
+adrenal insufficiency, 2
+IDDM, 2
+PMD, 2
+thrombocytopenia, 2
+IV, 2
+breast and / or ovarian cancer, 2
+chondrodysplasias, 2
+hereditary, 2
+Wilms, 2
+ALD, 2
+renal cell carcinoma, 2
+von Willebrand disease, 2
+alveolar, 2
+Ehlers-Danlos, 2
+rhabdomyosarcoma, 2
+heart, 2
+PWS, 2
+Pelizaeus-Merzbacher, 1
+kidney, 1
+von Hippel-Lindau tumor, 1
+sporadic aniridia, 1
+breast carcinomas, 1
+Wiskott-Aldrich syndrome, 1
+alkaptonuria, 1
+chondrodysplasia, 1
+oncocytomas, 1
+haemangioblastomas, 1
+retinal , cerebellar and spinal haemangioblastomas, 1
+lymphoreticular disease, 1
+ataxia-telangiectasia, 1
+acute, 1
+deficiency of C9, 1
+von Hippel-Lindau ( VHL ) disease, 1
+parenchymal, 1
+lymphomas, 1
+cystic kidney disease, 1
+HPRT-deficient, 1
+leukodystrophy, 1
+Prostate, 1
+glioblastoma, 1
+renal cell tumours, 1
+hereditary nonpolyposis colorectal cancer, 1
+diastrophic dysplasia, 1
+Krabbe, 1
+glucose-6-phosphate, 1
+Prader-Willi, 1
+congenita, 1
+red-blood-cell, 1
+desmoplastic, 1
+Norrie, 1
+FED, 1
+prostate cancer, 1
+spastic paraplegia, 1
+myeloid, 1
+globoid, 1
+dehydrogenase, 1
+fever, 1
+round, 1
+endometrial carcinoma, 1
+familial, 1
+pancreatic cancer, 1
+carcinoma, 1
+nonspherocytic, 1
+hypoplasia, 1
+nonpolyposis, 1
+skeletal myopathy, 1
+Mediterranean, 1
+colorectal cancer, 1
+dementia, 1
+WT, 1
+neisseria, 1
+insufficiency, 1
+leukemia, 1
+HNPCC, 1
+meningitis, 1
+AAPC, 1
+glioblastomas, 1
+retinoblastoma, 1
+chronic, 1
+Pelizaeus-Merzbacher disease, 1
+fish-eye, 1
+diabetes, 1
+myotonica, 1
+splenomegaly, 1
+anemia, 1
+hemolytic, 1
+small, 1
+mesothelioma, 1
+coronary, 1
+hyperparathyroidism-jaw tumor syndrome, 1
+DTD, 1
+dystrophia, 1
+disease-associated, 1
+thymic, 1
+breast and ovarian cancers, 1
+Li-Fraumeni, 1
+diabetes mellitus, 1
+lymphadenopathy, 1
+AO-GLD, 1
+onset, 1
+adrenoleukodystrophy, 1
+X-Linked, 1
+SPG, 1
+hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency, 1
+lymphoreticular, 1

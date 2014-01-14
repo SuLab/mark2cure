@@ -1,0 +1,305 @@
+cancer, 86
+breast, 73
+ovarian, 35
+ovarian cancer, 31
+breast cancer, 30
+and, 18
+VHL, 16
+DM, 15
+disease, 12
+cell, 12
+renal, 11
+BRCA1, 10
+carcinomas, 10
+of, 10
+cancers, 10
+deficiency, 10
+HD, 9
+tumours, 8
+syndrome, 8
+C7, 8
+sporadic, 8
+WAS, 8
+CHD, 8
+IDDM, 7
+ataxia-telangiectasia, 7
+von, 7
+dystrophy, 7
+carcinoma, 7
+bone, 6
+Prostate, 6
+RB1, 6
+aniridia, 6
+HPRT, 6
+hereditary, 6
+DTD, 6
+dysplasia, 6
+ATM, 6
+hereditary breast, 6
+breast / ovarian cancer, 5
+AO2, 5
+HPT, 5
+renal cell carcinomas, 5
+JT, 5
+A-T, 5
+mutations, 5
+breast and ovarian cancer, 5
+Myotonic dystrophy, 5
+Classical, 5
+C6, 5
+von Hippel-Lindau, 5
+familial, 5
+Hippel-Lindau, 5
+myotonia, 5
+Atm, 5
+SJS, 5
+bone dysplasia, 5
+papillary, 4
+renal cell carcinoma, 4
+Myotonic, 4
+galactosemia, 4
+C9, 4
+breast and / or ovarian cancer, 4
+PTEN, 4
+IDDM2, 4
+adenocarcinoma, 4
+tumor, 4
+vWF, 4
+HPT-JT, 3
+the, 3
+Huntington, 3
+von Hippel-Lindau disease, 3
+Duarte, 3
+RCC, 3
+type, 3
+renal hamartomas, 3
+tumors, 3
+Lesch-Nyhan, 3
+Huntington disease, 3
+APRT, 3
+huntingtin, 3
+Santamaria, 3
+Lesch-Nyhan syndrome, 3
+AT, 3
+PKU, 3
+endometrial, 3
+breast / ovarian, 3
+colorectal cancer, 3
+non-papillary, 3
+breast and, 3
+colorectal cancers, 3
+kidney, 2
+pancreatic, 2
+breast cancers, 2
+breast carcinomas, 2
+lipomas, 2
+human, 2
+inherited, 2
+tumour, 2
+IID von Willebrand disease, 2
+mutation, 2
+lymphomas, 2
+WASP, 2
+Li-Fraumeni syndrome, 2
+breast carcinoma, 2
+thrombocytopenia, 2
+FED, 2
+chondrodysplasias, 2
+coli, 2
+human breast cancer, 2
+Wiskott-Aldrich, 2
+heart, 2
+prostate carcinomas, 2
+adult, 2
+adenomatous, 2
+locus, 2
+Willebrand, 2
+IID, 2
+polyposis, 2
+prostatic, 2
+chromophobe, 2
+myotonic, 2
+AAPC, 2
+von Willebrand disease, 2
+colorectal, 2
+disease-associated, 2
+PWS, 2
+Li-Fraumeni, 2
+FAP, 2
+von Willebrand, 2
+sporadic breast and ovarian, 1
+hereditary breast cancers, 1
+first, 1
+endometrial carcinomas, 1
+coronary heart disease, 1
+mismatched, 1
+cerebellar ataxia, 1
+tumorigenesis, 1
+attenuated, 1
+fibrosis, 1
+thymomas, 1
+retinal , cerebellar and spinal haemangioblastomas, 1
+hypertrophic cardiomyopathy, 1
+attenuated adenomatous polyposis coli, 1
+Norrie disease ( ND, 1
+male-infertility, 1
+G6PD deficient, 1
+young onset breast cancer and ovarian cancer, 1
+deficiency of C9, 1
+HPRT-deficient, 1
+infertile, 1
+leukocyte, 1
+breast-ovarian, 1
+familial breast and ovarian cancer, 1
+nonpolyposis colorectal cancer ( HNPCC, 1
+renal cell tumours, 1
+class, 1
+diastrophic dysplasia, 1
+Krabbe, 1
+Prader-Willi, 1
+spinal, 1
+phaeochromocytoma, 1
+C9 deficiency, 1
+endometrial carcinoma, 1
+retinal, 1
+pancreatic cancer, 1
+phosphoribosyl-transferase ( HPRT ) deficiency, 1
+Myotonic dystrophy ( DM, 1
+breast and ovarian, 1
+Alu, 1
+thymic lymphomas, 1
+short stature, 1
+haploinsufficiency, 1
+heritable, 1
+skeletal myopathy, 1
+growth-retarded, 1
+metastatic tumors, 1
+deficiency of C6 and C7, 1
+GALT, 1
+male, 1
+Familial, 1
+fibre-type dependent atrophy, 1
+nonocular tumors, 1
+X-linked thrombocytopenia, 1
+glioblastomas, 1
+short, 1
+retinoblastoma, 1
+cancer-associated diseases, 1
+AKU, 1
+diabetes, 1
+C7 deficiency, 1
+sporadic renal cell carcinoma, 1
+ND, 1
+Prader-Willi syndrome ( PWS, 1
+adult onset globoid cell leukodystrophy, 1
+hereditary cancer, 1
+kidney allografts, 1
+classic Li-Fraumeni syndrome, 1
+Emery-Dreifuss, 1
+dystrophia, 1
+gene, 1
+adult renal hamartomas, 1
+bilateral, 1
+breast and ovarian cancers, 1
+hereditary adult neuromuscular disease, 1
+tumourigenesis, 1
+polycystic kidney disease, 1
+Wiskott-Aldrich syndrome protein, 1
+early-onset breast and / or ovarian cancer, 1
+prostate, 1
+phosphoribosyl-transferase, 1
+AO-GLD, 1
+onset, 1
+Krabbe disease, 1
+disease ( HD, 1
+Familial adenomatous polyposis, 1
+hypoxanthine-guanine, 1
+breast cancer and ovarian cancer, 1
+cerebellar, 1
+sporadic aniridia, 1
+Wiskott-Aldrich syndrome, 1
+muscular, 1
+alkaptonuria, 1
+mellitus, 1
+cardiomyopathy, 1
+oncocytomas, 1
+globoid cell leukodystrophy, 1
+leiomyosarcoma, 1
+neuromuscular, 1
+chondrodystrophic myotonia, 1
+haemangioblastomas, 1
+breast or ovarian cancer, 1
+retinoblastoma gene, 1
+paraplegia, 1
+renal oncocytomas, 1
+parenchymal, 1
+cystic kidney disease, 1
+atelosteogenesis type 2, 1
+leukodystrophy, 1
+III, 1
+AO, 1
+atelosteogenesis type 2 ( AO2, 1
+Norrie disease, 1
+autosomal dominant disease, 1
+Hereditary hyperparathyroidism-jaw tumor syndrome, 1
+defective, 1
+Hippel-Lindau tumor, 1
+phenylketonuria, 1
+Norrie, 1
+diastrophic dysplasia ( DTD, 1
+breast / ovarian tumorigenesis, 1
+CETP, 1
+X-linked, 1
+estrogen receptor-positive, 1
+male breast cancer, 1
+polymorphism, 1
+tumour of the proband, 1
+globoid, 1
+hypoxanthine-guanine phosphoribosyl-transferase, 1
+renal cell carcinoma and phaeochromocytoma, 1
+parenchymal tumours, 1
+nonpolyposis, 1
+Meiosis, 1
+Prostate cancer, 1
+hereditary retinoblastoma, 1
+renal lesions, 1
+prostate carcinoma, 1
+premature protein termination, 1
+clear-cell, 1
+hypertrophic, 1
+allografts, 1
+familial breast and ovarian, 1
+haemangioblastoma, 1
+fish-eye, 1
+myotonica, 1
+progressive skeletal myopathy, 1
+prostatic adenocarcinoma, 1
+Complete, 1
+human breast carcinomas, 1
+cataract, 1
+achondrogenesis type 1B, 1
+coronary, 1
+pancreatic cancers, 1
+clear-cell renal cell carcinoma, 1
+fish-eye disease, 1
+1, 1
+hyperparathyroidism-jaw tumor syndrome, 1
+kinases, 1
+Schwartz-Jampel syndrome, 1
+metastasis, 1
+prostate adenocarcinoma, 1
+dystrophia myotonica, 1
+thymic, 1
+enzyme deficiency, 1
+Escherichia coli, 1
+synergistic, 1
+diabetes mellitus, 1
+enzyme, 1
+human tumours, 1
+Aspergillus, 1
+RCC- and von Hippel-Lindau disease-associated tumors, 1
+Prader-Willi syndrome, 1
+bilateral sporadic aniridia, 1
+meiotic failure, 1
+breast and / or ovarian, 1
+hypoxanthine-guanine phosphoribosyl-transferase ( HPRT ) deficiency, 1

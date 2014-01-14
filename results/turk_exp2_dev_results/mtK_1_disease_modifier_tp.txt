@@ -1,0 +1,55 @@
+VHL, 13
+tumour, 9
+A-T, 9
+HD, 8
+DM, 6
+tumor, 5
+ataxia-telangiectasia, 5
+breast cancer, 5
+cancer, 4
+Atm-deficient, 4
+ND, 4
+AT, 4
+SJS, 3
+lipoma, 3
+galactosemia, 3
+male breast cancer, 3
+myotonic dystrophy, 2
+HPRT-deficient, 2
+WAS, 2
+PWS, 2
+RCC, 2
+breast and ovarian cancer, 2
+EDMD, 1
+von Hippel-Lindau tumor, 1
+breast / ovarian cancer, 1
+Wiskott-Aldrich syndrome, 1
+alkaptonuria, 1
+EMDM, 1
+HPRT-APRT-deficient, 1
+breast-ovarian cancer, 1
+breast or ovarian cancer, 1
+HNPCC, 1
+AAPC, 1
+retinoblastoma, 1
+von Hippel-Lindau ( VHL ) disease, 1
+ovarian cancer, 1
+prostatic adenocarcinoma, 1
+glioblastoma, 1
+APRT-HPRT-deficient, 1
+hereditary breast and ovarian cancer, 1
+hereditary nonpolyposis colorectal cancer, 1
+diastrophic dysplasia, 1
+prostate adenocarcinoma, 1
+inherited breast / ovarian cancer, 1
+hereditary breast or ovarian cancer, 1
+FED, 1
+prostate cancer, 1
+insulin-dependent diabetes mellitus, 1
+aniridia, 1
+C7-deficient, 1
+AO-GLD, 1
+C9 deficiency, 1
+Emery-Dreifuss muscular dystrophy, 1
+endometrial carcinoma, 1
+pancreatic tumour, 1

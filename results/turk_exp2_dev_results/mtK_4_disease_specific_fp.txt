@@ -1,0 +1,35 @@
+cancer, 16
+breast cancer, 16
+DM, 11
+A-T, 10
+VHL, 9
+galactosemia, 8
+HD, 7
+ovarian cancer, 6
+WAS, 5
+ND, 4
+CHD, 4
+cancers, 3
+RCC, 3
+aniridia, 3
+Addisons, 3
+HPT-JT, 2
+PWS, 2
+IDDM, 2
+ALD, 2
+PMD, 2
+glioblastoma, 1
+alkaptonuria, 1
+chondrodysplasia, 1
+hereditary nonpolyposis colorectal cancer, 1
+WT, 1
+prostate cancer, 1
+neisseria, 1
+HNPCC, 1
+ataxia-telangiectasia, 1
+meningitis, 1
+lymphadenopathy, 1
+retinoblastoma, 1
+endometrial carcinoma, 1
+adrenoleukodystrophy, 1
+splenomegaly, 1

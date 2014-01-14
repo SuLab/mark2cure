@@ -1,0 +1,41 @@
+breast cancer, 9
+HD, 8
+ataxia-telangiectasia, 8
+ALD, 6
+DM, 6
+A-T, 5
+IDDM, 5
+WAS, 4
+aniridia, 4
+Myotonic dystrophy, 3
+galactosemia, 3
+FMF, 3
+CHD, 3
+PKU, 3
+Lesch-Nyhan syndrome, 3
+ovarian cancer, 3
+PWS, 2
+RCC, 2
+FAP, 2
+Kniest dysplasia, 2
+ALPS, 2
+ND, 1
+Adrenomyeloneuropathy, 1
+Li-Fraumeni syndrome, 1
+adrenomyeloneuropathy, 1
+Prostate cancer, 1
+HPT-JT, 1
+alkaptonuria, 1
+phenylketonuria, 1
+Schwartz-Jampel syndrome, 1
+colorectal cancer, 1
+WT, 1
+Type II complement protein C2 deficiency, 1
+Aniridia, 1
+polycystic kidney disease, 1
+retinoblastoma, 1
+autoimmune lymphoproliferative syndrome, 1
+haemangioblastoma, 1
+Prader-Willi syndrome, 1
+endometrial carcinoma, 1
+C7 deficiency, 1

@@ -1,0 +1,85 @@
+tumours, 7
+cancers, 6
+tumors, 6
+cancer, 5
+bone dysplasia, 5
+myotonia, 3
+behavioral abnormalities, 3
+short stature, 2
+autosomal recessive disorder, 2
+diminished GALC activity, 2
+sporadic tumours, 2
+demyelination of the central nervous system, 1
+stage III cancers, 1
+blindness, 1
+lipomas, 1
+autosomal dominant multisystem disorder, 1
+renal lesions, 1
+cancer-prone, 1
+adenomatous polyps, 1
+anxiety-related personality traits, 1
+solid tumor, 1
+recessively inherited condition, 1
+metastatic tumors, 1
+parenchymal tumours of the kidney, 1
+chondrodysplasia, 1
+neuromuscular disease, 1
+X-linked recessive neurological disorder, 1
+dementia, 1
+anxiety, 1
+tumour, 1
+severely handicapped, 1
+cellular abnormalities, 1
+adrenal insufficiency, 1
+semidominant developmental disorders, 1
+autoimmune manifestations, 1
+X-linked immunodeficiency disease, 1
+nonocular tumors, 1
+tumor types, 1
+nystagmus, 1
+cancer predisposition, 1
+bacterial infections, 1
+meningitis, 1
+solid tumors, 1
+developmental abnormalities of the eye, 1
+mental retardation, 1
+cancer-associated diseases, 1
+predisposition to WT, 1
+adrenocortical insufficiency, 1
+brain abnormalities, 1
+cystic kidney disease, 1
+splenomegaly, 1
+fatal lymphoreticular disease, 1
+PLP-associated disease, 1
+restricted joint mobility, 1
+hereditary cancer, 1
+cancer , 1
+defective formation of type II collagen, 1
+genetic disease, 1
+tremors, 1
+autosomal dominant disease, 1
+deficiencies of complement components, 1
+genetic disorder, 1
+idiopathic epilepsies, 1
+metastasis, 1
+inherited human disease, 1
+primary lipomas, 1
+autosomal dominant disorder, 1
+enzyme deficiency, 1
+spastic paraplegia, 1
+chondrodysplasias, 1
+inherited metabolic disorder, 1
+immunodeficiency, 1
+developmental defects, 1
+sporadic cancers, 1
+lymphadenopathy, 1
+inherited cancer syndrome, 1
+cerebellar degeneration, 1
+Adrenal insufficiency, 1
+gonadal anomaly, 1
+inherited disorder of skeletal muscle, 1
+renal nephropathy, 1
+disorder of inappropriate apoptosis, 1
+personality disorders, 1
+chromosome abnormalities, 1
+Immune defects, 1

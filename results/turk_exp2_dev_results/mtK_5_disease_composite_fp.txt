@@ -1,0 +1,2 @@
+galactosemia, 7
+cancer, 4
