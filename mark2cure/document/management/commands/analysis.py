@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.account.models import Ncbo
 from django.contrib.auth.models import User
 
 import os, os.path, csv
@@ -13,6 +14,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for experiment in args:
             self.stdout.write('-- Running analytics on Experiment Run %s --' % experiment)
+
+            base_path = os.path.join(settings.PROJECT_PATH, 'results')
+            os.chdir(base_path)
 
             # views, hits = self.get_experiment_data(experiment)
             # gm_views = self.get_user_data('goldenmaster', 'NCBI_corpus_development')
@@ -35,18 +39,11 @@ class Command(BaseCommand):
 
 
 
-            # base_path = os.path.join(settings.PROJECT_PATH, 'results')
-            # os.chdir(base_path)
 
             # Annotator vs. Gold
-
         #     max_k = 0
-
         #     for ann in mturk_anns:
-        #
         #       for k in range(1, 5+1):
-
-        #
 
         #     types = ["disease:modifier", "disease:class", "disease:specific", "disease:composite"]
         #     for disease_type in types:
@@ -60,30 +57,36 @@ class Command(BaseCommand):
         #     with open('.csv', 'wb') as csvfile:
         #       writer = csv.writer(csvfile, delimiter=',')
         #       writer.writerow(['foo', 'bar', 'tall'])
-
         #     # print len(views)
         #     # print len(gm_views)
         # pass
 
 
     def util_ncbo_specturm(self, documents):
-        ncbos = User.objects.filter(userprofile__mturk = True).all()
-        print ncbos
-        print "\t".join(["Score", "Min Term Size", "P", "R", "R"])
-        for ncbo in ncbos:
-          results = []
-          for document in documents:
-            # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
-            gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
-            ncbo_annotations = self.process_annotations(user = ncbo.user, document=document)
+        # ncbos = User.objects.filter(userprofile__ncbo = True).all()
+        ncbos = Ncbo.objects.all()
+        gm_user = User.objects.get(username__exact = 'goldenmaster')
 
-            ncbo_score = self.calc_score(ncbo_annotations, gm_annotations)
-            results.append( ncbo_score )
+        with open('ncbo_spectrum.csv', 'wb') as csvfile:
+          writer = csv.writer(csvfile, delimiter=',')
+          writer.writerow(["Score", "Min Term Size", "TP", "FP", "FN", "P", "R", "R"])
 
-          results = map(sum,zip(*results))
-          results = self.determine_f( results[0], results[1], results[2] )
-          print "\t".join([str(ncbo.score), str(ncbo.min_term_size), "%.2f"%results[0], "%.2f"%results[1], "%.2f"%results[2]])
+          for ncbo in ncbos:
+            results = []
+            for document in documents:
+              for section in document.section_set.all():
+                # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
+                gm_annotations = Annotation.objects.filter(view__section = section, view__user = gm_user).all()
+                ncbo_annotations = Annotation.objects.filter(view__section = section, view__user = ncbo.user).all()
 
+                ncbo_score = self.calc_score(ncbo_annotations, gm_annotations)
+                results.append( ncbo_score )
+
+
+            results = map(sum,zip(*results))
+            score = self.determine_f( results[0], results[1], results[2] )
+            writer.writerow([ncbo.score, ncbo.min_term_size, results[0], results[1], results[2], score[0], score[1], score[2]])
+          print ncbo.user
 
 
     def match_exact(self, gm_ann, user_anns):
@@ -97,7 +100,6 @@ class Command(BaseCommand):
         for user_ann in user_anns:
           if gm_ann.start == user_ann.start and gm_len == len(user_ann.text): return True
         return False
-
 
 
     def calc_score(self, annotations_a, annotations_b):
@@ -133,6 +135,20 @@ class Command(BaseCommand):
       # for fn in false_negatives: self.error_aggreements['false_negatives'].append( fn[1][1] )
 
       return ( len(true_positives), len(false_positives), len(false_negatives) )
+
+
+    def determine_f(self, true_positive, false_positive, false_negative):
+        if true_positive + false_positive is 0:
+          return (0,0,0)
+
+        precision = true_positive / float(true_positive + false_positive)
+        recall = true_positive / float(true_positive + false_negative)
+
+        if precision + recall > 0.0:
+          f = ( 2 * precision * recall ) / ( precision + recall )
+          return (precision, recall, f)
+        else:
+          return (0,0,0)
 
 
     def compare_turk_to_gold():
