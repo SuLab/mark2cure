@@ -27,11 +27,11 @@ class Command(BaseCommand):
             documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
 
             self.util_ncbo_specturm(documents)
-            for document in documents:
-              types = ["disease:modifier", "disease:class", "disease:specific", "disease:composite"]
-              for disease_type in types:
-                gm_anns = Annotation.objects.filter(type = disease_type, view__section__document = document, view__user = gm_user).all()
-                print self.calc_score(gm_anns, gm_anns)
+            # for document in documents:
+            #   types = ["disease:modifier", "disease:class", "disease:specific", "disease:composite"]
+            #   for disease_type in types:
+            #     gm_anns = Annotation.objects.filter(type = disease_type, view__section__document = document, view__user = gm_user).all()
+            #     print self.calc_score(gm_anns, gm_anns)
 
               # print "\n\n"+ disease_type +"\n\n"
               # for gm_ann in gm_anns[:10]:
@@ -64,20 +64,32 @@ class Command(BaseCommand):
 
     def util_ncbo_specturm(self, documents):
         # ncbos = User.objects.filter(userprofile__ncbo = True).all()
-        ncbos = Ncbo.objects.all()
+        ncbos = Ncbo.objects.filter(score__lt = 15).all()
         gm_user = User.objects.get(username__exact = 'goldenmaster')
 
         with open('ncbo_spectrum.csv', 'wb') as csvfile:
           writer = csv.writer(csvfile, delimiter=',')
-          writer.writerow(["Score", "Min Term Size", "TP", "FP", "FN", "P", "R", "R"])
+          writer.writerow(["Score", "Min Term Size", "TP", "FP", "FN", "P", "R", "F"])
 
           for ncbo in ncbos:
             results = []
             for document in documents:
+
+              # only iterate over abstracts
               for section in document.section_set.all():
                 # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
                 gm_annotations = Annotation.objects.filter(view__section = section, view__user = gm_user).all()
                 ncbo_annotations = Annotation.objects.filter(view__section = section, view__user = ncbo.user).all()
+
+                print "\nGM Anns: "
+                for gm_ann in gm_annotations:
+                  print gm_ann.text + " :: " + str(gm_ann.start)
+
+                print "\nNCBO Anns: "
+                for ncbo_ann in ncbo_annotations:
+                  print ncbo_ann.text + " :: " + str(ncbo_ann.start)
+
+                print "\n - - - - - - \n"
 
                 ncbo_score = self.calc_score(ncbo_annotations, gm_annotations)
                 results.append( ncbo_score )
@@ -85,8 +97,9 @@ class Command(BaseCommand):
 
             results = map(sum,zip(*results))
             score = self.determine_f( results[0], results[1], results[2] )
-            writer.writerow([ncbo.score, ncbo.min_term_size, results[0], results[1], results[2], score[0], score[1], score[2]])
-          print ncbo.user
+            arr = [ncbo.score, ncbo.min_term_size, results[0], results[1], results[2], score[0], score[1], score[2]]
+            writer.writerow(arr)
+            print arr
 
 
     def match_exact(self, gm_ann, user_anns):
