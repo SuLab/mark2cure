@@ -152,3 +152,4 @@ class Command(BaseCommand):
 
       return views, annotations
 
+

@@ -1,3 +1,0 @@
-A-T, 4
-ataxia-telangiectasia, 2
-PWS, 2

@@ -1,5 +1,0 @@
-cancer, 1
-chondrodysplasia, 1
-anxiety, 1
-splenomegaly, 1
-lymphadenopathy, 1

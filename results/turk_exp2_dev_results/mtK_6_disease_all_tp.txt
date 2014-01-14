@@ -1,4 +1,0 @@
-A-T, 9
-PWS, 4
-ALPS, 2
-ataxia-telangiectasia, 2
