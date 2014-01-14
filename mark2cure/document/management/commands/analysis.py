@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from mark2cure.document.models import Document, Section, View, Annotation
+from django.contrib.auth.models import User
 
 import os, os.path, csv
 
@@ -17,19 +18,16 @@ class Command(BaseCommand):
             # gm_views = self.get_user_data('goldenmaster', 'NCBI_corpus_development')
             # gm_anns = Annotation.objects.filter(user_agent = 'goldenmaster').all()
 
-            # gm_counter = 0
-            # for v in gm_views:
-            #   gm_counter += len( v.annotation_set.all() )
+            gm_user = User.objects.get(username__exact = 'goldenmaster')
+            ncbo_user = User.objects.get(username__exact = 'ncbo_5_5')
+            documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
 
-
-            # print gm_counter
-            # print len(gm_anns)
-
-
-            types = ["disease:modifier", "disease:class", "disease:specific", "disease:composite"]
-            for disease_type in types:
-              gm_anns = Annotation.objects.filter(user_agent = 'goldenmaster', type=disease_type).all()
-              print self.calc_score(gm_anns, gm_anns)
+            self.util_ncbo_specturm(documents)
+            for document in documents:
+              types = ["disease:modifier", "disease:class", "disease:specific", "disease:composite"]
+              for disease_type in types:
+                gm_anns = Annotation.objects.filter(type = disease_type, view__section__document = document, view__user = gm_user).all()
+                print self.calc_score(gm_anns, gm_anns)
 
               # print "\n\n"+ disease_type +"\n\n"
               # for gm_ann in gm_anns[:10]:
@@ -46,7 +44,6 @@ class Command(BaseCommand):
 
         #     for ann in mturk_anns:
         #
-
         #       for k in range(1, 5+1):
 
         #
@@ -55,23 +52,38 @@ class Command(BaseCommand):
         #     for disease_type in types:
         #       report = compareAnnosCorpusLevel(gold_annos, test_annos);
 
-
-
-
         # if(include_doc_level) {
         #   List<Report> reports = compareAnnosDocumentLevel(gold_annos, test_annos);
         #   report.writeReportList(reports, outprefix+"_doc_level.txt");
         # }
 
-
         #     with open('.csv', 'wb') as csvfile:
         #       writer = csv.writer(csvfile, delimiter=',')
         #       writer.writerow(['foo', 'bar', 'tall'])
 
-
         #     # print len(views)
         #     # print len(gm_views)
         # pass
+
+
+    def util_ncbo_specturm(self, documents):
+        ncbos = User.objects.filter(userprofile__mturk = True).all()
+        print ncbos
+        print "\t".join(["Score", "Min Term Size", "P", "R", "R"])
+        for ncbo in ncbos:
+          results = []
+          for document in documents:
+            # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
+            gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
+            ncbo_annotations = self.process_annotations(user = ncbo.user, document=document)
+
+            ncbo_score = self.calc_score(ncbo_annotations, gm_annotations)
+            results.append( ncbo_score )
+
+          results = map(sum,zip(*results))
+          results = self.determine_f( results[0], results[1], results[2] )
+          print "\t".join([str(ncbo.score), str(ncbo.min_term_size), "%.2f"%results[0], "%.2f"%results[1], "%.2f"%results[2]])
+
 
 
     def match_exact(self, gm_ann, user_anns):

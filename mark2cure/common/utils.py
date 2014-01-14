@@ -786,83 +786,7 @@ class Analysis():
 #
 #       return uniq_annotations
 #
-#
-#     def match_exact(self, gm_ann, user_anns):
-#         '''
-#           Exact or Coextensive match finding for annotations. Works off start of annotation and cleaned length both being equal
-#
-#           Returns True is any of the user annotations are equal to this GM Annotation
-#
-#         '''
-#         gm_len = len(gm_ann['text'])
-#         for user_ann in user_anns:
-#           if gm_ann['start'] == user_ann['start'] and gm_len == len(user_ann['text']): return True
-#         return False
-#
-#
-#     def match_partial(self, gm_ann, user_anns):
-#         '''
-#           Overlap (Partial) match finding for annotations.
-#
-#           Works off start of annotation and cleaned length enclosing a user annotation
-#
-#         '''
-#         gm_len = len( gm_ann['text'])
-#         gm_start = gm_ann['start']
-#
-#         for user_ann in user_anns:
-#           if gm_start <= user_ann['start'] <= gm_start + gm_len:
-#               return True
-#
-#         return False
-#
-#
-#     def calc_score(self, annotations_a, annotations_b, algo=0):
-#       '''
-#         This calculates the comparsion overlap between two arrays of dictionary terms
-#
-#         Algorithms
-#           - 0: Exact
-#           - 1: Partial
-#
-#         It considers both the precision p and the recall r of the test to compute the score:
-#         p is the number of correct results divided by the number of all returned results
-#         r is the number of correct results divided by the number of results that should have been returned.
-#         The F1 score can be interpreted as a weighted average of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
-#
-#        tp  fp
-#        fn  *tn
-#
-#       '''
-#       # Calculate the correct annotations the user submitted TP is the # of GM
-#       # annotations that the user had as well
-#       if algo is 0:
-#         # For each of the GMs, check to see if the user has a coextensive match
-#         true_positives = [gm_ann for gm_ann in annotations_b if self.match_exact(gm_ann, annotations_a)]
-#       elif algo is 1:
-#         true_positives = [gm_ann for gm_ann in annotations_b if self.match_partial(gm_ann, annotations_a)]
-#       else:
-#         true_positives = [gm_ann for gm_ann in annotations_b if self.match_exact(gm_ann, annotations_a)]
-#
-#       # In order to make our comparisons we need to do the conversion to a list of tuples
-#       true_positives = [tuple(sorted(item.items())) for item in true_positives]
-#       annotations_a  = [tuple(sorted(item.items())) for item in annotations_a]
-#       annotations_b  = [tuple(sorted(item.items())) for item in annotations_b]
-#
-#       # Annotations the user submitted that were wrong (the User set without their True Positives)
-#       false_positives = set(annotations_a) - set(true_positives)
-#
-#       # Annotations the user missed (the GM set without their True Positives)
-#       false_negatives = set(annotations_b) - set(true_positives)
-#
-#       # Add the False Positives and False Negatives to a global array to keep track which
-#       # annotations are commonly incorrect
-#       for tp in true_positives:  self.error_aggreements['true_positives' ].append( tp[1][1] )
-#       for fp in false_positives: self.error_aggreements['false_positives'].append( fp[1][1] )
-#       for fn in false_negatives: self.error_aggreements['false_negatives'].append( fn[1][1] )
-#
-#       # print "TP: {} \nFP: {} \nFN: {} \n|| \nUser Ann: {} \nGM Ann: {} \n\n-----\n\n".format(true_positive, false_positive, false_negative, annotations_a, annotations_b)
-#       return ( len(true_positives), len(false_positives), len(false_negatives) )
+
 #
 #     def determine_f(self, true_positive, false_positive, false_negative):
 #       if true_positive + false_positive is 0:
@@ -939,50 +863,8 @@ class Analysis():
 #         workers_culmulative = [item for sublist in workers_culmulative for item in sublist]
 #         return workers_culmulative
 #
-#
-#     def get_experiment_hits(self, experiment=2, document=None):
-#       '''
-#         Returns all the HITs (aka Views) for an experiment
-#         (TODO) Confirm they source documents for the correct experiment GM set
-#       '''
-#       if experiment is 1:
-#         worker_views = db.session.query(View).\
-#             filter( View.created >= '2013-10-29' ).\
-#             filter( View.created < '2013-11-6' ).\
-#             filter( View.user.has(mturk=1) )
-#       elif experiment is 2:
-#         worker_views = db.session.query(View).\
-#             filter( View.created >= '2013-11-6' ).\
-#             filter( View.user.has(mturk=1) )
-#
-#       if document:
-#         return worker_views.filter_by( document = document ).all()
-#       else:
-#         return worker_views.all()
-#
-#
-#     def get_experiment_annotations(self, experiment=2):
-#       '''
-#         Returns all the Annotations for an experiment
-#         (TODO) Confirm they source documents for the correct experiment GM set
-#       '''
-#       if experiment is 1:
-#         annotations = db.session.query(Annotation).\
-#           filter( Annotation.user.has(mturk=1) ).\
-#           filter( Annotation.created < '2013-11-6' ).\
-#           filter_by( experiment = None ).\
-#           all()
-#       else:
-#         annotations = db.session.query(Annotation).\
-#             filter( Annotation.user.has(mturk=1) ).\
-#             filter_by( experiment = experiment ).\
-#             all()
-#
-#       return annotations
-#
-#
-#     def util_worker_overlap(self):
-#       pass
+
+
 #
 #     def util_annotation_length(self, experiment=2):
 #       annotations = self.get_experiment_annotations(experiment)
@@ -1007,15 +889,10 @@ class Analysis():
 #       for user in users:
 #         print "\t".join([user, str(users[user]), "%.2f"%(users[user]/total) ])
 #
-#
-#     def util_time_comparison(self):
-#       hits = self.get_experiment_hits()
-#       users = [hit.user.username for hit in hits]
-#       hits = [{'user': hit.user.username, 'created': hit.created.isoformat()} for hit in hits]
-#       res = collections.Counter( users )
-#       print res
-#
-#
+
+
+
+
 #     def util_demographic(self, experiment=2):
 #       annotations = self.get_experiment_annotations(experiment)
 #       ips = [ann.player_ip for ann in annotations]
@@ -1029,26 +906,9 @@ class Analysis():
 #         print "\t".join([location[0], str(location[1]), "%.2f"%(location[1]/total), str(r.get('city', "None")), str(r.get('country_name', "None"))])
 #
 #       return True
-#
-#
-#     def util_ncbo_specturm(self, documents, match=0):
-#       ncbos = db.session.query(Ncbo).all()
-#       print "\t".join(["Score", "Min Term Size", "P", "R", "R"])
-#       for ncbo in ncbos:
-#         results = []
-#         for document in documents:
-#           # Collect the list of Annotations models for the Golden Master and NCBO Annotator to use throughout
-#           gm_annotations = self.process_annotations(user=User.query.get(2), document=document)
-#           ncbo_annotations = self.process_annotations(user = ncbo.user, document=document)
-#
-#           ncbo_score = self.calc_score(ncbo_annotations, gm_annotations, match)
-#           results.append( ncbo_score )
-#
-#         results = map(sum,zip(*results))
-#         results = self.determine_f( results[0], results[1], results[2] )
-#         print "\t".join([str(ncbo.score), str(ncbo.min_term_size), "%.2f"%results[0], "%.2f"%results[1], "%.2f"%results[2]])
-#
-#
+
+
+
 #     def util_global_score(self, documents, experiment=2):
 #       '''
 #         Calculates the fp/fn/tp for a selection of user submissions
@@ -1080,25 +940,3 @@ class Analysis():
 #         fn = str( self.error_aggreements['false_negatives'].get(key, 0) )
 #         print "\t".join([key, tp, fp, fn])
 #
-#
-#     def run(self, document, user):
-#       documents = db.session.query(Document).\
-#           filter_by(source = 'NCBI_corpus_development').\
-#           all()
-#       # self.util_demographic(1)
-#       # self.util_annotation_length(1)
-#       # self.util_worker_contribution_counts()
-#       # self.util_time_comparison()
-#       # self.util_ncbo_specturm(documents)
-#       # self.util_global_score(documents, 1)
-#       self.figure_two(documents, 0, 1)
-#       # self.util_ip_lookup(2)
-#
-#       # self.show_missed_results()
-#       # print self.util_count_total_views()
-#
-#
-#     # if submits 2+ docs with 0 annotation : BLOCK
-#
-#     # These docs appear to have highest remaining assignments: 358, 348
-# 
