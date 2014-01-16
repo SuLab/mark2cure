@@ -40,12 +40,13 @@ class Command(BaseCommand):
         types = ["*", "disease:modifier", "disease:class", "disease:specific", "disease:composite"]
 
         for disease_type in types:
-          for document in documents:
-            results = {}
-            true_positives = []
-            false_positives = []
-            false_negatives = []
+          results = {}
+          for i in range(1, 20): results[i] = []
+          true_positives = []
+          false_positives = []
+          false_negatives = []
 
+          for document in documents:
             for section in document.section_set.all():
 
               # Get the annotation for this grouping
@@ -92,6 +93,7 @@ class Command(BaseCommand):
                 # Ex: If an annotation matches 3 times, it also matches 2 times
 
                 for i in range(1, worker_dict_anns.count(ann) + 1 ):
+                  print i, ann
                   k[i].append( ann )
 
                   # Put the document K score annotations and append their TP/FP/FN counts to the K results
@@ -100,25 +102,31 @@ class Command(BaseCommand):
                   false_positives = score[1]
                   false_negatives = score[2]
                   score = ( len(score[0]), len(score[1]), len(score[2]) )
+                  print score
 
-                for i in range(1, worker_k + 1): results[i].append( score )
-
-            print results
-            # We've now built up the results dictionary for our K scores and NCBO annotator for all the documents.
-            # Sum all the scores up, calculate their P/R/F and print it out
-            # for i in range(1, worker_k + 1):
-            #   results[group] = map(sum,zip(*results[group]))
-            #   results[group] = self.determine_f( results[group][0], results[group][1], results[group][2] )
-            #   print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
+                for i in range(1, worker_k + 1):
+                  results[i].append( score )
 
 
-        # results.append( ncbo_score )
-        # report = compareAnnosCorpusLevel(gold_annos, test_annos);
-        #     with open('.csv', 'wb') as csvfile:
-        #       writer = csv.writer(csvfile, delimiter=',')
-        #       writer.writerow(['foo', 'bar', 'tall'])
-        #     # print len(views)
-        #     # print len(gm_views)
+          print "\n\n -- RESULTS -- \n\n"
+          print results
+          # We've now built up the results dictionary for our K scores for all the documents.
+          # Sum all the scores up, calculate their P/R/F and print it out
+          for i in range(1, worker_k + 1):
+            results[i] = map(sum,zip(*results[i]))
+            results[i] = self.determine_f( results[i][0], results[i][1], results[i][2] )
+            print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
+
+
+          #After res for all docs are collected
+          for i in range(1, worker_k + 1):
+            with open('mturk_'+ disease_type +'_k'+ i +'_summary.csv', 'wb') as csvfile:
+              writer = csv.writer(csvfile, delimiter=',')
+              writer.writerow(["TP", "FP", "FN", "precision", "recall", "F", "consistency"])
+
+              arr = ["TP", "FP", "FN", "precision", "recall", "F", "?"]
+              writer.writerow(arr)
+              print arr
 
 
     def util_ncbo_specturm(self, documents):
