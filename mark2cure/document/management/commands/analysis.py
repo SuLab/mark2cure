@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
         for disease_type in types:
           results = {}
-          for i in range(1, 20): results[i] = []
+          for i in range(1, 10): results[i] = []
           true_positives = []
           false_positives = []
           false_negatives = []
@@ -79,7 +79,8 @@ class Command(BaseCommand):
               # print "\n - - - - - - \n"
 
               k = {}
-              for i in range(1, worker_k + 1): k[i] = []
+              # unclear why, just extra buffer
+              for i in range(1, worker_k + 10): k[i] = []
 
               # Looping through all the unique annotations to get their counts to actual
               # submitted annotations for the workers results
@@ -92,39 +93,35 @@ class Command(BaseCommand):
                 # particular annotation) and everything below it
                 # Ex: If an annotation matches 3 times, it also matches 2 times
 
-                for i in range(1, worker_dict_anns.count(ann) + 1 ):
-                  print i, ann
-                  k[i].append( ann )
+                for k_group in range(1, worker_dict_anns.count(ann) + 2 ):
+                  k[k_group].append( ann )
 
                   # Put the document K score annotations and append their TP/FP/FN counts to the K results
-                  score = self.calc_score(k[i], gm_dict_anns)
-                  true_positives = score[0]
-                  false_positives = score[1]
-                  false_negatives = score[2]
+                  score = self.calc_score(k[k_group], gm_dict_anns)
+                  true_positives.append(score[0])
+                  false_positives.append(score[1])
+                  false_negatives.append(score[2])
                   score = ( len(score[0]), len(score[1]), len(score[2]) )
-                  print score
 
                 for i in range(1, worker_k + 1):
                   results[i].append( score )
 
 
           print "\n\n -- RESULTS -- \n\n"
-          print results
           # We've now built up the results dictionary for our K scores for all the documents.
           # Sum all the scores up, calculate their P/R/F and print it out
           for i in range(1, worker_k + 1):
             results[i] = map(sum,zip(*results[i]))
             results[i] = self.determine_f( results[i][0], results[i][1], results[i][2] )
-            print "\t".join(["{} ".format(group), "%.2f"%results[group][0], "%.2f"%results[group][1], "%.2f"%results[group][2]])
-
+          print results
 
           #After res for all docs are collected
           for i in range(1, worker_k + 1):
-            with open('mturk_'+ disease_type +'_k'+ i +'_summary.csv', 'wb') as csvfile:
+            with open('mturk_'+ disease_type +'_k'+ str(i) +'_summary.csv', 'wb') as csvfile:
               writer = csv.writer(csvfile, delimiter=',')
               writer.writerow(["TP", "FP", "FN", "precision", "recall", "F", "consistency"])
 
-              arr = ["TP", "FP", "FN", "precision", "recall", "F", "?"]
+              arr = [results[0], results[1], results[2], results[3], results[4], results[5], "?"]
               writer.writerow(arr)
               print arr
 
@@ -232,7 +229,7 @@ class Command(BaseCommand):
 
         if precision + recall > 0.0:
           f = ( 2 * precision * recall ) / ( precision + recall )
-          return (precision, recall, f)
+          return (true_positive, false_positive, false_negative, precision, recall, f)
         else:
           return (0,0,0)
 
