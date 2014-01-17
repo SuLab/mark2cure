@@ -41,10 +41,12 @@ class Command(BaseCommand):
 
         for disease_type in types:
           results = {}
-          for i in range(1, 10): results[i] = []
-          true_positives = []
-          false_positives = []
-          false_negatives = []
+          for i in range(1, 10):
+            results[i] = {}
+            results[i]['true_positives'] = []
+            results[i]['false_positives'] = []
+            results[i]['false_negatives'] = []
+            results[i]['score'] = []
 
           for document in documents:
             for section in document.section_set.all():
@@ -57,36 +59,23 @@ class Command(BaseCommand):
                 gold_query = Annotation.objects.filter(type = disease_type, view__section__document = document, view__user = gm_user)
                 work_query = Annotation.objects.filter(type = disease_type, view__section = section, experiment = 3, view__user__userprofile__mturk = True)
 
-              gm_anns = gold_query.all()
-              worker_anns = work_query.all()
+
               # When gold_k is 0, that section (likely a title) has no disease terms in it
               gold_k = len(gold_query.values('view__user').distinct())
               worker_k = len(work_query.values('view__user').distinct())
-
-              #
-              # LOGGING
-              #
-              # print "\nGM Anns: "
-              # for gm_ann in gm_anns:
-              #   print gm_ann.text + " :: " + str(gm_ann.start)
-
-              # print "\nWorker Anns: "
-              # for worker_ann in worker_anns:
-              #   print worker_ann.text + " :: " + str(worker_ann.start)
-
-              # worker_score = self.calc_score(worker_anns, gm_anns)
-              # print worker_score
-              # print "\n - - - - - - \n"
-
-              k = {}
-              # unclear why, just extra buffer
-              for i in range(1, worker_k + 10): k[i] = []
 
               # Looping through all the unique annotations to get their counts to actual
               # submitted annotations for the workers results
               worker_dict_anns = list( work_query.values('text', 'start') )
               gm_dict_anns = list( gold_query.values('text', 'start') )
+
+              worker_anns = work_query.all()
               worker_uniq_anns = worker_anns.values('text', 'start').distinct()
+
+
+              k = {}
+              # unclear why, just extra buffer
+              for i in range(1, worker_k + 10): k[i] = []
 
               for ann in worker_uniq_anns:
                 # Put that annotation into the k for the # that it matches (how many times did workers agree on that
