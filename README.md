@@ -42,3 +42,6 @@ An online text annotator to generate user annotations in fun and exploratory way
 #### Notes
 
 Print out a diagram of the database relationships: `python manage.py graph_models -a -o myapp_models.png`
+
+Debug what anns are selected
+YPet['x'].currentView.collection.parentDocument.get('annotations')

@@ -31,6 +31,16 @@ class Command(BaseCommand):
             # self.util_ncbo_specturm(documents)
             self.util_worker_specturm(documents)
 
+            # anns = Annotation.objects.filter(text = 'of breast and ovarian canc').all()
+            # for ann in anns:
+              # print ann.view.user, " :: ", ann.text, " :: ", "Document: ", ann.view.section.document.document_id
+
+            # print "- - - - -"
+            # anns = Annotation.objects.filter(view__section__document__document_id = 9145677).all()
+            # for ann in anns:
+            #   print ann.text, ann.start
+
+
 
     def util_worker_specturm(self, documents):
         '''
