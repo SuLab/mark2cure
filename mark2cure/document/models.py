@@ -119,11 +119,3 @@ class Annotation(models.Model):
 #               'annotations' : [i.json_view() for i in annotations],
 #               'popularity'  : popularity
 #               }
-
-# def compare_view(self):
-#   # Returns back the text dictionary for comparision
-#   offset = len(self.text) - len(self.text.lstrip())
-#   return {
-#             'text'      : self.text.strip().lower(),
-#             'start'     : int(self.start)+offset,
-#           }

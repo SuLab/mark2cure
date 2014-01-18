@@ -40,13 +40,15 @@ class Command(BaseCommand):
         types = ["*", "disease:modifier", "disease:class", "disease:specific", "disease:composite"]
 
         for disease_type in types:
+
+
           results = {}
           for i in range(1, 10):
             results[i] = {}
             results[i]['true_positives'] = []
             results[i]['false_positives'] = []
             results[i]['false_negatives'] = []
-            results[i]['score'] = []
+
 
           for document in documents:
             for section in document.section_set.all():
@@ -56,8 +58,8 @@ class Command(BaseCommand):
                 gold_query = Annotation.objects.filter(view__section = section, view__user = gm_user)
                 work_query = Annotation.objects.filter(view__section = section, experiment = 3, view__user__userprofile__mturk = True)
               else:
-                gold_query = Annotation.objects.filter(type = disease_type, view__section__document = document, view__user = gm_user)
-                work_query = Annotation.objects.filter(type = disease_type, view__section = section, experiment = 3, view__user__userprofile__mturk = True)
+                gold_query = Annotation.objects.filter(type = disease_type, view__section = section, view__user = gm_user)
+                work_query = Annotation.objects.filter(type = 'disease', view__section = section, experiment = 3, view__user__userprofile__mturk = True)
 
 
               # When gold_k is 0, that section (likely a title) has no disease terms in it
@@ -72,47 +74,53 @@ class Command(BaseCommand):
               worker_anns = work_query.all()
               worker_uniq_anns = worker_anns.values('text', 'start').distinct()
 
-
               k = {}
-              # unclear why, just extra buffer
               for i in range(1, worker_k + 10): k[i] = []
 
               for ann in worker_uniq_anns:
                 # Put that annotation into the k for the # that it matches (how many times did workers agree on that
                 # particular annotation) and everything below it
                 # Ex: If an annotation matches 3 times, it also matches 2 times
+                for k_group in range(1, worker_dict_anns.count(ann) + 2 ): k[k_group].append( ann )
 
-                for k_group in range(1, worker_dict_anns.count(ann) + 2 ):
-                  k[k_group].append( ann )
 
-                  # Put the document K score annotations and append their TP/FP/FN counts to the K results
-                  score = self.calc_score(k[k_group], gm_dict_anns)
-                  true_positives.append(score[0])
-                  false_positives.append(score[1])
-                  false_negatives.append(score[2])
-                  score = ( len(score[0]), len(score[1]), len(score[2]) )
+              # For this section, go back and actually store the results
+              for k_group in range(1, worker_k + 1):
+                # Put the document K score annotations and append their TP/FP/FN counts to the K results
+                truths = self.calc_truth_table( k[k_group], gm_dict_anns)
 
-                for i in range(1, worker_k + 1):
-                  results[i].append( score )
-
+                results[k_group]['true_positives'] = results[k_group]['true_positives'] + truths[0]
+                results[k_group]['false_positives'] = results[k_group]['false_positives'] + truths[1]
+                results[k_group]['false_negatives'] = results[k_group]['false_negatives'] + truths[2]
 
           print "\n\n -- RESULTS -- \n\n"
           # We've now built up the results dictionary for our K scores for all the documents.
           # Sum all the scores up, calculate their P/R/F and print it out
           for i in range(1, worker_k + 1):
-            results[i] = map(sum,zip(*results[i]))
-            results[i] = self.determine_f( results[i][0], results[i][1], results[i][2] )
-          print results
+            tp = len(results[i]['true_positives'])
+            fp = len(results[i]['false_positives'])
+            fn = len(results[i]['false_negatives'])
 
-          #After res for all docs are collected
-          for i in range(1, worker_k + 1):
+            precision, recall, f = self.determine_f( tp, fp, fn )
+
+            # Make the summary files for the different K values
             with open('mturk_'+ disease_type +'_k'+ str(i) +'_summary.csv', 'wb') as csvfile:
               writer = csv.writer(csvfile, delimiter=',')
               writer.writerow(["TP", "FP", "FN", "precision", "recall", "F", "consistency"])
 
-              arr = [results[0], results[1], results[2], results[3], results[4], results[5], "?"]
+              arr = [tp, fp, fn, precision, recall, f, 100*2*float(tp)/(tp+tp+fp+fn)]
               writer.writerow(arr)
               print arr
+
+            # Make the count files for the differnt K values
+            for x in ['true_positives', 'false_positives', 'false_negatives']:
+              with open('mturk_'+ disease_type +'_k'+ str(i) +'_'+ x +'.csv', 'wb') as csvfile:
+                writer = csv.writer(csvfile, delimiter=',')
+                writer.writerow(["text", "start", "count"])
+                for term in results[i][x]:
+                  arr = [term[0], term[1], ""]
+                  writer.writerow(arr)
+
 
 
     def util_ncbo_specturm(self, documents):
@@ -174,7 +182,7 @@ class Command(BaseCommand):
         return (dic['text'], int(dic['start']))
 
 
-    def calc_score(self, annotations_a, annotations_b):
+    def calc_truth_table(self, annotations_a, annotations_b):
       '''
         This calculates the comparsion overlap between two arrays of dictionary terms
 
@@ -206,7 +214,7 @@ class Command(BaseCommand):
       # for fp in false_positives: self.error_aggreements['false_positives'].append( fp[1][1] )
       # for fn in false_negatives: self.error_aggreements['false_negatives'].append( fn[1][1] )
 
-      return ( true_positives, false_positives, false_negatives )
+      return ( list(true_positives), list(false_positives), list(false_negatives) )
 
 
     def determine_f(self, true_positive, false_positive, false_negative):
@@ -218,7 +226,7 @@ class Command(BaseCommand):
 
         if precision + recall > 0.0:
           f = ( 2 * precision * recall ) / ( precision + recall )
-          return (true_positive, false_positive, false_negative, precision, recall, f)
+          return (precision, recall, f)
         else:
           return (0,0,0)
 
