@@ -13,10 +13,11 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 
 # from mark2cure.common.forms import UserForm
-from mark2cure.document.models import Document
+from mark2cure.document.models import Document, View, Annotation
 from mark2cure.common.forms import MessageForm
 
 from datetime import datetime, timedelta
+import math
 
 def home(request):
     if request.user.is_superuser:
@@ -49,7 +50,28 @@ def library(request, page_num=1):
         .order_by('-created')\
         .distinct()[3:]
 
-    return render_to_response('library/index.jade', {'docs' : docs, 'recent': recent_docs}, context_instance=RequestContext(request))
+    '''
+      Calc stats for player
+    '''
+    stats = []
+    # Count total seconds spent working
+    views = list(View.objects.filter(user = request.user).all().distinct().values_list('updated', 'created', 'section__document'))
+    seen = set()
+    u_views = [item for item in views if item[2] not in seen and not seen.add(item[2])]
+    total_seconds = 0
+    for updated, created, document in u_views:
+      timediff = (updated - created).total_seconds()
+      total_seconds += timediff if (timediff > 3 and timediff < 600) else 0
+
+    stats.append({'t':'Total docs', 'v': len(u_views) })
+    stats.append({'t':'Total annotations', 'v': Annotation.objects.filter(view__user = request.user).count()})
+    stats.append({'t':'Total time', 'v': str(int(math.floor(total_seconds / 60))) +" mins" })
+
+
+    return render_to_response('library/index.jade', {
+      'docs' : docs,
+      'recent': recent_docs,
+      'stats': stats}, context_instance=RequestContext(request))
 
 
 @require_http_methods(["POST"])

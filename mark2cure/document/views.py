@@ -56,6 +56,10 @@ def read(request, doc_id):
     turk_sub_location = request.GET.get('turkSubmitTo')
 
     if request.method == 'POST':
+      '''
+        If the user if submitting results for a document an document and sections
+      '''
+
       if worker_id:
 
         if request.user.is_authenticated():
@@ -69,10 +73,21 @@ def read(request, doc_id):
                                     "assignmentId": assignment_id},
                                   context_instance=RequestContext(request))
       else:
+
+        if request.user.is_authenticated():
+          # Update the timestamps
+          for sec in doc.section_set.all():
+            view = get_object_or_404(View, section = sec, user = request.user)
+            view.save()
+
         # Move on to another document
         doc = Document.objects.get_random_document()
         return redirect('/document/'+ str(doc.pk) )
+
     else:
+      '''
+        If the user is fetching / viewing a document and sections
+      '''
 
       if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE":
         logout(request)

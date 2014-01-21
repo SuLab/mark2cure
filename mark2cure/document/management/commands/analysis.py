@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 # from django.db.models import Count
+from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.document.utils import check_validation_status
 from mark2cure.account.models import Ncbo
-from django.contrib.auth.models import User
 
 import os, os.path, csv
 
@@ -29,7 +30,8 @@ class Command(BaseCommand):
             documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
 
             # self.util_ncbo_specturm(documents)
-            self.util_worker_specturm(documents)
+            # self.util_worker_specturm(documents)
+            self.util_worker_ban_analysis()
 
             # anns = Annotation.objects.filter(text = 'of breast and ovarian canc').all()
             # for ann in anns:
@@ -39,6 +41,15 @@ class Command(BaseCommand):
             # anns = Annotation.objects.filter(view__section__document__document_id = 9145677).all()
             # for ann in anns:
             #   print ann.text, ann.start
+
+
+    def util_worker_ban_analysis(self):
+        workers = User.objects.filter(userprofile__mturk = True).all()
+        for worker in workers:
+          print "\n -- User "+ str(worker.id) +" -- \n"
+          views = View.objects.filter(user = worker).all()
+          for view in views:
+            print view.section.validate, ' :: ', view.section.document.id, " :: ", check_validation_status(worker, view)
 
 
 

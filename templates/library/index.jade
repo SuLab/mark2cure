@@ -21,7 +21,7 @@ block content
               th
                 | Sections
               th
-                | Complete?
+                | Views
 
             - for doc in docs
               tr.show-on-hover-container
@@ -31,7 +31,7 @@ block content
                 td
                   | #{ doc.section_set.count }
                 td
-                  | #{ doc.objects.submitted }
+                  | #{ doc.submitted }
 
 
         .row
@@ -55,13 +55,14 @@ block content
       h2
         | Player Stats:
       .row.well
-        p
-          | Coming soon...
+        ul
+          - for stat in stats
+            li <strong>{{ stat.t }}:</strong> {{ stat.v }}
 
       h2
         | History
       .row.well
-        ul
+        ul.unstyle
           - for doc in recent
             li
               a(href="/document/{{doc.pk}}")

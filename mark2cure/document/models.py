@@ -28,7 +28,7 @@ class Document(models.Model):
         return self.title
 
     def submitted(self):
-        return self.section_set
+        return View.objects.filter(section__document = self).count()
 
 
 class Section(models.Model):
