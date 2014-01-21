@@ -121,4 +121,3 @@ def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
             sec.document = doc
             sec.save()
 
-

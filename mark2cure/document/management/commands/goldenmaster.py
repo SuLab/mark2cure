@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 from mark2cure.document.models import Document, Section, View, Annotation
 import csv, random
@@ -10,9 +11,9 @@ class Command(BaseCommand):
     help = 'Import GM documents'
 
     def handle(self, *args, **options):
-        # self.import_golden_documents()
+        self.import_golden_documents()
         self.randomly_make_validation_documents() #ALREADY RAN ONCE ON PROD
-        # self.annotate_golden_documents()
+        self.annotate_golden_documents()
         self.stdout.write('Completed')
 
 

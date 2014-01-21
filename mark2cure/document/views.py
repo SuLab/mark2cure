@@ -88,6 +88,7 @@ def read(request, doc_id):
       '''
         If the user is fetching / viewing a document and sections
       '''
+      completed = False
 
       if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE":
         logout(request)
@@ -99,8 +100,20 @@ def read(request, doc_id):
         login(request, user)
 
       if request.user.is_authenticated():
-        for sec in doc.section_set.all():
+        sections = doc.section_set.all()
+        for sec in sections:
           view, created = View.objects.get_or_create(section = sec, user = request.user)
+
+        gen_u_view = View.objects.filter(section__document = doc, user = request.user).values('updated', 'created').first()
+        timediff = (gen_u_view['updated'] - gen_u_view['created']).total_seconds()
+        completed = timediff > 2
+
+        if completed:
+          results = {}
+          for sec in sections:
+            print " ~ ~ ~ ~ ~ ~ ~ "
+            anns = Annotation.objects.filter(view__section = sec).values_list('text', 'start').all()
+            print anns
 
       return render_to_response('document/read.jade',
                                 { "doc": doc,

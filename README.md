@@ -39,6 +39,8 @@ An online text annotator to generate user annotations in fun and exploratory way
 `cd webapps/mark2cure/ && git pull`
 `sudo supervisorctl restart mark2cure`
 
+`python manage.py goldenmaster`
+
 #### Notes
 
 Print out a diagram of the database relationships: `python manage.py graph_models -a -o myapp_models.png`
