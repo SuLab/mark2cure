@@ -62,13 +62,6 @@ AnnotationList = Backbone.Collection.extend({
     });
   },
 
-  exactMatch : function(word) {
-    return this.filter(function(annotation) {
-      return  word.get('start') == annotation.get('start') &&
-              word.get('stop') == annotation.get('stop');
-    });
-  },
-
   add : function(ann) {
     //-- Prevent duplicate annotations from being submitted
     var isDupe = this.any(function(_ann) {
@@ -110,15 +103,20 @@ Paragraph = Backbone.RelationalModel.extend({
 
   parseText : function() {
     var step = 0,
+        space_padding,
         word_obj,
-        words = _.map(_.string.words( this.get('text') ), function(word) {
+        text = this.get('text'),
+        words = _.map(_.string.words( text ), function(word) {
           word_obj = {
             'text'      : word,
             'length'    : word.length,
             'start'     : step,
             'stop'      : step + word.length
           }
-          step = step + word.length + 1;
+
+          space_padding = (text.substring(step).match(/\s+/g) || [""])[0].length;
+
+          step = step + word.length + space_padding;
           return word_obj;
         });
 
@@ -126,7 +124,6 @@ Paragraph = Backbone.RelationalModel.extend({
       _.each(this.get('words'), function(word) { word.destroy(); });
       this.get('words').add(words);
   }
-
 });
 
 //
@@ -220,11 +217,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     }
 
     this.selectWordsOfAnnotations();
-
-    // console.log('/ / / / / / / / / / / /');
-    // _.each(annotations.models, function(ann) {
-      // console.log(ann.get('text'), " || ", ann.get('start'), ann.get('stop'));
-    // });
   },
 
   createAnns : function(start, stop) {
@@ -274,7 +266,6 @@ WordView = Backbone.Marionette.ItemView.extend({
   sanitizeAnnotation : function(full_str, start) {
     //-- Return the cleaned string and the (potentially) new start position
     var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-    // console.log(full_str, str);
     return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
@@ -291,7 +282,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     _.each(annotations.models, function(ann) {
       var words = self.model.collection.filter(function(word) {
         word_index_average = (word.get('start') + word.get('stop')) / 2;
-        // console.log(word.get('text'), " // ", word_index_average, word.get('start'), word.get('stop'),  " // ", ann.get('start'), ann.get('stop') );
         return ann.get('start') < word_index_average && word_index_average < ann.get('stop');
       });
 
