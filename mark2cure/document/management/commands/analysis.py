@@ -7,40 +7,56 @@ from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.document.utils import check_validation_status
 from mark2cure.account.models import Ncbo
 
-import os, os.path, csv
+from mark2cure.common.utils import Turk
 
+import os, os.path, csv
 
 class Command(BaseCommand):
     args = '<experiment_run_id>'
     help = 'Run and calculate metrics for the experiment'
 
     def handle(self, *args, **options):
-        for experiment in args:
-            self.stdout.write('-- Running analytics on Experiment Run %s --' % experiment)
+        if len(args) < 2: raise Exception('Analysis needs 2 parameters <experiement_id, command>')
 
-            base_path = os.path.join(settings.PROJECT_PATH, 'results')
-            os.chdir(base_path)
+        experiment = args[0]
+        command = args[1]
 
-            # views, hits = self.get_experiment_data(experiment)
-            # gm_views = self.get_user_data('goldenmaster', 'NCBI_corpus_development')
-            # gm_anns = Annotation.objects.filter(user_agent = 'goldenmaster').all()
-            # gm_user = User.objects.get(username__exact = 'goldenmaster')
-            # ncbo_user = User.objects.get(username__exact = 'ncbo_5_5')
+        self.stdout.write('-- Running analytics ({0}) on Experiment Run {1} --'.format(command, experiment))
 
-            documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
+        try:
+          base_path = os.path.join(settings.PROJECT_PATH, 'results')
+          os.chdir(base_path)
+        except RuntimeError:
+          print "A 'results' folder must be created in the project directory"
 
-            # self.util_ncbo_specturm(documents)
-            # self.util_worker_specturm(documents)
-            self.util_worker_ban_analysis()
+        if command == "ncbo_spectrum":
+          documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
+          self.util_ncbo_specturm(documents)
 
-            # anns = Annotation.objects.filter(text = 'of breast and ovarian canc').all()
-            # for ann in anns:
-              # print ann.view.user, " :: ", ann.text, " :: ", "Document: ", ann.view.section.document.document_id
+        elif command == "worker_specturm":
+          documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
+          self.util_worker_specturm(documents)
 
-            # print "- - - - -"
-            # anns = Annotation.objects.filter(view__section__document__document_id = 9145677).all()
-            # for ann in anns:
-            #   print ann.text, ann.start
+        elif command == "worker_ban_analysis":
+          self.util_worker_ban_analysis()
+
+        elif command == "worker_qualification_scores":
+          self.util_worker_qualification_scores()
+
+        else:
+          pass
+
+
+    def util_worker_qualification_scores(self):
+        workers = User.objects.filter(userprofile__mturk = True).all()
+        turk = Turk()
+        results = []
+        with open('mturk_qual_3_summary.tsv', 'wb') as csvfile:
+          writer = csv.writer(csvfile, delimiter='\t')
+          for page in range(1,5):
+            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_3, page_number = page)
+            for qi in quals:
+              writer.writerow([qi.Status, qi.SubjectId, qi.IntegerValue, qi.GrantTime])
 
 
     def util_worker_ban_analysis(self):
@@ -49,7 +65,7 @@ class Command(BaseCommand):
           print "\n -- User "+ str(worker.id) +" -- \n"
           views = View.objects.filter(user = worker).all()
           for view in views:
-            print view.section.validate, ' :: ', view.section.document.id, " :: ", check_validation_status(worker, view)
+            print view.section.validate, ' :: ', view.section.document.id, " :: ", check_validation_status(worker, view.section.document, view)
 
 
 

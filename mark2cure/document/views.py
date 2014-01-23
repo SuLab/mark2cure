@@ -108,12 +108,12 @@ def read(request, doc_id):
         timediff = (gen_u_view['updated'] - gen_u_view['created']).total_seconds()
         completed = timediff > 2
 
-        if completed:
-          results = {}
-          for sec in sections:
-            print " ~ ~ ~ ~ ~ ~ ~ "
-            anns = Annotation.objects.filter(view__section = sec).values_list('text', 'start').all()
-            print anns
+        # if completed:
+          # results = {}
+          # for sec in sections:
+            # print " ~ ~ ~ ~ ~ ~ ~ "
+            # anns = Annotation.objects.filter(view__section = sec).values_list('text', 'start').all()
+            # print anns
 
       return render_to_response('document/read.jade',
                                 { "doc": doc,
@@ -154,7 +154,7 @@ def createannotation(request, doc_id, section_id):
     section = get_object_or_404(Section, pk=section_id)
     view, created = View.objects.get_or_create(section = section, user = request.user)
 
-    form = AnnotationForm(request.POST)
+    form = AnnotationForm(request.POST, view)
     if form.is_valid():
         ann = form.save(commit=False)
 
@@ -164,7 +164,7 @@ def createannotation(request, doc_id, section_id):
         ann.player_ip = request.META['REMOTE_ADDR']
 
         if request.user.profile.mturk:
-          ann.experiment = 3
+          ann.experiment = 4
 
         ann.save()
         return HttpResponse(200)

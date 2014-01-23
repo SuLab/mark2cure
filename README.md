@@ -46,4 +46,13 @@ An online text annotator to generate user annotations in fun and exploratory way
 Print out a diagram of the database relationships: `python manage.py graph_models -a -o myapp_models.png`
 
 Debug what anns are selected
-YPet['x'].currentView.collection.parentDocument.get('annotations')
+YPet['730'].currentView.collection.parentDocument.get('annotations').each(function(m){ console.log(m.get('text')) })
+
+
+from mark2cure.document.utils import *
+user = User.objects.filter(username = 'demo').first()
+doc = Document.objects.filter(pk = 375).first()
+gold_matches(user,doc)
+
+
+

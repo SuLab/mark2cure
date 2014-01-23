@@ -25,12 +25,4 @@ class AnnotationForm(forms.ModelForm):
 
         fields = ['kind', 'text', 'start']
 
-    # def __init__(self, *args, **kwargs):
-    #     v = kwargs.pop('userview', None)
-    #     print "\n\n View is here: ", v
-
-    #     super(AnnotationForm, self).__init__(*args, **kwargs)
-    #     # forms.ModelForm.__init__(self, *args, **kwargs)
-    #     self.view = v
-
-
+        # unique = ['start', 'text', 'fk_view_id']

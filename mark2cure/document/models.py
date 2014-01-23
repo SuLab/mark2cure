@@ -92,6 +92,9 @@ class Annotation(models.Model):
     view = models.ForeignKey(View)
     concept = models.ForeignKey(Concept, blank=True, null=True)
 
+    # class Meta:
+    #   unique_together = ("text", "start", "view")
+
     def __unicode__(self):
         return self.text
 

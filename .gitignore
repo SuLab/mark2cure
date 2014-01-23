@@ -65,3 +65,5 @@ coverage.xml
 docs/_build/
 
 /myapp_models.png
+
+/results

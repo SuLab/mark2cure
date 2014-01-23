@@ -28,8 +28,7 @@ def gold_matches(current_user, document):
     return len(true_positives)
 
 
-def check_validation_status(user, view):
-    document = view.section.document
+def check_validation_status(user, document, view=None):
     views = View.objects.filter(user = user, section__document = document ).all()
     if len(views) > 2:
       if user.profile.mturk:
@@ -41,7 +40,10 @@ def check_validation_status(user, view):
     if document.section_set.all()[:1].get().validate and user.profile.mturk:
       # If this is a validate document, check the user's history, if it's their 3rd submission
       # or more run test to potentially fail if poor performance
-      valid_views = View.objects.filter(user = user, section__validate = True, created__lt = view.updated).order_by('-created').all()[:6]
+      if view is None:
+        valid_views = View.objects.filter(user = user, section__validate = True).order_by('-created').all()[:6]
+      else:
+        valid_views = View.objects.filter(user = user, section__validate = True, created__lt = view.updated).order_by('-created').all()[:6]
 
       if len(valid_views) is 6:
         if sum(1 for x in valid_views if gold_matches(x.user, x.section.document) >= 1) < 3:
