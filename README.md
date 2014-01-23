@@ -36,7 +36,7 @@ An online text annotator to generate user annotations in fun and exploratory way
 ### Control
 
 `. /opt/mark2cure-venv/bin/activate`
-`cd webapps/mark2cure/ && git pull`
+`cd webapps/mark2cure/ && git pull origin HEAD`
 `sudo supervisorctl restart mark2cure`
 
 `python manage.py goldenmaster`
@@ -55,4 +55,42 @@ doc = Document.objects.filter(pk = 375).first()
 gold_matches(user,doc)
 
 
+In [1]: from mark2cure.document.utils import *
 
+In [2]: user = User.objects.filter(username = 'demo').first()
+
+In [3]: doc = Document.objects.filter(pk = 375).first()
+
+
+
+
+In [4]: gold_matches(user,doc)
+user_annotations: []
+ ~ ~ ~ ~ ~
+gold_annotations: [u’retinoblastoma', u'retinoblastoma']
+ ~ ~ ~ ~ ~
+true_positives: []
+ ~ ~ ~ ~ ~
+Out[4]: 0
+
+
+
+In [5]: gold_matches(user,doc)
+user_annotations: [u’retinoblastoma gene']
+ ~ ~ ~ ~ ~
+gold_annotations: [u’retinoblastoma', u'retinoblastoma']
+ ~ ~ ~ ~ ~
+true_positives: []
+ ~ ~ ~ ~ ~
+Out[5]: 0
+
+
+
+In [6]: gold_matches(user,doc)
+user_annotations: [u’retinoblastoma gene', u'retinoblastoma']
+ ~ ~ ~ ~ ~
+user_annotations: [u’retinoblastoma', u'retinoblastoma']
+ ~ ~ ~ ~ ~
+true_positives: [u’retinoblastoma', u'retinoblastoma']
+ ~ ~ ~ ~ ~
+Out[6]: 2

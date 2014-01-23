@@ -701,7 +701,7 @@ class Turk():
 
       # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
       qual_test = self.mtc.create_qualification_type(
-        name = 'Annotation Instructions & Qualification Questions',
+        name = 'Annotation Instructions & Qualification Questions (Jan. 2014)',
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
@@ -718,7 +718,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_3, "GreaterThanOrEqualTo", 22) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_4, "GreaterThanOrEqualTo", 22) )
 
       hit = self.mtc.create_hit(
           hit_type = None,
@@ -740,85 +740,4 @@ class Turk():
           )
       return hit
 
-'''
-  Analysis Helpers
-  -----
 
-  General functions for checking experimental results
-'''
-
-#
-#     def util_annotation_length(self, experiment=2):
-#       annotations = self.get_experiment_annotations(experiment)
-#       annotations = [ann.compare_view() for ann in annotations]
-#       annotations = [len(ann['text']) for ann in annotations]
-#       total = float(len(annotations))
-#       annotations = collections.Counter( annotations )
-#
-#       print "\t".join(["Annotation Length", "Occurances", "Percentage"])
-#       for ann_len in annotations.items():
-#         print "\t".join([str(ann_len[0]), str(ann_len[1]), "%.2f"%(ann_len[1]/total)])
-#
-#     def util_worker_contribution_counts(self, experiment=2):
-#       hits = self.get_experiment_hits(experiment)
-#
-#       total = float(len(hits))
-#
-#       users = [hit.user.username for hit in hits]
-#       users = collections.Counter( users )
-#       users = dict((str(k), v) for k, v in users.iteritems())
-#       print "\t".join(["User", "Submissions", "Percentage"])
-#       for user in users:
-#         print "\t".join([user, str(users[user]), "%.2f"%(users[user]/total) ])
-#
-
-
-
-
-#     def util_demographic(self, experiment=2):
-#       annotations = self.get_experiment_annotations(experiment)
-#       ips = [ann.player_ip for ann in annotations]
-#       total = float(len(annotations))
-#       ips = collections.Counter( ips )
-#
-#       print "\t".join(["IP", "Occurances", "Percentage", "City", "Country"])
-#       for location in ips.items():
-#         percent = (location[1]/ float(total)) * 100
-#         r = requests.get('http://api.hostip.info/get_json.php?ip='+ location[0] +'&position=true').json()
-#         print "\t".join([location[0], str(location[1]), "%.2f"%(location[1]/total), str(r.get('city', "None")), str(r.get('country_name', "None"))])
-#
-#       return True
-
-
-
-#     def util_global_score(self, documents, experiment=2):
-#       '''
-#         Calculates the fp/fn/tp for a selection of user submissions
-#       '''
-#       for document in documents:
-#         gm_annotations = self.process_annotations(user = User.query.get(2), document = document)
-#
-#         # Collect all of the MTurk workers that viewed this document and assemble a list of all
-#         # the annotations across the MTurk Workers for this document in the experiment
-#         worker_views = self.get_experiment_hits(experiment, document)
-#         workers_culmulative = self.get_workers_culmulative_annotations( worker_views )
-#         uniq_workers_culmulative = [dict(y) for y in set(tuple(x.items()) for x in workers_culmulative)]
-#
-#         # Runs the comparision between the workers and the gold master, saving to our class vars in the process
-#         self.calc_score(uniq_workers_culmulative, gm_annotations)
-#
-#
-#       shared_keys = []
-#       for key in self.error_aggreements.keys():
-#         self.error_aggreements[key] = collections.Counter(self.error_aggreements[key])
-#         self.error_aggreements[key] = dict((str(k), v) for k, v in self.error_aggreements[key].iteritems())
-#         shared_keys.append( self.error_aggreements[key].keys() )
-#
-#       shared_keys = list(set( self.flatten(shared_keys) ))
-#       shared_keys.sort()
-#       for key in shared_keys:
-#         tp = str( self.error_aggreements['true_positives'].get(key, 0) )
-#         fp = str( self.error_aggreements['false_positives'].get(key, 0) )
-#         fn = str( self.error_aggreements['false_negatives'].get(key, 0) )
-#         print "\t".join([key, tp, fp, fn])
-#

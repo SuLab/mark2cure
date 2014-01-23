@@ -11,9 +11,23 @@ class Command(BaseCommand):
     help = 'Import GM documents'
 
     def handle(self, *args, **options):
-        self.import_golden_documents()
-        self.randomly_make_validation_documents() #ALREADY RAN ONCE ON PROD
-        self.annotate_golden_documents()
+        if len(args) < 1: raise Exception('Analysis needs 1 parameters <experiement_id, command>')
+
+        command = args[0]
+        self.stdout.write('-- Running GM Routine ({0}) --'.format(command))
+
+        if command == "import":
+          self.import_golden_documents()
+
+        elif command == "randomly_make_validation_documents":
+          self.randomly_make_validation_documents() #ALREADY RAN ONCE ON PROD
+
+        elif command == "annotate":
+          self.annotate_golden_documents()
+
+        else:
+          pass
+
         self.stdout.write('Completed')
 
 
