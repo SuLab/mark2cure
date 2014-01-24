@@ -11,19 +11,20 @@ class Command(BaseCommand):
     help = 'Import GM documents'
 
     def handle(self, *args, **options):
-        if len(args) < 1: raise Exception('Analysis needs 1 parameters <experiement_id, command>')
+        if len(args) < 2: raise Exception('Analysis needs 1 parameters <experiement_id, command>')
 
         command = args[0]
+        document_set = args[1]
         self.stdout.write('-- Running GM Routine ({0}) --'.format(command))
 
         if command == "import":
-          self.import_golden_documents()
+          self.import_golden_documents(document_set)
 
         elif command == "randomly_make_validation_documents":
-          self.randomly_make_validation_documents() #ALREADY RAN ONCE ON PROD
+          self.randomly_make_validation_documents(document_set) #ALREADY RAN ONCE ON PROD
 
         elif command == "annotate":
-          self.annotate_golden_documents()
+          self.annotate_golden_documents(document_set)
 
         else:
           pass
@@ -31,11 +32,35 @@ class Command(BaseCommand):
         self.stdout.write('Completed')
 
 
-    def randomly_make_validation_documents(self):
-        documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
-        for doc in documents:
-          for sec in doc.section_set.all():
-            print sec.validate
+
+
+    def import_golden_documents(self, document_set):
+
+        with open('assets/NCBI_corpus/NCBI_corpus_'+ document_set +'_cleaned.txt','r') as f:
+            reader = csv.reader(f, delimiter='\t')
+            for num, title, text in reader:
+                print title
+
+                doc, doc_c = Document.objects.get_or_create(document_id = num)
+                doc.title = title
+                doc.source = 'NCBI_corpus_'+ document_set
+                doc.save()
+
+                sec, sec_c = Section.objects.get_or_create(kind = "t", document = doc)
+                sec.text = title
+                sec.save()
+
+                sec, sec_c = Section.objects.get_or_create(kind = "a", document = doc)
+                sec.text = text
+                sec.save()
+
+
+
+    def randomly_make_validation_documents(self, document_set):
+        documents = Document.objects.filter(source = 'NCBI_corpus_'+ document_set).all()
+        # for doc in documents:
+        #   for sec in doc.section_set.all():
+        #     print sec.validate
 
         # doc_ids = [doc.id for doc in documents]
         # random.shuffle(doc_ids)
@@ -46,52 +71,37 @@ class Command(BaseCommand):
         #       section.save()
 
 
-    def import_golden_documents(self):
-        path = "NCBI_corpus_development"
-        with open('assets/NCBI_corpus/'+ path +'.txt','r') as f:
-            reader = csv.reader(f, delimiter='\t')
-            for num, title, text in reader:
-                try:
-                    doc = Document.objects.get(document_id = num)
-                except ObjectDoesNotExist:
-                    doc = Document()
-
-                    doc.document_id = num
-                    doc.title = title
-                    doc.source = path
-                    doc.save()
-
-                    sec = Section(kind = "t")
-                    sec.text = title
-                    sec.document = doc
-                    sec.save()
-
-                    sec = Section(kind = "a")
-                    sec.text = text
-                    sec.document = doc
-                    sec.save()
-
-
-    def annotate_golden_documents(self):
+    def annotate_golden_documents(self, document_set):
         user, created = User.objects.get_or_create(username="goldenmaster")
         if created:
             user.set_password('')
             user.save()
 
-        path = "NCBI_corpus_development"
-        with open('assets/NCBI_corpus/'+ path +'_annos.txt','rU') as f:
+        # Clean out all the old annotations just b/c we don't know what they were off on / need to be changed
+        documents = Document.objects.filter(source = 'NCBI_corpus_'+ document_set).all()
+        for doc in documents:
+            views = View.objects.filter(section__document = doc, user = user)
+            for view in views:
+                Annotation.objects.filter(view = view).delete()
+
+        with open('assets/NCBI_corpus/NCBI_corpus_'+ document_set +'_annos.txt','rU') as f:
             reader = csv.reader(f, delimiter='\t')
+            next(reader, None)  # skip the headers
             for doc_id, doc_field, ann_type, text, start, stop in reader:
-                doc = Document.objects.get(document_id = doc_id)
+                try:
+                  doc = Document.objects.get(document_id = doc_id)
 
-                for section in doc.section_set.all():
-                    if section.kind == doc_field[0]:
-                        view, created = View.objects.get_or_create(section = section, user = user)
+                  for section in doc.section_set.all():
+                      if section.kind == doc_field[0]:
+                          view, created = View.objects.get_or_create(section = section, user = user)
 
-                        ann, created = Annotation.objects.get_or_create(view = view, text = text, start = start, type = ann_type)
-                        ann.kind = "e"
-                        ann.user_agent = "goldenmaster"
-                        ann.save()
+                          ann, created = Annotation.objects.get_or_create(view = view, text = text, start = start, type = ann_type)
+                          ann.kind = "e"
+                          ann.user_agent = "goldenmaster"
+                          ann.save()
+
+                except Foo.DoesNotExist:
+                    doc = None
 
 
         # Now go back over and confirm they match
