@@ -65,6 +65,11 @@ def read(request, doc_id):
         if request.user.is_authenticated():
           check_validation_status(request.user, doc)
 
+          # Update the timestamps
+          for sec in doc.section_set.all():
+            view = get_object_or_404(View, section = sec, user = request.user)
+            view.save()
+
         return render_to_response('document/read.jade',
                                   { "doc": doc,
                                     "completed": True,

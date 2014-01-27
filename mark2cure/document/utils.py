@@ -25,6 +25,9 @@ def gold_matches(current_user, document):
     gold_annotations = [ann.text for ann in gold_annotations]
     true_positives = [gm_ann for gm_ann in gold_annotations if gm_ann in user_annotations]
 
+    if( len(gold_annotations) ) is 0:
+      return 1
+
     return len(true_positives)
 
 
