@@ -159,7 +159,7 @@ class Turk():
       #
       overview = Overview()
       overview.append_field('Title', 'Instructions')
-      overview.append(FormattedContent( '<p><strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medical related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>'
+      overview.append(FormattedContent( '<p><strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>'
                                         '<p><strong>Here are some examples of correctly highlighted text.  Please study these before attempting to take the qualification test.  Please also feel free to refer back to these examples if you are uncertain.</strong></p>'
                                         '<ul>'
                                           '<li>'
@@ -700,8 +700,9 @@ class Turk():
                         </AnswerKey>'''
 
       # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
+      qual_name = 'Annotation Instructions & Qualification Questions (Jan. 2014)'
       qual_test = self.mtc.create_qualification_type(
-        name = 'Annotation Instructions & Qualification Questions (Jan. 2014)',
+        name = qual_name,
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
@@ -710,6 +711,7 @@ class Turk():
         test_duration = 25 * 60)
 
       return qual_test
+
 
   # Actionable methods
   def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
