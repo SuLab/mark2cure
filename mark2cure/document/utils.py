@@ -33,7 +33,7 @@ def gold_matches(current_user, document):
 
 def check_validation_status(user, document, view=None):
     views = View.objects.filter(user = user, section__document = document ).all()
-    if len(views) > 2:
+    if len(views) > 4:
       if user.profile.mturk:
         t = Turk()
         t.mtc.block_worker(user.username, "Attempted to submit same document multiple times.")
