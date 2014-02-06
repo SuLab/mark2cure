@@ -1,0 +1,86 @@
+extends base
+
+- load humanize
+
+block content
+
+    - for sec in doc.section_set.all
+        .row
+          - if user.is_authenticated and user.profile.mturk == False
+              .col-md-10.col-md-offset-1
+                h4
+                  | #{ sec.get_kind_display }
+
+          .col-md-10.col-md-offset-1.head-space.game
+            div(id="{{ sec.pk }}").paragraph.entity_tag
+              p
+                | #{ sec.text }
+
+
+    include document/relationships
+
+    - if False
+      // complete and !mturk
+      .well.col-md-10
+        p
+          | Congratulations, you completed the document!
+
+      .col-md-1
+        button.btn.btn-success.btn-large.navigate
+          | Next
+
+    - else
+      .well.col-md-10.col-md-offset-1.head-space
+        .row
+          - if user.is_authenticated and user.profile.mturk == False
+            p
+              span.label.label-info Title
+              |  #{ doc.title }
+            p
+              span.label.label-info Created
+              |  #{ doc.created|naturaltime }
+
+          form(method="post", id="document_submit")
+            {% csrf_token %}
+            button.btn.btn-primary.btn-large.done
+              | Done
+
+
+
+
+block post-footer
+
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    - if completed
+      script.
+        // If the document was completed forget the rest and submit the mturk ajax request to move the turker
+        $('#worker_submit').submit();
+
+    - else
+      script.
+
+
+        $( ".draggable" ).draggable({ revert: "valid" });
+        $( ".droppable" ).droppable({
+          activeClass: "ui-list-group-item-dragging",
+          hoverClass: "ui-list-group-item-hover",
+          drop: function( event, ui ) {
+            // $( this )
+            //   .addClass( "ui-state-highlight" )
+            //   .find( "p" )
+            //     .html( "Dropped!" );
+          }
+        });
+
+
+        $('.select-relation').selectize({
+          create: true,
+          sortField: 'text'
+        });
+
+
+        $('#instructions_toggle').click(function() {
+          $('#instructions').toggle()
+        });
+
+

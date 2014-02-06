@@ -1,0 +1,109 @@
+.row.head-space.bottom-space
+  .col-md-12
+    .row
+      .col-md-4.col-md-offset-4
+        ul.list-group.concepts
+          li.list-group-item.text-center.draggable.droppable
+            strong Cancer
+          li.list-group-item.text-center.draggable.droppable
+            strong Gene_or_gene_product
+          li.list-group-item.text-center.draggable.droppable
+            strong Simple_chemical
+          li.list-group-item.text-center.draggable.droppable
+            strong Cell
+          li.list-group-item.text-center.draggable.droppable
+            strong Organism_substance
+
+    .row
+      .col-md-8.col-md-offset-2
+        table.table.table-striped.table-hover
+          thead
+            tr
+              th
+                | First Concept
+              th
+                | Second Concept
+              th
+                | Relation Type
+              th
+              th
+          tbody
+            tr
+              th
+                | Cancer
+              th
+                | p53
+              th
+                select.select-relation
+                  option(value = "direct")
+                    | Direct
+                  option(value = "physical")
+                    | Physical
+                  option(value = "indirect")
+                    | Indirect
+                  option(value = "correlation")
+                    | Correlation
+                  option(value = "no relation")
+                    | No Relation
+              th
+                button.btn.btn-info.btn-xs
+                  | Copy
+              th
+                button.btn.btn-danger.btn-xs
+                  | Delete
+            tr
+              th
+                | Simple_chemical
+              th
+                | Cancer
+              th
+                select.select-relation
+                  option(value = "direct")
+                    | Direct
+                  option(value = "physical")
+                    | Physical
+                  option(value = "indirect")
+                    | Indirect
+                  option(value = "correlation")
+                    | Correlation
+                  option(value = "no relation")
+                    | No Relation
+              th
+                button.btn.btn-info.btn-xs
+                  | Copy
+              th
+                button.btn.btn-danger.btn-xs
+                  | Delete
+            tr
+              th
+                | Cell
+              th
+                | Organism_substance
+              th
+                select.select-relation
+                  option(value = "direct")
+                    | Direct
+                  option(value = "physical")
+                    | Physical
+                  option(value = "indirect")
+                    | Indirect
+                  option(value = "correlation")
+                    | Correlation
+                  option(value = "no relation")
+                    | No Relation
+              th
+                button.btn.btn-info.btn-xs
+                  | Copy
+              th
+                button.btn.btn-danger.btn-xs
+                  | Delete
+
+
+    .row(style="display:none;")
+      .col-md-6.col-md-offset-3
+        p.lead
+          | Describe their relation
+
+    .row(style="display:none;")
+      .col-md-6.col-md-offset-3
+

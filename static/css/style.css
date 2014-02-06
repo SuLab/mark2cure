@@ -119,6 +119,20 @@ svg {
   border-bottom: 3px solid #0cf;
 }
 
+/* Relationships */
+
+.list-group-item:hover {
+  cursor: pointer;
+}
+
+.ui-list-group-item-dragging {
+  z-index: 99999;
+}
+
+.ui-list-group-item-hover {
+  background-color: #d9edf7
+}
+
 /* =========================
       Analytics View
 ========================= */

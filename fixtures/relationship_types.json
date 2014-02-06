@@ -1,0 +1,18 @@
+[
+  {
+    "model": "mark2cure.document.relationshiptype",
+    "pk": 1,
+    "fields": {
+      "full_name": "Gene-gene",
+      "type": "gene-gene"
+    }
+  },
+  {
+    "model": "mark2cure.document.relationshiptype",
+    "pk": 2,
+    "fields": {
+      "full_name": "Disease-disease",
+      "type": "disease-disease"
+    }
+  }
+]

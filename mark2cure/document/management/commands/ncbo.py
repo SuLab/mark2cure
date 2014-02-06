@@ -2,9 +2,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError, NoArgsCommand
 from django.contrib.auth.models import User
 
-from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.document.models import Document, Section, View, Annotation, Concept
 from mark2cure.account.models import Ncbo
-from mark2cure.common.models import Concept
 
 import requests, re, csv, datetime
 import xml.etree.ElementTree as ET
@@ -32,7 +31,7 @@ class Command(BaseCommand):
 
         # Go over all the documents
         annotators = Ncbo.objects.filter(score = 5).all()
-        documents = Document.objects.filter(source='NCBI_corpus_development').all()
+        documents = Document.objects.all()
 
         for document in documents:
           for annotator in annotators:
@@ -78,9 +77,15 @@ class Command(BaseCommand):
 
             annotation = view.section.text[start:stop]
             concept_url =  ctx.find('term').find('concept').find('fullId').text
+            concept_preferred_name = ctx.find('term').find('concept').find('preferredName').text
+
+            print "\n - - - - - - CONCEPT - - - - - - - - - \n"
+            print concept_preferred_name
 
             if score >= annotator.score:
-              concept, cc = Concept.objects.get_or_create(concept_id = concept_url)
+              concept, cc = Concept.objects.get_or_create(full_id = concept_url)
+              concept.preferred_name = concept_preferred_name
+              concept.save()
 
               # Find those results in the original abstract we had
               ann = Annotation()

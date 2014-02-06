@@ -18,6 +18,8 @@ from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
+from mark2cure.common.models import Concept
+
 from copy import copy
 
 import oauth2 as oauth
@@ -126,6 +128,35 @@ def read(request, doc_id):
                                   "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
                                   "assignmentId": assignment_id},
                                 context_instance=RequestContext(request))
+
+
+
+def read_concepts(request, doc_id):
+    # If they're attempting to view or work on the document
+    doc = get_object_or_404(Document, pk=doc_id)
+
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+          # Update the timestamps
+          for sec in doc.section_set.all():
+            view = get_object_or_404(View, section = sec, user = request.user)
+            view.save()
+
+        # Move on to another document
+        doc = Document.objects.get_random_document()
+        return redirect('/document/'+ str(doc.pk) )
+
+    else:
+        concepts = Concept.objects.all()[:3]
+        # concepts = list(concepts)
+        print concepts
+
+        return render_to_response('document/concepts.jade',
+                                  { "doc": doc,
+                                    "concepts": concepts},
+                                  context_instance=RequestContext(request))
+
+
 
 
 

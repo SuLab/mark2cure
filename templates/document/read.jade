@@ -3,7 +3,7 @@ extends base
 - load humanize
 
 block content
-    include includes/instructions
+    include includes/instructions/annotation_exp_4
 
     - for sec in doc.section_set.all
         .row
@@ -16,6 +16,7 @@ block content
             div(id="{{ sec.pk }}").paragraph.entity_tag
               p
                 | #{ sec.text }
+
 
     - if False
       // complete and !mturk
@@ -49,6 +50,7 @@ block content
       input(type="text", name="document_id", value="{{ doc.pk }}")
 
 
+
 block post-footer
 
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
@@ -59,6 +61,28 @@ block post-footer
 
     - else
       script.
+
+
+        $( ".draggable" ).draggable({ revert: "valid" });
+        $( ".droppable" ).droppable({
+          activeClass: "ui-list-group-item-dragging",
+          hoverClass: "ui-list-group-item-hover",
+          drop: function( event, ui ) {
+            // $( this )
+            //   .addClass( "ui-state-highlight" )
+            //   .find( "p" )
+            //     .html( "Dropped!" );
+          }
+        });
+
+
+
+        $('.select-relation').selectize({
+          create: true,
+          sortField: 'text'
+        });
+
+
         $('#instructions_toggle').click(function() {
           $('#instructions').toggle()
         });

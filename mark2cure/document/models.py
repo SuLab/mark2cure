@@ -5,7 +5,6 @@ from django.utils.encoding import smart_text
 
 from mark2cure.document.managers import DocumentManager, AnnotationManager
 from django.contrib.auth.models import User
-from mark2cure.common.models import Concept
 
 from ttp import ttp
 from decimal import Decimal as D
@@ -55,6 +54,44 @@ class Section(models.Model):
         return self.text
 
 
+class Concept(models.Model):
+    concept_id = models.TextField(blank=False)
+    preferred_name = models.TextField(blank=True)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    section = models.ManyToManyField(Section)
+
+    def __unicode__(self):
+        return self.concept_id
+
+
+class ConceptRelationship(models.Model):
+
+    concept_a = models.ForeignKey(Concept)
+    # concept_b = models.ForeignKey(Concept)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.concept_id
+
+
+class RelationshipType(models.Model):
+    full_name = models.CharField(max_length = 80)
+    type = models.CharField(max_length = 80)
+
+    parent = models.ForeignKey("RelationshipType", blank=True, null=True)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.full_name
+
+
 class View(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -91,9 +128,7 @@ class Annotation(models.Model):
 
     view = models.ForeignKey(View)
     concept = models.ForeignKey(Concept, blank=True, null=True)
-
-    # class Meta:
-    #   unique_together = ("text", "start", "view")
+    concepts = models.ForeignKey(ConceptRelationship, blank=True, null=True)
 
     def __unicode__(self):
         return self.text
@@ -102,23 +137,3 @@ class Annotation(models.Model):
       return (self.text, int(self.start))
 
 
-# def json_view(self, user):
-#     if user.is_anonymous():
-#       viewed = False
-#       annotations = []
-#     else:
-#       viewed = True if db.session.query(View).filter_by(user = user).filter_by(document = self).first() else False
-#       annotations = db.session.query(Annotation).filter_by(user = user).filter_by(document = self).all()
-
-#     popularity = self.cache.split(", ") if self.cache else ["0"]
-
-#     return {  'id'          : self.id,
-#               'document_id' : self.document_id,
-#               'text'        : self.text,
-#               'title'       : self.title,
-#               'created'     : self.created.isoformat(),
-#               # relationships
-#               'complete'    : viewed,
-#               'annotations' : [i.json_view() for i in annotations],
-#               'popularity'  : popularity
-#               }

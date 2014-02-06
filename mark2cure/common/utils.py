@@ -137,6 +137,7 @@ class Turk():
   def disable_all(self):
       for hit in self.mtc.get_all_hits():
           self.mtc.disable_hit( hit.HITId )
+          print hit.HITId
 
   def ban_user(self, worker_id, reason="Did not meet our standards."):
       self.mtc.block_worker(worker_id, reason)
@@ -699,10 +700,11 @@ class Turk():
 
                         </AnswerKey>'''
 
-      # qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_3,
       qual_name = 'Annotation Instructions & Qualification Questions (Jan. 2014)'
-      qual_test = self.mtc.create_qualification_type(
-        name = qual_name,
+
+      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_4,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = qual_name,
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,

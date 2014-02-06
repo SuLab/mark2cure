@@ -43,18 +43,37 @@ class Command(BaseCommand):
         elif command == "worker_qualification_scores":
           self.util_worker_qualification_scores()
 
+        elif command == "average_time_per_hit":
+          self.util_avg_time_per_hit()
+
         else:
           pass
+
+    def util_avg_time_per_hit(self):
+        views = View.objects.filter(user__userprofile__mturk = True, section__kind = "a", created__gt = '2014-1-28 20:00:00')
+
+
+        with open('mturk_run4_abstract_completion_summary.tsv', 'wb') as csvfile:
+          writer = csv.writer(csvfile, delimiter='\t')
+          writer.writerow(['worker', 'document', 'seconds_spent', 'annotation_submitted'])
+
+          for view in views:
+            timediff = (view.updated - view.created).total_seconds()
+            arr = [view.user.username, view.section.document.document_id, timediff, len(view.annotation_set.all())]
+            print arr
+            writer.writerow(arr)
+
+        pass
 
 
     def util_worker_qualification_scores(self):
         workers = User.objects.filter(userprofile__mturk = True).all()
         turk = Turk()
         results = []
-        with open('mturk_qual_3_summary.tsv', 'wb') as csvfile:
+        with open('mturk_qual_4_summary.tsv', 'wb') as csvfile:
           writer = csv.writer(csvfile, delimiter='\t')
           for page in range(1,5):
-            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_3, page_number = page)
+            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_4, page_number = page)
             for qi in quals:
               writer.writerow([qi.Status, qi.SubjectId, qi.IntegerValue, qi.GrantTime])
 

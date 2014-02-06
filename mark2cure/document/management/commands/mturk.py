@@ -17,30 +17,60 @@ class Command(BaseCommand):
     help = 'Command for posting and controlling mturk activity'
 
     def handle(self, *args, **options):
-        if len(args) < 2: raise Exception('Analysis needs 2 parameters <experiement_id, command>')
+        if len(args) < 1: raise Exception('Analysis needs 2 parameters <experiement_id, command>')
 
         command = args[0]
-        documents = args[1]
+        document_set = ""
+        if len(args) > 1:
+          document_set = args[1]
 
-        self.stdout.write('-- Running MTurk Commands ({0}) on Documents {1} --'.format(command, documents))
+        self.stdout.write('-- Running MTurk Commands ({0}) on Documents {1} --'.format(command, document_set))
 
         turk = Turk()
 
         if command == "create_qual":
-          turk.make_qualification_test()
+          print turk.make_qualification_test()
 
 
         elif command == "disable_all":
           turk.disable_all()
 
 
-        elif command == "create_hits":
-          documents = Document.objects.filter(source = 'NCBI_corpus_development').all()[:10]
+        elif command == "validation":
+          # Remove the previous validation rules
+          v_sections = Section.objects.filter(validate = True, document__source = 'NCBI_corpus_'+ document_set).all()
+          for sec in v_sections:
+            sec.validate = False
+            sec.save()
+
+          documents = Document.objects.filter(source = 'NCBI_corpus_'+ document_set).all()
           doc_ids = [doc.id for doc in documents]
           random.shuffle(doc_ids)
-          # print doc_ids
-          for doc_id in doc_ids:
+
+          for doc_id in doc_ids[:50]:
+            secs = Section.objects.filter(document__id = doc_id).all()
+            for sec in secs:
+              sec.validate = True
+              sec.save()
+
+
+        elif command == "create_hits":
+          '''
+            Combine all 593 of the training documents with the validation documents from
+            the development set (there are 50), randomize their order, then create a HIT
+          '''
+          documents = Document.objects.filter(source = 'NCBI_corpus_training').all()
+          v_documents = Document.objects.filter(source = 'NCBI_corpus_development', section__validate = True).distinct()
+
+          documents = [doc.id for doc in documents]
+          v_documents = [doc.id for doc in v_documents]
+
+          combine_docs = documents + v_documents
+          random.shuffle(combine_docs)
+
+          for idx, doc_id in enumerate(combine_docs):
             turk.hit_for_document(doc_id)
+            print idx
 
 
         else:
