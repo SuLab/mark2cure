@@ -10,6 +10,10 @@ class MyInlineModelOptions(admin.TabularInline):
 
 admin.site.register(Document)
 admin.site.register(Concept)
+
+admin.site.register(ConceptRelationship)
+admin.site.register(RelationshipType)
+
 admin.site.register(Section)
 admin.site.register(View)
 admin.site.register(Annotation)

@@ -89,7 +89,17 @@ class RelationshipType(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.full_name
+
+        names = []
+        current = self.parent
+        while current:
+          names.append(current.full_name)
+          current = current.parent
+
+        names = list(reversed(names))
+        path = ' :: '.join(names)
+
+        return "{0}:: {1}".format(path, self.full_name)
 
 
 class View(models.Model):

@@ -13,12 +13,10 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from mark2cure.document.models import Document, Annotation, View, Section
+from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
-
-from mark2cure.common.models import Concept
 
 from copy import copy
 
