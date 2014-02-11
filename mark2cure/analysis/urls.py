@@ -1,5 +1,5 @@
 '''
-doc namespaced URLs
+analysis namespaced URLs
 '''
 
 from django.conf import settings
@@ -11,17 +11,9 @@ from mark2cure.document.views import *
 router = routers.DefaultRouter()
 router.register(r'relationshiptypes', RelationshipTypeViewSet)
 
-urlpatterns = patterns('mark2cure.document.views',
-    url(r'^$', r'list'),
-    url(r'^page/(?P<page_num>\d+)/$', r'list'),
-    url(r'^(?P<doc_id>\d+)/$', r'read'),
-    url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'createannotation'),
-    url(r'^(?P<doc_id>\d+)/concepts/$', r'read_concepts'),
-    url(r'^create/$', r'create'),
-
-    # REST Framework
-    url(r'^', include(router.urls)),
-
+urlpatterns = patterns('mark2cure.analysis.views',
+    url(r'^network$', r'network'),
+    # url(r'^page/(?P<page_num>\d+)/$', r'list'),
 )
 
 # //-- Specific Doc for relationships
@@ -31,3 +23,4 @@ urlpatterns = patterns('mark2cure.document.views',
 # 'document/:doc_id?assignmentId=:var1&hitId=:var2&workerId=:var3&turkSubmitTo=:var4' : 'showDocument',
 # 'document/:doc_id?assignmentId=:var1&hitId=:var2' : 'showDocument',
 # 'document/:doc_id' : 'showDocument',
+

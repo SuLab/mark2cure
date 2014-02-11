@@ -137,37 +137,14 @@ svg {
       Analytics View
 ========================= */
 
-.analytics-view .node {
+#analytics-network .node {
   stroke: #fff;
   stroke-width: 1.5px;
 }
 
-.analytics-view .link {
+#analytics-network .link {
   stroke: #999;
   stroke-opacity: .6;
-}
-
-.analytics-view #network {
-  position: relative;
-}
-
-.analytics-view #network button.close {
-  position: absolute;
-  top: 60px;
-  right: 120px;
-  font-size: 28px;
-  color: #000;
-}
-
-.analytics-view #network i.refresh {
-  position: absolute;
-  top: 64px;
-  right: 150px;
-}
-
-.analytics-view #network i.refresh:hover,
-.analytics-view #network button.close:hover {
-  cursor: pointer;
 }
 
 /* =========================

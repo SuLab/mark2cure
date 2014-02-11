@@ -6,49 +6,55 @@ block content
 
   .row
     .col-sm-8
-      h2
-        | Library:
-      .library-list
-        table.table.table-striped
-          - if twitter_users.paginator.count == 0
-            tr
-              td
-                | No documents
-          - else
-            tr
-              th
-                | Title
-              th
-                | Sections
-              th
-                | Views
+      .row
+        .col-sm-12
+          include analysis/network
 
-            - for doc in docs
-              tr.show-on-hover-container
-                td
-                  a(href="/document/{{doc.pk}}")
-                    | #{ doc.title|truncatewords:10 }
-                td
-                  | #{ doc.section_set.count }
-                td
-                  | #{ doc.submitted }
+      .row
+        .col-sm-12
+          h2
+            | Library:
+          .library-list
+            table.table.table-striped
+              - if twitter_users.paginator.count == 0
+                tr
+                  td
+                    | No documents
+              - else
+                tr
+                  th
+                    | Title
+                  th
+                    | Sections
+                  th
+                    | Views
+
+                - for doc in docs
+                  tr.show-on-hover-container
+                    td
+                      a(href="/document/{{doc.pk}}")
+                        | #{ doc.title|truncatewords:10 }
+                    td
+                      | #{ doc.section_set.count }
+                    td
+                      | #{ doc.submitted }
 
 
-        .row
-          ul.pagination
-            - if docs.has_previous
-              li
-                a(href="/library/page/{{docs.previous_page_number}}")
-                  | &laquo;
+            .row
+              ul.pagination
+                - if docs.has_previous
+                  li
+                    a(href="/library/page/{{docs.previous_page_number}}")
+                      | &laquo;
 
-            li
-              a(href="#")
-                | Page {{ docs.number }} of {{ docs.paginator.num_pages }}
+                li
+                  a(href="#")
+                    | Page {{ docs.number }} of {{ docs.paginator.num_pages }}
 
-            - if docs.has_next
-              li
-                a(href="/library/page/{{docs.next_page_number}}")
-                  | &raquo;
+                - if docs.has_next
+                  li
+                    a(href="/library/page/{{docs.next_page_number}}")
+                      | &raquo;
 
 
     .col-sm-4
@@ -69,6 +75,12 @@ block content
                 | #{ doc.title }
 
       h2
+        | Analysis
+      .row.well
+        a.network
+          | Network
+
+      h2
         | Search:
       .row.well
         p
@@ -84,3 +96,12 @@ block content
             .input-group-btn
               button(type="submit").btn.btn-default
                 | Import
+
+
+block post-footer
+
+  script.
+    $('.network').click(function(evt) {
+      evt.preventDefault();
+      $('#analytics-network').slideToggle();
+    });

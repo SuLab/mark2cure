@@ -18,6 +18,10 @@ from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
+
+from rest_framework import viewsets
+from mark2cure.document.serializers import RelationshipTypeSerializer
+
 from copy import copy
 
 import oauth2 as oauth
@@ -203,4 +207,15 @@ def createannotation(request, doc_id, section_id):
         ann.save()
         return HttpResponse(200)
     return HttpResponse(500)
+
+
+
+
+class RelationshipTypeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = RelationshipType.objects.all()
+    serializer_class = RelationshipTypeSerializer
+
 
