@@ -45,6 +45,8 @@ class Section(models.Model):
     validate    = models.BooleanField(default = False, blank = True)
     cache       = models.TextField(blank=True)
 
+    concepts    = models.ManyToManyField('Concept', blank=True, null=True)
+
     updated     = models.DateTimeField(auto_now=True)
     created     = models.DateTimeField(auto_now_add=True)
 
@@ -52,57 +54,6 @@ class Section(models.Model):
 
     def __unicode__(self):
         return self.text
-
-
-class Concept(models.Model):
-    concept_id = models.TextField(blank=False)
-    preferred_name = models.TextField(blank=True)
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    section = models.ManyToManyField(Section)
-
-    def __unicode__(self):
-        return self.concept_id
-
-
-class ConceptAnnotationRelationship(models.Model):
-
-    annotation = models.ForeignKey('Annotation')
-    concept = models.ForeignKey(Concept)
-
-    target = models.ForeignKey(Concept, blank=True, null=True, related_name="target")
-    relationship = models.ForeignKey('RelationshipType', blank=True, null=True)
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return self.concept_id
-
-
-class RelationshipType(models.Model):
-    full_name = models.CharField(max_length = 80)
-    type = models.CharField(max_length = 80)
-
-    parent = models.ForeignKey("self", blank=True, null=True, related_name="children")
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-
-        names = []
-        current = self.parent
-        while current:
-          names.append(current.full_name)
-          current = current.parent
-
-        names = list(reversed(names))
-        path = ' :: '.join(names)
-
-        return "{0}:: {1}".format(path, self.full_name)
 
 
 class View(models.Model):
@@ -124,13 +75,13 @@ class Annotation(models.Model):
       ('t', 'Triggers'),
       ('e', 'Events'),
     )
-    kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE)
+    kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False)
 
     # Disease, Gene, Protein, et cetera...
-    type    = models.CharField(max_length=40, blank=True)
+    type    = models.CharField(max_length=40, blank=True, null=True)
 
-    text    = models.TextField(blank=False)
-    start   = models.IntegerField()
+    text    = models.TextField(blank=True, null=True)
+    start   = models.IntegerField(blank=True, null=True)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -139,8 +90,6 @@ class Annotation(models.Model):
     player_ip   = models.GenericIPAddressField(blank=True, null=True)
     experiment  = models.IntegerField(blank=True, null=True)
 
-    concepts = models.ManyToManyField(Concept, blank=True, null=True, through = ConceptAnnotationRelationship)
-
     view = models.ForeignKey(View)
 
     def __unicode__(self):
@@ -148,5 +97,57 @@ class Annotation(models.Model):
 
     def simple(self):
       return (self.text, int(self.start))
+
+
+
+class Concept(models.Model):
+    concept_id = models.TextField(blank=False)
+    preferred_name = models.TextField(blank=True)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.concept_id
+
+
+class RelationshipType(models.Model):
+    full_name = models.CharField(max_length = 80)
+    type = models.CharField(max_length = 80)
+
+    parent = models.ForeignKey("self", blank=True, null=True, related_name="children")
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        names = []
+        current = self.parent
+        while current:
+          names.append(current.full_name)
+          current = current.parent
+
+        names = list(reversed(names))
+        path = ' :: '.join(names)
+
+        return "{0}:: {1}".format(path, self.full_name)
+
+
+
+class ConceptRelationship(models.Model):
+    concept       = models.ForeignKey(Concept, related_name="actor")
+    relationship  = models.ForeignKey('RelationshipType', blank=True, null=True)
+    target        = models.ForeignKey(Concept, blank=True, null=True, related_name="target")
+
+    annotation = models.ForeignKey(Annotation)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "{0} >> {1} >> {2}".format(self.concept.preferred_name,
+                                          self.relationship.full_name,
+                                          self.target)
+
 
 
