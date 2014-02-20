@@ -67,10 +67,13 @@ class Concept(models.Model):
         return self.concept_id
 
 
-class ConceptRelationship(models.Model):
+class ConceptAnnotationRelationship(models.Model):
 
-    concept_a = models.ForeignKey(Concept)
-    # concept_b = models.ForeignKey(Concept)
+    annotation = models.ForeignKey('Annotation')
+    concept = models.ForeignKey(Concept)
+
+    target = models.ForeignKey(Concept, blank=True, null=True, related_name="target")
+    relationship = models.ForeignKey('RelationshipType', blank=True, null=True)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -83,7 +86,7 @@ class RelationshipType(models.Model):
     full_name = models.CharField(max_length = 80)
     type = models.CharField(max_length = 80)
 
-    parent = models.ForeignKey("RelationshipType", blank=True, null=True)
+    parent = models.ForeignKey("self", blank=True, null=True, related_name="children")
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -136,9 +139,9 @@ class Annotation(models.Model):
     player_ip   = models.GenericIPAddressField(blank=True, null=True)
     experiment  = models.IntegerField(blank=True, null=True)
 
+    concepts = models.ManyToManyField(Concept, blank=True, null=True, through = ConceptAnnotationRelationship)
+
     view = models.ForeignKey(View)
-    concept = models.ForeignKey(Concept, blank=True, null=True)
-    concepts = models.ForeignKey(ConceptRelationship, blank=True, null=True)
 
     def __unicode__(self):
         return self.text

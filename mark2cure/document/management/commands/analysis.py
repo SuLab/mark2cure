@@ -79,12 +79,14 @@ class Command(BaseCommand):
 
 
     def util_worker_ban_analysis(self):
-        workers = User.objects.filter(userprofile__mturk = True).all()
+        # workers = User.objects.filter(userprofile__mturk = True).all()
+        workers = User.objects.filter(username = 'AZV6NZ24XBR7I').all()
         for worker in workers:
           print "\n -- User "+ str(worker.id) +" -- \n"
           views = View.objects.filter(user = worker).all()
           for view in views:
-            print view.section.validate, ' :: ', view.section.document.id, " :: ", check_validation_status(worker, view.section.document, view)
+            if view.section.validate:
+              print view.section.document.id, " :: ", check_validation_status(worker, view.section.document, view)
 
 
 

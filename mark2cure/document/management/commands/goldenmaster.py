@@ -36,14 +36,14 @@ class Command(BaseCommand):
 
     def import_golden_documents(self, document_set):
 
-        with open('assets/NCBI_corpus/NCBI_corpus_'+ document_set +'_cleaned.txt','r') as f:
+        with open('assets/datasets/'+ document_set +'_padded.txt','r') as f:
             reader = csv.reader(f, delimiter='\t')
             for num, title, text in reader:
                 print title
 
                 doc, doc_c = Document.objects.get_or_create(document_id = num)
                 doc.title = title
-                doc.source = 'NCBI_corpus_'+ document_set
+                doc.source = document_set
                 doc.save()
 
                 sec, sec_c = Section.objects.get_or_create(kind = "t", document = doc)
@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
 
     def randomly_make_validation_documents(self, document_set):
-        documents = Document.objects.filter(source = 'NCBI_corpus_'+ document_set).all()
+        documents = Document.objects.filter(source = document_set).all()
         # for doc in documents:
         #   for sec in doc.section_set.all():
         #     print sec.validate
@@ -78,13 +78,13 @@ class Command(BaseCommand):
             user.save()
 
         # Clean out all the old annotations just b/c we don't know what they were off on / need to be changed
-        documents = Document.objects.filter(source = 'NCBI_corpus_'+ document_set).all()
+        documents = Document.objects.filter(source = document_set).all()
         for doc in documents:
             views = View.objects.filter(section__document = doc, user = user)
             for view in views:
                 Annotation.objects.filter(view = view).delete()
 
-        with open('assets/NCBI_corpus/NCBI_corpus_'+ document_set +'_annos.txt','rU') as f:
+        with open('assets/datasets/'+ document_set +'_annos.txt','rU') as f:
             reader = csv.reader(f, delimiter='\t')
             next(reader, None)  # skip the headers
             for doc_id, doc_field, ann_type, text, start, stop in reader:
