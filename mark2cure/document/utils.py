@@ -64,34 +64,42 @@ def create_from_pubmed_id(pubmed_id=None):
 
     ## Check if the account already exists
     try:
-        doc = Document.objects.get(document_id = pubmed_id)
+        return Document.objects.get(document_id = pubmed_id)
     except ObjectDoesNotExist:
-        doc = Document()
-
         Entrez.email = settings.ENTREZ_EMAIL
         h = Entrez.efetch(db='pubmed', id=[pubmed_id], rettype='medline', retmode='text')
         records = Medline.parse(h)
 
         for record in records:
-          if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
+          # http://www.nlm.nih.gov/bsd/mms/medlineelements.html
+
+          if record.get('TI') and record.get('PMID') and record.get('CRDT'):
+            doc = Document()
+
             doc.document_id = record.get('PMID')
             doc.title = record.get('TI')
             doc.created = datetime.datetime.strptime(record.get('CRDT')[0], '%Y/%m/%d %H:%M')
             doc.source = "pubmed"
             doc.save()
 
+            sec = Section(kind = "o")
+            sec.document = doc
+            sec.save()
+
             sec = Section(kind = "t")
             sec.text = record.get('TI')
             sec.document = doc
             sec.save()
 
-            sec = Section(kind = "a")
-            sec.text = record.get('AB')
-            sec.document = doc
-            sec.save()
+            if record.get('AB'):
+              sec = Section(kind = "a")
+              sec.text = record.get('AB')
+              sec.document = doc
+              sec.save()
+
+            return doc
           break
 
-    return doc
 
 
 def get_pubmed_documents(terms = settings.ENTREZ_TERMS):

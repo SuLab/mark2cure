@@ -32,6 +32,7 @@ class Document(models.Model):
 
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
+      ('o', 'Overview'),
       ('t', 'Title'),
       ('a', 'Abstract'),
       ('p', 'Paragraph'),
@@ -39,7 +40,7 @@ class Section(models.Model):
     )
     kind = models.CharField(max_length=1, choices=SECTION_KIND_CHOICE)
 
-    text        = models.TextField(blank=False)
+    text        = models.TextField(blank=True)
     source      = models.ImageField(blank=True, upload_to="media/images/", default = 'images/figure.jpg')
 
     validate    = models.BooleanField(default = False, blank = True)
@@ -53,7 +54,10 @@ class Section(models.Model):
     document = models.ForeignKey(Document)
 
     def __unicode__(self):
-        return self.text
+        if self.kind == 'o':
+          return '[Overview] '+ self.document.title
+        else:
+          return self.text
 
 
 class View(models.Model):
@@ -93,7 +97,10 @@ class Annotation(models.Model):
     view = models.ForeignKey(View)
 
     def __unicode__(self):
-        return self.text
+        if self.kind == 'r':
+          return "Relationship Ann"
+        else:
+          return self.type
 
     def simple(self):
       return (self.text, int(self.start))
@@ -103,17 +110,20 @@ class Annotation(models.Model):
 class Concept(models.Model):
     concept_id = models.TextField(blank=False)
     preferred_name = models.TextField(blank=True)
+    definition = models.TextField(blank=True)
+    semantic_type = models.TextField(blank=True)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.concept_id
+        return "{0} ({1})".format(self.preferred_name, self.concept_id)
 
 
 class RelationshipType(models.Model):
     full_name = models.CharField(max_length = 80)
     type = models.CharField(max_length = 80)
+    definition = models.TextField(blank=True)
 
     parent = models.ForeignKey("self", blank=True, null=True, related_name="children")
 
@@ -139,7 +149,7 @@ class ConceptRelationship(models.Model):
     relationship  = models.ForeignKey('RelationshipType', blank=True, null=True)
     target        = models.ForeignKey(Concept, blank=True, null=True, related_name="target")
 
-    annotation = models.ForeignKey(Annotation)
+    annotation = models.ForeignKey(Annotation, blank=True, null=True)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

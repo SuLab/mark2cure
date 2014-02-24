@@ -150,21 +150,21 @@ def read_concepts(request, doc_id):
     else:
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text
-
-        concepts = ConceptRelationship.objects.filter(annotation__view__user__username = "nanis").values_list('concept', 'target')
+        concepts = ConceptRelationship.objects.filter(annotation__view__user__mturk = True).values_list('concept', 'target')
         concepts = set(itertools.chain.from_iterable(concepts))
-        if len(concepts) >= 5:
-          concepts = Concept.objects.in_bulk(concepts)
-          print concepts
+        if len(concepts) >= 2:
+          concepts = Concept.objects.in_bulk(concepts).values()
         else:
           concepts = Concept.objects.filter(section__document = doc).distinct()
-          print concepts
 
+        concepts = itertools.combinations(concepts, 2)
+        concepts = [x for x in concepts]
 
+        print concepts
 
         return render_to_response('document/concepts.jade',
-                                  { "doc": doc,
-                                    "concepts": concepts},
+                                  { "doc"       : doc,
+                                    "concepts"  : concepts },
                                   context_instance=RequestContext(request))
 
 

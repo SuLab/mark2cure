@@ -20,30 +20,32 @@ block content
     include document/relationships
 
     - if False
-      // complete and !mturk
-      .well.col-md-10
-        p
-          | Congratulations, you completed the document!
+      .row.well
+        // complete and !mturk
+        .col-md-10
+          p
+            | Congratulations, you completed the document!
 
-      .col-md-1
-        button.btn.btn-success.btn-large.navigate
-          | Next
+        .col-md-1
+          button.btn.btn-success.btn-large.navigate
+            | Next
 
     - else
-      .well.col-md-10.col-md-offset-1.head-space
-        .row
-          - if user.is_authenticated and user.profile.mturk == False
-            p
-              span.label.label-info Title
-              |  #{ doc.title }
-            p
-              span.label.label-info Created
-              |  #{ doc.created|naturaltime }
+      .row.well
+        .col-md-10.col-md-offset-1.head-space
+          .row
+            - if user.is_authenticated and user.profile.mturk == False
+              p
+                span.label.label-info Title
+                |  #{ doc.title }
+              p
+                span.label.label-info Created
+                |  #{ doc.created|naturaltime }
 
-          form(method="post", id="document_submit")
-            {% csrf_token %}
-            button.btn.btn-primary.btn-large.done
-              | Done
+            form(method="post", id="document_submit")
+              {% csrf_token %}
+              button.btn.btn-primary.btn-large.done
+                | Done
 
 
 
