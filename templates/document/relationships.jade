@@ -1,24 +1,35 @@
 .row
-  div(id="carousel-concept-questions", data-ride="carousel").carousel.slide
 
-    ol.carousel-indicators
-      - for c_one, c_two, index in concepts
-        li(data-target="#carousel-concept-questions", data-slide-to="{{ i }}")
+  .col-md-12
+    div(id="carousel-concept-questions", data-ride="carousel").carousel.slide
+
+      ol.carousel-indicators
+        - for c_one, c_two, index in concepts
+          li(data-target="#carousel-concept-questions", data-slide-to="{{ index }}", class="{{ 'active' if index == 0 else '' }}" )
+
+      div.carousel-inner
+        - for c_one, c_two, index in concepts
+          - if index == 0
+            div.item.active
+              img(src="#")
+              div.carousel-caption
+                h3
+                  | {{ c_one.preferred_name }}
+                p
+                  | Hello
+          - else
+            div.item
+              img(src="http://www.maxnanis.com/img/style/profile.jpg")
+              div.carousel-caption
+                h3
+                  | {{ c_one.preferred_name }}
+                p
+                  | Hello
 
 
-    div.carousel-inner
-      - for c_one, c_two, index in concepts
-        div.item
-          div.carousel-caption
-            h3
-              | {{ c_one.preferred_name }}
-            p
-              | Hello
-
-
-    a(href="#carousel-concept-questions", data-slide="prev").left.carousel-control
-      span.glyphicon.glyphicon-chevron-left
-    a(href="#carousel-concept-questions", data-slide="next").right.carousel-control
-      span.glyphicon.glyphicon-chevron-right
+      a(href="#carousel-concept-questions", data-slide="prev").left.carousel-control
+        span.glyphicon.glyphicon-chevron-left
+      a(href="#carousel-concept-questions", data-slide="next").right.carousel-control
+        span.glyphicon.glyphicon-chevron-right
 
 

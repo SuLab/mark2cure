@@ -98,6 +98,10 @@ def read(request, doc_id):
       '''
       completed = False
 
+      if len(doc.section_set.filter(kind="a")) is 0:
+        return redirect('/document/'+ str(doc.pk) + '/concepts/' )
+
+
       if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE":
         logout(request)
 
@@ -150,7 +154,7 @@ def read_concepts(request, doc_id):
     else:
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text
-        concepts = ConceptRelationship.objects.filter(annotation__view__user__mturk = True).values_list('concept', 'target')
+        concepts = ConceptRelationship.objects.filter(annotation__view__user__username = "semmed").values_list('concept', 'target')
         concepts = set(itertools.chain.from_iterable(concepts))
         if len(concepts) >= 2:
           concepts = Concept.objects.in_bulk(concepts).values()
@@ -164,7 +168,7 @@ def read_concepts(request, doc_id):
 
         return render_to_response('document/concepts.jade',
                                   { "doc"       : doc,
-                                    "concepts"  : concepts },
+                                    "concepts"  : concepts[:3] },
                                   context_instance=RequestContext(request))
 
 
