@@ -156,8 +156,8 @@ div.popover.top {
 
 .head-space { margin-top: 20px; }
 .head-space-xl { margin-top: 60px; }
-.bottom-space { margin-bottom: 20px; }
-.bottom-space-xl { margin-bottom: 60px; }
+.foot-space { margin-bottom: 20px; }
+.foot-space-xl { margin-bottom: 60px; }
 
 .tooltip {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

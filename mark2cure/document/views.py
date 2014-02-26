@@ -25,7 +25,7 @@ from mark2cure.document.serializers import RelationshipTypeSerializer
 from copy import copy
 
 import oauth2 as oauth
-import json, itertools
+import json, itertools, random
 
 @login_required
 def list(request, page_num=1):
@@ -152,6 +152,12 @@ def read_concepts(request, doc_id):
         return redirect('/document/'+ str(doc.pk) )
 
     else:
+
+
+
+
+
+
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text
         concepts = ConceptRelationship.objects.filter(annotation__view__user__username = "semmed").values_list('concept', 'target')
@@ -161,10 +167,15 @@ def read_concepts(request, doc_id):
         else:
           concepts = Concept.objects.filter(section__document = doc).distinct()
 
+
+
+
+
+
+
         concepts = itertools.combinations(concepts, 2)
         concepts = [x for x in concepts]
-
-        print concepts
+        random.shuffle(concepts)
 
         return render_to_response('document/concepts.jade',
                                   { "doc"       : doc,
@@ -220,6 +231,34 @@ def createannotation(request, doc_id, section_id):
         ann.save()
         return HttpResponse(200)
     return HttpResponse(500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def createconceptannotation(request, doc_id):
+
+    print "/ / / / / / /"
+    doc = get_object_or_404(Document, pk=doc_id)
+    overview = doc.section_set.filter(kind = 'o').first()
+
+    subject_concept = get_object_or_404(Concept, concept_id=request.POST["c_one"])
+    object_concept = get_object_or_404(Concept, concept_id=request.POST["c_two"])
+
+    view, vc = View.objects.get_or_create(section = overview, user = request.user)
+    ann, ac = Annotation.objects.get_or_create(view = view, kind = 'r')
+
+    for r in request.POST["relation"].split(","):
+      relationship_type = get_object_or_404(RelationshipType, pk=r)
+
+      ConceptRelationship.objects.get_or_create(
+          concept = subject_concept,
+          relationship = relationship_type,
+          target = object_concept,
+          annotation = ann)
+
+
+    return redirect('/document/'+ str(doc.pk) + '/concepts/' )
+
 
 
 

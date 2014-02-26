@@ -82,6 +82,50 @@ $(document).ready(function() {
 
     NETWORK.init( $el );
   });
+
+
+  $('.submit-on-focusout').blur(function(evt) {
+    console.log('ran')
+    // $(this).closest('form').submit();
+  });
+
+  $('.selectize-relationshiptypes').selectize({
+      valueField: 'id',
+      labelField: 'full_name',
+      searchField: ['full_name', 'type', 'id'],
+      options: [],
+      create: false,
+      render: {
+          option: function(item, escape) {
+              return '<div class="row">' +
+                        '<div class="col-md-11 col-md-offset-1">' +
+                          '<div class="title">' + escape(item.full_name) + '</div>' +
+                        '</div>' +
+                     '</div>';
+          }
+      },
+      load: function(query, callback) {
+          if (!query.length) return callback();
+          $.ajax({
+              url: '/document/relationshiptypes/?format=json',
+              type: 'GET',
+              data: {
+                  prefix: query,
+                  page_limit: 10
+              },
+              error: function() {
+                  callback();
+              },
+              success: function(res) {
+                  callback(res);
+              }
+          });
+      }
+  });
+
+
+
+
 });
 
 

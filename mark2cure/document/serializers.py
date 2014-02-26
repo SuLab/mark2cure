@@ -4,4 +4,4 @@ from rest_framework import serializers
 class RelationshipTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RelationshipType
-        fields = ('full_name', 'type', 'parent')
+        fields = ('id', 'full_name', 'type', 'parent')
