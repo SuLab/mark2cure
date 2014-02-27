@@ -18,8 +18,9 @@ urlpatterns = patterns('mark2cure.document.views',
     url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'createannotation'),
 
 
-    url(r'^(?P<doc_id>\d+)/concepts/$', r'read_concepts'),
     url(r'^(?P<doc_id>\d+)/concepts/annotation/create/$', r'createconceptannotation'),
+    url(r'^(?P<doc_id>\d+)/concepts/validate/$', r'validate_concepts'),
+    url(r'^(?P<doc_id>\d+)/concepts/$', r'read_concepts'),
 
 
     url(r'^create/$', r'create'),

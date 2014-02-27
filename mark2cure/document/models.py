@@ -10,7 +10,7 @@ from ttp import ttp
 from decimal import Decimal as D
 from copy import copy
 
-import requests, random, datetime
+import requests, random, datetime, itertools
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -28,6 +28,25 @@ class Document(models.Model):
 
     def submitted(self):
         return View.objects.filter(section__document = self).count()
+
+    def get_concepts_for_classification(self):
+        # First see if the GM has any annotations for these sections,
+        # if not, see if there are any basic concepts for the text
+        concepts = ConceptRelationship.objects.filter(annotation__view__user__username = "semmed").values_list('concept', 'target')
+        concepts = set(itertools.chain.from_iterable(concepts))
+        if len(concepts) >= 2:
+          concepts = Concept.objects.in_bulk(concepts).values()
+        else:
+          concepts = Concept.objects.filter(section__document = doc).distinct()
+
+        concepts = itertools.combinations(concepts, 2)
+        concepts = [x for x in concepts]
+        random.shuffle(concepts)
+        return concepts
+
+    def get_conceptrelation_entries_to_validate(self):
+        return ConceptRelationship.objects.filter(validate = None, annotation__view__section__document = self).all()
+
 
 
 class Section(models.Model):
@@ -151,6 +170,9 @@ class ConceptRelationship(models.Model):
 
     annotation = models.ForeignKey(Annotation, blank=True, null=True)
 
+    validate = models.ForeignKey("self", blank=True, null=True)
+    confidence = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], default=0)
+
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -158,6 +180,5 @@ class ConceptRelationship(models.Model):
         return "{0} >> {1} >> {2}".format(self.concept.preferred_name,
                                           self.relationship.full_name,
                                           self.target)
-
 
 

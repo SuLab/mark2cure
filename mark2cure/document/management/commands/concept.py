@@ -37,7 +37,7 @@ class Command(BaseCommand):
             for pid, sid, pnumber, pmid, predicate, s_cui, s_name, s_type, s_novel, o_cui, o_name, o_type, o_novel in reader:
               print pid, sid, pnumber, pmid, predicate, s_cui, s_name, s_type, s_novel, o_cui, o_name, o_type, o_novel
 
-              doc = create_from_pubmed_id(pid)
+              doc = create_from_pubmed_id(pmid)
 
               if doc:
                 overview = doc.section_set.filter(kind = 'o').first()

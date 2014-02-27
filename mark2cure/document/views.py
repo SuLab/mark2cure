@@ -25,7 +25,7 @@ from mark2cure.document.serializers import RelationshipTypeSerializer
 from copy import copy
 
 import oauth2 as oauth
-import json, itertools, random
+import json, itertools
 
 @login_required
 def list(request, page_num=1):
@@ -152,37 +152,23 @@ def read_concepts(request, doc_id):
         return redirect('/document/'+ str(doc.pk) )
 
     else:
-
-
-
-
-
-
-        # First see if the GM has any annotations for these sections,
-        # if not, see if there are any basic concepts for the text
-        concepts = ConceptRelationship.objects.filter(annotation__view__user__username = "semmed").values_list('concept', 'target')
-        concepts = set(itertools.chain.from_iterable(concepts))
-        if len(concepts) >= 2:
-          concepts = Concept.objects.in_bulk(concepts).values()
-        else:
-          concepts = Concept.objects.filter(section__document = doc).distinct()
-
-
-
-
-
-
-
-        concepts = itertools.combinations(concepts, 2)
-        concepts = [x for x in concepts]
-        random.shuffle(concepts)
-
+        concepts = doc.get_concepts_for_classification()
         return render_to_response('document/concepts.jade',
                                   { "doc"       : doc,
                                     "concepts"  : concepts[:3] },
                                   context_instance=RequestContext(request))
 
 
+@login_required
+def validate_concepts(request, doc_id):
+    doc = get_object_or_404(Document, pk=doc_id)
+    concepts = doc.get_conceptrelation_entries_to_validate()
+    print concepts
+    return HttpResponse(200)
+    # return render_to_response('document/concepts.jade',
+                              # { "doc"       : doc,
+                                # "concept_relations"  : concepts },
+                              # context_instance=RequestContext(request))
 
 
 
