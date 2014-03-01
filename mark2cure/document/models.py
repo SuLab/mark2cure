@@ -45,7 +45,10 @@ class Document(models.Model):
         return concepts
 
     def get_conceptrelation_entries_to_validate(self):
-        return ConceptRelationship.objects.filter(validate = None, annotation__view__section__document = self).all()
+        return ConceptRelationship.objects.filter(
+            validate = None,
+            annotation__view__section__document = self,
+            annotation__view__user__username = "semmed").all()
 
 
 

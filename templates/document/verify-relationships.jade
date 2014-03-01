@@ -1,0 +1,102 @@
+extends base
+
+- load humanize
+
+block content
+
+    - for sec in doc.section_set.all
+        .row
+          - if user.is_authenticated and user.profile.mturk == False
+              .col-md-10.col-md-offset-1
+                h4
+                  | #{ sec.get_kind_display }
+
+          .col-md-10.col-md-offset-1.head-space.game
+            div(id="{{ sec.pk }}").paragraph.entity_tag
+              p
+                | #{ sec.text }
+
+
+    .row.relationship-validation.foot-space-xl.head-space-xl
+      .col-md-6.col-md-offset-3
+        div.panel.panel-default
+          div.panel-heading
+            | Are the following relationships true?
+          div.panel-body
+            p
+              | Using the document above, please confirm if the following relationships are true
+          table.table.table-striped
+            thead
+              th
+                | Subject
+              th
+                | Relation
+              th
+                | Object
+              th
+
+            tbody
+            - for relationship, index in relationships
+              tr
+                td
+                  | #{ relationship.concept.preferred_name }
+                td
+                  | #{ relationship.relationship.full_name }
+                td
+                  | #{ relationship.target.preferred_name }
+                td
+                  input(type="checkbox", checked, readonly, data-on-color="success", data-off-color="warning", data-on-text="Yes", data-off-text="No").yes-no-toggle
+
+
+    .row.well
+      .col-md-10.col-md-offset-1.head-space
+        .row
+          - if user.is_authenticated and user.profile.mturk == False
+            p
+              span.label.label-info Title
+              |  #{ doc.title }
+            p
+              span.label.label-info Created
+              |  #{ doc.created|naturaltime }
+
+          form(method="post", id="document_submit")
+            {% csrf_token %}
+            button.btn.btn-primary.btn-large.done
+              | Done
+
+
+
+
+block post-footer
+
+  script.
+    $(".relationship-validation input").bootstrapSwitch();
+    $(".relationship-validation tr").hover(function(e) {
+      // console.log( $(this) );
+      var input = $(this).children().last().find('.yes-no-toggle');
+      input.bootstrapSwitch('readonly', false);
+    });
+
+    $( ".draggable" ).draggable({ revert: "valid" });
+      $( ".droppable" ).droppable({
+        activeClass: "ui-list-group-item-dragging",
+        hoverClass: "ui-list-group-item-hover",
+        drop: function( event, ui ) {
+          // $( this )
+          //   .addClass( "ui-state-highlight" )
+          //   .find( "p" )
+          //     .html( "Dropped!" );
+        }
+      });
+
+
+      $('.select-relation').selectize({
+        create: true,
+        sortField: 'text'
+      });
+
+
+      $('#instructions_toggle').click(function() {
+        $('#instructions').toggle()
+      });
+

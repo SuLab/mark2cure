@@ -61,28 +61,6 @@ block post-footer
 
     - else
       script.
-
-
-        $( ".draggable" ).draggable({ revert: "valid" });
-        $( ".droppable" ).droppable({
-          activeClass: "ui-list-group-item-dragging",
-          hoverClass: "ui-list-group-item-hover",
-          drop: function( event, ui ) {
-            // $( this )
-            //   .addClass( "ui-state-highlight" )
-            //   .find( "p" )
-            //     .html( "Dropped!" );
-          }
-        });
-
-
-
-        $('.select-relation').selectize({
-          create: true,
-          sortField: 'text'
-        });
-
-
         $('#instructions_toggle').click(function() {
           $('#instructions').toggle()
         });

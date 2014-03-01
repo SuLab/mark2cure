@@ -73,7 +73,7 @@ def read(request, doc_id):
             view = get_object_or_404(View, section = sec, user = request.user)
             view.save()
 
-        return render_to_response('document/read.jade',
+        return render_to_response('document/annotate.jade',
                                   { "doc": doc,
                                     "completed": True,
                                     "turk_sub_location": turk_sub_location,
@@ -127,7 +127,7 @@ def read(request, doc_id):
             # anns = Annotation.objects.filter(view__section = sec).values_list('text', 'start').all()
             # print anns
 
-      return render_to_response('document/read.jade',
+      return render_to_response('document/annotate.jade',
                                 { "doc": doc,
                                   "completed": False,
                                   "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
@@ -153,22 +153,21 @@ def read_concepts(request, doc_id):
 
     else:
         concepts = doc.get_concepts_for_classification()
-        return render_to_response('document/concepts.jade',
-                                  { "doc"       : doc,
-                                    "concepts"  : concepts[:3] },
+        return render_to_response('document/identify-concepts.jade',
+                                  { 'doc'       : doc,
+                                    'concepts'  : concepts[:3] },
                                   context_instance=RequestContext(request))
 
 
 @login_required
 def validate_concepts(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
-    concepts = doc.get_conceptrelation_entries_to_validate()
-    print concepts
-    return HttpResponse(200)
-    # return render_to_response('document/concepts.jade',
-                              # { "doc"       : doc,
-                                # "concept_relations"  : concepts },
-                              # context_instance=RequestContext(request))
+    relationships = doc.get_conceptrelation_entries_to_validate()
+    print relationships
+    return render_to_response('document/verify-relationships.jade',
+                              { 'doc'       : doc,
+                                'relationships'  : relationships },
+                              context_instance=RequestContext(request))
 
 
 
