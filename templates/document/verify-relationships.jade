@@ -59,8 +59,9 @@ block content
               span.label.label-info Created
               |  #{ doc.created|naturaltime }
 
-          form(method="post", id="document_submit")
+          form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
             {% csrf_token %}
+            input(type="hidden", name="task_type", value="validate-concepts")
             button.btn.btn-primary.btn-large.done
               | Done
 

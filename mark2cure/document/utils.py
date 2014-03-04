@@ -11,6 +11,14 @@ from bs4 import BeautifulSoup, NavigableString
 
 import re, nltk, datetime
 
+def update_views(user, document):
+    # Update the timestamps
+    for sec in document.section_set.all():
+      view, created = View.objects.get_or_create(section = sec, user = user)
+      view.save()
+
+
+
 def gold_matches(current_user, document):
     '''
       Used on the document API to check for good performance from users

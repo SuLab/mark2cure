@@ -14,16 +14,19 @@ router.register(r'relationshiptypes', RelationshipTypeViewSet)
 urlpatterns = patterns('mark2cure.document.views',
     url(r'^$', r'list'),
     url(r'^page/(?P<page_num>\d+)/$', r'list'),
-    url(r'^(?P<doc_id>\d+)/$', r'read'),
-    url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'createannotation'),
 
+    url(r'^(?P<doc_id>\d+)/$', r'identify_annotations'),
+    url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'create_annotation'),
 
-    url(r'^(?P<doc_id>\d+)/concepts/annotation/create/$', r'createconceptannotation'),
     url(r'^(?P<doc_id>\d+)/concepts/validate/$', r'validate_concepts'),
-    url(r'^(?P<doc_id>\d+)/concepts/$', r'read_concepts'),
+    url(r'^(?P<doc_id>\d+)/concepts/validate/submit/$', r'validate_concepts_submit'),
 
+    url(r'^(?P<doc_id>\d+)/concepts/identify/$', r'identify_concepts'),
+    url(r'^(?P<doc_id>\d+)/concepts/identify/submit/$', r'identify_concepts_submit'),
 
+    url(r'^(?P<doc_id>\d+)/next/$', r'next'),
     url(r'^create/$', r'create'),
+    url(r'^(?P<doc_id>\d+)/delete/$', r'create'),
 
     # REST Framework
     url(r'^', include(router.urls)),
