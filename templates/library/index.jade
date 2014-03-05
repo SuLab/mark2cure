@@ -15,7 +15,7 @@ block content
           h2
             | Library:
           .library-list
-            table.table.table-striped
+            table.table.table-striped.table-hover
               - if twitter_users.paginator.count == 0
                 tr
                   td
@@ -32,15 +32,16 @@ block content
                     | Views
 
                 - for doc in docs
-                  tr.show-on-hover-container
+                  tr
                     td
                       a(href="/document/{{doc.pk}}/")
                         | #{ doc.title|truncatewords:10 }
 
                     td
-                      a(href="/document/{{doc.pk}}/concepts/validate/")
-                        small
-                          | [Concepts]
+                      - if doc.get_conceptrelation_entries_to_validate.count
+                        a(href="/document/{{doc.pk}}/concepts/validate/")
+                          small
+                            | [Concepts]
 
                     td
                       | #{ doc.available_sections.count }

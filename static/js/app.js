@@ -75,6 +75,34 @@ NETWORK['drawNetwork'] = function(graph) {
 }
 
 $(document).ready(function() {
+
+  $('.form-via-ajax').on('submit', function(evt) {
+    evt.preventDefault();
+    var form = $(this),
+        data = {},
+        input;
+
+    $.each( form.find('input, textarea'), function() {
+      input = $(this);
+      data[ input.attr('name') ] = input.val();
+      input.val('');
+    });
+
+    $.ajax({
+      type: 'POST',
+      url: form.attr('action'),
+      data: data,
+      cache: false,
+      async: false,
+      success: function() {
+        if( form.parent().hasClass('.modal-body') ) {
+          form.closest('modal').modal('hide');
+        }
+      }
+    });
+  });
+
+
   $('.network').click(function(evt) {
     evt.preventDefault();
     $el = $('#analytics-network')

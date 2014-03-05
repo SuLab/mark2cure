@@ -66,5 +66,6 @@ body
     block modals
       - if user.is_authenticated and user.profile.mturk == False
         include includes/message
+        include includes/survey
 
 

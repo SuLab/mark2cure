@@ -1,4 +1,4 @@
-div(id="myModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+div(id="messageModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
   .modal-dialog
     .modal-content
       a(data-dismiss="modal").close-btn
@@ -9,28 +9,18 @@ div(id="myModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", 
           | Want to send a note to the developers?
 
       .modal-body
-        form(action="/message/", method="post")
+        form(action="/message/", method="post", role="form").form-horizontal.form-via-ajax
           {% csrf_token %}
           .form-group
-            .col-lg-12
+            .col-md-12
               textarea#new_message(name="message", placeholder="Type in your message", rows="5").form-control
 
           .form-group
-            button(type="submit").btn.btn-success
-              | Post New Message
+            .col-md-6.col-md-offset-3
+              button(type="submit").btn.btn-block.btn-success
+                | Post New Message
 
       .modal-footer
         button(data-dismiss="modal").btn.btn-warning
           | Close
 
-script.
-  $("#myModal").bind('submit', function(evt) {
-    evt.preventDefault()
-    $.post( '/message/',
-            $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, { 'message' : $('textarea#new_message').val() }),
-            function() {
-              $('textarea#new_message').val('');
-              $("#myModal").modal('hide');
-              }
-      );
-  })

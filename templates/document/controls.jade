@@ -1,0 +1,32 @@
+- load humanize
+
+- if False
+  // complete and !mturk
+  .well.col-md-10
+    p
+      | Congratulations, you completed the document!
+
+  .col-md-1
+    button.btn.btn-success.btn-large.navigate
+      | Next
+
+- else
+  .well.col-md-10.col-md-offset-1.head-space
+    .row
+      .col-md-6
+        - if user.is_authenticated and user.profile.mturk == False
+          p
+            span.label.label-info Title
+            |  #{ doc.title }
+          p
+            span.label.label-info Created
+            |  #{ doc.created|naturaltime }
+
+      .col-md-6
+        form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
+          {% csrf_token %}
+          input(type="hidden", name="task_type", value="identify-annotations")
+          button.btn.btn-primary.btn-large.done
+            | Done
+
+

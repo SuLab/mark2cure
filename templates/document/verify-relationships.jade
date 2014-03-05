@@ -52,24 +52,7 @@ block content
                     input(type="checkbox", name="vote", checked, readonly, data-on-color="success", data-off-color="warning", data-on-text="Yes", data-off-text="No").yes-no-toggle
 
 
-    .row.well
-      .col-md-10.col-md-offset-1.head-space
-        .row
-          - if user.is_authenticated and user.profile.mturk == False
-            p
-              span.label.label-info Title
-              |  #{ doc.title }
-            p
-              span.label.label-info Created
-              |  #{ doc.created|naturaltime }
-
-          form(method="post", action="/document/{{ doc.pk }}/next/").next-document
-            {% csrf_token %}
-            input(type="hidden", name="task_type", value="validate-concepts")
-            button.btn.btn-primary.btn-large.done
-              | Done
-
-
+    include document/controls
 
 
 block post-footer

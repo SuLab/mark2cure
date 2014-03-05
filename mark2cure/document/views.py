@@ -265,6 +265,17 @@ def create(request):
       doc = create_from_pubmed_id( request.POST['document_id'] )
       return redirect('/document/'+ str(doc.pk) )
 
+def annotation_heatmap(request, doc_id):
+    doc = get_object_or_404(Document, pk=doc_id)
+
+    anns = Annotation.objects.filter(
+        view__section__document = doc,
+        kind = 'e')
+
+    print anns
+
+    return HttpResponse(200)
+
 class RelationshipTypeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.

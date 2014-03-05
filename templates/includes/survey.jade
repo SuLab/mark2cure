@@ -1,20 +1,31 @@
-.modal-content
-  a(href="#").close-btn
-    | &times;
+div(id="surveyModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      a(data-dismiss="modal").close-btn
+        | &times;
 
-  .modal-header
-    h3
-      | How did you feel about Mark2Cure?
+      .modal-header
+        h3
+          | How did you feel about Mark2Cure?
 
-  .modal-body
-    .row
-      <% _.each(questions, function(question, question_i) { %>
-        .col-md-6
-          <h5><%= question %>:</h5>
-          <select name="<%= question_i %>" class="form-control
-            <% _.each(['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'], function(option, option_i) { %>
-              <option value="<%= option_i %>" <%= user.get('feedback_'+question_i) === option_i ? 'selected' : '' %> ><%= option %></option>
+      .modal-body
+        .row
+          h3
+            | Answer stuff here!
 
-  .modal-footer
-    button(type="button").btn.btn-success.close-btn
-      | Done
+      .modal-footer
+        button(data-dismiss="modal").btn.btn-warning
+          | Close
+
+script.
+  $("#surveyModal").bind('submit', function(evt) {
+    evt.preventDefault()
+    $.post( '/message/',
+            $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, { 'message' : $('textarea#new_message').val() }),
+            function() {
+              $('textarea#new_message').val('');
+              $("#surveyModal").modal('hide');
+              }
+      );
+  });
+

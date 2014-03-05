@@ -48,7 +48,7 @@ def library(request, page_num=1):
     recent_docs = Document.objects\
         .filter(section__view__user = request.user)\
         .order_by('-created')\
-        .distinct()[3:]
+        .distinct()[:3]
 
     '''
       Calc stats for player

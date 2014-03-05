@@ -32,6 +32,12 @@ class Document(models.Model):
     def available_sections(self):
         return self.section_set.exclude(kind = 'o').all()
 
+    # def user_completed_annotation_identification(self, user):
+    #     anns = Annotation.objects.filter(
+    #         view__section__document = self,
+    #         view__user = user
+    #         )
+
     def get_concepts_for_classification(self):
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text
@@ -52,6 +58,9 @@ class Document(models.Model):
             validate = None,
             annotation__view__section__document = self,
             annotation__view__user__username = "semmed").all()
+
+    class Meta:
+        ordering = ('created',)
 
 
 

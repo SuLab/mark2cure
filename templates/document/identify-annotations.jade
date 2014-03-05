@@ -18,33 +18,7 @@ block content
                 | #{ sec.text }
 
 
-    - if False
-      // complete and !mturk
-      .well.col-md-10
-        p
-          | Congratulations, you completed the document!
-
-      .col-md-1
-        button.btn.btn-success.btn-large.navigate
-          | Next
-
-    - else
-      .well.col-md-10.col-md-offset-1.head-space
-        .row
-          - if user.is_authenticated and user.profile.mturk == False
-            p
-              span.label.label-info Title
-              |  #{ doc.title }
-            p
-              span.label.label-info Created
-              |  #{ doc.created|naturaltime }
-
-          form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
-            {% csrf_token %}
-            input(type="hidden", name="task_type", value="identify-annotations")
-            button.btn.btn-primary.btn-large.done
-              | Done
-
+    include document/controls
 
     form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
       input(type="hidden", name="assignmentId", value="{{ assignmentId }}")
