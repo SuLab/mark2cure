@@ -26,3 +26,4 @@ class AnnotationForm(forms.ModelForm):
         fields = ['kind', 'text', 'start']
 
         # unique = ['start', 'text', 'fk_view_id']
+

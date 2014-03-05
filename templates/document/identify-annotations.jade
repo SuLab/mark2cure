@@ -5,7 +5,7 @@ extends base
 block content
     include includes/instructions/annotation_exp_4
 
-    - for sec in doc.section_set.all
+    - for sec in doc.available_sections
         .row
           - if user.is_authenticated and user.profile.mturk == False
               .col-md-10.col-md-offset-1

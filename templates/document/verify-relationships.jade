@@ -4,20 +4,20 @@ extends base
 
 block content
 
-    - for sec in doc.section_set.all
+    - for sec in doc.available_sections
         .row
           - if user.is_authenticated and user.profile.mturk == False
               .col-md-10.col-md-offset-1
                 h4
                   | #{ sec.get_kind_display }
 
-          .col-md-10.col-md-offset-1.head-space.game
+          .col-md-10.col-md-offset-1.head-space
             div(id="{{ sec.pk }}").paragraph.entity_tag
               p
                 | #{ sec.text }
 
 
-    .row.relationship-validation.foot-space-xl.head-space-xl
+    .row.relationship-validation
       .col-md-6.col-md-offset-3
         div.panel.panel-default
           div.panel-heading
@@ -45,7 +45,11 @@ block content
                 td
                   | #{ relationship.target.preferred_name }
                 td
-                  input(type="checkbox", checked, readonly, data-on-color="success", data-off-color="warning", data-on-text="Yes", data-off-text="No").yes-no-toggle
+                  form(method="post", action="/document/{{ doc.pk }}/concepts/validate/submit/").relationship
+                    {% csrf_token %}
+                    input(type="hidden", name="concept_relationship", value="{{ relationship.pk }}")
+
+                    input(type="checkbox", name="vote", checked, readonly, data-on-color="success", data-off-color="warning", data-on-text="Yes", data-off-text="No").yes-no-toggle
 
 
     .row.well
@@ -59,7 +63,7 @@ block content
               span.label.label-info Created
               |  #{ doc.created|naturaltime }
 
-          form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
+          form(method="post", action="/document/{{ doc.pk }}/next/").next-document
             {% csrf_token %}
             input(type="hidden", name="task_type", value="validate-concepts")
             button.btn.btn-primary.btn-large.done
@@ -71,33 +75,33 @@ block content
 block post-footer
 
   script.
-    $(".relationship-validation input").bootstrapSwitch();
-    $(".relationship-validation tr").hover(function(e) {
+    $("input.yes-no-toggle").bootstrapSwitch();
+    $("tr").hover(function(e) {
       // console.log( $(this) );
       var input = $(this).children().last().find('.yes-no-toggle');
       input.bootstrapSwitch('readonly', false);
     });
 
-    $( ".draggable" ).draggable({ revert: "valid" });
-      $( ".droppable" ).droppable({
-        activeClass: "ui-list-group-item-dragging",
-        hoverClass: "ui-list-group-item-hover",
-        drop: function( event, ui ) {
-          // $( this )
-          //   .addClass( "ui-state-highlight" )
-          //   .find( "p" )
-          //     .html( "Dropped!" );
-        }
+    $('button.done').click(function(evt) {
+      evt.preventDefault();
+
+      $.each($('form.relationship'), function(e) {
+        var form = $(this),
+            data = {
+          'csrfmiddlewaretoken' : form.find('input[name="csrfmiddlewaretoken"]').val(),
+          'concept_relationship': form.find('input[name="concept_relationship"]').val(),
+          'vote'                : form.find('.yes-no-toggle').bootstrapSwitch('state')
+          }
+
+        $.ajax({
+          type: 'POST',
+          url: form.attr('action'),
+          data: data,
+          cache: false,
+          async: false,
+        });
       });
 
-
-      $('.select-relation').selectize({
-        create: true,
-        sortField: 'text'
-      });
-
-
-      $('#instructions_toggle').click(function() {
-        $('#instructions').toggle()
-      });
+      $('form.next-document').submit();
+    });
 

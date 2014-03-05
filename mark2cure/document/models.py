@@ -29,6 +29,9 @@ class Document(models.Model):
     def submitted(self):
         return View.objects.filter(section__document = self).count()
 
+    def available_sections(self):
+        return self.section_set.exclude(kind = 'o').all()
+
     def get_concepts_for_classification(self):
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text

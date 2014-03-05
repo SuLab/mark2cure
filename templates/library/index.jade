@@ -38,12 +38,12 @@ block content
                         | #{ doc.title|truncatewords:10 }
 
                     td
-                      a(href="/document/{{doc.pk}}/concepts/")
+                      a(href="/document/{{doc.pk}}/concepts/validate/")
                         small
                           | [Concepts]
 
                     td
-                      | #{ doc.section_set.count }
+                      | #{ doc.available_sections.count }
                     td
                       | #{ doc.submitted }
 

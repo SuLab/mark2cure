@@ -135,6 +135,21 @@ def validate_concepts(request, doc_id):
 @require_http_methods(["POST"])
 def validate_concepts_submit(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
+    validating_cr = get_object_or_404(ConceptRelationship, pk=request.POST.get('concept_relationship'))
+    overview = get_object_or_404(Section, kind='o', document=doc)
+
+    view, vc = View.objects.get_or_create(section = overview, user = request.user)
+    ann, ac = Annotation.objects.get_or_create(kind = 'r', view = view)
+
+    concept_relationship = ConceptRelationship(
+        concept = validating_cr.concept,
+        relationship = validating_cr.relationship,
+        target = validating_cr.target,
+        annotation = ann,
+        validate = validating_cr,
+        confidence = 0 if request.POST.get('vote') == 'false' else 1)
+    concept_relationship.save()
+
     return HttpResponse(200)
 
 
