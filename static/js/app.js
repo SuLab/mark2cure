@@ -78,14 +78,16 @@ $(document).ready(function() {
 
   $('.form-via-ajax').on('submit', function(evt) {
     evt.preventDefault();
+    evt.stopPropagation();
+
     var form = $(this),
         data = {},
         input;
 
-    $.each( form.find('input, textarea'), function() {
+    $.each( form.find('input, textarea, select'), function() {
       input = $(this);
       data[ input.attr('name') ] = input.val();
-      input.val('');
+      input.val('')
     });
 
     $.ajax({
@@ -96,7 +98,7 @@ $(document).ready(function() {
       async: false,
       success: function() {
         if( form.parent().hasClass('.modal-body') ) {
-          form.closest('modal').modal('hide');
+          form.closest('.modal').modal('hide');
         }
       }
     });

@@ -11,5 +11,6 @@ urlpatterns = patterns('mark2cure.common.views',
     url(r'^library/$', r'library'),
     url(r'^library/page/(?P<page_num>\d+)/$', r'library'),
     url(r'^signup/$', r'signup'),
-    url(r'^message/$', r'message')
+    url(r'^message/$', r'message'),
+    url(r'^survey/$', r'survey')
 )

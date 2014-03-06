@@ -8,10 +8,43 @@ div(id="surveyModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabe
         h3
           | How did you feel about Mark2Cure?
 
+
       .modal-body
-        .row
-          h3
-            | Answer stuff here!
+        form(action="/survey/", method="post", role="form").form-horizontal.form-via-ajax
+          {% csrf_token %}
+          .form-group
+            label(for="feedback_1").col-sm-10.col-sm-offset-1
+              | I feel like I'm contributing to "science"
+            div.col-sm-10.col-sm-offset-1
+              select(id="feedback_1", name="contribute_to_science").form-control
+                include includes/feedback-dropdown
+
+          .form-group
+            label(for="feedback_2").col-sm-10.col-sm-offset-1
+              | I would do this regularly"
+            div.col-sm-10.col-sm-offset-1
+              select(id="feedback_2", name="would_do_regularly").form-control
+                include includes/feedback-dropdown
+
+          .form-group
+            label(for="feedback_3").col-sm-10.col-sm-offset-1
+              | I felt comfortable doing these tasks
+            div.col-sm-10.col-sm-offset-1
+              select(id="feedback_3", name="comfertable_doing_tasks").form-control
+                include includes/feedback-dropdown
+
+          .form-group
+            label(for="feedback_4").col-sm-10.col-sm-offset-1
+              | I learned something doing this task?
+            div.col-sm-10.col-sm-offset-1
+              select(id="feedback_3", name="learned_something_doing_task").form-control
+                include includes/feedback-dropdown
+
+
+          .form-group
+            .col-sm-6.col-sm-offset-3
+              button(type="submit").btn.btn-block.btn-success
+                | Submit Answers
 
       .modal-footer
         button(data-dismiss="modal").btn.btn-warning

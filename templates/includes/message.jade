@@ -12,11 +12,11 @@ div(id="messageModal", tabindex="-1", role="dialog", aria-labelledby="myModalLab
         form(action="/message/", method="post", role="form").form-horizontal.form-via-ajax
           {% csrf_token %}
           .form-group
-            .col-md-12
+            .col-sm-12
               textarea#new_message(name="message", placeholder="Type in your message", rows="5").form-control
 
           .form-group
-            .col-md-6.col-md-offset-3
+            .col-sm-6.col-sm-offset-3
               button(type="submit").btn.btn-block.btn-success
                 | Post New Message
 

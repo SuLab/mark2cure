@@ -98,6 +98,15 @@ class View(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    TASK_TYPE_CHOICE = (
+      ('cr', 'Concept Recognition'),
+      ('cn', 'Concept Normalization'),
+      ('rv', 'Relationship Verification'),
+      ('ri', 'Relationship Identification'),
+      ('rc', 'Relationship Correction'),
+    )
+    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
+
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
 

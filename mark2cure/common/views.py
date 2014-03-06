@@ -15,6 +15,7 @@ from django.http import HttpResponse
 # from mark2cure.common.forms import UserForm
 from mark2cure.document.models import Document, View, Annotation
 from mark2cure.common.forms import MessageForm
+from mark2cure.common.models import SurveyFeedback
 
 from datetime import datetime, timedelta
 import math
@@ -104,4 +105,16 @@ def message(request):
       return HttpResponse("Success")
 
     return HttpResponse('Unauthorized', status=401)
+
+@require_http_methods(["POST"])
+@login_required
+def survey(request):
+    for k, v in request.POST.iteritems():
+        print k, v
+        if(k != "csrfmiddlewaretoken"):
+          sf = SurveyFeedback(question = k, response = v, user = request.user)
+          sf.save()
+
+    return HttpResponse("Success")
+    #return HttpResponse('Unauthorized', status=401)
 
