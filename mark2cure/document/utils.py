@@ -11,10 +11,10 @@ from bs4 import BeautifulSoup, NavigableString
 
 import re, nltk, datetime
 
-def update_views(user, document):
+def update_views(user, document, task_type):
     # Update the timestamps
     for sec in document.section_set.all():
-      view, created = View.objects.get_or_create(section = sec, user = user)
+      view, created = View.objects.get_or_create(task_type = task_type, section = sec, user = user)
       view.save()
 
 

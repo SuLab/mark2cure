@@ -76,13 +76,13 @@ def identify_annotations(request, doc_id):
       login(request, user)
 
     if request.user.is_authenticated():
-      update_views(request.user, doc)
+      update_views(request.user, doc, 'cr')
 
-      gen_u_view = View.objects.filter(section__document = doc, user = request.user).values('updated', 'created').first()
+      gen_u_view = View.objects.filter(task_type = 'cr', section__document = doc, user = request.user).values('updated', 'created').first()
       timediff = (gen_u_view['updated'] - gen_u_view['created']).total_seconds()
       completed = timediff > 2
 
-    return render_to_response('document/identify-annotations.jade',
+    return render_to_response('document/concept-recognition.jade',
                               { "doc": doc,
                                 "completed": False,
                                 "instruct_bool": "block" if assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE" else "none",
@@ -97,7 +97,7 @@ def create_annotation(request, doc_id, section_id):
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
     section = get_object_or_404(Section, pk=section_id)
-    view, created = View.objects.get_or_create(section = section, user = request.user)
+    view, created = View.objects.get_or_create(task_type = "cr", section = section, user = request.user)
 
     form = AnnotationForm(request.POST, view)
     if form.is_valid():
@@ -214,7 +214,7 @@ def next(request, doc_id):
     #     check_validation_status(request.user, doc)
     #     # Update the timestamps
     #     update_views(request.user, doc)
-    #   return render_to_response('document/identify-annotations.jade',
+    #   return render_to_response('document/concept-recognition.jade',
     #                             { "doc": doc,
     #                               "completed": True,
     #                               "turk_sub_location": turk_sub_location,
@@ -231,7 +231,7 @@ def next(request, doc_id):
     # Move on to another document
     doc = Document.objects.get_random_document()
 
-    if kind == 'identify-annotations':
+    if kind == 'concept-recognition':
         return redirect('/document/{0}/'.format(doc.pk))
     elif kind == 'validate-concepts':
         return redirect('/document/{0}/concepts/validate/'.format(doc.pk))
@@ -265,16 +265,20 @@ def create(request):
       doc = create_from_pubmed_id( request.POST['document_id'] )
       return redirect('/document/'+ str(doc.pk) )
 
-def annotation_heatmap(request, doc_id):
+
+def annotation_results(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
+
+
 
     anns = Annotation.objects.filter(
         view__section__document = doc,
         kind = 'e')
 
-    print anns
+    return render_to_response('document/concept-recognition-results.jade',
+        { "doc": doc },
+                              context_instance=RequestContext(request))
 
-    return HttpResponse(200)
 
 class RelationshipTypeViewSet(viewsets.ModelViewSet):
     """

@@ -16,7 +16,7 @@ urlpatterns = patterns('mark2cure.document.views',
     url(r'^page/(?P<page_num>\d+)/$', r'list'),
 
     url(r'^(?P<doc_id>\d+)/$', r'identify_annotations'),
-    url(r'^(?P<doc_id>\d+)/heatmap/$', r'annotation_heatmap'),
+    url(r'^(?P<doc_id>\d+)/results/$', r'annotation_results'),
     url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'create_annotation'),
 
     url(r'^(?P<doc_id>\d+)/concepts/validate/$', r'validate_concepts'),

@@ -25,7 +25,7 @@
       .col-md-6
         form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
           {% csrf_token %}
-          input(type="hidden", name="task_type", value="identify-annotations")
+          input(type="hidden", name="task_type", value="concept-recognition")
           button.btn.btn-primary.btn-large.done
             | Done
 

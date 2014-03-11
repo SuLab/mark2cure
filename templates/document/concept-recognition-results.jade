@@ -1,0 +1,50 @@
+extends base
+
+- load humanize
+
+block content
+
+    - for sec in doc.available_sections
+        .row
+          - if user.is_authenticated and user.profile.mturk == False
+              .col-md-10.col-md-offset-1
+                h4
+                  | #{ sec.get_kind_display }
+
+          .col-md-10.col-md-offset-1.head-space.game
+            div(id="{{ sec.pk }}").paragraph.entity_tag
+              p
+                - for indexes, text, counter, user_annotated in sec.resultwords
+                  span(data-counter="{{ counter }}", class="{{ 'user_annotated' if user_annotated == True else '' }}" )
+                    | #{ text } 
+
+
+
+    include document/controls
+
+block post-footer
+      script.
+        var $sections = $('div.paragraph p')
+
+        $.each($sections, function() {
+          var section = $(this);
+          var $words = section.find('span')
+
+          var values = _.map($words, function(w) { return $(w).data('counter'); }),
+              max = _.max(values);
+
+          var color = d3.scale.linear()
+              .domain([0, max])
+              .range(["white", "yellow"]);
+
+          $.each($words, function(w) {
+            var word = $(this),
+                value = word.data('counter');
+
+            word.css({'background-color': color(value)});
+
+          });
+
+        });
+
+

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from ttp import ttp
 from decimal import Decimal as D
 from copy import copy
+from nltk.tokenize import WhitespaceTokenizer
 
 import requests, random, datetime, itertools
 
@@ -86,6 +87,36 @@ class Section(models.Model):
     created     = models.DateTimeField(auto_now_add=True)
 
     document = models.ForeignKey(Document)
+
+
+    def resultwords(self):
+        # Gather words and positions from the text
+        words_index = WhitespaceTokenizer().span_tokenize(self.text)
+        words_text = WhitespaceTokenizer().tokenize(self.text)
+        words = zip(words_index, words_text)
+        # Add counters for concensus count and personal annotation
+        words = [w + (0,False,) for w in words]
+
+        # Gather other annotations from GM and users for this section
+        anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e").values_list('start', 'text')
+
+        # Build the running counter of times a word was annotated
+        for start, text in anns:
+          length = len(text)
+
+          for idx, word in enumerate(words):
+            word_start = word[0][0]
+            counter = word[2]
+
+            if word_start >= start and word_start <= start+length:
+              counter += 1
+              words[idx] = (word[0], word[1], counter, word[3])
+
+
+        # print "USER :: ", request
+        # user_anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user =  ).values_list('start', 'text')
+        return words
+
 
     def __unicode__(self):
         if self.kind == 'o':
