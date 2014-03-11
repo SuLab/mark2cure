@@ -1,0 +1,20 @@
+- load humanize
+
+.well.col-md-10.col-md-offset-1.head-space
+  .row
+    .col-md-6
+      - if user.is_authenticated and user.profile.mturk == False
+        p
+          span.label.label-info Title
+          |  #{ doc.title }
+        p
+          span.label.label-info Created
+          |  #{ doc.created|naturaltime }
+
+    .col-md-6
+      form(method="post", id="document_submit", action="/document/{{ doc.pk }}/submit/")
+        {% csrf_token %}
+        input(type="hidden", name="task_type", value="{{ task_type }}")
+        button.btn.btn-primary.btn-large.done
+          | Submit
+

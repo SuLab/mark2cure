@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.encoding import smart_text
+from django.shortcuts import get_object_or_404
 
 from mark2cure.document.managers import DocumentManager, AnnotationManager
 from django.contrib.auth.models import User
@@ -33,6 +34,9 @@ class Document(models.Model):
     def available_sections(self):
         return self.section_set.exclude(kind = 'o').all()
 
+    def count_available_sections(self):
+        return self.section_set.exclude(kind = 'o').count()
+
     # def user_completed_annotation_identification(self, user):
     #     anns = Annotation.objects.filter(
     #         view__section__document = self,
@@ -59,6 +63,18 @@ class Document(models.Model):
             validate = None,
             annotation__view__section__document = self,
             annotation__view__user__username = "semmed").all()
+
+
+    def is_complete(self, user, task_type = 'cr'):
+        return True if View.objects.filter(user = user, completed = True, task_type = task_type, section__document = self).count() >= self.count_available_sections() else False
+
+
+    def update_views(self, user, task_type, completed = False):
+      for sec in self.available_sections():
+          view, created = View.objects.get_or_create(task_type = task_type, section = sec, user = user)
+          view.completed = completed
+          view.save()
+
 
     class Meta:
         ordering = ('created',)
@@ -118,6 +134,14 @@ class Section(models.Model):
         return words
 
 
+    def update_view(self, user, task_type, completed = False):
+      view = get_object_or_404(View, user = user, task_type = task_type, section = self)
+      view.completed = completed
+      view.save()
+      return view
+
+
+
     def __unicode__(self):
         if self.kind == 'o':
           return '[Overview] '+ self.document.title
@@ -137,6 +161,7 @@ class View(models.Model):
       ('rc', 'Relationship Correction'),
     )
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
+    completed = models.BooleanField(default = False)
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
