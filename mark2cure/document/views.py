@@ -106,7 +106,7 @@ def identify_annotations_submit(request, doc_id, section_id):
         ann.player_ip = request.META['REMOTE_ADDR']
 
         if request.user.profile.mturk:
-          ann.experiment = 5
+          ann.experiment = 6
 
         ann.save()
         return HttpResponse(200)

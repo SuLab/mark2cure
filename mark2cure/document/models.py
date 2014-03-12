@@ -161,7 +161,7 @@ class View(models.Model):
       ('rc', 'Relationship Correction'),
     )
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
-    completed = models.BooleanField(default = False)
+    completed = models.BooleanField(default = False, blank=True)
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
