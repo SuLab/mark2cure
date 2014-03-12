@@ -19,6 +19,21 @@ block content
                     | #{ text } 
 
 
+    .row
+      .col-md-5.col-md-offset-1
+        ul.list-group
+          - for annotation_start_i, annotation_text in doc.gold_annotations
+            li.list-group-item
+              small
+                | Start #{ annotation_start_i }
+
+              | #{ annotation_text }
+
+      .col-md-5.col-md-offset-1
+        - for scores in user.userprofile.score
+          p
+            | yerp
+
 
     include document/controls-results
 

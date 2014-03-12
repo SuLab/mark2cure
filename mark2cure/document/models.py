@@ -37,12 +37,6 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind = 'o').count()
 
-    # def user_completed_annotation_identification(self, user):
-    #     anns = Annotation.objects.filter(
-    #         view__section__document = self,
-    #         view__user = user
-    #         )
-
     def get_concepts_for_classification(self):
         # First see if the GM has any annotations for these sections,
         # if not, see if there are any basic concepts for the text
@@ -74,6 +68,10 @@ class Document(models.Model):
           view, created = View.objects.get_or_create(task_type = task_type, section = sec, user = user)
           view.completed = completed
           view.save()
+
+
+    def gold_annotations(self):
+        return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username="goldenmaster").values_list('start', 'text')
 
 
     class Meta:

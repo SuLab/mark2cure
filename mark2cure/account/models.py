@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from mark2cure.common.models import Message
 
+from mark2cure.document.models import Document
+
 from timezone_field import TimeZoneField
 import datetime
 
@@ -24,6 +26,18 @@ class UserProfile(models.Model):
 
     mturk     = models.BooleanField(default = False, blank = True)
     ncbo      = models.BooleanField(default = False, blank = True)
+
+
+    def score(self, task_type="cr"):
+      # Get the last 3 documents with Golden Master Anns
+      documents = Document.objects.filter(section__view__user__username = "goldenmaster").order_by('-created').distinct()[:3]
+      user_documents = Document.objects.filter(section__view__user = self).order_by('-created').distinct()[:3]
+      # .annotate(num_authors=Count('authors'))
+
+      print documents
+      print user_documents
+      return documents
+
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
