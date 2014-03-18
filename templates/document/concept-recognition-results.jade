@@ -5,27 +5,59 @@ extends base
 block content
 
     .row
-      .col-md-3.col-md-offset-1
+      .col-md-5
         .panel.panel-default
           .panel-heading.text-center
             | You missed
 
-          ul.list-group
-            - for ann in results.false_negatives
-              li.list-group-item
-                | #{ ann.text }
+          table.table.table-striped
+            thead
+              tr
+                th
+                  | Section
+                th
+                  | Text
+                th
+                  | Position
 
-      .col-md-3
+            tbody
+              - for ann in results.false_negatives
+                  tr(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").annotation-finder
+                    td
+                      | #{ ann.view.section.get_kind_display }
+                    td
+                      | #{ ann.text }
+                    td
+                      | #{ ann.start }
+
+
+      .col-md-5
         .panel.panel-default
           .panel-heading.text-center
             | You wrongly marked
 
-          ul.list-group
-            - for ann in results.false_positives
-              li.list-group-item
-                | #{ ann.text }
+          table.table.table-striped
+            thead
+              tr
+                th
+                  | Section
+                th
+                  | Text
+                th
+                  | Position
 
-      .col-md-3
+            tbody
+              - for ann in results.false_positives
+                  tr
+                    td
+                      | #{ ann.view.section.get_kind_display }
+                    td
+                      | #{ ann.text }
+                    td
+                      | #{ ann.start }
+
+
+      .col-md-2
         .panel.panel-default
           .panel-heading.text-center
             | Score
@@ -36,10 +68,9 @@ block content
 
     - for section in sections
         .row
-          - if user.is_authenticated and user.profile.mturk == False
-              .col-md-10.col-md-offset-1
-                h4
-                  | #{ section.get_kind_display }
+          .col-md-10.col-md-offset-1
+            h4
+              | #{ section.get_kind_display }
 
           .col-md-10.col-md-offset-1.head-space.game
             div(id="{{ sec.pk }}").paragraph.entity_tag
@@ -50,7 +81,7 @@ block content
 
 
     .row
-      .col-md-2.col-md-offset-1
+      .col-md-3.col-md-offset-1
         table.table
           tbody
             tr
@@ -71,61 +102,63 @@ block content
               td
                 | Correct annotations
 
+      - if debug
+        .col-md-4
+          .panel.panel-default
+            .panel-heading.text-center
+              | Your Submissions
 
-      .col-md-4
-        .panel.panel-default
-          .panel-heading.text-center
-            | Your Submissions
+            table.table.table-striped
+              thead
+                tr
+                  th
+                    | Section
+                  th
+                    | Text
+                  th
+                    | Position
 
-          table.table.table-striped
-            thead
-              tr
-                th
-                  | Section
-                th
-                  | Text
-                th
-                  | Position
-
-            tbody
-              - for section in sections
-                - for ann in section.user_annotations
-                  tr
-                    td
-                      | #{ section.get_kind_display }
-                    td
-                      | #{ ann.text }
-                    td
-                      | #{ ann.start }
-
-
+              tbody
+                - for section in sections
+                  - for ann in section.user_annotations
+                    tr
+                      td
+                        | #{ section.get_kind_display }
+                      td
+                        | #{ ann.text }
+                      td
+                        | #{ ann.start }
 
 
-      .col-md-4
-        .panel.panel-default
-          .panel-heading.text-center
-            | Answer Key
 
-          table.table.table-striped
-            thead
-              tr
-                th
-                  | Section
-                th
-                  | Text
-                th
-                  | Position
 
-            tbody
-              - for section in sections
-                - for ann in section.annotations
-                  tr
-                    td
-                      | #{ section.get_kind_display }
-                    td
-                      | #{ ann.text }
-                    td
-                      | #{ ann.start }
+
+      - if debug
+        .col-md-4
+          .panel.panel-default
+            .panel-heading.text-center
+              | Answer Key
+
+            table.table.table-striped
+              thead
+                tr
+                  th
+                    | Section
+                  th
+                    | Text
+                  th
+                    | Position
+
+              tbody
+                - for section in sections
+                  - for ann in section.annotations
+                    tr
+                      td
+                        | #{ section.get_kind_display }
+                      td
+                        | #{ ann.text }
+                      td
+                        | #{ ann.start }
 
 
     include document/controls-results

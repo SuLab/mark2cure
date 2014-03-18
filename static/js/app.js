@@ -76,6 +76,15 @@ NETWORK['drawNetwork'] = function(graph) {
 
 $(document).ready(function() {
 
+  $('tr.annotation-finder').hover(function(evt) {
+    var $ann = $(this);
+    // console.log( $annotation.data('text'), $annotation.data('start') );
+
+    var $section = $('#'+ $ann.data('section')+'.paragraph')
+    console.log( $section )
+
+  });
+
   $('.form-via-ajax').on('submit', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
