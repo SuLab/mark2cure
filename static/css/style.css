@@ -113,6 +113,11 @@ svg {
   margin-right: 5px;
 }
 
+.paragraph p span.focused {
+  font-weight: 600;
+  box-shadow: 0px 0px 5px yellow;
+}
+
 /* Community Consensus */
 .paragraph.results p span.selected {
   border-top: 3px solid #0cf;

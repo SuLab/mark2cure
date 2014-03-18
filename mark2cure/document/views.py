@@ -118,6 +118,9 @@ def identify_annotations_results(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     turk_sub_location = request.GET.get('turkSubmitTo')
 
+    if not doc.is_complete(request.user):
+      return redirect('/document/'+ str(doc.pk))
+
     results = {}
     score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
     results['score'] = score

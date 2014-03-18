@@ -10,7 +10,7 @@ block content
           .panel-heading.text-center
             | You missed
 
-          table.table.table-striped
+          table.table.table-striped.table-hover
             thead
               tr
                 th
@@ -36,7 +36,7 @@ block content
           .panel-heading.text-center
             | You wrongly marked
 
-          table.table.table-striped
+          table.table.table-striped.table-hover
             thead
               tr
                 th
@@ -48,7 +48,7 @@ block content
 
             tbody
               - for ann in results.false_positives
-                  tr
+                  tr(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").annotation-finder
                     td
                       | #{ ann.view.section.get_kind_display }
                     td
@@ -73,10 +73,10 @@ block content
               | #{ section.get_kind_display }
 
           .col-md-10.col-md-offset-1.head-space.game
-            div(id="{{ sec.pk }}").paragraph.entity_tag
+            div(id="{{ section.pk }}").paragraph.entity_tag
               p
                 - for indexes, text, counter, user_annotated in section.words
-                  span(data-counter="{{ counter }}", class="#{ 'user_annotated' if user_annotated else '' }")
+                  span(data-counter="{{ counter }}", data-starti="{{ indexes.0 }}", data-stopi="{{ indexes.1 }}", class="#{ 'user_annotated' if user_annotated else '' }")
                     | #{ text } 
 
 
@@ -129,11 +129,6 @@ block content
                       td
                         | #{ ann.start }
 
-
-
-
-
-      - if debug
         .col-md-4
           .panel.panel-default
             .panel-heading.text-center

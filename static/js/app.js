@@ -76,13 +76,28 @@ NETWORK['drawNetwork'] = function(graph) {
 
 $(document).ready(function() {
 
-  $('tr.annotation-finder').hover(function(evt) {
-    var $ann = $(this);
-    // console.log( $annotation.data('text'), $annotation.data('start') );
+  $('tr.annotation-finder').mouseenter(function() {
+    var $ann = $(this),
+        $section = $('#'+ $ann.data('section')+'.paragraph')
+        needle_start = $ann.data('start'),
+        needle_length = $ann.data('text').length,
+        start = 0, stop = 0;
 
-    var $section = $('#'+ $ann.data('section')+'.paragraph')
-    console.log( $section )
+    $.each( $section.find('span'), function() {
+      start = $(this).data('starti'),
+      stop = $(this).data('stopi');
 
+      if(start >= needle_start && start <= needle_start+needle_length) {
+        $(this).addClass('focused');
+      }
+
+    });
+  }).mouseleave(function() {
+    var $ann = $(this),
+        $section = $('#'+ $ann.data('section')+'.paragraph');
+    $.each( $section.find('span'), function() {
+      $(this).removeClass('focused');
+    });
   });
 
   $('.form-via-ajax').on('submit', function(evt) {
