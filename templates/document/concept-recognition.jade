@@ -24,78 +24,72 @@ block content
 block post-footer
 
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
-    - if completed
-      script.
-        // If the document was completed forget the rest and submit the mturk ajax request to move the turker
-        $('#worker_submit').submit();
+    script.
+      $('#instructions_toggle').click(function() {
+        $('#instructions').toggle()
+      });
 
-    - else
-      script.
-        $('#instructions_toggle').click(function() {
-          $('#instructions').toggle()
+      var sections = {};
+      var section_selectors = {};
+      YPet.addInitializer(function(options) {
+
+        $( ".game .paragraph" ).each(function( index ) {
+          var section_id = $(this).attr('id'),
+              section_text = $(this).text().trim();
+
+          sections[ section_id ] = section_text;
+          section_selectors[ section_id ] = '#'+section_id;
         });
 
-        var sections = {};
-        var section_selectors = {};
-        YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions(section_selectors);
 
-          $( ".game .paragraph" ).each(function( index ) {
-            var section_id = $(this).attr('id'),
-                section_text = $(this).text().trim();
-
-            sections[ section_id ] = section_text;
-            section_selectors[ section_id ] = '#'+section_id;
-          });
-
-          // Create our regions
-          YPet.addRegions(section_selectors);
-
-          // Add our views for each section
-          _.each( _.keys(sections), function(key) {
-            var p = new Paragraph({'text': sections[key] })
-            p.parseText();
-            var view = new WordCollectionView({collection: p.get('words')});
-            YPet[key].show( view );
-          });
-
+        // Add our views for each section
+        _.each( _.keys(sections), function(key) {
+          var p = new Paragraph({'text': sections[key] })
+          p.parseText();
+          var view = new WordCollectionView({collection: p.get('words')});
+          YPet[key].show( view );
         });
 
-        YPet.start();
+      });
 
-        $('button.done').click(function(evt) {
-          //-- Submit the annotations to the server, then tell the server
-          //-- you're done with that document.
+      YPet.start();
 
-          //-- We prevent this or else Django gives broken pipe b/c we need to
-          //-- wait for the ajax submissions to close before reloading the page
-          evt.preventDefault();
-          var counter = 0,
-              ann_counter = 0;
+      $('button.done').click(function(evt) {
+        //-- Submit the annotations to the server, then tell the server
+        //-- you're done with that document.
 
-          //-- Iterate over each of the paragraphs or annotatable sections on the page
-          _.each( _.keys(sections), function(key) {
-            var annotations = YPet[key].currentView.collection.parentDocument.get('annotations').toJSON(),
-                url = '/document/{{ doc.pk }}/section/'+ key +'/annotation/create/';
-            ann_counter += annotations.length;
+        //-- We prevent this or else Django gives broken pipe b/c we need to
+        //-- wait for the ajax submissions to close before reloading the page
+        evt.preventDefault();
+        var counter = 0,
+            ann_counter = 0;
 
-            //-- Iterate over each of the annotations within that section
-            _.each(annotations, function(annotation) {
-              $.ajax({
-                type: 'POST',
-                url: url,
-                data: $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, annotation),
-                cache: false,
-                async: false,
-                success: function() { counter++; },
-              });
+        //-- Iterate over each of the paragraphs or annotatable sections on the page
+        _.each( _.keys(sections), function(key) {
+          var annotations = YPet[key].currentView.collection.parentDocument.get('annotations').toJSON(),
+              url = '/document/{{ doc.pk }}/section/'+ key +'/annotation/create/';
+          ann_counter += annotations.length;
+
+          //-- Iterate over each of the annotations within that section
+          _.each(annotations, function(annotation) {
+            $.ajax({
+              type: 'POST',
+              url: url,
+              data: $.extend({'csrfmiddlewaretoken': '{{ csrf_token }}'}, annotation),
+              cache: false,
+              async: false,
+              success: function() { counter++; },
             });
           });
-
-          //-- If they all got sent to the server, let's move on
-          if(counter === ann_counter) {
-            $('#document_submit').submit();
-          } else {
-            alert('There was a problem submissing this document. Please try another.')
-          }
-
         });
+
+        //-- If they all got sent to the server, let's move on
+        if(counter === ann_counter) {
+          $('#document_submit').submit();
+        } else {
+          alert('There was a problem submissing this document. Please try another.')
+        }
+
+      });

@@ -20,7 +20,8 @@ class DocumentManager(models.Manager):
 
 
 class AnnotationManager(models.Manager):
-    pass
-#
-#     def clean_annotations(self):
-#         Annotation = self.model
+
+    def match_exact(self, gm_ann, user_anns):
+      for user_ann in user_anns:
+          if user_ann.is_exact_match(gm_ann): return True
+      return False

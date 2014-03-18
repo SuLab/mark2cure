@@ -119,6 +119,12 @@ svg {
   border-bottom: 3px solid #0cf;
 }
 
+.f-score {
+  font-size: 52px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
 /* Relationships */
 
 .list-group-item:hover {

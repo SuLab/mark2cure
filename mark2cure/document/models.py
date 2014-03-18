@@ -70,9 +70,30 @@ class Document(models.Model):
           view.save()
 
 
-    def gold_annotations(self):
-        return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username="goldenmaster").values_list('start', 'text')
+    def annotations(self, username = "goldenmaster", experiment = False):
+        if experiment:
+          return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username=username, experiment = experiment).order_by('start')
+        else:
+          return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username=username).order_by('start')
 
+
+    def score(self, user):
+        gma = self.annotations()
+
+        if user.userprofile.mturk:
+          cua = self.annotations(user.username, settings.EXPERIMENT)
+        else:
+          cua = self.annotations(user.username)
+
+
+        print " / / / score / / / "
+        print gma
+        print cua
+        compareann = gma[0]
+        for ann in gma:
+          print ann.is_exact_match(compareann)
+
+        pass
 
     class Meta:
         ordering = ('created',)
@@ -103,7 +124,16 @@ class Section(models.Model):
     document = models.ForeignKey(Document)
 
 
-    def resultwords(self):
+    def annotations(self, username = "goldenmaster", experiment = False):
+        if experiment:
+          return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username, experiment = experiment).order_by('start')
+        else:
+          return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username).order_by('start')
+
+
+
+
+    def resultwords(self, user):
         # Gather words and positions from the text
         words_index = WhitespaceTokenizer().span_tokenize(self.text)
         words_text = WhitespaceTokenizer().tokenize(self.text)
@@ -112,23 +142,32 @@ class Section(models.Model):
         words = [w + (0,False,) for w in words]
 
         # Gather other annotations from GM and users for this section
-        anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e").values_list('start', 'text')
-
+        # anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e").values_list('start', 'text')
+        anns = self.annotations().values_list('start', 'text')
         # Build the running counter of times a word was annotated
         for start, text in anns:
           length = len(text)
-
           for idx, word in enumerate(words):
             word_start = word[0][0]
             counter = word[2]
-
             if word_start >= start and word_start <= start+length:
               counter += 1
               words[idx] = (word[0], word[1], counter, word[3])
 
 
-        # print "USER :: ", request
-        # user_anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user =  ).values_list('start', 'text')
+        if user.userprofile.mturk:
+          user_anns = self.annotations(user.username, experiment = settings.EXPERIMENT).values_list('start', 'text')
+        else:
+          user_anns = self.annotations(user.username).values_list('start', 'text')
+
+        # Build the running counter of times a word was annotated
+        for start, text in user_anns:
+          length = len(text)
+          for idx, word in enumerate(words):
+            word_start = word[0][0]
+            if word_start >= start and word_start <= start+length:
+              words[idx] = (word[0], word[1], word[2], True)
+
         return words
 
 
@@ -193,14 +232,22 @@ class Annotation(models.Model):
 
     view = models.ForeignKey(View)
 
-    def __unicode__(self):
-        if self.kind == 'r':
-          return "Relationship Ann"
-        else:
-          return self.type
+    objects = AnnotationManager()
+
 
     def simple(self):
       return (self.text, int(self.start))
+
+    def is_exact_match(self, comparing_annotation):
+      return True if self.start == comparing_annotation.start and len(self.text) == len(comparing_annotation.text) else False
+
+    def __unicode__(self):
+        if self.kind == 'r':
+          return "Relationship Ann"
+        if self.kind == 'e':
+          return "{0} ({1}) [{2}]".format(self.text, self.start, self.pk)
+        else:
+          return self.type
 
 
 

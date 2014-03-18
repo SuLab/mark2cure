@@ -8,13 +8,18 @@ form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style
 .well.col-md-10.col-md-offset-1.head-space
   .row
     .col-md-6
-      - if user.is_authenticated and user.profile.mturk == False
         p
           span.label.label-info Title
           |  #{ doc.title }
         p
-          span.label.label-info Created
-          |  #{ doc.created|naturaltime }
+          span.label.label-info Source
+          a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{ doc.document_id }}", target="_blank")
+            |  NCBI PubMed
+
+        - if user.is_authenticated and user.profile.mturk == False
+          p
+            span.label.label-info Created
+            |  #{ doc.created|naturaltime }
 
     .col-md-6
       form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
@@ -22,4 +27,6 @@ form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style
         input(type="hidden", name="task_type", value="{{ task_type }}")
         button.btn.btn-primary.btn-large.done
           | Next
+
+
 

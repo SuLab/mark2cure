@@ -12,10 +12,11 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.conf import settings
 
 from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm
-from mark2cure.document.utils import create_from_pubmed_id, check_validation_status
+from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
 
@@ -106,7 +107,7 @@ def identify_annotations_submit(request, doc_id, section_id):
         ann.player_ip = request.META['REMOTE_ADDR']
 
         if request.user.profile.mturk:
-          ann.experiment = 6
+          ann.experiment = settings.EXPERIMENT
 
         ann.save()
         return HttpResponse(200)
@@ -115,16 +116,25 @@ def identify_annotations_submit(request, doc_id, section_id):
 
 def identify_annotations_results(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
-
-    # If mTurk user not logged in, make a new account for them and set the session
-    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
-    hit_id = request.GET.get('hitId')
-    # Only available when accepted HIT
-    worker_id = request.GET.get('workerId')
     turk_sub_location = request.GET.get('turkSubmitTo')
+
+    results = {}
+    score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
+    results['score'] = score
+    results['true_positives'] = true_positives
+    results['false_positives'] = false_positives
+    results['false_negatives'] = false_negatives
+
+    sections = doc.available_sections()
+    for section in sections:
+      setattr(section, "words", section.resultwords(request.user))
+      setattr(section, "user_annotations", section.annotations(request.user.username))
 
     return render_to_response('document/concept-recognition-results.jade',
         { 'doc': doc,
+          'sections' : sections,
+          'results' : results,
+          'turk_sub_location' : turk_sub_location,
           'task_type': 'concept-recognition' },
         context_instance=RequestContext(request))
 

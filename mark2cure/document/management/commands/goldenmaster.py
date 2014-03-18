@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
     def import_golden_documents(self, document_set):
 
-        with open('assets/datasets/'+ document_set +'_padded.txt','r') as f:
+        with open('assets/datasets/'+ document_set +'_cleaned.txt','r') as f:
             reader = csv.reader(f, delimiter='\t')
             for num, title, text in reader:
                 print title

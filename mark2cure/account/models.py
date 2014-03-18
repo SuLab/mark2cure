@@ -1,8 +1,10 @@
 from django.db import models
+from django.db.models import Count
+
 from django.contrib.auth.models import User
 from mark2cure.common.models import Message
 
-from mark2cure.document.models import Document
+from mark2cure.document.models import Document, View
 
 from timezone_field import TimeZoneField
 import datetime
@@ -30,12 +32,24 @@ class UserProfile(models.Model):
 
     def score(self, task_type="cr"):
       # Get the last 3 documents with Golden Master Anns
-      documents = Document.objects.filter(section__view__user__username = "goldenmaster").order_by('-created').distinct()[:3]
-      user_documents = Document.objects.filter(section__view__user = self).order_by('-created').distinct()[:3]
-      # .annotate(num_authors=Count('authors'))
+      # documents = Document.objects.annotate(num_annotations=Count('section__view__annotation')).filter(section__view__user__username = "goldenmaster").order_by('-created').distinct()[:3]
 
+      documents = Document.objects.\
+        annotate(num_annotations = Count('section__view__annotation')).\
+        filter(section__view__user = self, section__view__user__username = "goldenmaster").\
+        order_by('-created').\
+        distinct()[:3]
+
+
+      views = View.objects.filter(user = self)
+
+
+      print " / / / /  DOCS / / / / /"
       print documents
-      print user_documents
+      print " - - "
+      for doc in documents:
+        print doc.pk, doc.num_annotations
+
       return documents
 
 

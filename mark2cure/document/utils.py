@@ -2,6 +2,7 @@ from django.conf import settings
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.common.utils import Turk
@@ -11,24 +12,69 @@ from bs4 import BeautifulSoup, NavigableString
 
 import re, nltk, datetime
 
-def gold_matches(current_user, document):
+
+def determine_f(true_positive, false_positive, false_negative):
+    if true_positive + false_positive is 0:
+      return (0,0,0)
+
+    precision = true_positive / float(true_positive + false_positive)
+    recall = true_positive / float(true_positive + false_negative)
+
+    if precision + recall > 0.0:
+      f = ( 2 * precision * recall ) / ( precision + recall )
+      return (precision, recall, f)
+    else:
+      return (0,0,0)
+
+
+def match_exact(gm_ann, user_anns):
+    for user_ann in user_anns:
+        if user_ann.is_exact_match(gm_ann): return True
+    return False
+
+
+def generate_results(document, user):
     '''
-      Used on the document API to check for good performance from users
+      This calculates the comparsion overlap between two arrays of dictionary terms
 
-      This is very "loose" but given how good turkers have been and how careful we want to be it's perfect
+      It considers both the precision p and the recall r of the test to compute the score:
+      p is the number of correct results divided by the number of all returned results
+      r is the number of correct results divided by the number of results that should have been returned.
+      The F1 score can be interpreted as a weighted average of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
+
+     tp  fp
+     fn  *tn
+
     '''
-    user_annotations = Annotation.objects.filter(view__section__document = document, view__user = current_user).all()
-    gold_user, created = User.objects.get_or_create(username="goldenmaster")
-    gold_annotations = Annotation.objects.filter(view__section__document = document, view__user = gold_user).all()
+    gm_annotations = document.annotations()
+    if user.userprofile.mturk:
+      user_annotations = document.annotations(user.username, experiment = settings.EXPERIMENT)
+    else:
+      user_annotations = document.annotations(user.username)
 
-    user_annotations = [ann.text for ann in user_annotations]
-    gold_annotations = [ann.text for ann in gold_annotations]
-    true_positives = [gm_ann for gm_ann in gold_annotations if gm_ann in user_annotations]
+    true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 
-    if( len(gold_annotations) ) is 0:
-      return 1
+    # Annotations the user submitted that were wrong (the User set without their True Positives)
+    # false_positives = user_annotations - true_positives
+    false_positives = user_annotations
+    for tp in true_positives:
+      false_positives = false_positives.exclude(start = tp.start, text = tp.text)
 
-    return len(true_positives)
+
+    # # Annotations the user missed (the GM set without their True Positives)
+    # false_negatives = gm_annotations - true_positives
+    false_negatives = gm_annotations
+    for tp in true_positives:
+      false_negatives = false_negatives.exclude(start = tp.start, text = tp.text)
+
+    print "USER ANNS: ", user_annotations
+    print "TRUE POSITIVES: ", true_positives
+    print "FALSE POSITIVES: ", false_positives
+    print "FALSE NEGATIVES: ", false_negatives
+
+    score = determine_f( len(true_positives), false_positives.count(), false_negatives.count() )
+    return ( score, true_positives, false_positives, false_negatives )
+
 
 
 def check_validation_status(user, document, view=None):

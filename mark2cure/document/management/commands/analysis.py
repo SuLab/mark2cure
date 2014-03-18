@@ -223,17 +223,7 @@ class Command(BaseCommand):
             print arr
 
 
-    def match_exact(self, gm_ann, user_anns):
-        '''
-          Exact or Coextensive match finding for annotations. Works off start of annotation and cleaned length both being equal
 
-          Returns True is any of the user annotations are equal to this GM Annotation
-
-        '''
-        gm_len = len(gm_ann['text'])
-        for user_ann in user_anns:
-          if gm_ann['start'] == user_ann['start'] and gm_len == len(user_ann['text']): return True
-        return False
 
 
     def dict_to_tuple(self, dic):
@@ -275,18 +265,6 @@ class Command(BaseCommand):
       return ( list(true_positives), list(false_positives), list(false_negatives) )
 
 
-    def determine_f(self, true_positive, false_positive, false_negative):
-        if true_positive + false_positive is 0:
-          return (0,0,0)
-
-        precision = true_positive / float(true_positive + false_positive)
-        recall = true_positive / float(true_positive + false_negative)
-
-        if precision + recall > 0.0:
-          f = ( 2 * precision * recall ) / ( precision + recall )
-          return (precision, recall, f)
-        else:
-          return (0,0,0)
 
 
     def compare_turk_to_gold():
