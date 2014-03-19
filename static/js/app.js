@@ -81,11 +81,10 @@ $(document).ready(function() {
         $section = $('#'+ $ann.data('section')+'.paragraph')
         needle_start = $ann.data('start'),
         needle_length = $ann.data('text').length,
-        start = 0, stop = 0;
+        start = 0;
 
     $.each( $section.find('span'), function() {
-      start = $(this).data('starti'),
-      stop = $(this).data('stopi');
+      start = $(this).data('starti');
 
       if(start >= needle_start && start <= needle_start+needle_length) {
         $(this).addClass('focused');
@@ -93,9 +92,8 @@ $(document).ready(function() {
 
     });
   }).mouseleave(function() {
-    var $ann = $(this),
-        $section = $('#'+ $ann.data('section')+'.paragraph');
-    $.each( $section.find('span'), function() {
+    var $section = $('#'+ $(this).data('section')+'.paragraph');
+    $.each( $section.find('span.focused'), function() {
       $(this).removeClass('focused');
     });
   });

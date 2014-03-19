@@ -77,7 +77,7 @@ block content
           include includes/refute
 
           .col-md-10.col-md-offset-1.head-space.game
-            div(id="{{ section.pk }}").paragraph.entity_tag
+            div(id="{{ section.pk }}").paragraph.results
               p
                 - for indexes, text, counter, user_annotated in section.words
                   span(data-counter="{{ counter }}", data-starti="{{ indexes.0 }}", data-stopi="{{ indexes.1 }}", class="#{ 'user_annotated' if user_annotated else '' }")
@@ -92,15 +92,15 @@ block content
               td
                 div(style="height: 16px; width: 16px; background-color: yellow")
               td
-                | Missed annotations
+                | Correct annotations
 
             tr
               td
                 div(style="height: 16px; width: 16px; background-color: #0cf")
               td
-                | Wrongly marked annotations
+                | Your annotations
 
-            tr
+            // tr
               td
                 div(style="height: 16px; width: 16px; background-color: #80E680")
               td
@@ -202,10 +202,13 @@ block post-footer
                 value = word.data('counter'),
                 next_word_value = next_word.data('counter');
 
+
+            if(value > 0) { word.addClass('golden'); }
+
             if( next_word.hasClass('user_annotated') ) { user_tracker = true; } else {
               if(user_tracker) {
                 word.html( word.html().trim() );
-                word.css({'marginRight' : '4px'});
+                word.addClass('neighbor');
               }
               user_tracker = false;
             }
@@ -213,22 +216,22 @@ block post-footer
             if( next_word_value > 0 ) { gold_tracker = true; } else {
               if(gold_tracker) {
                 word.html( word.html().trim() );
-                word.css({'marginRight' : '4px'});
+                word.addClass('neighbor');
               }
               gold_tracker = false;
             }
 
-            word.css({'background-color': color(value)});
-            if( word.hasClass('user_annotated') ) {
-              var c = d3.scale.linear()
-                        .domain([0, 1])
-                        .range([color(value), "#0cf"]);
-              if( value > 0 ) {
-                word.css({'background-color': c(.5)});
-              } else {
-                word.css({'background-color': c(1)});
-              }
-            }
+            // word.css({'background-color': color(value)});
+            // if( word.hasClass('user_annotated') ) {
+            //   var c = d3.scale.linear()
+            //             .domain([0, 1])
+            //             .range([color(value), "#0cf"]);
+            //   if( value > 0 ) {
+            //     word.css({'background-color': c(.5)});
+            //   } else {
+            //     word.css({'background-color': c(1)});
+            //   }
+            // }
 
           });
         });

@@ -113,16 +113,35 @@ svg {
   margin-right: 5px;
 }
 
-.paragraph p span.focused {
-  font-weight: 600;
-  box-shadow: 0px 0px 5px yellow;
-}
-
 /* Community Consensus */
 .paragraph.results p span.selected {
   border-top: 3px solid #0cf;
   border-bottom: 3px solid #0cf;
 }
+
+/*
+ *
+ * Community Consensus & Results page paragraph classes
+ *
+ */
+
+.paragraph.results p span.golden {
+  /* Word span when simply showing golden master (not community consensus) */
+  border-bottom: 6px solid yellow;
+}
+
+.paragraph.results p span.user_annotated {
+  /* Word span when simply showing user selection */
+  background-color: #0cf;
+}
+
+.paragraph.results p span.focused {
+  /* Word span when bringing attention to it via table hover */
+  font-weight: 600;
+  /* box-shadow: 0px 0px 5px yellow; */
+}
+
+
 
 .f-score {
   font-size: 52px;
