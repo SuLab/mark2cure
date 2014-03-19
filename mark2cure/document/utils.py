@@ -67,11 +67,6 @@ def generate_results(document, user):
     for tp in true_positives:
       false_negatives = false_negatives.exclude(start = tp.start, text = tp.text)
 
-    print "USER ANNS: ", user_annotations
-    print "TRUE POSITIVES: ", true_positives
-    print "FALSE POSITIVES: ", false_positives
-    print "FALSE NEGATIVES: ", false_negatives
-
     score = determine_f( len(true_positives), false_positives.count(), false_negatives.count() )
     return ( score, true_positives, false_positives, false_negatives )
 

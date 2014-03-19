@@ -1,4 +1,4 @@
-div(id="messageModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+div(id="refute-{{ section.pk }}", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
   .modal-dialog
     .modal-content
       a(data-dismiss="modal").close-btn
@@ -6,10 +6,10 @@ div(id="messageModal", tabindex="-1", role="dialog", aria-labelledby="myModalLab
 
       .modal-header
         h3
-          | Want to send a note to the developers?
+          | Was there a problem with our annotations in this {{ section.get_kind_display }}?
 
       .modal-body
-        form(action="/message/", method="post", role="form").form-horizontal.form-via-ajax
+        form(action="/document/{{ doc.pk }}/section/{{ section.pk }}/refute/create/", method="post", role="form").form-horizontal.form-via-ajax
           {% csrf_token %}
           .form-group
             .col-sm-12
@@ -18,9 +18,10 @@ div(id="messageModal", tabindex="-1", role="dialog", aria-labelledby="myModalLab
           .form-group
             .col-sm-6.col-sm-offset-3
               button(type="submit").btn.btn-block.btn-success
-                | Post New Message
+                | Let us know!
 
       .modal-footer
         button(data-dismiss=modal").btn.btn-warning
           | Close
+
 

@@ -121,7 +121,7 @@ $(document).ready(function() {
       cache: false,
       async: false,
       success: function() {
-        if( form.parent().hasClass('.modal-body') ) {
+        if( form.parent().hasClass('modal-body') ) {
           form.closest('.modal').modal('hide');
         }
       }

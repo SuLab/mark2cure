@@ -70,7 +70,11 @@ block content
         .row
           .col-md-10.col-md-offset-1
             h4
-              | #{ section.get_kind_display }
+              | #{ section.get_kind_display } 
+              small
+                a(data-toggle="modal", data-target="#refute-{{ section.pk }}", href="#")
+                  | [Refute]
+          include includes/refute
 
           .col-md-10.col-md-offset-1.head-space.game
             div(id="{{ section.pk }}").paragraph.entity_tag

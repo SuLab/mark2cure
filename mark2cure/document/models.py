@@ -132,7 +132,6 @@ class Section(models.Model):
 
 
 
-
     def resultwords(self, user):
         # Gather words and positions from the text
         words_index = WhitespaceTokenizer().span_tokenize(self.text)
@@ -205,6 +204,25 @@ class View(models.Model):
 
     def __unicode__(self):
       return "Doc:"+ str(self.section.document.pk) +", Sec:"+ str(self.section.pk) +" by "+ self.user.username
+
+
+class Refute(models.Model):
+    '''
+      I ended up putting this into a separate model after careful thought:
+       - There may be multiple types of refutes in the future
+       - Simple query for # Refutes per section
+       - Separate update/create timestamps, makes a difference if we add
+       a `resolved` boolean in the future
+    '''
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    message = models.TextField(blank=True)
+
+    view = models.ForeignKey(View)
+
+    def __unicode__(self):
+        return "{0} {1}".format(self.message, self.view)
 
 
 class Annotation(models.Model):

@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 
 from mark2cure.document.models import *
-from mark2cure.document.forms import DocumentForm, AnnotationForm
+from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
@@ -140,6 +140,21 @@ def identify_annotations_results(request, doc_id):
           'turk_sub_location' : turk_sub_location,
           'task_type': 'concept-recognition' },
         context_instance=RequestContext(request))
+
+
+@require_http_methods(["POST"])
+@login_required
+def refute_section(request,  doc_id, section_id):
+    view = get_object_or_404(View, section__pk = section_id, user = request.user, completed = True, task_type="cr")
+
+    form = RefuteForm(request.POST)
+    if form.is_valid():
+      refute = form.save(commit=False)
+      refute.view = view
+      refute.save()
+      return HttpResponse("Success")
+
+    return HttpResponse('Unauthorized', status=401)
 
 
 '''
