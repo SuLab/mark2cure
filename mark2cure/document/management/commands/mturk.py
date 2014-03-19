@@ -59,17 +59,15 @@ class Command(BaseCommand):
             Combine all 593 of the training documents with the validation documents from
             the development set (there are 50), randomize their order, then create a HIT
           '''
-          documents = Document.objects.filter(source = 'disease_pubmed_exp5').all()
-          v_documents = Document.objects.filter(source = 'NCBI_corpus_development', section__validate = True).distinct()
-
+          documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
           documents = [doc.id for doc in documents]
-          v_documents = [doc.id for doc in v_documents]
+          random.shuffle(documents)
 
-          combine_docs = documents + v_documents
-          random.shuffle(combine_docs)
+          print documents
+          print len(documents)
 
-          for idx, doc_id in enumerate(combine_docs):
-            turk.hit_for_document(doc_id)
+          for idx, doc_id in enumerate(documents):
+            turk.hit_for_document(doc_id, max_assignments = 10)
             print idx
 
 
