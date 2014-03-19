@@ -12,13 +12,18 @@ block content
 
           table.table.table-striped.table-hover
             thead
-              tr
-                th
-                  | Section
-                th
-                  | Text
-                th
-                  | Position
+              - if results.false_positives.count == 0
+                  tr
+                    td.text-center.text-muted.no-annotations
+                      | None
+              - else
+                  tr
+                    th
+                      | Section
+                    th
+                      | Text
+                    th
+                      | Position
 
             tbody
               - for ann in results.false_negatives
@@ -38,13 +43,18 @@ block content
 
           table.table.table-striped.table-hover
             thead
-              tr
-                th
-                  | Section
-                th
-                  | Text
-                th
-                  | Position
+              - if results.false_positives.count == 0
+                  tr
+                    td.text-center.text-muted.no-annotations
+                      | None
+              - else
+                  tr
+                    th
+                      | Section
+                    th
+                      | Text
+                    th
+                      | Position
 
             tbody
               - for ann in results.false_positives
