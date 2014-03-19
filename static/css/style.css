@@ -127,7 +127,7 @@ svg {
 
 .paragraph.results p span.golden {
   /* Word span when simply showing golden master (not community consensus) */
-  border-bottom: 6px solid yellow;
+  border-bottom: 6px solid #00CC00;
 }
 
 .paragraph.results p span.user_annotated {
@@ -137,12 +137,13 @@ svg {
 
 .paragraph.results p span.focused {
   /* Word span when bringing attention to it via table hover */
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-weight: bold;
   /* box-shadow: 0px 0px 5px yellow; */
 }
 
 .no-annotations,
-.f-score {
+.f-score h2 {
   font-size: 52px;
   margin-top: 0px;
   margin-bottom: 0px;

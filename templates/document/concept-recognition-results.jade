@@ -5,86 +5,54 @@ extends base
 block content
 
     .row
-      .col-md-5
+      .col-md-4.col-md-offset-1
         .panel.panel-default
           .panel-heading.text-center
             | You missed
 
-          table.table.table-striped.table-hover
-            thead
-              - if results.false_negatives.count == 0
-                  tr
-                    td.text-center.text-muted.no-annotations
-                      | None
-              - else
-                  tr
-                    th
-                      | Section
-                    th
-                      | Text
-                    th
-                      | Position
-
-            tbody
+          ul.list-group
+              - if results.false_positives.count == 0
+                li.list-group-item.text-muted.no-annotations
+                  | None
               - for ann in results.false_negatives
-                  tr(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").annotation-finder
-                    td
-                      | #{ ann.view.section.get_kind_display }
-                    td
-                      | #{ ann.text }
-                    td
-                      | #{ ann.start }
+                li(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").list-group-item.annotation-finder
+                  | #{ ann.text }
 
 
-      .col-md-5
+      .col-md-4
         .panel.panel-default
           .panel-heading.text-center
             | You wrongly marked
 
-          table.table.table-striped.table-hover
-            thead
+          ul.list-group
               - if results.false_positives.count == 0
-                  tr
-                    td.text-center.text-muted.no-annotations
-                      | None
-              - else
-                  tr
-                    th
-                      | Section
-                    th
-                      | Text
-                    th
-                      | Position
+                li.list-group-item.text-muted.no-annotations
+                  | None
 
-            tbody
               - for ann in results.false_positives
-                  tr(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").annotation-finder
-                    td
-                      | #{ ann.view.section.get_kind_display }
-                    td
-                      | #{ ann.text }
-                    td
-                      | #{ ann.start }
+                li(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").list-group-item.annotation-finder
+                  | #{ ann.text }
 
 
       .col-md-2
         .panel.panel-default
           .panel-heading.text-center
             | Score
-          .panel-body
-            h2.text-center.f-score
+          .panel-body.f-score
+            h2.text-center
               | {% widthratio results.score.2 1 100 %}
+
+        p.text-center
+          a(data-toggle="modal", data-target="#comment", href="#")
+            | Comment
+        include includes/comment
 
 
     - for section in sections
         .row
           .col-md-10.col-md-offset-1
             h4
-              | #{ section.get_kind_display } 
-              small
-                a(data-toggle="modal", data-target="#refute-{{ section.pk }}", href="#")
-                  | [Refute]
-          include includes/refute
+              | #{ section.get_kind_display }
 
           .col-md-10.col-md-offset-1.head-space.game
             div(id="{{ section.pk }}").paragraph.results
@@ -100,7 +68,7 @@ block content
           tbody
             tr
               td
-                div(style="height: 16px; width: 16px; background-color: yellow")
+                div(style="height: 16px; width: 16px; background-color: #00CC00")
               td
                 | Correct annotations
 
@@ -190,7 +158,7 @@ block post-footer
         var score_color = d3.scale.linear()
                             .domain([0, 1])
                             .range(["red", "#80E680"]);
-        $('.f-score').css({ 'color': score_color( #{results.score.2} ) });
+        $('.f-score').css({ 'backgroundColor': score_color( #{results.score.2} ) });
 
         $.each($sections, function() {
           var section = $(this);

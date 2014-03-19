@@ -4,29 +4,39 @@ form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style
   input(type="hidden", name="assignmentId", value="{{ assignmentId }}")
   input(type="text", name="document_id", value="{{ doc.pk }}")
 
+- if user.userprofile.mturk
+  .col-md-10.col-md-offset-1.foot-space-xl
+    .row
+      .col-md-6.col-md-offset-3
+          form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
+            {% csrf_token %}
+            input(type="hidden", name="task_type", value="{{ task_type }}")
+            button.btn.btn-primary.btn-block.done
+              | Next
 
-.well.col-md-10.col-md-offset-1.head-space
-  .row
-    .col-md-6
-        p
-          span.label.label-info Title
-          |  #{ doc.title }
-        p
-          span.label.label-info Source
-          a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{ doc.document_id }}", target="_blank")
-            |  NCBI PubMed
-
-        - if user.is_authenticated and user.profile.mturk == False
+- else
+  .well.col-md-10.col-md-offset-1.head-space
+    .row
+      .col-md-6
           p
-            span.label.label-info Created
-            |  #{ doc.created|naturaltime }
+            span.label.label-info Title
+            |  #{ doc.title }
+          p
+            span.label.label-info Source
+            a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{ doc.document_id }}", target="_blank")
+              |  NCBI PubMed
 
-    .col-md-6
-      form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
-        {% csrf_token %}
-        input(type="hidden", name="task_type", value="{{ task_type }}")
-        button.btn.btn-primary.btn-large.done
-          | Next
+          - if user.is_authenticated and user.profile.mturk == False
+            p
+              span.label.label-info Created
+              |  #{ doc.created|naturaltime }
+
+      .col-md-6
+        form(method="post", id="document_submit", action="/document/{{ doc.pk }}/next/")
+          {% csrf_token %}
+          input(type="hidden", name="task_type", value="{{ task_type }}")
+          button.btn.btn-primary.btn-large.done
+            | Next
 
 
 

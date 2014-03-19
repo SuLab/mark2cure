@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 
 from mark2cure.document.models import *
-from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm
+from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
@@ -131,7 +131,12 @@ def identify_annotations_results(request, doc_id):
     sections = doc.available_sections()
     for section in sections:
       setattr(section, "words", section.resultwords(request.user))
-      setattr(section, "user_annotations", section.annotations(request.user.username))
+
+      if request.user.userprofile.mturk:
+        setattr(section, "user_annotations", section.annotations(request.user.username, experiment = settings.EXPERIMENT))
+      else:
+        setattr(section, "user_annotations", section.annotations(request.user.username))
+
 
     return render_to_response('document/concept-recognition-results.jade',
         { 'doc': doc,
@@ -155,6 +160,24 @@ def refute_section(request,  doc_id, section_id):
       return HttpResponse("Success")
 
     return HttpResponse('Unauthorized', status=401)
+
+
+
+@require_http_methods(["POST"])
+@login_required
+def comment_document(request,  doc_id):
+    doc = get_object_or_404(Document, pk=doc_id)
+
+    form = CommentForm(request.POST)
+    if form.is_valid():
+      refute = form.save(commit=False)
+      refute.document = doc
+      refute.user = request.user
+      refute.save()
+      return HttpResponse("Success")
+
+    return HttpResponse('Unauthorized', status=401)
+
 
 
 '''

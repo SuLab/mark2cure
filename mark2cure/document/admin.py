@@ -16,6 +16,7 @@ admin.site.register(RelationshipType)
 
 admin.site.register(Section)
 admin.site.register(Refute)
+admin.site.register(Comment)
 admin.site.register(View)
 admin.site.register(Annotation)
 

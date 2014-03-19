@@ -76,7 +76,7 @@ NETWORK['drawNetwork'] = function(graph) {
 
 $(document).ready(function() {
 
-  $('tr.annotation-finder').mouseenter(function() {
+  $('.annotation-finder').mouseenter(function() {
     var $ann = $(this),
         $section = $('#'+ $ann.data('section')+'.paragraph')
         needle_start = $ann.data('start'),
