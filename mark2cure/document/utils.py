@@ -49,7 +49,9 @@ def generate_results(document, user):
      fn  *tn
 
     '''
+    # (TODO) IF THERE ARE NO GM ANNOTATIONS DON'T SHOW THE RESULTS PAGE
     gm_annotations = document.annotations()
+
     if user.userprofile.mturk:
       user_annotations = document.annotations(user.username, experiment = settings.EXPERIMENT)
     else:
