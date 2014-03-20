@@ -51,11 +51,13 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 /etc/supervisor/conf.d/mark2cure.conf
 
   [program:mark2cure]
-  environment=HTTPS="on"
   command = /bin/gunicorn_start
   user = deploy
   stdout_logfile = /home/ubuntu/webapps/mark2cure/logs/gunicorn_supervisor.log
   redirect_stderr = true
+
+from django.core.mail import send_mail
+send_mail('Subject here', 'Here is the message.', 'su.lab.logger@gmail.com', ['max@maxnanis.com'], fail_silently=False)
 
 ### NGINX
 
@@ -71,8 +73,6 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
     access_log  /var/log/nginx/mark2cure.log;
     ssl_certificate /etc/ssl/mark2cure/mark2cure.crt;
     ssl_certificate_key /etc/ssl/mark2cure/mark2cure.key;
-
-    #rewrite ^(.*) https://$host$1 permanent;
 
     location /static/admin {
       autoindex on;
@@ -90,10 +90,14 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
     }
 
     location / {
-      proxy_pass http://127.0.0.1:8080;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_pass_header Server;
+          proxy_set_header Host $http_host;
+          proxy_redirect off;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Scheme $scheme;
+          proxy_connect_timeout 10;
+          proxy_read_timeout 10;
+          proxy_pass http://localhost:8080/;
     }
 
   }

@@ -5,7 +5,7 @@ extends base
 block content
 
     .row
-      .col-md-4.col-md-offset-1
+      .col-sm-4.col-sm-offset-1
         .panel.panel-default
           .panel-heading.text-center
             | You missed
@@ -19,7 +19,7 @@ block content
                   | #{ ann.text }
 
 
-      .col-md-4
+      .col-sm-4
         .panel.panel-default
           .panel-heading.text-center
             | You wrongly marked
@@ -34,7 +34,7 @@ block content
                   | #{ ann.text }
 
 
-      .col-md-2
+      .col-sm-2
         .panel.panel-default
           .panel-heading.text-center
             | Score
@@ -50,11 +50,11 @@ block content
 
     - for section in sections
         .row
-          .col-md-10.col-md-offset-1
+          .col-sm-10.col-sm-offset-1
             h4
               | #{ section.get_kind_display }
 
-          .col-md-10.col-md-offset-1.head-space.game
+          .col-sm-10.col-sm-offset-1.head-space.game
             div(id="{{ section.pk }}").paragraph.results
               p
                 - for indexes, text, counter, user_annotated in section.words
@@ -63,7 +63,7 @@ block content
 
 
     .row
-      .col-md-3.col-md-offset-1
+      .col-sm-3.col-sm-offset-1
         table.table
           tbody
             tr
@@ -85,7 +85,7 @@ block content
                 | Correct annotations
 
       - if debug
-        .col-md-4
+        .col-sm-4
           .panel.panel-default
             .panel-heading.text-center
               | Your Submissions
@@ -111,7 +111,7 @@ block content
                       td
                         | #{ ann.start }
 
-        .col-md-4
+        .col-sm-4
           .panel.panel-default
             .panel-heading.text-center
               | Answer Key

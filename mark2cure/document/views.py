@@ -59,10 +59,10 @@ def identify_annotations(request, doc_id):
     worker_id = request.GET.get('workerId')
 
     if doc.is_complete(request.user):
-      return redirect('/document/'+ str(doc.pk) + '/results/' )
+      return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
     if len(doc.section_set.filter(kind="a")) is 0:
-      return redirect('/document/'+ str(doc.pk) + '/concepts/validate/' )
+      return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
@@ -119,7 +119,7 @@ def identify_annotations_results(request, doc_id):
     turk_sub_location = request.GET.get('turkSubmitTo')
 
     if not doc.is_complete(request.user):
-      return redirect('/document/'+ str(doc.pk))
+      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     results = {}
     score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
@@ -191,7 +191,7 @@ def validate_concepts(request, doc_id):
     relationships = doc.get_conceptrelation_entries_to_validate()
 
     if len(relationships) is 0:
-      return redirect('/document/{0}'.format(doc.pk))
+      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     return render_to_response('document/verify-relationships.jade',
         { 'doc': doc,
@@ -266,7 +266,7 @@ def identify_concepts_submit(request, doc_id):
           annotation = ann)
 
 
-    return redirect('/document/'+ str(doc.pk) + '/concepts/' )
+    return HttpResponse(200)
 
 
 
@@ -284,20 +284,20 @@ def submit(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     task_type = request.POST.get('task_type')
 
+
     if task_type == 'concept-recognition':
         doc.update_views(request.user, 'cr', True)
-        return redirect('https://mark2cure.org/document/{0}/results/'.format(doc.pk))
-        # return redirect('/document/{0}/results/'.format(doc.pk))
-        # return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
+        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
     elif task_type == 'validate-concepts':
-        return redirect('/document/{0}/concepts/validate/'.format(doc.pk))
+        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
     elif task_type == 'identify-concepts':
-        return redirect('/document/{0}/concepts/identify/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_concepts', doc.pk)
+
 
     else:
         doc.update_views(request.user, 'cr', True)
-        return redirect('/document/{0}/results/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
 
 @login_required
@@ -311,14 +311,14 @@ def next(request, doc_id):
     doc = Document.objects.get_random_document()
 
     if task_type == 'concept-recognition':
-        return redirect('/document/{0}/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     elif task_type == 'validate-concepts':
-        return redirect('/document/{0}/concepts/validate/'.format(doc.pk))
+        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
     elif task_type == 'identify-concepts':
-        return redirect('/document/{0}/concepts/identify/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_concepts', doc.pk)
     else:
-        return redirect('/document/{0}/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
 
 @login_required
@@ -342,7 +342,7 @@ def create(request):
     form = DocumentForm(request.POST)
     if form.is_valid():
       doc = create_from_pubmed_id( request.POST['document_id'] )
-      return redirect('/document/'+ str(doc.pk) )
+      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
 
 

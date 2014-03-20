@@ -7,18 +7,18 @@ block content
     - for sec in doc.available_sections
         .row
           - if user.is_authenticated and user.profile.mturk == False
-              .col-md-10.col-md-offset-1
+              .col-sm-10.col-sm-offset-1
                 h4
                   | #{ sec.get_kind_display }
 
-          .col-md-10.col-md-offset-1.head-space
+          .col-sm-10.col-sm-offset-1.head-space
             div(id="{{ sec.pk }}").paragraph.entity_tag
               p
                 | #{ sec.text }
 
 
     .row.relationship-validation
-      .col-md-6.col-md-offset-3
+      .col-sm-6.col-sm-offset-3
         div.panel.panel-default
           div.panel-heading
             | Are the following relationships true?

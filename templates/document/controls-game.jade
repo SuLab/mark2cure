@@ -1,9 +1,9 @@
 - load humanize
 
 - if user.userprofile.mturk
-  .col-md-10.col-md-offset-1.foot-space-xl
+  .col-sm-10.col-sm-offset-1.foot-space-xl
     .row
-      .col-md-6.col-md-offset-3
+      .col-sm-6.col-sm-offset-3
           form(method="post", id="document_submit", action="/document/{{ doc.pk }}/submit/")
             {% csrf_token %}
             input(type="hidden", name="task_type", value="{{ task_type }}")
@@ -11,9 +11,9 @@
               | Submit
 
 - else
-  .well.col-md-10.col-md-offset-1.head-space
+  .well.col-sm-10.col-sm-offset-1.head-space
     .row
-      .col-md-6
+      .col-sm-6
           p
             span.label.label-info Title
             |  #{ doc.title }
@@ -27,7 +27,7 @@
               span.label.label-info Created
               |  #{ doc.created|naturaltime }
 
-      .col-md-6
+      .col-sm-6
         form(method="post", id="document_submit", action="/document/{{ doc.pk }}/submit/")
           {% csrf_token %}
           input(type="hidden", name="task_type", value="{{ task_type }}")
