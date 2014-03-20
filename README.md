@@ -14,7 +14,7 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 ### Server Dependencies
 
 * `sudo apt-get update`
-* `sudo apt-get upgrate`
+* `sudo apt-get upgrade`
 * `sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev git-core nginx`
 
 ### Project Setup
@@ -45,6 +45,91 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 * Flow diagram of the database relationships
 * `python manage.py graph_models -a -o myapp_models.png`
+
+### Supervisor
+
+/etc/supervisor/conf.d/mark2cure.conf
+
+  [program:mark2cure]
+  environment=HTTPS="on"
+  command = /bin/gunicorn_start
+  user = deploy
+  stdout_logfile = /home/ubuntu/webapps/mark2cure/logs/gunicorn_supervisor.log
+  redirect_stderr = true
+
+### NGINX
+
+/etc/nginx/site-available/default
+
+  server {
+    listen 80;
+    listen 443 ssl;
+
+    server_name mark2cure.org www.mark2cure.org *.mark2cure.org;
+    #root /var/www;
+
+    access_log  /var/log/nginx/mark2cure.log;
+    ssl_certificate /etc/ssl/mark2cure/mark2cure.crt;
+    ssl_certificate_key /etc/ssl/mark2cure/mark2cure.key;
+
+    #rewrite ^(.*) https://$host$1 permanent;
+
+    location /static/admin {
+      autoindex on;
+      alias /opt/mark2cure-venv/lib/python2.7/site-packages/django/contrib/admin/static/admin;
+    }
+
+    location /static/grappelli {
+      autoindex on;
+      alias /opt/mark2cure-venv/local/lib/python2.7/site-packages/grappelli/static/grappelli/;
+    }
+
+    location /static {
+      autoindex on;
+      alias /home/ubuntu/webapps/mark2cure/static/;
+    }
+
+    location / {
+      proxy_pass http://127.0.0.1:8080;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+  }
+
+### GUNICORN
+
+  #!/bin/bash
+
+  NAME="mark2cure_app"                              # Name of the application
+  LOGFILE=/home/ubuntu/webapps/mark2cure/log/gunicorn.log
+  LOGDIR=$(dirname $LOGFILE)
+  DJANGO_SETTINGS_MODULE=mark2cure.settings
+  DJANGO_WSGI_MODULE=mark2cure.wsgi
+
+  DJANGODIR=/home/ubuntu/webapps/mark2cure                      # Django project directory
+  VENVDIR=/opt/mark2cure-venv/bin/activate                       # Virtual envioronment directory
+
+  USER=deploy                                       # the user to run as
+  GROUP=deploy                                      # the group to run as
+  NUM_WORKERS=3                                     # how many worker processes should Gunicorn spawn
+
+  echo "Starting $NAME as `whoami`"
+
+  # Activate the virtual environment
+  source $VENVDIR
+
+  cd $DJANGODIR
+  test -d $LOGDIR || mkdir -p $LOGDIR
+
+  exec /opt/mark2cure-venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
+    --name $NAME \
+    --workers $NUM_WORKERS \
+    --user=$USER --group=$GROUP \
+    --log-level=debug \
+    --bind=0.0.0.0:8080
+    --log-file=$LOGFILE 2>>$LOGFILE
 
 #### Notes
 

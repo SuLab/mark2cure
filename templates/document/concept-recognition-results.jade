@@ -11,7 +11,7 @@ block content
             | You missed
 
           ul.list-group
-              - if results.false_positives.count == 0
+              - if results.false_negatives.count == 0
                 li.list-group-item.text-muted.no-annotations
                   | None
               - for ann in results.false_negatives
