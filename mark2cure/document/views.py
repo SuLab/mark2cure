@@ -286,7 +286,7 @@ def submit(request, doc_id):
 
     if task_type == 'concept-recognition':
         doc.update_views(request.user, 'cr', True)
-        return redirect('/document/{0}/results/'.format(doc.pk))
+        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
     elif task_type == 'validate-concepts':
         return redirect('/document/{0}/concepts/validate/'.format(doc.pk))
