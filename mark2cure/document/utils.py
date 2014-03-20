@@ -14,8 +14,8 @@ import re, nltk, datetime
 
 
 def determine_f(true_positive, false_positive, false_negative):
-    if true_positive + false_positive is 0:
-      return (0,0,0)
+    if true_positive + false_positive < 0.9999:
+      return (0.0,0.0,0.0)
 
     precision = true_positive / float(true_positive + false_positive)
     recall = true_positive / float(true_positive + false_negative)
@@ -24,7 +24,7 @@ def determine_f(true_positive, false_positive, false_negative):
       f = ( 2 * precision * recall ) / ( precision + recall )
       return (precision, recall, f)
     else:
-      return (0,0,0)
+      return (0.0,0.0,0.0)
 
 
 def match_exact(gm_ann, user_anns):
