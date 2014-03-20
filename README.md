@@ -32,14 +32,14 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 ### Database Migrations
 
-`sudo /opt/mark2cure-venv/bin/python manage.py schemamigration APP --auto CHANGE_MESSAGE`
-`sudo /opt/mark2cure-venv/bin/python manage.py migrate APP`
+* `sudo /opt/mark2cure-venv/bin/python manage.py schemamigration APP --auto CHANGE_MESSAGE`
+* `sudo /opt/mark2cure-venv/bin/python manage.py migrate APP`
 
 ### Control
 
-`. /opt/mark2cure-venv/bin/activate`
-`cd webapps/mark2cure/ && git pull origin HEAD`
-`sudo supervisorctl restart mark2cure`
+* `. /opt/mark2cure-venv/bin/activate`
+* `cd webapps/mark2cure/ && git pull origin HEAD`
+* `sudo supervisorctl restart mark2cure`
 
 ### Utils
 
