@@ -67,7 +67,7 @@ class Command(BaseCommand):
           print len(documents)
 
           for idx, doc_id in enumerate(documents):
-            turk.hit_for_document(doc_id, max_assignments = 10)
+            turk.hit_for_document(doc_id, max_assignments = 50)
             print idx
 
 

@@ -709,7 +709,7 @@ class Turk():
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        # retry_delay = 1,
+        retry_delay = 60,
         test_duration = 25 * 60)
 
       return qual_test
@@ -722,7 +722,7 @@ class Turk():
 
       qualifications = Qualifications()
       # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_4, "GreaterThanOrEqualTo", 22) )
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_4, "GreaterThanOrEqualTo", 20) )
 
       hit = self.mtc.create_hit(
           hit_type = None,

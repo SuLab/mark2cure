@@ -132,6 +132,10 @@ def identify_annotations_results(request, doc_id):
     results['false_positives'] = false_positives
     results['false_negatives'] = false_negatives
 
+    if score[2] == 1.0 or score[2] == 0.0:
+      from django.core.mail import send_mail
+      send_mail('[Mark2Cure #6] User event', '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk), 'su.lab.logger@gmail.com', ['max@maxnanis.com', 'ben.mcgee.good@gmail.com'])
+
     sections = doc.available_sections()
     for section in sections:
       setattr(section, "words", section.resultwords(request.user))

@@ -56,8 +56,6 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
   stdout_logfile = /home/ubuntu/webapps/mark2cure/logs/gunicorn_supervisor.log
   redirect_stderr = true
 
-from django.core.mail import send_mail
-send_mail('Subject here', 'Here is the message.', 'su.lab.logger@gmail.com', ['max@maxnanis.com'], fail_silently=False)
 
 ### NGINX
 
