@@ -27,6 +27,7 @@ class UserProfile(models.Model):
     email_notify  = models.BooleanField(default = False, blank = True)
 
     mturk           = models.BooleanField(default = False, blank = True)
+    turk_last_assignment_id = models.CharField(max_length=200, blank = True)
     turk_submit_to  = models.CharField(max_length=200, blank = True, default = "http://example.com")
     ncbo            = models.BooleanField(default = False, blank = True)
 

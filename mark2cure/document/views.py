@@ -55,16 +55,16 @@ def identify_annotations(request, doc_id):
     # If they're attempting to view or work on the document
     doc = get_object_or_404(Document, pk=doc_id)
 
-    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
-    worker_id = request.GET.get('workerId')
-    turk_sub_location = request.GET.get('turkSubmitTo')
-
     if doc.is_complete(request.user):
       return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
     if len(doc.section_set.filter(kind="a")) is 0:
       return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
+
+    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
+    worker_id = request.GET.get('workerId')
+    turk_sub_location = request.GET.get('turkSubmitTo')
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
       logout(request)
@@ -75,8 +75,9 @@ def identify_annotations(request, doc_id):
       user = authenticate(username=user.username, password='')
       login(request, user)
 
-    if turk_sub_location and worker_id and request.user.is_authenticated():
+    if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
       request.user.userprofile.turk_submit_to = turk_sub_location
+      request.user.userprofile.turk_last_assignment_id = assignment_id
       request.user.userprofile.save()
 
     if request.user.is_authenticated():
@@ -85,8 +86,7 @@ def identify_annotations(request, doc_id):
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
                                 'task_type': 'concept-recognition',
-                                'instruct_bool': 'block' if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE' else 'none',
-                                'assignmentId': assignment_id},
+                                'instruct_bool': 'block' if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE' else 'none' },
                               context_instance=RequestContext(request))
 
 
