@@ -57,6 +57,7 @@ def identify_annotations(request, doc_id):
 
     assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
     worker_id = request.GET.get('workerId')
+    turk_sub_location = request.GET.get('turkSubmitTo')
 
     if doc.is_complete(request.user):
       return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
@@ -73,6 +74,10 @@ def identify_annotations(request, doc_id):
       user = get_mturk_account(worker_id)
       user = authenticate(username=user.username, password='')
       login(request, user)
+
+    if turk_sub_location and worker_id and request.user.is_authenticated():
+      request.user.userprofile.turk_submit_to = turk_sub_location
+      request.user.userprofile.save()
 
     if request.user.is_authenticated():
       doc.update_views(request.user, 'cr')
@@ -116,7 +121,6 @@ def identify_annotations_submit(request, doc_id, section_id):
 
 def identify_annotations_results(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
-    turk_sub_location = request.GET.get('turkSubmitTo')
 
     if not doc.is_complete(request.user):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
@@ -142,7 +146,6 @@ def identify_annotations_results(request, doc_id):
         { 'doc': doc,
           'sections' : sections,
           'results' : results,
-          'turk_sub_location' : turk_sub_location,
           'task_type': 'concept-recognition' },
         context_instance=RequestContext(request))
 

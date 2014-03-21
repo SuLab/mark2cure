@@ -26,8 +26,9 @@ class UserProfile(models.Model):
     first_run   = models.BooleanField(default = False, blank = True)
     email_notify  = models.BooleanField(default = False, blank = True)
 
-    mturk     = models.BooleanField(default = False, blank = True)
-    ncbo      = models.BooleanField(default = False, blank = True)
+    mturk           = models.BooleanField(default = False, blank = True)
+    turk_submit_to  = models.CharField(max_length=200, blank = True, default = "http://example.com")
+    ncbo            = models.BooleanField(default = False, blank = True)
 
 
     def score(self, task_type="cr"):

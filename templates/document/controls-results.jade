@@ -1,6 +1,6 @@
 - load humanize
 
-form(action="{{ turk_sub_location }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
+form(action="{{ user.userprofile.turk_submit_to }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
   input(type="hidden", name="assignmentId", value="{{ assignmentId }}")
   input(type="text", name="document_id", value="{{ doc.pk }}")
 
