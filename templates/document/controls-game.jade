@@ -10,6 +10,15 @@
             button.btn.btn-primary.btn-block.done
               | Submit
 
+
+- else if user.userprofile.turk_last_assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE'
+  .col-sm-10.col-sm-offset-1.foot-space-xl
+    .row
+      .col-sm-6.col-sm-offset-3
+            button(disabled="disabled").btn.btn-primary.btn-block.done
+              | Submit
+
+
 - else
   .well.col-sm-10.col-sm-offset-1.head-space
     .row

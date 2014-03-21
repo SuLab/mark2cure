@@ -74,6 +74,8 @@ def identify_annotations(request, doc_id):
       user = get_mturk_account(worker_id)
       user = authenticate(username=user.username, password='')
       login(request, user)
+      user.userprofile.turk_last_assignment_id = assignment_id
+      user.save()
 
     if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
       request.user.userprofile.turk_submit_to = turk_sub_location
