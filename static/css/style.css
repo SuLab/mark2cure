@@ -108,10 +108,25 @@ svg {
   to {background-color:#0cf;}
 }
 
-.paragraph.entity_tag p span.neighbor,
-.paragraph.results p span.neighbor {
+.paragraph.entity_tag p span.neighbor {
   margin-right: 5px;
 }
+
+.paragraph.results p span.neighbor_gm,
+.paragraph.results p span.neighbor_u {
+  margin-right: 5px;
+}
+
+.paragraph.results p span.neighbor_gm.neighbor_u {
+}
+
+.paragraph.results p.putty-rect {
+  position: absolute;
+
+  width: 5px;
+  background-color: #0cf;
+}
+
 
 /* Community Consensus */
 .paragraph.results p span.selected {
@@ -125,12 +140,14 @@ svg {
  *
  */
 
-.paragraph.results p span.golden {
+.paragraph.results p span.golden,
+.paragraph.results p.golden {
   /* Word span when simply showing golden master (not community consensus) */
   border-bottom: 6px solid #00CC00;
 }
 
-.paragraph.results p span.user_annotated {
+.paragraph.results p span.user_annotated,
+.paragraph.results p.user_annotated {
   /* Word span when simply showing user selection */
   background-color: #0cf;
 }

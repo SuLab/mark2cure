@@ -12,7 +12,7 @@ block content
 
           ul.list-group
               - if results.false_negatives.count == 0
-                li.list-group-item.text-muted.no-annotations
+                li.list-group-item.text-muted.no-annotations.text-center
                   | None
               - for ann in results.false_negatives
                 li(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").list-group-item.annotation-finder
@@ -26,7 +26,7 @@ block content
 
           ul.list-group
               - if results.false_positives.count == 0
-                li.list-group-item.text-muted.no-annotations
+                li.list-group-item.text-muted.no-annotations.text-center
                   | None
 
               - for ann in results.false_positives
@@ -57,8 +57,12 @@ block content
           .col-sm-10.col-sm-offset-1.head-space.game
             div(id="{{ section.pk }}").paragraph.results
               p
-                - for indexes, text, counter, user_annotated in section.words
-                  span(data-counter="{{ counter }}", data-starti="{{ indexes.0 }}", data-stopi="{{ indexes.1 }}", class="#{ 'user_annotated' if user_annotated else '' }")
+                - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
+                  span( data-counter="{{ counter }}",
+                        data-starti="{{ indexes.0 }}",
+                        data-stopi="{{ indexes.1 }}",
+                        data-gmannid="{{ gm_pk }}",
+                        data-uannid="{{ user_pk }}")
                     | #{ text } 
 
 
@@ -171,46 +175,47 @@ block post-footer
               .domain([0, max])
               .range(["white", "yellow"]);
 
-          var user_tracker = true,
-              gold_tracker = true;
-
           $.each($words, function(w) {
             var word = $(this),
                 next_word = word.next(),
                 value = word.data('counter'),
-                next_word_value = next_word.data('counter');
+                next_word_value = next_word.data('counter'),
+
+                gm_ann = word.data('gmannid'),
+                next_word_gm_ann = next_word.data('gmannid'),
+
+                u_ann = word.data('uannid'),
+                next_word_u_ann = next_word.data('uannid');
 
 
-            if(value > 0) { word.addClass('golden'); }
+            if(gm_ann != "None") { word.addClass('golden'); }
+            if(u_ann != "None") { word.addClass('user_annotated'); }
 
-            if( next_word.hasClass('user_annotated') ) { user_tracker = true; } else {
-              if(user_tracker) {
-                word.html( word.html().trim() );
-                word.addClass('neighbor');
+            if( gm_ann != "None" && gm_ann != next_word_gm_ann ) {
+              word.html( word.html().trim() );
+              word.addClass('neighbor_gm');
+
+              // Check if it messes up user anns
+              if( u_ann != "None" && u_ann == next_word_u_ann) {
+                var $putty = $("<p class='putty-rect user_annotated'> </p>").appendTo(section),
+                    position = word.position();
+                $putty.css({'top' : position.top, 'left' : position.left + word.width(), 'height': word.height() });
               }
-              user_tracker = false;
+
             }
 
-            if( next_word_value > 0 ) { gold_tracker = true; } else {
-              if(gold_tracker) {
-                word.html( word.html().trim() );
-                word.addClass('neighbor');
+            if( u_ann != "None" && u_ann != next_word_u_ann ) {
+              word.html( word.html().trim() );
+              word.addClass('neighbor_u');
+
+              // Check if it messes up GM anns
+              if( gm_ann != "None" && gm_ann == next_word_gm_ann) {
+                var $putty = $("<p class='putty-rect golden'> </p>").appendTo(section),
+                    position = word.position();
+                $putty.css({'top' : position.top + word.height(), 'left' : position.left + word.width(), 'height': '6px' });
               }
-              gold_tracker = false;
+
             }
-
-            // word.css({'background-color': color(value)});
-            // if( word.hasClass('user_annotated') ) {
-            //   var c = d3.scale.linear()
-            //             .domain([0, 1])
-            //             .range([color(value), "#0cf"]);
-            //   if( value > 0 ) {
-            //     word.css({'background-color': c(.5)});
-            //   } else {
-            //     word.css({'background-color': c(1)});
-            //   }
-            // }
-
           });
         });
 

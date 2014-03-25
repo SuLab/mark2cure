@@ -137,35 +137,36 @@ class Section(models.Model):
         words_index = WhitespaceTokenizer().span_tokenize(self.text)
         words_text = WhitespaceTokenizer().tokenize(self.text)
         words = zip(words_index, words_text)
+
         # Add counters for concensus count and personal annotation
-        words = [w + (0,False,) for w in words]
+        # ((start, stop), 'Word string itself', Intensity, GM Ann ID, User Ann ID, Did user annotate)
+        words = [w + (0, None, None, False,) for w in words]
 
         # Gather other annotations from GM and users for this section
-        # anns = Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e").values_list('start', 'text')
-        anns = self.annotations().values_list('start', 'text')
+        anns = self.annotations().values_list('pk', 'start', 'text')
         # Build the running counter of times a word was annotated
-        for start, text in anns:
+        for gm_pk, start, text in anns:
           length = len(text)
+
           for idx, word in enumerate(words):
             word_start = word[0][0]
             counter = word[2]
             if word_start >= start and word_start <= start+length:
               counter += 1
-              words[idx] = (word[0], word[1], counter, word[3])
+              words[idx] = (word[0], word[1], counter, gm_pk, word[3], word[4])
 
 
         if user.userprofile.mturk:
-          user_anns = self.annotations(user.username, experiment = settings.EXPERIMENT).values_list('start', 'text')
+          user_anns = self.annotations(user.username, experiment = settings.EXPERIMENT).values_list('pk', 'start', 'text')
         else:
-          user_anns = self.annotations(user.username).values_list('start', 'text')
-
+          user_anns = self.annotations(user.username).values_list('pk', 'start', 'text')
         # Build the running counter of times a word was annotated
-        for start, text in user_anns:
+        for user_pk, start, text in user_anns:
           length = len(text)
           for idx, word in enumerate(words):
             word_start = word[0][0]
             if word_start >= start and word_start <= start+length:
-              words[idx] = (word[0], word[1], word[2], True)
+              words[idx] = (word[0], word[1], word[2], word[3], user_pk, True)
 
         return words
 
