@@ -70,12 +70,14 @@ class Command(BaseCommand):
         workers = User.objects.filter(userprofile__mturk = True).all()
         turk = Turk()
         results = []
-        with open('mturk_qual_4_summary.tsv', 'wb') as csvfile:
+        with open('mturk_qual_2_summary.tsv', 'wb') as csvfile:
           writer = csv.writer(csvfile, delimiter='\t')
           for page in range(1,5):
-            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_4, page_number = page)
+            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_2, page_number = page)
             for qi in quals:
               writer.writerow([qi.Status, qi.SubjectId, qi.IntegerValue, qi.GrantTime])
+
+
 
 
     def util_worker_ban_analysis(self):
