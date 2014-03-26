@@ -15,7 +15,7 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 * `sudo apt-get update`
 * `sudo apt-get upgrade`
-* `sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev git-core nginx`
+* `sudo apt-get install build-essential python python-dev python-pip python-virtualenv libmysqlclient-dev git-core nginx rabbitmq-server`
 
 ### Project Setup
 

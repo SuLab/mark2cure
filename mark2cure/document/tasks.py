@@ -1,40 +1,45 @@
-'''
-  Calculates the heatmap array
-'''
+from django.conf import settings
 
-# def run(self):
-#   for document in Document.query.all():
-#     print "Running document {0}".format( document.document_id )
-#
-#
-#     # Select all the annotations for this document
-#     annotations = db.session.query(Annotation).filter_by(document = document)
-#
-#
-#     step = 0
-#     length = 0
-#     pop_arr = []
-#
-#     # Iterate over each word in the text
-#     for idx, word in enumerate(document.text.split()):
-#       length = len(word)
-#       step = step + length + 1;
-#       wordstart = step - length - 1,
-#
-#       # Count which words have annotations in the db for that doc, across all users
-#       # Number of annotations that encapsulate that word
-#       count = 0
-#       for ann in annotations:
-#         if wordstart[0] >= ann.start and wordstart[0] <= (ann.start+ann.length):
-#           count = count + 1
-#       pop_arr.append(count);
-#
-#     document.cache = ', '.join([str(x) for x in pop_arr])
-#
-#     # Save every document instead of once incase some doc crashes
-#     db.session.commit()
-#   print "Complete"
-#
-#
+from mark2cure.document.models import Document, Section
+from Bio import Entrez, Medline
+from celery import task
 
+import datetime
+
+@task
+def get_pubmed_documents(terms = settings.ENTREZ_TERMS):
+    Entrez.email = settings.ENTREZ_EMAIL
+
+    for term in terms:
+      h = Entrez.esearch(db='pubmed', retmax=settings.ENTREZ_MAX_COUNT, term=term)
+      result = Entrez.read(h)
+      ids = result['IdList']
+      h = Entrez.efetch(db='pubmed', id=ids, rettype='medline', retmode='text')
+      records = Medline.parse(h)
+
+      #
+      # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
+      #
+      for record in records:
+        if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
+          if Document.objects.pubmed_count( record.get('PMID') ) is 0:
+            doc = Document.objects.create(document_id = record.get('PMID'))
+            doc.title = record.get('TI')
+            doc.created = datetime.datetime.strptime(record.get('CRDT')[0], '%Y/%m/%d %H:%M')
+            doc.source = "pubmed"
+            doc.save()
+
+            sec = Section(kind = "o")
+            sec.document = doc
+            sec.save()
+
+            sec = Section(kind = "t")
+            sec.text = record.get('TI')
+            sec.document = doc
+            sec.save()
+
+            sec = Section(kind = "a")
+            sec.text = record.get('AB')
+            sec.document = doc
+            sec.save()
 
