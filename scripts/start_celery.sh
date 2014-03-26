@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Start the venv
-source . /opt/mark2cure-venv/bin/activate
-source . /opt/mark2cure-venv/bin/activate
+source /opt/mark2cure-venv/bin/activate
+source /opt/mark2cure-venv/bin/activate
 
 # Make sure rabbit-mq is running and start celery worker and beat
 sudo /etc/init.d/rabbitmq-server start

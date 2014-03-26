@@ -41,6 +41,9 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 * `cd webapps/mark2cure/ && git pull origin HEAD`
 * `sudo supervisorctl restart mark2cure`
 
+* `python /opt/python/current/app/manage.py celeryd -v 2 -E -l INFO`
+* `python /opt/python/current/app/manage.py celerybeat`
+
 ### Utils
 
 * Flow diagram of the database relationships
@@ -138,4 +141,4 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 * Debug what anns are selected
 * `YPet['730'].currentView.collection.parentDocument.get('annotations').each(function(m){ console.log(m.get('text')) })`
 
-
+Doc count: 3,454
