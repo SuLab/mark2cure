@@ -186,10 +186,10 @@ def comment_document(request,  doc_id):
       refute.user = request.user
       refute.save()
 
-      mail_managers('[Mark2Cure #6] User event',
-                    '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk),
-                    settings.SERVER_EMAIL,
-                    [email[1] for email in settings.MANAGERS])
+      send_mail('[Mark2Cure #6] User event',
+                '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk),
+                settings.SERVER_EMAIL,
+                [email[1] for email in settings.MANAGERS])
 
       return HttpResponse("Success")
 
