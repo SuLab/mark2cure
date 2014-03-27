@@ -20,7 +20,6 @@ from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, C
 from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 
-
 from rest_framework import viewsets
 from mark2cure.document.serializers import RelationshipTypeSerializer
 
@@ -46,6 +45,7 @@ def list(request, page_num=1):
     return render_to_response('document/list.jade',
                               {'docs': docs},
                               context_instance=RequestContext(request))
+
 
 '''
 
@@ -135,7 +135,10 @@ def identify_annotations_results(request, doc_id):
     results['false_negatives'] = false_negatives
 
     if score[2] == 1.0 or score[2] == 0.0:
-      send_mail('[Mark2Cure #6] User event', '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk), 'su.lab.logger@gmail.com', ['max@maxnanis.com', 'ben.mcgee.good@gmail.com'])
+      send_mail('[Mark2Cure #6] User event',
+                    '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk),
+                     settings.SERVER_EMAIL,
+                     [email[1] for email in settings.MANAGERS])
 
     sections = doc.available_sections()
     for section in sections:
@@ -183,7 +186,10 @@ def comment_document(request,  doc_id):
       refute.user = request.user
       refute.save()
 
-      send_mail('[Mark2Cure #6] User event', '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk), 'su.lab.logger@gmail.com', ['max@maxnanis.com', 'ben.mcgee.good@gmail.com'])
+      mail_managers('[Mark2Cure #6] User event',
+                    '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk),
+                    settings.SERVER_EMAIL,
+                    [email[1] for email in settings.MANAGERS])
 
       return HttpResponse("Success")
 
