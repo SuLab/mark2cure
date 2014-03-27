@@ -135,7 +135,7 @@ def identify_annotations_results(request, doc_id):
     results['false_negatives'] = false_negatives
 
     if score[2] == 1.0 or score[2] == 0.0:
-      send_mail('[Mark2Cure #6] User event',
+      send_mail('[Mark2Cure #6] HIT completion',
                     '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk),
                      settings.SERVER_EMAIL,
                      [email[1] for email in settings.MANAGERS])
@@ -186,7 +186,7 @@ def comment_document(request,  doc_id):
       refute.user = request.user
       refute.save()
 
-      send_mail('[Mark2Cure #6] User event',
+      send_mail('[Mark2Cure #6] Document comment',
                 '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk),
                 settings.SERVER_EMAIL,
                 [email[1] for email in settings.MANAGERS])
