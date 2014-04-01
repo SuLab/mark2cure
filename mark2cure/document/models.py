@@ -67,7 +67,10 @@ class Document(models.Model):
 
 
     def is_complete(self, user, task_type = 'cr'):
-        return True if View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self).count() >= self.count_available_sections() else False
+        if user.userprofile.mturk:
+          return False
+        else:
+          return True if View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self).count() >= self.count_available_sections() else False
 
 
     def create_views(self, user, task_type, completed = False):
