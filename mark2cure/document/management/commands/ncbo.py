@@ -8,6 +8,7 @@ from mark2cure.account.models import Ncbo
 import requests, re, csv, datetime
 import xml.etree.ElementTree as ET
 
+
 class Command(BaseCommand):
     help = 'Populates the documents with NCBO annotator results'
 

@@ -1,13 +1,13 @@
 from django.db import models
 from django.db.models import Count
-
 from django.contrib.auth.models import User
-from mark2cure.common.models import Message
 
+from mark2cure.common.models import Message
 from mark2cure.document.models import Document, View
 
 from timezone_field import TimeZoneField
 import datetime
+
 
 class UserProfile(models.Model):
     user                  = models.OneToOneField(User, unique=True)

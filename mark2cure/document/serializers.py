@@ -1,5 +1,7 @@
-from mark2cure.document.models import *
+from mark2cure.document.models import RelationshipType
+
 from rest_framework import serializers
+
 
 class RelationshipTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -1,5 +1,4 @@
 from django.conf import settings
-from datetime import datetime
 from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
@@ -8,7 +7,9 @@ from boto.mturk.connection import *
 from boto.mturk.question import *
 from boto.mturk.qualification import *
 
+from datetime import datetime
 import requests, datetime, random, re, nltk
+
 
 def get_mturk_account(worker_id):
     u, created = User.objects.get_or_create(username=worker_id)

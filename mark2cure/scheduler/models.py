@@ -2,11 +2,12 @@
 Code adapted from
 https://groups.google.com/forum/#!msg/celery-users/CZXCh8sCK5Q/ihZgMV2HWWYJ
 """
+from django.db import models
 
 from djcelery.models import PeriodicTask, IntervalSchedule
-import datetime
-from django.db import models
 from celery.app.control import Control
+
+import datetime
 
 
 class TaskScheduler(models.Model):

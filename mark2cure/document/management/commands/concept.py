@@ -1,14 +1,13 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-# from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 
 from mark2cure.document.models import *
 from mark2cure.document.utils import create_from_pubmed_id
 
-import os, os.path, csv
-import warnings
+import os, os.path, csv, warnings
+
 
 class Command(BaseCommand):
     args = '<command>'

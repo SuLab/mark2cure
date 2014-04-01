@@ -13,6 +13,7 @@ from mark2cure.account.forms import UserForm, ProfileForm
 
 import datetime
 
+
 def reset_thanks(request):
     return render_to_response('account/reset-thanks.jade',
                               {},

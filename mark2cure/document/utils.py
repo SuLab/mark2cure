@@ -1,5 +1,4 @@
 from django.conf import settings
-from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -7,6 +6,7 @@ from django.db.models import Q
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.common.utils import Turk
 
+from datetime import datetime
 from Bio import Entrez, Medline
 
 import re, nltk, datetime

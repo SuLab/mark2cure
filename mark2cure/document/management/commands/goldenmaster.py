@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from mark2cure.document.models import Document, Section, View, Annotation
+
 import csv, random
+
 
 class Command(BaseCommand):
     args = '<gm_type>'

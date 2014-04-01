@@ -1,12 +1,10 @@
-'''
-doc namespaced URLs
-'''
-
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+
 from rest_framework import routers
 
 from mark2cure.document.views import *
+
 
 router = routers.DefaultRouter()
 router.register(r'relationshiptypes', RelationshipTypeViewSet)

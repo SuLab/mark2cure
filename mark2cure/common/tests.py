@@ -1,13 +1,8 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
-from django.test import TestCase, Client, LiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver
 from django.contrib.auth.models import User
+from django.test import TestCase, Client, LiveServerTestCase
+
+from selenium.webdriver.firefox.webdriver import WebDriver
+
 
 class SimpleTest(TestCase):
     def setUp(self):

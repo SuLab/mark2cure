@@ -1,7 +1,3 @@
-'''
-doc views (controllers)
-'''
-
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404, redirect
@@ -19,15 +15,13 @@ from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
-
-from rest_framework import viewsets
 from mark2cure.document.serializers import RelationshipTypeSerializer
 
-from copy import copy
+from rest_framework import viewsets
 
+from copy import copy
 import oauth2 as oauth
 import json, itertools
-
 
 
 @login_required
@@ -83,7 +77,7 @@ def identify_annotations(request, doc_id):
       request.user.userprofile.save()
 
     if request.user.is_authenticated():
-      doc.update_views(request.user, 'cr')
+      doc.create_views(request.user, 'cr')
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,

@@ -1,15 +1,14 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-# from django.db.models import Count
 from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.document.utils import check_validation_status
 from mark2cure.account.models import Ncbo
-
 from mark2cure.common.utils import Turk
 
 import os, os.path, csv
+
 
 class Command(BaseCommand):
     args = '<experiment_run_id>'

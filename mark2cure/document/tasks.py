@@ -1,10 +1,11 @@
 from django.conf import settings
 
 from mark2cure.document.models import Document, Section
+
 from Bio import Entrez, Medline
 from celery import task
-
 import datetime
+
 
 @task
 def get_pubmed_documents(terms = settings.ENTREZ_TERMS):

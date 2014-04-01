@@ -1,5 +1,7 @@
-from mark2cure.document.models import *
 from django.contrib import admin
+
+from mark2cure.document.models import Document, Concept, ConceptRelationship, RelationshipType, Section, Refute, Comment, View, Annotation
+
 
 class MyInlineModelOptions(admin.TabularInline):
     fields = ( "title", "updated",)

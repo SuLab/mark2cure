@@ -3,9 +3,9 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.encoding import smart_text
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 from mark2cure.document.managers import DocumentManager, AnnotationManager
-from django.contrib.auth.models import User
 
 from ttp import ttp
 from decimal import Decimal as D
@@ -13,6 +13,7 @@ from copy import copy
 from nltk.tokenize import WhitespaceTokenizer
 
 import requests, random, datetime, itertools
+
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -25,17 +26,22 @@ class Document(models.Model):
 
     objects = DocumentManager()
 
+
     def __unicode__(self):
         return self.title
+
 
     def submitted(self):
         return View.objects.filter(section__document = self).count()
 
+
     def available_sections(self):
         return self.section_set.exclude(kind = 'o').all()
 
+
     def count_available_sections(self):
         return self.section_set.exclude(kind = 'o').count()
+
 
     def get_concepts_for_classification(self):
         # First see if the GM has any annotations for these sections,
@@ -52,6 +58,7 @@ class Document(models.Model):
         random.shuffle(concepts)
         return concepts
 
+
     def get_conceptrelation_entries_to_validate(self):
         return ConceptRelationship.objects.filter(
             validate = None,
@@ -63,9 +70,20 @@ class Document(models.Model):
         return True if View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self).count() >= self.count_available_sections() else False
 
 
+    def create_views(self, user, task_type, completed = False):
+        '''
+          We never want to "recycle" a View, always make a new one, even if there
+          are currently "open" / uncompleted ones from the same doc
+        '''
+        for sec in self.available_sections():
+          view = View(task_type = task_type, section = sec, user = user)
+          view.completed = completed
+          view.save()
+
+
     def update_views(self, user, task_type, completed = False):
-      for sec in self.available_sections():
-          view, created = View.objects.get_or_create(task_type = task_type, section = sec, user = user)
+        for sec in self.available_sections():
+          view = View.objects.filter(user = user, task_type = task_type, section = self).latest()
           view.completed = completed
           view.save()
 
@@ -99,6 +117,9 @@ class Document(models.Model):
         ordering = ('created',)
 
 
+    class Meta:
+        get_latest_by = 'updated'
+
 
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
@@ -129,7 +150,6 @@ class Section(models.Model):
           return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username, experiment = experiment).order_by('start')
         else:
           return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username).order_by('start')
-
 
 
     def resultwords(self, user):
@@ -172,11 +192,10 @@ class Section(models.Model):
 
 
     def update_view(self, user, task_type, completed = False):
-      view = get_object_or_404(View, user = user, task_type = task_type, section = self)
+      view = View.objects.filter(user = user, task_type = task_type, section = self).latest()
       view.completed = completed
       view.save()
       return view
-
 
 
     def __unicode__(self):
@@ -184,6 +203,10 @@ class Section(models.Model):
           return '[Overview] '+ self.document.title
         else:
           return self.text
+
+
+    class Meta:
+        get_latest_by = 'updated'
 
 
 class View(models.Model):
@@ -203,8 +226,13 @@ class View(models.Model):
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
 
+
     def __unicode__(self):
       return "Doc:"+ str(self.section.document.pk) +", Sec:"+ str(self.section.pk) +" by "+ self.user.username
+
+
+    class Meta:
+        get_latest_by = 'updated'
 
 
 class Refute(models.Model):
@@ -224,6 +252,10 @@ class Refute(models.Model):
 
     def __unicode__(self):
         return "{0} {1}".format(self.message, self.view)
+
+
+    class Meta:
+        get_latest_by = 'updated'
 
 
 class Comment(models.Model):
@@ -246,10 +278,13 @@ class Comment(models.Model):
     document = models.ForeignKey(Document)
     user = models.ForeignKey(User)
 
+
     def __unicode__(self):
         return "{0} {1} {2}".format(self.message, self.document, self.user)
 
 
+    class Meta:
+        get_latest_by = 'updated'
 
 
 class Annotation(models.Model):
@@ -283,8 +318,10 @@ class Annotation(models.Model):
     def simple(self):
       return (self.text, int(self.start))
 
+
     def is_exact_match(self, comparing_annotation):
       return True if self.start == comparing_annotation.start and len(self.text) == len(comparing_annotation.text) else False
+
 
     def __unicode__(self):
         if self.kind == 'r':
@@ -293,6 +330,10 @@ class Annotation(models.Model):
           return "{0} ({1}) [{2}]".format(self.text, self.start, self.pk)
         else:
           return self.type
+
+
+    class Meta:
+        get_latest_by = 'updated'
 
 
 
