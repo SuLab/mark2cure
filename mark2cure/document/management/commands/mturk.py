@@ -57,13 +57,20 @@ class Command(BaseCommand):
             Combine all 593 of the training documents with the validation documents from
             the development set (there are 50), randomize their order, then create a HIT
           '''
-          documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
-          documents = [doc.id for doc in documents]
-          random.shuffle(documents)
+          # documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
+          docs = ["8661102", "9218625", "9069115", "9122265", "8944023", "9138149", "8929413", "8692963", "9050866", "8674108", "9012409", "8956035", "8786135", "8938427", "8776595", "8651278", "9020847", "8644703", "8833159", "8625410", "8595416", "8622978", "8682510", "8670333", "8696339", "9223312", "9182899", "8843193", "8808605", "8621452", "8723064", "8812423", "9144525", "8755645", "9223307", "8808606", "8825052", "8649785", "9028321", "8689689", "8755918", "8917548", "8659549", "8898652", "9241281", "9063749", "9144439", "8841191", "9241282", "8782829", "9195227", "9019400"]
+          random.shuffle(docs)
 
-          for idx, doc_id in enumerate(documents):
-            turk.hit_for_document(doc_id, max_assignments = 50)
-            print idx
+          for idx, d in enumerate(docs):
+            doc = Document.objects.filter(document_id = d).first()
+            turk.hit_for_document(doc.pk, max_assignments = 50, minutes = 10)
+            print idx, doc.pk
+
+          # documents = [doc.id for doc in documents]
+          # random.shuffle(docs)
+          # for idx, doc_id in enumerate(documents):
+            # turk.hit_for_document(doc_id, max_assignments = 50)
+            # print idx
 
 
         else:

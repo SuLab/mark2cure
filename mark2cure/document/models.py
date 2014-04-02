@@ -67,6 +67,9 @@ class Document(models.Model):
 
 
     def is_complete(self, user, task_type = 'cr'):
+        if not user.is_authenticated():
+          return False
+
         if user.userprofile.mturk:
           query = View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
         else:
