@@ -68,9 +68,11 @@ class Document(models.Model):
 
     def is_complete(self, user, task_type = 'cr'):
         if user.userprofile.mturk:
-          return False
+          query = View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
         else:
-          return True if View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self).count() >= self.count_available_sections() else False
+          query = View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self)
+
+        return True if query.count() >= self.count_available_sections() else False
 
 
     def create_views(self, user, task_type, completed = False):
@@ -79,7 +81,12 @@ class Document(models.Model):
           are currently "open" / uncompleted ones from the same doc
         '''
         for sec in self.available_sections():
-          view = View(task_type = task_type, section = sec, user = user)
+
+          if user.userprofile.mturk:
+              view = View(task_type = task_type, section = sec, user = user, experiment = settings.EXPERIMENT)
+          else:
+              view = View(task_type = task_type, section = sec, user = user)
+
           view.completed = completed
           view.save()
 
@@ -225,6 +232,7 @@ class View(models.Model):
     )
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default = False, blank=True)
+    experiment  = models.IntegerField(blank=True, null=True)
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
