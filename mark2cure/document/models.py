@@ -86,7 +86,7 @@ class Document(models.Model):
 
     def update_views(self, user, task_type, completed = False):
         for sec in self.available_sections():
-          view = View.objects.filter(user = user, task_type = task_type, section = self).latest()
+          view = View.objects.filter(user = user, task_type = task_type, section = sec).latest()
           view.completed = completed
           view.save()
 
