@@ -1,6 +1,5 @@
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -10,18 +9,20 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils import simplejson
 
 from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
-from mark2cure.document.serializers import RelationshipTypeSerializer
+from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
 
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 
 from copy import copy
 import oauth2 as oauth
-import json, itertools
+import json, itertools, logging
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -42,19 +43,17 @@ def list(request, page_num=1):
 
 
 '''
-
   Views for completing the Concept Recognition task
-
 '''
 def identify_annotations(request, doc_id):
     # If they're attempting to view or work on the document
     doc = get_object_or_404(Document, pk=doc_id)
 
     if doc.is_complete(request.user):
-      return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
+        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
 
     if len(doc.section_set.filter(kind="a")) is 0:
-      return redirect('mark2cure.document.views.validate_concepts', doc.pk)
+        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
 
     assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
@@ -62,29 +61,31 @@ def identify_annotations(request, doc_id):
     turk_sub_location = request.GET.get('turkSubmitTo')
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
-      logout(request)
+        logout(request)
 
     if worker_id and not request.user.is_authenticated():
-      # If it's accepted and a worker that doesn't have an account
-      user = get_mturk_account(worker_id)
-      user = authenticate(username=user.username, password='')
-      login(request, user)
+        # If it's accepted and a worker that doesn't have an account
+        user = get_mturk_account(worker_id)
+        user = authenticate(username=user.username, password='')
+        login(request, user)
 
 
     if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
-      request.user.userprofile.turk_submit_to = turk_sub_location
-      request.user.userprofile.turk_last_assignment_id = assignment_id
-      request.user.userprofile.save()
+        request.user.userprofile.turk_submit_to = turk_sub_location
+        request.user.userprofile.turk_last_assignment_id = assignment_id
+        request.user.userprofile.save()
 
     if request.user.is_authenticated():
-      doc.create_views(request.user, 'cr')
+        if request.user.userprofile.softblock:
+            return redirect('mark2cure.common.views.softblock')
+
+        doc.create_views(request.user, 'cr')
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
                                 'task_type': 'concept-recognition',
                                 'instruct_bool': 'block' if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE' else 'none' },
                               context_instance=RequestContext(request))
-
 
 
 @login_required
@@ -116,23 +117,13 @@ def identify_annotations_submit(request, doc_id, section_id):
 
 
 def identify_annotations_results(request, doc_id):
+    '''
+      After a document has been submitted, show the results and handle score keeping details
+    '''
     doc = get_object_or_404(Document, pk=doc_id)
 
     if not doc.is_complete(request.user):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
-
-    results = {}
-    score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
-    results['score'] = score
-    results['true_positives'] = true_positives
-    results['false_positives'] = false_positives
-    results['false_negatives'] = false_negatives
-
-    if score[2] == 1.0 or score[2] == 0.0:
-      send_mail('[Mark2Cure #6] HIT completion',
-                    '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk),
-                     settings.SERVER_EMAIL,
-                     [email[1] for email in settings.MANAGERS])
 
     sections = doc.available_sections()
     for section in sections:
@@ -143,13 +134,66 @@ def identify_annotations_results(request, doc_id):
       else:
         setattr(section, "user_annotations", section.annotations(request.user.username))
 
+    '''
+      1) It's a GM doc with GM annotations used to score
+      2) It has community contributions (from this experiment) for context
+      3) It's a novel document annotated by the worker
+    '''
+    if request.user.userprofile.mturk:
+        activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=settings.EXPERIMENT)
 
-    return render_to_response('document/concept-recognition-results.jade',
-        { 'doc': doc,
-          'sections' : sections,
-          'results' : results,
-          'task_type': 'concept-recognition' },
-        context_instance=RequestContext(request))
+        activity.experiment = settings.EXPERIMENT
+        previous_activities_available = Activity.objects.filter(document = doc, task_type='cr', experiment=settings.EXPERIMENT).exclude(user=request.user).exists()
+    else:
+        activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=None)
+        previous_activities_available = Activity.objects.filter(document = doc, task_type='cr').exclude(user=request.user).exists()
+
+
+    if doc.is_golden():
+        results = {}
+        score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
+        results['score'] = score
+        results['true_positives'] = true_positives
+        results['false_positives'] = false_positives
+        results['false_negatives'] = false_negatives
+        if score[2] == 1.0 or score[2] == 0.0:
+          send_mail('[Mark2Cure #6] HIT completion',
+                        '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk),
+                         settings.SERVER_EMAIL,
+                         [email[1] for email in settings.MANAGERS])
+
+
+        activity.submission_type = 'gm'
+        activity.precsion = score[0]
+        activity.recall = score[1]
+        activity.f_score = score[2]
+        activity.save()
+
+        return render_to_response('document/concept-recognition-results-gold.jade',
+            { 'doc': doc,
+              'sections' : sections,
+              'results' : results,
+              'task_type': 'concept-recognition' },
+            context_instance=RequestContext(request))
+
+
+    elif previous_activities_available:
+        activity.submission_type = 'cc'
+        activity.save()
+        return render_to_response('document/concept-recognition-results-community.jade',
+            { 'doc': doc,
+              'sections' : sections,
+              'task_type': 'concept-recognition' },
+            context_instance=RequestContext(request))
+
+    elif not previous_activities_available:
+        activity.submission_type = 'na'
+        activity.save()
+        return render_to_response('document/concept-recognition-results-not-available.jade',
+            { 'doc': doc,
+              'sections' : sections,
+              'task_type': 'concept-recognition' },
+            context_instance=RequestContext(request))
 
 
 @require_http_methods(["POST"])
@@ -165,7 +209,6 @@ def refute_section(request,  doc_id, section_id):
       return HttpResponse("Success")
 
     return HttpResponse('Unauthorized', status=401)
-
 
 
 @require_http_methods(["POST"])
@@ -190,12 +233,10 @@ def comment_document(request,  doc_id):
     return HttpResponse('Unauthorized', status=401)
 
 
-
 '''
-
   Views for completing the Verify Concept task
-
 '''
+@require_http_methods(["POST"])
 @login_required
 def validate_concepts(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
@@ -234,9 +275,7 @@ def validate_concepts_submit(request, doc_id):
 
 
 '''
-
   Views for other task types [IN PROGRESS]
-
 '''
 @login_required
 def identify_concepts(request, doc_id):
@@ -280,11 +319,8 @@ def identify_concepts_submit(request, doc_id):
     return HttpResponse(200)
 
 
-
 '''
-
   Utility views for general document controls
-
 '''
 @login_required
 @require_http_methods(['POST'])
@@ -355,6 +391,29 @@ def create(request):
       doc = create_from_pubmed_id( request.POST['document_id'] )
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
+
+class TopUserViewSet(generics.ListAPIView):
+    serializer_class = TopUserFromViewsSerializer
+
+    def get_queryset(self):
+        doc_id = self.kwargs['doc_id']
+        section_id = self.kwargs['section_id']
+
+        if self.request.user.userprofile.mturk:
+            top_users = View.objects.filter(task_type = 'cr', completed = True, section__document__id = doc_id, experiment = settings.EXPERIMENT).exclude(user = self.request.user).values('user').distinct()
+        else:
+            top_users = View.objects.filter(task_type = 'cr', completed = True, section__document__id = doc_id).exclude(user = self.request.user).values('user').distinct()
+
+        return top_users
+
+
+class AnnotationViewSet(generics.ListAPIView):
+    serializer_class = AnnotationSerializer
+
+    def get_queryset(self):
+        section_id = self.kwargs['section_id']
+        user_id = self.kwargs['user_id']
+        return Annotation.objects.filter(view__section__id = section_id, view__user__id = user_id).all()[:10]
 
 
 class RelationshipTypeViewSet(viewsets.ModelViewSet):

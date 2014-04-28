@@ -24,8 +24,8 @@
                 | Rule #1: Highlight <u>all</u> diseases and disease abbreviations
         #collapseOne.panel-collapse.collapse.in
           .panel-body
-            img(src="/static/images/experiment/3/1.gif").img-rounded
-            img(src="/static/images/experiment/3/2.gif").img-rounded
+            img(src="/static/images/experiment/8/1.gif").img-rounded
+            img(src="/static/images/experiment/8/2.gif").img-rounded
 
       .panel.panel-default
         .panel-heading
@@ -35,8 +35,15 @@
                 | Rule #2: Highlight the longest span of text specific to a disease
         #collapseTwo.panel-collapse.collapse
           .panel-body
-            img(src="/static/images/experiment/3/3.gif").img-rounded
-            img(src="/static/images/experiment/3/4.gif").img-rounded
+            img(src="/static/images/experiment/8/3.gif").img-rounded
+            img(src="/static/images/experiment/8/4.gif").img-rounded
+            .alert.alert-warning
+              p
+                | and not just ‘cancer’.
+            img(src="/static/images/experiment/8/5.gif").img-rounded
+            .alert.alert-warning
+              p
+                | and not just ‘breast cancer’
 
       .panel.panel-default
         .panel-heading
@@ -46,8 +53,8 @@
                 | Rule #3: Highlight disease conjunctions as single, long spans.
         #collapseThree.panel-collapse.collapse
           .panel-body
-            img(src="/static/images/experiment/3/5.gif").img-rounded
-            img(src="/static/images/experiment/3/6.gif").img-rounded
+            img(src="/static/images/experiment/8/6.gif").img-rounded
+            img(src="/static/images/experiment/8/7.gif").img-rounded
 
       .panel.panel-default
         .panel-heading
@@ -57,7 +64,7 @@
                 | Rule #4: Highlight symptoms - physical results of having a disease
         #collapseFour.panel-collapse.collapse
           .panel-body
-            img(src="/static/images/experiment/3/7.gif").img-rounded
+            img(src="/static/images/experiment/8/8.gif").img-rounded
 
       .panel.panel-default
         .panel-heading
@@ -67,7 +74,7 @@
                 | Rule #5: Highlight <u>all</u> occurrences of disease terms
         #collapseFive.panel-collapse.collapse
           .panel-body
-            img(src="/static/images/experiment/3/8.gif").img-rounded
+            img(src="/static/images/experiment/8/9.gif").img-rounded
 
       .panel.panel-default
         .panel-heading
@@ -77,4 +84,31 @@
                 | Rule #6: Highlight <u>all</u> diseases, disease groups and key disease symptoms
         #collapseSix.panel-collapse.collapse
           .panel-body
-            img(src="/static/images/experiment/3/9.gif").img-rounded
+            img(src="/static/images/experiment/8/10.gif").img-rounded
+
+
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle="collapse", data-parent="#accordion", href="#collapseSeven")
+              strong
+                | Rule #7: Do not highlight gene names
+        #collapseSeven.panel-collapse.collapse
+          .panel-body
+            img(src="/static/images/experiment/8/11.gif").img-rounded
+            .alert.alert-warning
+              p
+                | highlight only the disease mention, not the gene
+            img(src="/static/images/experiment/8/12.gif").img-rounded
+            .alert.alert-warning
+              p
+                | the disease is highlighted, but the related gene is not.
+            img(src="/static/images/experiment/8/13.gif").img-rounded
+            .alert.alert-warning
+              p
+                | In some cases the name of the gene may be the same as the name of the disease.  In these cases you should only highlight the text if it is referring to the disease and not to the gene.  The first NAS is highlighted while the second is not.
+ 
+
+
+
+

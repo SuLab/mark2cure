@@ -66,6 +66,10 @@ class Document(models.Model):
             annotation__view__user__username = "semmed").all()
 
 
+    def is_golden(self):
+        return Annotation.objects.filter(view__user__username = 'goldenmaster', view__section__document = self).exists()
+
+
     def is_complete(self, user, task_type = 'cr'):
         if not user.is_authenticated():
           return False
@@ -127,11 +131,9 @@ class Document(models.Model):
         pass
 
     class Meta:
-        ordering = ('created',)
-
-
-    class Meta:
+        ordering = ('-created',)
         get_latest_by = 'updated'
+
 
 
 class Section(models.Model):
@@ -221,18 +223,18 @@ class Section(models.Model):
     class Meta:
         get_latest_by = 'updated'
 
+TASK_TYPE_CHOICE = (
+  ('cr', 'Concept Recognition'),
+  ('cn', 'Concept Normalization'),
+  ('rv', 'Relationship Verification'),
+  ('ri', 'Relationship Identification'),
+  ('rc', 'Relationship Correction'),
+)
 
 class View(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    TASK_TYPE_CHOICE = (
-      ('cr', 'Concept Recognition'),
-      ('cn', 'Concept Normalization'),
-      ('rv', 'Relationship Verification'),
-      ('ri', 'Relationship Identification'),
-      ('rc', 'Relationship Correction'),
-    )
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default = False, blank=True)
     experiment  = models.IntegerField(blank=True, null=True)
@@ -247,6 +249,29 @@ class View(models.Model):
 
     class Meta:
         get_latest_by = 'updated'
+        ordering = ('-updated',)
+
+class Activity(models.Model):
+    user = models.ForeignKey(User)
+    document = models.ForeignKey(Document)
+    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
+    experiment  = models.IntegerField(blank=True, null=True)
+
+    SUBMISSION_TYPE = (
+      ('gm', 'Golden Master'),
+      ('cc', 'Community Consensus'),
+      ('na', 'Never Annotated'),
+    )
+    submission_type = models.CharField(max_length=3, choices=SUBMISSION_TYPE, blank=True, default='gm')
+
+    precsion = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
+    recall = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
+    f_score = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return u'Activity {0}'.format(self.user)
 
 
 class Refute(models.Model):
@@ -281,13 +306,6 @@ class Comment(models.Model):
 
     message = models.TextField(blank=True)
 
-    TASK_TYPE_CHOICE = (
-      ('cr', 'Concept Recognition'),
-      ('cn', 'Concept Normalization'),
-      ('rv', 'Relationship Verification'),
-      ('ri', 'Relationship Identification'),
-      ('rc', 'Relationship Correction'),
-    )
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     document = models.ForeignKey(Document)
     user = models.ForeignKey(User)

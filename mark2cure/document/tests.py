@@ -23,9 +23,6 @@ class SimpleTest(TestCase):
         self.assertEqual(1 + 1, 2)
 
 
-
-
-
 class MySeleniumTests(LiveServerTestCase):
     fixtures = ['user-data.json']
 

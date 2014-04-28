@@ -89,3 +89,4 @@ class MySeleniumTests(LiveServerTestCase):
         signup_user = signup_users[0]
         self.assertEquals(signup_user.userprofile.email_notify, True)
 
+

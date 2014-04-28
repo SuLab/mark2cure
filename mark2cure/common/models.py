@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Message(models.Model):
     message = models.TextField(blank=True)
 
@@ -11,6 +12,7 @@ class Message(models.Model):
 
     def __unicode__(self):
         return self.message
+
 
 class SurveyFeedback(models.Model):
 
@@ -31,3 +33,5 @@ class Quest(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+

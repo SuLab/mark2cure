@@ -127,6 +127,11 @@ svg {
   background-color: #0cf;
 }
 
+.paragraph svg {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
 
 /* Community Consensus */
 .paragraph.results p span.selected {

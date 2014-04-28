@@ -142,3 +142,32 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 * `YPet['730'].currentView.collection.parentDocument.get('annotations').each(function(m){ console.log(m.get('text')) })`
 
 Doc count: 3,454
+
+from mark2cure.document.models import *
+from django.contrib.auth.models import User
+
+doc = Document.objects.filter(pk = 278).first()
+user = User.objects.filter(username = 'worker').first()
+
+doc.update_views(user, 'cr', True)
+
+
+view = View.objects.filter(user__username = 'worker', section__document_id = 278).latest()
+views = View.objects.filter(user__username = 'worker', section__document_id = 278).all()
+for v in views:
+  print v.id, v.created, v.completed, v.experiment
+
+
+
+SOFTBAN THESE PEOPLE BEFORE FIRING OFF
+
+workers = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+MTurk API issue resolved
+
+"Thank you for submitting your previous HITs. You may have noticed we published new ones which you're not allowed to submit. This is because we're looking for a more diverse set of Workers. This is only temporary and we hope that once we're done experimenting on less experienced Workers, you'll return for future work as we'll soon be post many more available HITs. Thank you."
+
+
+var $el = $('div.paragraph#556');
+var svgContainer = d3.select($el[0]).append("svg").attr("width", $el.width()).attr("height", $el.height());
+

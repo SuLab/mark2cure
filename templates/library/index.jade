@@ -27,8 +27,6 @@ block content
                   th
                     | 
                   th
-                    | Sections
-                  th
                     | Views
 
                 - for doc in docs
@@ -43,8 +41,6 @@ block content
                           small
                             | [Concepts]
 
-                    td
-                      | #{ doc.available_sections.count }
                     td
                       | #{ doc.submitted }
 

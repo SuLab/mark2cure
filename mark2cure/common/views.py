@@ -21,17 +21,41 @@ def home(request):
 
     return render_to_response('landing/index.jade', context_instance=RequestContext(request))
 
+
+def mturk(request):
+    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
+    worker_id = request.GET.get('workerId')
+    turk_sub_location = request.GET.get('turkSubmitTo')
+
+    # If mTurk user not logged in, make a new account for them and set the session
+    if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
+        logout(request)
+
+    if worker_id and not request.user.is_authenticated():
+        # If it's accepted and a worker that doesn't have an account
+        user = get_mturk_account(worker_id)
+        user = authenticate(username=user.username, password='')
+        login(request, user)
+
+
+    if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
+        request.user.userprofile.turk_submit_to = turk_sub_location
+        request.user.userprofile.turk_last_assignment_id = assignment_id
+        request.user.userprofile.save()
+
+    if request.user.is_authenticated():
+        if request.user.userprofile.softblock:
+            return redirect('mark2cure.common.views.softblock')
+
+
+def softblock(request):
+    return render_to_response('common/softblock.jade', context_instance=RequestContext(request))
+
+
 @login_required
 def library(request, page_num=1):
 
-    # print "\n\n GET PROFILE"
-    # print request.user.profile
-
-    query = request.GET.get('search')
-    if query:
-      doc_list = Document.objects.filter(section__text__search = query).distinct()
-    else:
-      doc_list = Document.objects.all()
+    doc_list = Document.objects.all()
 
     doc_list_paginator = Paginator(doc_list, 18)
     try:
@@ -101,6 +125,7 @@ def message(request):
 
     return HttpResponse('Unauthorized', status=401)
 
+
 @require_http_methods(["POST"])
 @login_required
 def survey(request):
@@ -112,4 +137,5 @@ def survey(request):
 
     return HttpResponse("Success")
     #return HttpResponse('Unauthorized', status=401)
+
 

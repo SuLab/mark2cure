@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mark2cure.document.models import Document, Concept, ConceptRelationship, RelationshipType, Section, Refute, Comment, View, Annotation
+from mark2cure.document.models import Document, Concept, ConceptRelationship, RelationshipType, Section, Refute, Comment, View, Activity, Annotation
 
 
 class MyInlineModelOptions(admin.TabularInline):
@@ -20,5 +20,6 @@ admin.site.register(Section)
 admin.site.register(Refute)
 admin.site.register(Comment)
 admin.site.register(View)
+admin.site.register(Activity)
 admin.site.register(Annotation)
 

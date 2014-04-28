@@ -75,7 +75,6 @@ def generate_results(document, user):
     return ( score, true_positives, false_positives, false_negatives )
 
 
-
 def check_validation_status(user, document, view=None):
     views = View.objects.filter(user = user, section__document = document ).all()
     if len(views) > 4:
