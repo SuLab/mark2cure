@@ -5,7 +5,7 @@ extends base
 block content
     include includes/instructions/annotation_exp_4
 
-    - for sec in doc.available_sections
+    - for sec in sections
         .row
           - if user.is_authenticated and user_profile.mturk == False
               .col-sm-10.col-sm-offset-1
@@ -15,7 +15,7 @@ block content
           .col-sm-10.col-sm-offset-1.head-space.game
             div(id="{{ sec.pk }}").paragraph.entity_tag
               p
-                | #{ sec.text }
+                | #{ sec.text } 
 
 
     include document/controls-game

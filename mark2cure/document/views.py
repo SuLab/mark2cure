@@ -45,48 +45,30 @@ def list(request, page_num=1):
 '''
   Views for completing the Concept Recognition task
 '''
+@login_required
 def identify_annotations(request, doc_id):
     # If they're attempting to view or work on the document
     doc = get_object_or_404(Document, pk=doc_id)
+    sections = doc.available_sections()
 
-    if doc.is_complete(request.user):
-        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
+    '''
+      Technically we may want a user to do the same document multiple times,
+      just means that during the community consensus we don't include their own reults
+      to compare against
+    '''
 
-    if len(doc.section_set.filter(kind="a")) is 0:
+    # Make sure there is an abstract to annotate
+    if sections.filter(kind="a").count() is 0:
         return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
-
-    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
-    worker_id = request.GET.get('workerId')
-    turk_sub_location = request.GET.get('turkSubmitTo')
-    # If mTurk user not logged in, make a new account for them and set the session
-    if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
-        logout(request)
-
-    if worker_id and not request.user.is_authenticated():
-        # If it's accepted and a worker that doesn't have an account
-        user = get_mturk_account(worker_id)
-        user = authenticate(username=user.username, password='')
-        login(request, user)
-
-
-    if request.user.is_authenticated():
-        user_profile = request.user.userprofile
-
-        if assignment_id and turk_sub_location and worker_id:
-            user_profile.turk_submit_to = turk_sub_location
-            user_profile.turk_last_assignment_id = assignment_id
-            user_profile.save()
-
-        if user_profile.softblock:
-            return redirect('mark2cure.common.views.softblock')
-
-        doc.create_views(request.user, 'cr')
+    doc.create_views(request.user, 'cr')
+    user_profile = request.user.userprofile
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
-                                'task_type': 'concept-recognition',
-                                'instruct_bool': 'block' if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE' else 'none' },
+                                'sections' : sections,
+                                'user_profile' : user_profile,
+                                'task_type': 'concept-recognition' },
                               context_instance=RequestContext(request))
 
 

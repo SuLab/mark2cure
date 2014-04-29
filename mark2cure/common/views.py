@@ -23,6 +23,10 @@ def home(request):
 
 
 def mturk(request):
+    '''
+      All AWS people will come in through here
+      document app will *always* require authentication
+    '''
     assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
     worker_id = request.GET.get('workerId')
     turk_sub_location = request.GET.get('turkSubmitTo')
@@ -31,21 +35,37 @@ def mturk(request):
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
 
+        doc = Document.objects.get(pk=278)
+        return render_to_response('document/concept-recognition.jade',
+                                  { 'doc': doc,
+                                    'task_type': 'concept-recognition' },
+                                  context_instance=RequestContext(request))
+
+    # If they've accepted a HIT
     if worker_id and not request.user.is_authenticated():
         # If it's accepted and a worker that doesn't have an account
+        # Make one and log them in
         user = get_mturk_account(worker_id)
         user = authenticate(username=user.username, password='')
         login(request, user)
 
 
-    if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
-        request.user.userprofile.turk_submit_to = turk_sub_location
-        request.user.userprofile.turk_last_assignment_id = assignment_id
-        request.user.userprofile.save()
-
     if request.user.is_authenticated():
-        if request.user.userprofile.softblock:
+        user_profile = request.user.userprofile
+
+        if assignment_id and turk_sub_location and worker_id:
+            user_profile.turk_submit_to = turk_sub_location
+            user_profile.turk_last_assignment_id = assignment_id
+            user_profile.save()
+
+        if user_profile.softblock:
             return redirect('mark2cure.common.views.softblock')
+
+
+    # (TODO) Some magic document selection here
+    doc_id = 278
+    return redirect('mark2cure.document.views.identify_annotations', doc_id)
+
 
 
 def softblock(request):
