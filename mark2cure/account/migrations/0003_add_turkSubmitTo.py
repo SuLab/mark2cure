@@ -8,41 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'UserProfile'
-        db.create_table(u'account_userprofile', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='children', null=True, to=orm['auth.User'])),
-            ('timezone', self.gf('timezone_field.fields.TimeZoneField')(default='America/Los_Angeles')),
-            ('instructions_enabled', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('experience', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('feedback_0', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('feedback_1', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('feedback_2', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('feedback_3', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('first_run', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('email_notify', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('mturk', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal(u'account', ['UserProfile'])
-
-        # Adding model 'Ncbo'
-        db.create_table(u'account_ncbo', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('min_term_size', self.gf('django.db.models.fields.IntegerField')()),
-            ('score', self.gf('django.db.models.fields.IntegerField')()),
-        ))
-        db.send_create_signal(u'account', ['Ncbo'])
+        # Adding field 'UserProfile.turk_submit_to'
+        db.add_column(u'account_userprofile', 'turk_submit_to',
+                      self.gf('django.db.models.fields.CharField')(default='http://example.com', max_length=200, blank=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'UserProfile'
-        db.delete_table(u'account_userprofile')
-
-        # Deleting model 'Ncbo'
-        db.delete_table(u'account_ncbo')
+        # Deleting field 'UserProfile.turk_submit_to'
+        db.delete_column(u'account_userprofile', 'turk_submit_to')
 
 
     models = {
@@ -52,7 +26,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'min_term_size': ('django.db.models.fields.IntegerField', [], {}),
             'score': ('django.db.models.fields.IntegerField', [], {}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
+            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'null': 'True'})
         },
         u'account.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
@@ -67,7 +42,9 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'instructions_enabled': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'mturk': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'ncbo': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'timezone': ('timezone_field.fields.TimeZoneField', [], {'default': "'America/Los_Angeles'"}),
+            'turk_submit_to': ('django.db.models.fields.CharField', [], {'default': "'http://example.com'", 'max_length': '200', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True'})
         },
         u'auth.group': {

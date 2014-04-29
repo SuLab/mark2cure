@@ -2,7 +2,7 @@
 
 - if user.is_authenticated
 
-  - if user.userprofile.mturk
+  - if user_profile.mturk
     .col-sm-10.col-sm-offset-1.foot-space-xl
       .row
         .col-sm-6.col-sm-offset-3
@@ -25,7 +25,7 @@
               a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{ doc.document_id }}", target="_blank")
                 |  NCBI PubMed
 
-            - if user.is_authenticated and user.profile.mturk == False
+            - if user.is_authenticated and user_profile.mturk == False
               p
                 span.label.label-info Created
                 |  #{ doc.created|naturaltime }

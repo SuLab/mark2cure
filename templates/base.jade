@@ -18,7 +18,7 @@ head
 
 body
     block header
-      - if user.is_authenticated and user.profile.mturk == False
+      - if user.is_authenticated and user_profile.mturk == False
           include includes/header
 
     block jumbotron
@@ -64,7 +64,7 @@ body
 
     block post-footer
     block modals
-      - if user.is_authenticated and user.profile.mturk == False
+      - if user.is_authenticated and user_profile.mturk == False
         include includes/message
         include includes/survey
 

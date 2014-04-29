@@ -49,7 +49,7 @@ block content
     include document/controls-results
 
 block post-footer
-    - if user.userprofile.mturk
+    - if user_profile.mturk
       script.
         $("#document_submit").submit(function(evt) {
           evt.preventDefault();

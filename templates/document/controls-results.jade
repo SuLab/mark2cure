@@ -1,10 +1,10 @@
 - load humanize
 
-form(action="{{ user.userprofile.turk_submit_to }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
-  input(type="hidden", name="assignmentId", value="{{ user.userprofile.turk_last_assignment_id }}")
+form(action="{{ user_profile.turk_submit_to }}/mturk/externalSubmit", method="POST", style="display:none", id="worker_submit")
+  input(type="hidden", name="assignmentId", value="{{ user_profile.turk_last_assignment_id }}")
   input(type="text", name="document_id", value="{{ doc.pk }}")
 
-- if user.userprofile.mturk
+- if user_profile.mturk
   .col-sm-10.col-sm-offset-1.foot-space-xl
     .row
       .col-sm-6.col-sm-offset-3
@@ -26,7 +26,7 @@ form(action="{{ user.userprofile.turk_submit_to }}/mturk/externalSubmit", method
             a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{ doc.document_id }}", target="_blank")
               |  NCBI PubMed
 
-          - if user.is_authenticated and user.profile.mturk == False
+          - if user.is_authenticated and user_profile.mturk == False
             p
               span.label.label-info Created
               |  #{ doc.created|naturaltime }

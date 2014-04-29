@@ -70,13 +70,15 @@ def identify_annotations(request, doc_id):
         login(request, user)
 
 
-    if assignment_id and turk_sub_location and worker_id and request.user.is_authenticated():
-        request.user.userprofile.turk_submit_to = turk_sub_location
-        request.user.userprofile.turk_last_assignment_id = assignment_id
-        request.user.userprofile.save()
-
     if request.user.is_authenticated():
-        if request.user.userprofile.softblock:
+        user_profile = request.user.userprofile
+
+        if assignment_id and turk_sub_location and worker_id:
+            user_profile.turk_submit_to = turk_sub_location
+            user_profile.turk_last_assignment_id = assignment_id
+            user_profile.save()
+
+        if user_profile.softblock:
             return redirect('mark2cure.common.views.softblock')
 
         doc.create_views(request.user, 'cr')
@@ -86,6 +88,7 @@ def identify_annotations(request, doc_id):
                                 'task_type': 'concept-recognition',
                                 'instruct_bool': 'block' if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE' else 'none' },
                               context_instance=RequestContext(request))
+
 
 
 @login_required
@@ -139,7 +142,8 @@ def identify_annotations_results(request, doc_id):
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    if request.user.userprofile.mturk:
+    user_profile = request.user.userprofile
+    if user_profile.mturk:
         activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=settings.EXPERIMENT)
 
         activity.experiment = settings.EXPERIMENT
@@ -171,6 +175,7 @@ def identify_annotations_results(request, doc_id):
 
         return render_to_response('document/concept-recognition-results-gold.jade',
             { 'doc': doc,
+              'user_profile' : user_profile,
               'sections' : sections,
               'results' : results,
               'task_type': 'concept-recognition' },
@@ -182,6 +187,7 @@ def identify_annotations_results(request, doc_id):
         activity.save()
         return render_to_response('document/concept-recognition-results-community.jade',
             { 'doc': doc,
+              'user_profile' : user_profile,
               'sections' : sections,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
@@ -191,6 +197,7 @@ def identify_annotations_results(request, doc_id):
         activity.save()
         return render_to_response('document/concept-recognition-results-not-available.jade',
             { 'doc': doc,
+              'user_profile' : user_profile,
               'sections' : sections,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
