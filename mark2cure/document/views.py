@@ -106,15 +106,16 @@ def identify_annotations_results(request, doc_id):
       After a document has been submitted, show the results and handle score keeping details
     '''
     doc = get_object_or_404(Document, pk=doc_id)
+    sections = doc.available_sections()
+    user_profile = request.user.userprofile
 
-    if not doc.is_complete(request.user):
+    if not doc.is_complete(request.user, user_profile, sections):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
-    sections = doc.available_sections()
     for section in sections:
       setattr(section, "words", section.resultwords(request.user))
 
-      if request.user.userprofile.mturk:
+      if user_profile.mturk:
         setattr(section, "user_annotations", section.annotations(request.user.username, experiment = settings.EXPERIMENT))
       else:
         setattr(section, "user_annotations", section.annotations(request.user.username))
@@ -124,7 +125,6 @@ def identify_annotations_results(request, doc_id):
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    user_profile = request.user.userprofile
     if user_profile.mturk:
         activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=settings.EXPERIMENT)
 

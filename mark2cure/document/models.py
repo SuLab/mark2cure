@@ -70,16 +70,14 @@ class Document(models.Model):
         return Annotation.objects.filter(view__user__username = 'goldenmaster', view__section__document = self).exists()
 
 
-    def is_complete(self, user, task_type = 'cr'):
-        if not user.is_authenticated():
-          return False
-
-        if user.userprofile.mturk:
-          query = View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
+    def is_complete(self, user, user_profile, sections, task_type = 'cr'):
+        # Stick w/ Views b/c the Activity results haven't been logged yet
+        if user_profile.mturk:
+          query = View.objects.filter(userk = user, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
         else:
-          query = View.objects.filter(user__pk = user.pk, completed = True, task_type = task_type, section__document = self)
+          query = View.objects.filter(user = user, completed = True, task_type = task_type, section__document = self)
 
-        return True if query.count() >= self.count_available_sections() else False
+        return True if query.count() >= len(sections) else False
 
 
     def create_views(self, user, task_type, completed = False):
