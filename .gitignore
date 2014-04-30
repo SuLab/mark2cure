@@ -73,3 +73,5 @@ docs/_build/
 /mark2cure/aws_settings.py
 
 /..bfg-report
+
+/mark2cure/beat_settings.py
