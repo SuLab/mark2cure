@@ -35,7 +35,7 @@ def mturk(request):
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
-        # (TODO) This is our default doc
+
         doc = Document.objects.get(pk=278)
         return render_to_response('document/concept-recognition.jade',
                                   { 'doc': doc,

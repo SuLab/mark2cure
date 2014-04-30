@@ -38,4 +38,3 @@ def activity_save_handler(sender, instance, **kwargs):
 
 # signals.post_save.connect(document_save_handler, sender=Document)
 signals.post_save.connect(activity_save_handler, sender=Activity)
-
