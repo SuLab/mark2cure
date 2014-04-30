@@ -268,6 +268,12 @@ class Activity(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
+
+    class Meta:
+        ordering = ('-created',)
+        get_latest_by = 'created'
+
+
     def __unicode__(self):
         return u'Activity {0}'.format(self.user)
 

@@ -6,13 +6,14 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.conf import settings
 
 from mark2cure.document.models import Document, View, Annotation
 from mark2cure.common.forms import MessageForm
 from mark2cure.common.models import SurveyFeedback
 
 from datetime import datetime, timedelta
-import math
+import math, random
 
 
 def home(request):
@@ -34,7 +35,7 @@ def mturk(request):
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
-
+        # (TODO) This is our default doc
         doc = Document.objects.get(pk=278)
         return render_to_response('document/concept-recognition.jade',
                                   { 'doc': doc,
@@ -50,20 +51,45 @@ def mturk(request):
         login(request, user)
 
 
-    if request.user.is_authenticated():
-        user_profile = request.user.userprofile
+    user_profile = request.user.userprofile
+    if assignment_id and turk_sub_location and worker_id:
+        user_profile.turk_submit_to = turk_sub_location
+        user_profile.turk_last_assignment_id = assignment_id
+        user_profile.save()
 
-        if assignment_id and turk_sub_location and worker_id:
-            user_profile.turk_submit_to = turk_sub_location
-            user_profile.turk_last_assignment_id = assignment_id
-            user_profile.save()
-
-        if user_profile.softblock:
-            return redirect('mark2cure.common.views.softblock')
+    if user_profile.softblock:
+        return redirect('mark2cure.common.views.softblock')
 
 
     # (TODO) Some magic document selection here
-    doc_id = 278
+    if user_profile.mturk:
+        n_count = Activity.objects.filter(user=request.user, experiment=settings.EXPERIMENT).count()
+    else:
+        n_count = Activity.objects.filter(user=request.user).count()
+
+    if n_count == 0:
+        return redirect('mark2cure.document.views.identify_annotations', gm_1)
+    elif n_count == 1:
+        return redirect('mark2cure.document.views.identify_annotations', gm_2)
+    elif n_count == 2:
+        return redirect('mark2cure.document.views.identify_annotations', gm_3)
+    else:
+
+        if user_profile.mturk:
+            prev_docs = Activity.objects.filter(user=request.user, experiment=settings.EXPERIMENT).values('document__pk').all()
+        else:
+            prev_docs = Activity.objects.filter(user=request.user).values('document__pk').all()
+
+        gm_docs = [1,2,3,4,5,6,7]
+        exp_docs = [8,9,10,11,12,13,14,15,16,17]
+
+        joined = gm_docs + exp_docs
+        random.suffle(joined)
+
+        uncompleted_docs = joined - prev_docs
+        random.suffle(uncompleted_docs)
+
+    doc_id = uncompleted_docs[0]
     return redirect('mark2cure.document.views.identify_annotations', doc_id)
 
 
