@@ -67,3 +67,9 @@ docs/_build/
 /myapp_models.png
 
 /results
+
+/mark2cure/app_settings.py
+
+/mark2cure/aws_settings.py
+
+/..bfg-report
