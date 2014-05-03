@@ -8,17 +8,18 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.conf import settings
 
-from mark2cure.document.models import Document, View, Annotation
+from mark2cure.document.models import Document, View, Annotation, Activity
 from mark2cure.common.forms import MessageForm
 from mark2cure.common.models import SurveyFeedback
+from mark2cure.common.utils import experiment_routing
 
 from datetime import datetime, timedelta
 import math, random
 
 
 def home(request):
-    if request.user.is_superuser:
-      return redirect('/library')
+    if request.user.is_authenticated():
+      return redirect('mark2cure.common.views.library')
 
     return render_to_response('landing/index.jade', context_instance=RequestContext(request))
 
@@ -31,6 +32,13 @@ def mturk(request):
     assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
     worker_id = request.GET.get('workerId')
     turk_sub_location = request.GET.get('turkSubmitTo')
+
+    user = request.user
+    user_profile = user.userprofile
+
+    if user_profile.softblock:
+        return redirect('mark2cure.common.views.softblock')
+
 
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
@@ -57,41 +65,29 @@ def mturk(request):
         user_profile.turk_last_assignment_id = assignment_id
         user_profile.save()
 
-    if user_profile.softblock:
-        return redirect('mark2cure.common.views.softblock')
+    # Handle training or max allowed
+    n_count = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT).count()
+    training_order = [869, 956, 1018, 520]
+    if n_count < 4:
+        return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
+    if n_count >= 24:
+      return render_to_response('common/nohits.jade', context_instance=RequestContext(request))
+
+    return redirect('mark2cure.document.views.identify_annotations', experiment_routing(user, n_count))
 
 
-    # (TODO) Some magic document selection here
-    if user_profile.mturk:
-        n_count = Activity.objects.filter(user=request.user, experiment=settings.EXPERIMENT).count()
-    else:
-        n_count = Activity.objects.filter(user=request.user).count()
+@login_required
+def router(request):
+    # Handle training or max allowed
+    n_count = Activity.objects.filter(user=request.user).count()
+    print "\n\n ", n_count, " \n\n"
+    training_order = [869, 956, 1018, 520]
+    if n_count < 4:
+        return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
+    if n_count >= 24:
+      return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
-    if n_count == 0:
-        return redirect('mark2cure.document.views.identify_annotations', gm_1)
-    elif n_count == 1:
-        return redirect('mark2cure.document.views.identify_annotations', gm_2)
-    elif n_count == 2:
-        return redirect('mark2cure.document.views.identify_annotations', gm_3)
-    else:
-
-        if user_profile.mturk:
-            prev_docs = Activity.objects.filter(user=request.user, experiment=settings.EXPERIMENT).values('document__pk').all()
-        else:
-            prev_docs = Activity.objects.filter(user=request.user).values('document__pk').all()
-
-        gm_docs = [1,2,3,4,5,6,7]
-        exp_docs = [8,9,10,11,12,13,14,15,16,17]
-
-        joined = gm_docs + exp_docs
-        random.suffle(joined)
-
-        uncompleted_docs = joined - prev_docs
-        random.suffle(uncompleted_docs)
-
-    doc_id = uncompleted_docs[0]
-    return redirect('mark2cure.document.views.identify_annotations', doc_id)
-
+    return redirect('mark2cure.document.views.identify_annotations', experiment_routing(request.user, n_count))
 
 
 def softblock(request):
@@ -100,8 +96,9 @@ def softblock(request):
 
 @login_required
 def library(request, page_num=1):
-
     doc_list = Document.objects.all()
+    user = request.user
+    user_profile = user.userprofile
 
     doc_list_paginator = Paginator(doc_list, 18)
     try:
@@ -121,7 +118,7 @@ def library(request, page_num=1):
     '''
     stats = []
     # Count total seconds spent working
-    views = list(View.objects.filter(user = request.user).all().distinct().values_list('updated', 'created', 'section__document'))
+    views = list(View.objects.filter(user = user).all().distinct().values_list('updated', 'created', 'section__document'))
     seen = set()
     u_views = [item for item in views if item[2] not in seen and not seen.add(item[2])]
     total_seconds = 0
@@ -136,6 +133,7 @@ def library(request, page_num=1):
 
     return render_to_response('library/index.jade', {
       'docs' : docs,
+      'user_profile' : user_profile,
       'recent': recent_docs,
       'stats': stats}, context_instance=RequestContext(request))
 
@@ -182,6 +180,5 @@ def survey(request):
           sf.save()
 
     return HttpResponse("Success")
-    #return HttpResponse('Unauthorized', status=401)
 
 

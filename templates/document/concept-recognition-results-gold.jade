@@ -4,6 +4,16 @@ extends base
 
 block content
 
+    - if results.score.2 < .89
+      .row
+        .col-sm-10.col-sm-offset-1
+          .alert.alert-warning
+            p.lead.text-center
+              | Please note, if you score below 50 consecutively 3 times you'll be 
+              strong
+                | soft
+              | blocked :(
+
     .row
       .col-sm-4.col-sm-offset-1
         .panel.panel-default

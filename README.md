@@ -158,16 +158,10 @@ for v in views:
   print v.id, v.created, v.completed, v.experiment
 
 
-
-SOFTBAN THESE PEOPLE BEFORE FIRING OFF
-
-workers = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-
-MTurk API issue resolved
-
-"Thank you for submitting your previous HITs. You may have noticed we published new ones which you're not allowed to submit. This is because we're looking for a more diverse set of Workers. This is only temporary and we hope that once we're done experimenting on less experienced Workers, you'll return for future work as we'll soon be post many more available HITs. Thank you."
-
-
 var $el = $('div.paragraph#556');
 var svgContainer = d3.select($el[0]).append("svg").attr("width", $el.width()).attr("height", $el.height());
+
+from django.contrib.auth.models import User
+user = User.objects.get(username="admin")
+user.userprofile.score()
 

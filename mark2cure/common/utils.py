@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 
-from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.document.models import Document, Section, View, Annotation, Activity
 
 from boto.mturk.connection import *
 from boto.mturk.question import *
@@ -9,6 +10,47 @@ from boto.mturk.qualification import *
 
 from datetime import datetime
 import requests, datetime, random, re, nltk
+
+def experiment_routing(user):
+    user_profile = user.userprofile
+
+    # (TODO) Some magic document selection here
+    if user_profile.mturk:
+        n_count = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT).count()
+    else:
+        n_count = Activity.objects.filter(user=user).count()
+
+
+    training_order = [869, 956, 1018, 520]
+    print n_count
+    if n_count < 4:
+        return training_order[n_count]
+
+    if n_count >= 4:
+      redirect('mark2cure.common.views.library')
+
+
+    if user_profile.mturk:
+        prev_docs = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT).values('document__pk', flat=True).all()
+    else:
+        prev_docs = Activity.objects.filter(user=user).values_list('document__pk', flat=True).all()
+
+    gm_docs = [282, 310, 363, 326, 322]
+    prev_docs = list(prev_docs)
+
+
+    joined = gm_docs + exp_docs
+    random.shuffle(joined)
+
+    uncompleted_docs = joined - prev_docs
+    random.shuffle(uncompleted_docs)
+
+
+    # (TODO) If none left ask them to stop trying or checkout mark2cure.org
+    # (TODO) K = 5, K = 10
+
+    doc_id = uncompleted_docs[0]
+    return redirect('mark2cure.document.views.identify_annotations', doc_id)
 
 
 def get_mturk_account(worker_id):

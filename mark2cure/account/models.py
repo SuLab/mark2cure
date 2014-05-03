@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.contrib.auth.models import User
 
 from mark2cure.common.models import Message
-from mark2cure.document.models import Document, View
+from mark2cure.document.models import Document, View, Activity
 
 from timezone_field import TimeZoneField
 import datetime
@@ -28,32 +28,14 @@ class UserProfile(models.Model):
 
     mturk           = models.BooleanField(default = False, blank = True)
     softblock       = models.BooleanField(default = False, blank = True)
+    ignore          = models.BooleanField(default = False, blank = True)
     turk_last_assignment_id = models.CharField(max_length=200, blank = True)
     turk_submit_to  = models.CharField(max_length=200, blank = True, default = "http://example.com")
     ncbo            = models.BooleanField(default = False, blank = True)
 
 
     def score(self, task_type="cr"):
-      # Get the last 3 documents with Golden Master Anns
-      # documents = Document.objects.annotate(num_annotations=Count('section__view__annotation')).filter(section__view__user__username = "goldenmaster").order_by('-created').distinct()[:3]
-
-      documents = Document.objects.\
-        annotate(num_annotations = Count('section__view__annotation')).\
-        filter(section__view__user = self, section__view__user__username = "goldenmaster").\
-        order_by('-created').\
-        distinct()[:3]
-
-
-      views = View.objects.filter(user = self)
-
-
-      print " / / / /  DOCS / / / / /"
-      print documents
-      print " - - "
-      for doc in documents:
-        print doc.pk, doc.num_annotations
-
-      return documents
+        return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type="gm").values_list('f_score', flat=True).all())
 
 
     def __unicode__(self):

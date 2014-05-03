@@ -32,7 +32,7 @@ class Document(models.Model):
 
 
     def submitted(self):
-        return View.objects.filter(section__document = self).count()
+        return Activity.objects.filter(document = self).count()
 
 
     def available_sections(self):

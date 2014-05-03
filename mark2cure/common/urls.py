@@ -7,6 +7,8 @@ urlpatterns = patterns('mark2cure.common.views',
     url(r'^library/$', r'library'),
 
     url(r'^mturk/$', r'mturk'),
+    url(r'^router/$', r'router'),
+
     url(r'^softblock/$', r'softblock'),
 
     url(r'^library/page/(?P<page_num>\d+)/$', r'library'),
