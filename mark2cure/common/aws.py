@@ -1,0 +1,645 @@
+from django.conf import settings
+from datetime import datetime
+
+
+'''
+  AWS Stuff
+  ---------
+
+  Helper methods for creating HITs, Qualifications
+'''
+
+class Turk():
+
+  def __init__(self):
+    self.mtc = MTurkConnection( aws_access_key_id = settings.AWS_ACCESS_ID,
+                                aws_secret_access_key = settings.AWS_SECRET_KEY,
+                                host = settings.AWS_HOST)
+
+  # Utility Methods
+  def disable_all(self):
+      for hit in self.mtc.get_all_hits():
+          self.mtc.disable_hit( hit.HITId )
+          print hit.HITId
+
+
+  def external_question(self, doc_id):
+      # Would be cool to pull the length of the document to know the correct size of the window to show
+      return ExternalQuestion("https://mark2cure.org/mturk/", 1000)
+
+
+  def make_qualification_test(self):
+      '''
+        This qualification type only gets created once and is what is shown to
+        new workers before answering any questions
+
+      '''
+      # Define question form
+      question_form = QuestionForm()
+
+      #
+      # Instructions to train the Worker
+      #
+      overview = Overview()
+      overview.append_field('Title', 'Instructions')
+      overview.append(FormattedContent( '<p><strong>Task:</strong> You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are <u>diseases</u>, <u>disease groups</u>, or <u>symptoms</u> of diseases.  <u>This work will help advance research in cancer and many other diseases</u>!</p>'
+                                        '<p><strong>Here are some examples of correctly highlighted text.  Please study these before attempting to take the qualification test.  Please also feel free to refer back to these examples if you are uncertain.</strong></p>'
+                                        '<ul>'
+                                          '<li>'
+                                            '<h3>Rule #1: Highlight <u>all</u> diseases and disease abbreviations</h3>'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/8/1.png" />'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/8/2.png" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Rule #2: Highlight the longest span of text specific to a disease</h3>'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/3.png" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/4.png" />'
+                                            '<p>and not just "cancer"</p>'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/5.png" />'
+                                            '<p>and not just "breast cancer"</p>'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Rule #3: Highlight disease conjunctions as single, long spans.</h3>'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/8/6.png" />'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/8/7.png" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                          '<h3>Rule #4: Highlight symptoms - physical results of having a disease</h3>'
+                                            '<img alt="Highlight symptoms - physical results of having a disease" src="http://mark2cure.org/static/images/experiment/8/8.png" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Rule #5: Highlight <u>all</u> occurrences of disease terms</h3>'
+                                            '<img alt="Highlight all occurrences of disease terms" src="http://mark2cure.org/static/images/experiment/8/9.png" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                          '<li>'
+                                            '<h3>Rule #6: Highlight <u>all</u> diseases, disease groups and key disease symptoms</h3>'
+                                            '<img alt="Highlight all diseases, disease groups and key disease symptoms" src="http://mark2cure.org/static/images/experiment/8/10.png" />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                           '<li>'
+                                            '<h3>Rule #7: Do not highlight gene names</h3>'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/11.png" />'
+                                            '<p>highlight only the disease mention, not the gene</p>'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/12.png" />'
+                                            '<p>the disease is highlighted, but the related gene is not.</p>'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/13.png" />'
+                                            '<p>In some cases the name of the gene may be the same as the name of the disease.  In these cases you should only highlight the text if it is referring to the disease and not to the gene.  The first NAS is highlighted while the second is not.</p>'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                            '<br />'
+                                          '</li>'
+                                        '</ul>'))
+
+      #
+      # Questions to ask the Worker
+      #
+      instructions = "Select all and only the terms that should be highlighted for each text segment (don't select terms that overlap with each other in the text):"
+      paragraph1 = "Test Paragraph 1: \"Myotonic dystrophy ( DM ) is associated with a ( CTG ) n trinucleotide repeat expansion in the 3-untranslated region of a protein kinase-encoding gene , DMPK , which maps to chromosome 19q13 . 3 . \""
+      paragraph2 = "Test Paragraph 2: \"Germline mutations in BRCA1 are responsible for most cases of inherited breast and ovarian cancer . However , the function of the BRCA1 protein has remained elusive . As a regulated secretory protein , BRCA1 appears to function by a mechanism not previously described for tumour suppressor gene products.\""
+      paragraph3 = "Test Paragraph 3: \"We report about Dr . Kniest , who first described the condition in 1952 , and his patient , who , at the age of 50 years is severely handicapped with short stature , restricted joint mobility , and blindness but is mentally alert and leads an active life .  This is in accordance with molecular findings in other patients with Kniest dysplasia and...\""
+
+      # # # # # # # # #
+      #
+      # Paragraph 1
+      #
+      # # # # # # # # #
+      #abcdefghijklmnopqrstuvwxyz
+      qc = QuestionContent()
+      qc.append_field('Title', "Select the words that should be highlighted in the next three test paragraphs according to the rules above.")
+      qc.append_field('Title', paragraph1)
+      qc.append_field('Title', "")
+      qc.append_field('Title', "Which of the following should be highlighted according to the instructions described above?")
+      qc.append_field('Text', 'Myotonic')
+      q1 = Question(identifier = 'term_selection_1', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t1"), ("False", "f1")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'dystrophy')
+      q2 = Question(identifier = 'term_selection_2', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t2"), ("False", "f2")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'Myotonic dystrophy')
+      q3 = Question(identifier = 'term_selection_3', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t3"), ("False", "f3")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'DM')
+      q4 = Question(identifier = 'term_selection_4', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t4"), ("False", "f4")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'CTG')
+      q5 = Question(identifier = 'term_selection_5', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t5"), ("False", "f5")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'trinucleotide repeat expansion')
+      q6 = Question(identifier = 'term_selection_6', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t6"), ("False", "f6")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'kinase-encoding gene')
+      q7 = Question(identifier = 'term_selection_7', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t7"), ("False", "f7")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'DMPK')
+      q8 = Question(identifier = 'term_selection_8', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t8"), ("False", "f8")])))
+
+      # # # # # # # # #
+      #
+      # Paragraph 2
+      #
+      # # # # # # # # #
+      qc = QuestionContent()
+      qc.append_field('Title', paragraph2)
+      qc.append_field('Text', 'Germline mutations')
+      q9 = Question(identifier = 'term_selection_9', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t9"), ("False", "f9")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'BRCA1')
+      q10 = Question(identifier = 'term_selection_10', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t10"), ("False", "f10")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'breast')
+      q11 = Question(identifier = 'term_selection_11', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t11"), ("False", "f11")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'ovarian cancer')
+      q12 = Question(identifier = 'term_selection_12', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t12"), ("False", "f12")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'inherited breast and ovarian cancer')
+      q13 = Question(identifier = 'term_selection_13', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t13"), ("False", "f13")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'cancer')
+      q14 = Question(identifier = 'term_selection_14', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t14"), ("False", "f14")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour')
+      q15 = Question(identifier = 'term_selection_15', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t15"), ("False", "f15")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'tumour suppressor')
+      q16 = Question(identifier = 'term_selection_16', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t16"), ("False", "f16")])))
+
+
+      # # # # # # # # #
+      #
+      # Paragraph 3
+      #
+      # # # # # # # # #
+      qc = QuestionContent()
+      qc.append_field('Title', paragraph3)
+      qc.append_field('Text', 'age of 50 years')
+      q17 = Question(identifier = 'term_selection_17', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t17"), ("False", "f17")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'severely handicapped')
+      q18 = Question(identifier = 'term_selection_18', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t18"), ("False", "f18")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'short')
+      q19 = Question(identifier = 'term_selection_19', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t19"), ("False", "f19")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'short stature')
+      q20 = Question(identifier = 'term_selection_20', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t20"), ("False", "f20")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'restricted joint mobility')
+      q21 = Question(identifier = 'term_selection_21', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t21"), ("False", "f21")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'blindness')
+      q22 = Question(identifier = 'term_selection_22', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t22"), ("False", "f22")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'mentally alert')
+      q23 = Question(identifier = 'term_selection_23', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t23"), ("False", "f23")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'molecular findings')
+      q24 = Question(identifier = 'term_selection_24', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t24"), ("False", "f24")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'Kniest dysplasia')
+      q25 = Question(identifier = 'term_selection_25', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t25"), ("False", "f25")])))
+
+      qc = QuestionContent()
+      qc.append_field('Title', "")
+      qc.append_field('Text', 'dysplasia')
+      q26 = Question(identifier = 'term_selection_26', content = qc, is_required = True,
+          answer_spec = AnswerSpecification(SelectionAnswer(
+            style='radiobutton',
+            selections=[("True", "t26"), ("False", "f26")])))
+
+      # Add the content to the questionform
+      question_form.append(overview)
+      question_form.append(q1)
+      question_form.append(q2)
+      question_form.append(q3)
+      question_form.append(q4)
+      question_form.append(q5)
+      question_form.append(q6)
+      question_form.append(q7)
+      question_form.append(q8)
+      question_form.append(q9)
+      question_form.append(q10)
+      question_form.append(q11)
+      question_form.append(q12)
+      question_form.append(q13)
+      question_form.append(q14)
+      question_form.append(q15)
+      question_form.append(q16)
+      question_form.append(q17)
+      question_form.append(q18)
+      question_form.append(q19)
+      question_form.append(q20)
+      question_form.append(q21)
+      question_form.append(q22)
+      question_form.append(q23)
+      question_form.append(q24)
+      question_form.append(q25)
+      question_form.append(q26)
+
+      # Define evaluation mechanism
+      answer_logic = '''<AnswerKey xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/AnswerKey.xsd">
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_1</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f1</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_2</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f2</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_3</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t3</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_4</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t4</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_5</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f5</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_6</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f6</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_7</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f7</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_8</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f8</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+
+
+
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_9</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f9</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_10</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f10</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_11</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f11</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_12</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f12</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_13</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t13</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_14</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f14</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_15</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t15</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_16</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f16</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_17</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f17</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_18</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t18</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_19</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f19</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_20</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t20</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_21</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t21</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_22</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t22</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_23</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f23</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_24</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f24</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_25</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>t25</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                          <Question>
+                          <QuestionIdentifier>term_selection_26</QuestionIdentifier>
+                            <AnswerOption>
+                              <SelectionIdentifier>f26</SelectionIdentifier>
+                              <AnswerScore>1</AnswerScore>
+                            </AnswerOption>
+                          </Question>
+
+                        </AnswerKey>'''
+
+      qual_name = 'Annotation Instructions & Qualification Questions (Jan. 2014)'
+
+      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_4,
+      # qual_test = self.mtc.create_qualification_type(
+        # name = qual_name,
+        description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
+        status = 'Active',
+        test = question_form,
+        answer_key = answer_logic,
+        retry_delay = 60,
+        test_duration = 25 * 60)
+
+      return qual_test
+
+
+  # Actionable methods
+  def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
+      description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
+      keywords = 'science, abstract, primary literature, annotation, disease, text, highlight, annotation, medicine, term recognition'
+
+      qualifications = Qualifications()
+      # Add the step instructions and basic test
+      qualifications.add( Requirement(settings.AWS_QUAL_TEST_4, "GreaterThanOrEqualTo", 20) )
+
+      hit = self.mtc.create_hit(
+          hit_type = None,
+          question = self.external_question(doc_id),
+          hit_layout = None,
+          lifetime = datetime.timedelta(14),
+          max_assignments = max_assignments,
+          title = title,
+          description = description,
+          keywords = keywords,
+          reward = reward,
+          duration = datetime.timedelta(minutes = minutes),
+          approval_delay = 60 * 60 * 24 * 4,
+          annotation = None,
+          questions = None,
+          # qualifications = qualifications,
+          layout_params = None,
+          response_groups = None
+          )
+      return hit
+
+

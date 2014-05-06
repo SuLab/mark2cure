@@ -147,7 +147,6 @@ class Section(models.Model):
     text        = models.TextField(blank=True)
     source      = models.ImageField(blank=True, upload_to="media/images/", default = 'images/figure.jpg')
 
-    validate    = models.BooleanField(default = False, blank = True)
     cache       = models.TextField(blank=True)
 
     concepts    = models.ManyToManyField('Concept', blank=True, null=True)

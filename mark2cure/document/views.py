@@ -13,7 +13,7 @@ from django.utils import simplejson
 
 from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
-from mark2cure.document.utils import generate_results, create_from_pubmed_id, check_validation_status
+from mark2cure.document.utils import generate_results, create_from_pubmed_id
 from mark2cure.common.utils import get_timezone_offset, get_mturk_account
 from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
 

@@ -36,9 +36,6 @@ class Command(BaseCommand):
           documents = Document.objects.filter(source = 'NCBI_corpus_development').all()
           self.util_worker_specturm(documents)
 
-        elif command == "worker_ban_analysis":
-          self.util_worker_ban_analysis()
-
         elif command == "worker_qualification_scores":
           self.util_worker_qualification_scores()
 
@@ -75,20 +72,6 @@ class Command(BaseCommand):
             quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_2, page_number = page)
             for qi in quals:
               writer.writerow([qi.Status, qi.SubjectId, qi.IntegerValue, qi.GrantTime])
-
-
-
-
-    def util_worker_ban_analysis(self):
-        # workers = User.objects.filter(userprofile__mturk = True).all()
-        workers = User.objects.filter(username = 'AZV6NZ24XBR7I').all()
-        for worker in workers:
-          print "\n -- User "+ str(worker.id) +" -- \n"
-          views = View.objects.filter(user = worker).all()
-          for view in views:
-            if view.section.validate:
-              print view.section.document.id, " :: ", check_validation_status(worker, view.section.document, view)
-
 
 
     def util_worker_specturm(self, documents):

@@ -75,34 +75,6 @@ def generate_results(document, user):
     return ( score, true_positives, false_positives, false_negatives )
 
 
-def check_validation_status(user, document, view=None):
-    views = View.objects.filter(user = user, section__document = document ).all()
-    if len(views) > 4:
-      if user.profile.mturk:
-        t = Turk()
-        t.mtc.block_worker(user.username, "Attempted to submit same document multiple times.")
-      return "Cannot submit a document twice"
-      raise ValueError("Cannot submit a document twice")
-
-    if document.section_set.all()[:1].get().validate and user.profile.mturk:
-      # If this is a validate document, check the user's history, if it's their 3rd submission
-      # or more run test to potentially fail if poor performance
-      if view is None:
-        valid_views = View.objects.filter(user = user, section__validate = True).order_by('-created').all()[:6]
-      else:
-        valid_views = View.objects.filter(user = user, section__validate = True, created__lt = view.updated).order_by('-created').all()[:6]
-
-      if len(valid_views) is 6:
-        if sum(1 for x in valid_views if gold_matches(x.user, x.section.document) >= 1) < 3:
-          t = Turk()
-          t.mtc.block_worker(user.username, "Failed to properly answer golden master performance documents")
-          return "Failed"
-        else:
-          return "Passed w/ ", sum(1 for x in valid_views if gold_matches(x.user, x.section.document) >= 1)
-      else:
-        return "Not enough yet"
-
-
 def create_from_pubmed_id(pubmed_id=None):
     pubmed_id = str(pubmed_id)
 
