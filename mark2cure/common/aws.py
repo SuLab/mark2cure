@@ -1,12 +1,15 @@
 from django.conf import settings
 from datetime import datetime
 
+from boto.mturk.connection import *
+from boto.mturk.question import *
+from boto.mturk.qualification import *
 
 '''
   AWS Stuff
   ---------
 
-  Helper methods for creating HITs, Qualifications
+  Helper methods for creating HITs and Qualifications
 '''
 
 class Turk():
@@ -23,7 +26,7 @@ class Turk():
           print hit.HITId
 
 
-  def external_question(self, doc_id):
+  def external_question(self):
       # Would be cool to pull the length of the document to know the correct size of the window to show
       return ExternalQuestion("https://mark2cure.org/mturk/", 1000)
 
@@ -614,29 +617,24 @@ class Turk():
 
 
   # Actionable methods
-  def hit_for_document(self, doc_id, max_assignments = 5, reward = 0.06, minutes = 4, title="Highlight diseases in paragraph"):
+  def hit_for_document(self, max_assignments=1, approval_delay_days=4, reward=0.06, days_alive=14, minutes=10, title="Highlight diseases in paragraph"):
       description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
       keywords = 'science, abstract, primary literature, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
-      qualifications = Qualifications()
-      # Add the step instructions and basic test
-      qualifications.add( Requirement(settings.AWS_QUAL_TEST_4, "GreaterThanOrEqualTo", 20) )
-
       hit = self.mtc.create_hit(
           hit_type = None,
-          question = self.external_question(doc_id),
+          question = self.external_question(),
           hit_layout = None,
-          lifetime = datetime.timedelta(14),
+          lifetime = datetime.timedelta(days_alive),
           max_assignments = max_assignments,
           title = title,
           description = description,
           keywords = keywords,
           reward = reward,
           duration = datetime.timedelta(minutes = minutes),
-          approval_delay = 60 * 60 * 24 * 4,
+          approval_delay = 60 * 60 * 24 * approval_delay_days,
           annotation = None,
           questions = None,
-          # qualifications = qualifications,
           layout_params = None,
           response_groups = None
           )

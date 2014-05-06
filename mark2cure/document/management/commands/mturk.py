@@ -17,24 +17,25 @@ class Command(BaseCommand):
         command = args[0]
         hit_count = 0
         if len(args) > 1:
-          hit_count = args[1]
+            hit_count = args[1]
 
         self.stdout.write('-- Running MTurk Commands ({0}) on Documents {1} --'.format(command, document_set))
 
         turk = Turk()
 
         if command == "create_qual":
-          print turk.make_qualification_test()
+            print turk.make_qualification_test()
 
 
         elif command == "disable_all":
-          turk.disable_all()
+            turk.disable_all()
 
 
         elif command == "create_hits":
-          for idx in range(hit_count):
-            turk.hit_for_document(max_assignments = , minutes = 10)
-            print idx
+            for idx in range(hit_count):
+                turk.hit_for_document(max_assignments = 1, minutes = 10)
+                print idx
+
 
         else:
           pass
