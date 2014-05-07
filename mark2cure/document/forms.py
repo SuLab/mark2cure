@@ -1,10 +1,6 @@
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 
-from mark2cure.document.models import Document, Annotation, View, Refute, Comment
-from mark2cure.common.utils import get_timezone_offset
-
-import re
+from mark2cure.document.models import Document, Annotation, Refute, Comment
 
 
 class DocumentForm(forms.ModelForm):

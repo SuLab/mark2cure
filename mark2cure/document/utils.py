@@ -47,7 +47,6 @@ def generate_results(document, user):
      fn  *tn
 
     '''
-    # (TODO) IF THERE ARE NO GM ANNOTATIONS DON'T SHOW THE RESULTS PAGE
     gm_annotations = document.annotations()
 
     if user.userprofile.mturk:
@@ -114,7 +113,5 @@ def create_from_pubmed_id(pubmed_id=None):
 
             return doc
           break
-
-
 
 

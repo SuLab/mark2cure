@@ -8,7 +8,6 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 
 from mark2cure.account.models import UserProfile, Message, Ncbo
-from mark2cure.common.utils import get_timezone_offset
 from mark2cure.account.forms import UserForm, ProfileForm
 
 import datetime
