@@ -6,10 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
-from django.core.mail import send_mail
-from django.utils import simplejson
 
 from mark2cure.document.models import *
 from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
@@ -141,11 +138,7 @@ def identify_annotations_results(request, doc_id):
         results['true_positives'] = true_positives
         results['false_positives'] = false_positives
         results['false_negatives'] = false_negatives
-        if score[2] == 1.0 or score[2] == 0.0:
-          send_mail('[Mark2Cure #6] HIT completion',
-                        '{0} scored {1} on document id {2}'.format(request.user.pk, score[2], doc.pk),
-                         settings.SERVER_EMAIL,
-                         [email[1] for email in settings.MANAGERS])
+
 
 
         activity.submission_type = 'gm'
@@ -210,12 +203,6 @@ def comment_document(request,  doc_id):
       refute.document = doc
       refute.user = request.user
       refute.save()
-
-      send_mail('[Mark2Cure #6] Document comment',
-                '{0} commented: {1} on document id {2}'.format(request.user.pk, refute.message, doc.pk),
-                settings.SERVER_EMAIL,
-                [email[1] for email in settings.MANAGERS])
-
       return HttpResponse("Success")
 
     return HttpResponse('Unauthorized', status=401)

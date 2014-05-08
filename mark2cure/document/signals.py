@@ -1,47 +1,59 @@
 from django.conf import settings
 from django.db.models import signals
-from django.conf import settings
+from django.core.mail import send_mail
 
-from mark2cure.document.models import Document, Activity
+from mark2cure.document.models import Document, Activity, Comment
 
 import requests, importlib, logging
 logger = logging.getLogger(__name__)
 
 
-# def document_save_handler(sender, instance, **kwargs):
-#     '''
-#       Automatically seed new documents onto MTurk
-#     '''
-#     document = instance
-#     pass
+def comment_save_handler(sender, instance, **kwargs):
+    comment = instance
+
+    send_mail('[Mark2Cure #{0}] Document comment',
+              '{1} commented: {2} on document id {3}'.format(settings.EXPERIMENT, comment.user.pk, comment.message, comment.document.pk),
+              settings.SERVER_EMAIL,
+              [email[1] for email in settings.MANAGERS])
 
 
 def activity_save_handler(sender, instance, **kwargs):
-    '''
-      Automatically seed new documents onto MTurk
-    '''
     activity = instance
     user = activity.user
     user_profile = user.userprofile
+    '''
+      Email notify monitors
+    '''
+    if activity.f_score == 1.0 or activity.f_score == 0.0:
+        send_mail('[Mark2Cure #{0}] HIT completion',
+                      '{1} scored {2} on document id {3}'.format(settings.EXPERIMENT, user.pk, activity.f_score, activity.document.pk),
+                       settings.SERVER_EMAIL,
+                       [email[1] for email in settings.MANAGERS])
 
+
+    '''
+      Softblock on poor performance
+    '''
     print "activity_save_handler :: ", user_profile.mturk, activity.f_score, activity.submission_type
 
     if user_profile.mturk and activity.submission_type == "gm":
         if activity.f_score <= 0.5:
 
             if user_profile.mturk:
-                poor_subs_count = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT, f_score_lt=0.5).count()
+                latest_results = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT)[:3]
             else:
-                poor_subs_count = Activity.objects.filter(user=user, f_score_lt=0.5).count()
+                latest_results = Activity.objects.filter(user=user)[:3]
 
+            if len(latest_results) == 3:
+                if poor_subs_count[1].f_score < .5 and poor_subs_count[2].f_score < .5:
+                    user_profile.softblock = True
+                    user_profile.save()
+                    send_mail('[Mark2Cure #{0}] softblock',
+                                '{1} was blocked due to document id {3}'.format(settings.EXPERIMENT, user.pk, activity.document.pk),
+                                settings.SERVER_EMAIL,
+                                [email[1] for email in settings.MANAGERS])
 
-            print "\n\n poor_subs_count \n\n"
-            print poor_subs_count
-
-            # if poor_subs_count >= 3:
-            #     user_profile.softblock = True
-            #     user_profile.save()
-
-
-# signals.post_save.connect(document_save_handler, sender=Document)
 signals.post_save.connect(activity_save_handler, sender=Activity)
+signals.post_save.connect(comment_save_handler, sender=Comment)
+
+

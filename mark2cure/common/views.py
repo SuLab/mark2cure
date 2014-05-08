@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
 
 from mark2cure.document.models import Document, View, Annotation, Activity
 from mark2cure.common.forms import MessageForm
