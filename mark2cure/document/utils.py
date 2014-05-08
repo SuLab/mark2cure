@@ -47,12 +47,8 @@ def generate_results(document, user):
      fn  *tn
 
     '''
-    gm_annotations = document.annotations()
-
-    if user.userprofile.mturk:
-      user_annotations = document.annotations(user.username, experiment = settings.EXPERIMENT)
-    else:
-      user_annotations = document.annotations(user.username)
+    gm_annotations = document.latest_annotations()
+    user_annotations = document.latest_annotations(user)
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 

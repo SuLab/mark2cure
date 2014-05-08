@@ -98,35 +98,23 @@ class Document(models.Model):
 
     def update_views(self, user, task_type, completed = False):
         for sec in self.available_sections():
-          view = View.objects.filter(user = user, task_type = task_type, section = sec).latest()
-          view.completed = completed
-          view.save()
+            view = View.objects.filter(user = user, task_type = task_type, section = sec).latest()
+            view.completed = completed
+            view.save()
 
 
-    def annotations(self, username = "goldenmaster", experiment = False):
-        if experiment:
-          return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username=username, experiment = experiment).order_by('start')
+    def latest_views(self, user, task_type='cr', completed=True, experiment=None):
+        return View.objects.filter(user=user, task_type=task_type, completed=completed, experiment=experiment, section__document=self)[:2]
+
+
+    def latest_annotations(self, user = None):
+        if user is None:
+            user = User.objects.get(username="goldenmaster")
+            return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user=user).order_by('start')
         else:
-          return Annotation.objects.filter(view__section__document = self, view__task_type = "cr", kind = "e", view__user__username=username).order_by('start')
+            user_views = self.latest_views(user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None )
+            return Annotation.objects.filter(view__pk__in=[view.pk for view in user_views]).order_by('start')
 
-
-    def score(self, user):
-        gma = self.annotations()
-
-        if user.userprofile.mturk:
-          cua = self.annotations(user.username, settings.EXPERIMENT)
-        else:
-          cua = self.annotations(user.username)
-
-
-        print " / / / score / / / "
-        print gma
-        print cua
-        compareann = gma[0]
-        for ann in gma:
-          print ann.is_exact_match(compareann)
-
-        pass
 
     class Meta:
         ordering = ('-created',)
@@ -157,11 +145,18 @@ class Section(models.Model):
     document = models.ForeignKey(Document)
 
 
-    def annotations(self, username = "goldenmaster", experiment = False):
-        if experiment:
-          return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username, experiment = experiment).order_by('start')
+    def latest_view(self, user, task_type='cr', completed=True, experiment=None):
+        return View.objects.filter(user=user, task_type=task_type, completed=completed, experiment=experiment, section=self).first()
+
+
+    def latest_annotations(self, user = None):
+        if user is None:
+            user = User.objects.get(username="goldenmaster")
+            return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user=user).order_by('start')
         else:
-          return Annotation.objects.filter(view__section = self, view__task_type = "cr", kind = "e", view__user__username=username).order_by('start')
+            # (TODO) Scope to section only
+            user_view = self.latest_view(user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None )
+            return Annotation.objects.filter(view__pk=user_view.pk).order_by('start')
 
 
     def resultwords(self, user):
@@ -175,9 +170,9 @@ class Section(models.Model):
         words = [w + (0, None, None, False,) for w in words]
 
         # Gather other annotations from GM and users for this section
-        anns = self.annotations().values_list('pk', 'start', 'text')
+        gm_anns = self.latest_annotations().values_list('pk', 'start', 'text')
         # Build the running counter of times a word was annotated
-        for gm_pk, start, text in anns:
+        for gm_pk, start, text in gm_anns:
           length = len(text)
 
           for idx, word in enumerate(words):
@@ -188,10 +183,7 @@ class Section(models.Model):
               words[idx] = (word[0], word[1], counter, gm_pk, word[3], word[4])
 
 
-        if user.userprofile.mturk:
-          user_anns = self.annotations(user.username, experiment = settings.EXPERIMENT).values_list('pk', 'start', 'text')
-        else:
-          user_anns = self.annotations(user.username).values_list('pk', 'start', 'text')
+        user_anns = self.latest_annotations(user).values_list('pk', 'start', 'text')
         # Build the running counter of times a word was annotated
         for user_pk, start, text in user_anns:
           length = len(text)

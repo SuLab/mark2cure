@@ -110,11 +110,7 @@ def identify_annotations_results(request, doc_id):
 
     for section in sections:
       setattr(section, "words", section.resultwords(request.user))
-
-      if user_profile.mturk:
-        setattr(section, "user_annotations", section.annotations(request.user.username, experiment = settings.EXPERIMENT))
-      else:
-        setattr(section, "user_annotations", section.annotations(request.user.username))
+      setattr(section, "user_annotations", section.latest_annotations(request.user))
 
     '''
       1) It's a GM doc with GM annotations used to score
@@ -139,7 +135,16 @@ def identify_annotations_results(request, doc_id):
         results['false_positives'] = false_positives
         results['false_negatives'] = false_negatives
 
-
+        # print "\n - - - - - - - - - \n"
+        # print true_positives
+        # print false_positives
+        # print false_negatives
+        # print score
+        # for sec in sections:
+        #   print sec.words
+        #   print sec.user_annotations
+        #   print "~ ~ ~ ~ ~ ~"
+        # print "\n - - - - - - - - - \n"
 
         activity.submission_type = 'gm'
         activity.precsion = score[0]

@@ -34,8 +34,6 @@ def activity_save_handler(sender, instance, **kwargs):
     '''
       Softblock on poor performance
     '''
-    print "activity_save_handler :: ", user_profile.mturk, activity.f_score, activity.submission_type
-
     if user_profile.mturk and activity.submission_type == "gm":
         if activity.f_score <= 0.5:
 
