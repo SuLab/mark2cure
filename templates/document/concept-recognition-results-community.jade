@@ -69,12 +69,23 @@ block post-footer
 
               var $el = $('div.paragraph#'+ section_id);
               _.each(data, function(annotation) {
-                // console.log(annotation);
                 var $word = $el.find("p span[data-starti='"+ annotation.start +"']");
                 if( $word.length == 1 ) {
-                  var position = $word.position(),
-                      width = $word.width(),
-                      height = $word.height();
+                  var annotation_distance = annotation.text.length
+
+                  // Find last word
+                  var neighbor
+                  var sameline;
+                  var snakegrowth;
+                  var next = n;
+                  do {
+                      neighbor = $word.next(),
+                      word_length = neighbor.data('starti')-annotation.start-1;
+
+                      snakegrowth += (neighbor.data('starti') - $word.data('starti') - 1)
+                      var position = $word.position();
+                  }
+                  while (annotation_distance > snakegrowth);
 
                   var line = d3.select($el.find('svg')[0]).append("line")
                                .attr("x1", position.left )
@@ -87,7 +98,7 @@ block post-footer
                                .attr("stroke", function() { return color_scale(depth_index);} );
 
 
-                  console.log(position, width, height);
+                  // console.log(position, width, height);
                 }
               });
             },

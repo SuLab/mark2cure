@@ -82,7 +82,6 @@ def mturk(request):
 def router(request):
     # Handle training or max allowed
     n_count = Activity.objects.filter(user=request.user).count()
-    print "\n\n ", n_count, " \n\n"
     training_order = [869, 956, 1018, 520]
     if n_count < 4:
         return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
