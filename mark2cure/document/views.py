@@ -103,7 +103,8 @@ def identify_annotations_results(request, doc_id):
     '''
     doc = get_object_or_404(Document, pk=doc_id)
     sections = doc.available_sections()
-    user_profile = request.user.userprofile
+    user = request.user
+    user_profile = user.userprofile
 
     if not doc.is_complete(request.user, user_profile, sections):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
@@ -117,34 +118,16 @@ def identify_annotations_results(request, doc_id):
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    if user_profile.mturk:
-        activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=settings.EXPERIMENT)
-
-        activity.experiment = settings.EXPERIMENT
-        previous_activities_available = Activity.objects.filter(document = doc, task_type='cr', experiment=settings.EXPERIMENT).exclude(user=request.user).exists()
-    else:
-        activity, created = Activity.objects.get_or_create(user=request.user, document=doc, task_type = 'cr', experiment=None)
-        previous_activities_available = Activity.objects.filter(document = doc, task_type='cr').exclude(user=request.user).exists()
-
+    activity = Activity(user=user, document=doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None )
+    previous_activities_available = Activity.objects.filter(document = doc, task_type='cr', experiment= settings.EXPERIMENT if user_profile.mturk else None).exclude(user=request.user).exists()
 
     if doc.is_golden():
         results = {}
-        score, true_positives, false_positives, false_negatives = generate_results(doc, request.user)
+        score, true_positives, false_positives, false_negatives = generate_results(doc, user)
         results['score'] = score
         results['true_positives'] = true_positives
         results['false_positives'] = false_positives
         results['false_negatives'] = false_negatives
-
-        # print "\n - - - - - - - - - \n"
-        # print true_positives
-        # print false_positives
-        # print false_negatives
-        # print score
-        # for sec in sections:
-        #   print sec.words
-        #   print sec.user_annotations
-        #   print "~ ~ ~ ~ ~ ~"
-        # print "\n - - - - - - - - - \n"
 
         activity.submission_type = 'gm'
         activity.precsion = score[0]
@@ -170,6 +153,7 @@ def identify_annotations_results(request, doc_id):
               'sections' : sections,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
+
 
     elif not previous_activities_available:
         activity.submission_type = 'na'
