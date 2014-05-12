@@ -73,7 +73,7 @@ class Document(models.Model):
     def is_complete(self, user, user_profile, sections, task_type = 'cr'):
         # Stick w/ Views b/c the Activity results haven't been logged yet
         if user_profile.mturk:
-          query = View.objects.filter(userk = user, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
+          query = View.objects.filter(user = user, completed = True, task_type = task_type, section__document = self, experiment = settings.EXPERIMENT)
         else:
           query = View.objects.filter(user = user, completed = True, task_type = task_type, section__document = self)
 
