@@ -19,7 +19,7 @@ block content
                         data-stopi="{{ indexes.1 }}",
                         data-gmannid="{{ gm_pk }}",
                         data-uannid="{{ user_pk }}")
-                    | #{ text } 
+                    | #{ text }
 
 
     .row
@@ -71,34 +71,60 @@ block post-footer
               _.each(data, function(annotation) {
                 var $word = $el.find("p span[data-starti='"+ annotation.start +"']");
                 if( $word.length == 1 ) {
-                  var annotation_distance = annotation.text.length
+                  var neighbor = $word.next();
+                  var position = $word.position(),
+                      height = $word.height(),
+                      width = $word.width();
+
+                  var lines = []
+                  // We know where the line will start
+                  var start_dict = {
+                    'x1': position.left,
+                    'y1': position.top + height + 2 + (depth_index * 3)}
+                  lines.push(start_dict)
 
                   // Find last word
-                  var neighbor
-                  var sameline;
-                  var snakegrowth;
-                  var next = n;
-                  do {
-                      neighbor = $word.next(),
-                      word_length = neighbor.data('starti')-annotation.start-1;
+                  var current_line_index = 0;
+                  var covered_distance = $word.html().trim().length;
 
-                      snakegrowth += (neighbor.data('starti') - $word.data('starti') - 1)
-                      var position = $word.position();
+                  while(covered_distance < annotation.text.length) {
+                    console.log('covered_distance: ', covered_distance);
+
+                    lines[current_line_index]['x2'] = position.left + width - 4;
+                    lines[current_line_index]['y2'] = position.top + height + 2 + (depth_index * 3);
+
+                    if(neighbor.length) {
+                        console.log('neighbor: ', neighbor.length);
+
+                        // if(position.top != neighbor.position().top) {
+                          // var start_dict = {
+                          // 'x1': position.left,
+                          // 'y1': position.top + height + 2 + (depth_index * 3)}
+                          // lines.push(start_dict)
+                          // current_line_index += 1;
+                          // console.log('current_line_index: ', current_line_index);
+                        // }
+
+                        covered_distance += neighbor.html().trim().length;
+                        neighbor = neighbor.next();
+                        position = $word.position();
+                        width += neighbor.width();
+                    }
+
                   }
-                  while (annotation_distance > snakegrowth);
-
-                  var line = d3.select($el.find('svg')[0]).append("line")
-                               .attr("x1", position.left )
-                               .attr("y1", position.top + height + 2 + (depth_index * 4) )
-
-                               .attr("x2", position.left + width - 4 )
-                               .attr("y2", position.top + height + 2 + (depth_index * 4) )
-
-                               .attr("stroke-width", 2)
-                               .attr("stroke", function() { return color_scale(depth_index);} );
 
 
-                  // console.log(position, width, height);
+                  // Draw the actual line(s) onto the page
+                  d3.select($el.find('svg')[0]).data(lines)
+                      .append("line")
+                          .attr("x1", function(d) { return d['x1'] })
+                          .attr("y1", function(d) { return d['y1'] })
+                          .attr("x2", function(d) { return d['x2'] })
+                          .attr("y2", function(d) { return d['y2'] })
+                          .attr("stroke-width", 2)
+                          .attr("stroke", function() { return color_scale(depth_index);} );
+
+
                 }
               });
             },
