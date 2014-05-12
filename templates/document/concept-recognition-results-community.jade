@@ -59,30 +59,29 @@ block post-footer
             url: '/document/'+ document_id +'/section/'+ section_id +'/user/'+ user_id +'/annotations/?format=json',
             cache: false,
             success: function(data) {
-              // console.log(document_id, section_id, user_id, ' :: ', _.pluck(data, 'text'));
 
               var $el = $('div.paragraph#'+ section_id);
               _.each(data, function(annotation) {
                 var $word = $el.find("p span[data-starti='"+ annotation.start +"']");
                 if( $word.length == 1 ) {
-                  var neighbor = $word.next();
-                  var position = $word.position(),
+                  var neighbor = $word.next(),
+                      position = $word.position(),
+                      // The height is always a consistant value
                       height = $word.height(),
                       width = $word.width();
 
+                  // Track this annotation's lines, and we
+                  // know where the line will start
                   var lines = [];
-                  // We know where the line will start
-                  var start_dict = {
+                  lines.push({
                     'x1': position.left,
-                    'y1': position.top + height + 2 + (depth_index * 3)}
-                  lines.push(start_dict);
+                    'y1': position.top + height + 2 + (depth_index * 3)
+                  });
 
-                  // Find last word
-                  var current_line_index = 0;
-                  var covered_distance = $word.html().trim().length;
+                  var current_line_index = 0,
+                      covered_distance = $word.html().trim().length;
 
                   while(covered_distance <= annotation.text.length) {
-                    //console.log(annotation.text, annotation.text.length+':'+covered_distance, current_line_index, lines);
                     lines[current_line_index]['x2'] = $word.position().left + $word.width();
                     lines[current_line_index]['y2'] = $word.position().top + height + 2 + (depth_index * 3);
 
@@ -96,21 +95,22 @@ block post-footer
                         }
                         covered_distance += neighbor.html().trim().length;
                         $word = neighbor;
-                        neighbor = neighbor.next();
+                        neighbor = $word.next();
                     }
                   }
 
                   // Draw the actual line(s) onto the page
                   // with the computed coordinates
-                  var grid = $el.find('svg')[0];
-                  var lines = d3.select(grid).data(lines)
-                      .append("line")
-                          .attr("x1", function(d) { return d['x1'] })
-                          .attr("y1", function(d) { return d['y1'] })
-                          .attr("x2", function(d) { return d['x2'] })
-                          .attr("y2", function(d) { return d['y2'] })
-                          .attr("stroke-width", 2)
-                          .attr("stroke", function() { return color_scale(depth_index);} );
+                  var grid = $el.find('svg')[0],
+                      lines = d3.select(grid).selectAll('.foo').data(lines)
+                      .enter()
+                          .append("line")
+                              .attr("x1", function(d) { return d['x1'] })
+                              .attr("y1", function(d) { return d['y1'] })
+                              .attr("x2", function(d) { return d['x2'] })
+                              .attr("y2", function(d) { return d['y2'] })
+                              .attr("stroke-width", 2)
+                              .attr("stroke", function() { return color_scale(depth_index);} );
 
 
                 }
