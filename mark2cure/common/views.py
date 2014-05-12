@@ -35,13 +35,6 @@ def mturk(request):
     worker_id = request.GET.get('workerId')
     turk_sub_location = request.GET.get('turkSubmitTo')
 
-    user = request.user
-    user_profile = user.userprofile
-
-    if user_profile.softblock:
-        return redirect('mark2cure.common.views.softblock')
-
-
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
@@ -52,19 +45,25 @@ def mturk(request):
         return render_to_response('document/concept-recognition.jade',
                                   { 'doc': doc,
                                     'sections' : sections,
+                                    'user_profile' : None,
                                     'task_type': 'concept-recognition' },
                                   context_instance=RequestContext(request))
 
+    user = request.user
+
     # If they've accepted a HIT
-    if worker_id and not request.user.is_authenticated():
+    if worker_id and not user.is_authenticated():
         # If it's accepted and a worker that doesn't have an account
         # Make one and log them in
         user = get_mturk_account(worker_id)
         user = authenticate(username=user.username, password='')
         login(request, user)
 
+    user_profile = user.userprofile
 
-    user_profile = request.user.userprofile
+    if user_profile.softblock:
+        return redirect('mark2cure.common.views.softblock')
+
     if assignment_id and turk_sub_location and worker_id:
         user_profile.turk_submit_to = turk_sub_location
         user_profile.turk_last_assignment_id = assignment_id
