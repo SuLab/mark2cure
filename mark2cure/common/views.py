@@ -35,6 +35,10 @@ def mturk(request):
     worker_id = request.GET.get('workerId')
     turk_sub_location = request.GET.get('turkSubmitTo')
 
+    if request.user.is_authenticated():
+        if request.user.userprofile.softblock:
+            return redirect('mark2cure.common.views.softblock')
+
     # If mTurk user not logged in, make a new account for them and set the session
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
@@ -60,9 +64,6 @@ def mturk(request):
         login(request, user)
 
     user_profile = user.userprofile
-
-    if user_profile.softblock:
-        return redirect('mark2cure.common.views.softblock')
 
     if assignment_id and turk_sub_location and worker_id:
         user_profile.turk_submit_to = turk_sub_location
