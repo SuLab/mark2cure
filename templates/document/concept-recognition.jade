@@ -22,6 +22,9 @@ block content
 
 
 block post-footer
+    - if user.is_authenticated == False
+      script.
+        $('#instructions').show()
 
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
     script.

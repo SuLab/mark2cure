@@ -108,8 +108,3 @@
               p
                 | In some cases the name of the gene may be the same as the name of the disease.  In these cases you should only highlight the text if it is referring to the disease and not to the gene.  The first NAS is highlighted while the second is not.
 
-
-block post-footer
-  - if user.is_authenticated == False
-    script.
-      $('#instructions').show()
