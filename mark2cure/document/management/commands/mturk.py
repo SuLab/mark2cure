@@ -17,9 +17,9 @@ class Command(BaseCommand):
         command = args[0]
         hit_count = 0
         if len(args) > 1:
-            hit_count = args[1]
+            hit_count = int(args[1])
 
-        self.stdout.write('-- Running MTurk Commands ({0}) on Documents {1} --'.format(command, document_set))
+        self.stdout.write('-- Running MTurk Command ({0}) --'.format(command))
 
         turk = Turk()
 

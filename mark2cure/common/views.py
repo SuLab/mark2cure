@@ -47,8 +47,11 @@ def mturk(request):
         logout(request)
 
         doc = Document.objects.get(pk=278)
+        sections = doc.available_sections()
+
         return render_to_response('document/concept-recognition.jade',
                                   { 'doc': doc,
+                                    'sections' : sections,
                                     'task_type': 'concept-recognition' },
                                   context_instance=RequestContext(request))
 
