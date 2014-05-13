@@ -38,7 +38,7 @@ def experiment_routing(user, n_count, gm_occurance = 4, k_max = 3):
     prev_docs = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None).values_list('document__pk', flat=True).all()
     experiment_docs = [2787, 3195, 3357, 2726, 2637, 3030, 3203, 3314, 3077, 2369, 2394, 3003, 3567, 3166, 3177, 2152, 2661, 2236, 2193, 2878]
     for x in prev_docs:
-      experiment_docs.remove(x)
+        if x in experiment_docs: experiment_docs.remove(x)
 
     activities = Activity.objects.filter(document__pk__in=experiment_docs, task_type='cr', submission_type='gm', experiment=None).values('document').annotate(Count('document'))
     experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= k_max]
