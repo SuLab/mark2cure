@@ -4,6 +4,12 @@ extends base
 
 block content
 
+    .row
+      .col-sm-8.col-sm-offset-2
+        .alert.alert-success
+          h3.text-center
+            | You've hit an evaluation case.
+
     - if results.score.2 < .51
       .row
         .col-sm-10.col-sm-offset-1

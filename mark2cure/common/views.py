@@ -73,10 +73,12 @@ def mturk(request):
     # Handle training or max allowed
     n_count = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT).count()
     training_order = [869, 956, 1018, 520]
+
+    if n_count >= 24:
+        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
+
     if n_count < 4:
         return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
-    if n_count >= 24:
-      return render_to_response('common/nohits.jade', context_instance=RequestContext(request))
 
     return redirect('mark2cure.document.views.identify_annotations', experiment_routing(user, n_count))
 
@@ -86,10 +88,12 @@ def router(request):
     # Handle training or max allowed
     n_count = Activity.objects.filter(user=request.user).count()
     training_order = [869, 956, 1018, 520]
+
+    if n_count >= 24:
+        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
+
     if n_count < 4:
         return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
-    if n_count >= 24:
-      return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
     return redirect('mark2cure.document.views.identify_annotations', experiment_routing(request.user, n_count))
 

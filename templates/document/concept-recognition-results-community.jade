@@ -62,7 +62,7 @@ block post-footer
 
               var $el = $('div.paragraph#'+ section_id);
               _.each(data, function(annotation) {
-                console.log(' - - - - - - - ');
+                // console.log(' - - - - - - - ');
                 var $word = $el.find("p span[data-starti='"+ annotation.start +"']");
                 if( $word.length == 1 ) {
                   var neighbor = $word.next(),
