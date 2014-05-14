@@ -47,6 +47,9 @@ def identify_annotations(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     sections = doc.available_sections()
 
+    if request.user.userprofile.softblock:
+        return redirect('mark2cure.common.views.softblock')
+
     '''
       Technically we may want a user to do the same document multiple times,
       just means that during the community consensus we don't include their own reults

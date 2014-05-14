@@ -36,14 +36,10 @@ def activity_save_handler(sender, instance, **kwargs):
     '''
     if user_profile.mturk and activity.submission_type == "gm":
         if activity.f_score <= 0.5:
-
-            if user_profile.mturk:
-                latest_results = Activity.objects.filter(user=user, experiment=settings.EXPERIMENT)[:3]
-            else:
-                latest_results = Activity.objects.filter(user=user)[:3]
+            latest_results = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None)[:3]
 
             if len(latest_results) == 3:
-                if poor_subs_count[1].f_score < .5 and poor_subs_count[2].f_score < .5:
+                if latest_results[1].f_score < .5 and latest_results[2].f_score < .5:
                     user_profile.softblock = True
                     user_profile.save()
                     send_mail('[Mark2Cure #{0}] softblock',
@@ -51,7 +47,7 @@ def activity_save_handler(sender, instance, **kwargs):
                                 settings.SERVER_EMAIL,
                                 [email[1] for email in settings.MANAGERS])
 
+
 signals.post_save.connect(activity_save_handler, sender=Activity)
 signals.post_save.connect(comment_save_handler, sender=Comment)
-
 
