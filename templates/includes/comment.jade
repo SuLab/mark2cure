@@ -7,7 +7,7 @@ div(id="comment", tabindex="-1", role="dialog", aria-labelledby="myModalLabel", 
 
       .modal-header
         h3
-          | Was there a problem with our answers?
+          | {{modalMsg}}
 
       .modal-body
         form(action="/document/{{ doc.pk }}/comment/create/", method="post", role="form").form-horizontal.form-via-ajax

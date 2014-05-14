@@ -61,7 +61,8 @@ block content
         p.text-center
           a(data-toggle="modal", data-target="#comment", href="#")
             | Comment
-        include includes/comment
+        - with modalMsg="Was there a problem with our answers?"
+            include includes/comment
 
 
     - for section in sections

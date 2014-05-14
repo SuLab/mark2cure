@@ -19,7 +19,8 @@ block content
             a(data-toggle="modal", data-target="#comment", href="#")
               | please share
             |.
-        include includes/comment
+        - with modalMsg="We welcome any feedback"
+            include includes/comment
 
 
     - for section in sections
