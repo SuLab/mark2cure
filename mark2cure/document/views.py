@@ -365,13 +365,12 @@ class TopUserViewSet(generics.ListAPIView):
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
         section_id = self.kwargs['section_id']
-
-        if self.request.user.userprofile.mturk:
-            top_users = View.objects.filter(task_type = 'cr', completed = True, section__document__id = doc_id, experiment = settings.EXPERIMENT).exclude(user = self.request.user).values('user').distinct()
-        else:
-            top_users = View.objects.filter(task_type = 'cr', completed = True, section__document__id = doc_id).exclude(user = self.request.user).values('user').distinct()
-
-        return top_users
+        # (TODO) Test distinct + limit
+        return View.objects.filter(
+            task_type = 'cr',
+            completed = True,
+            section__document__id = doc_id,
+            experiment= settings.EXPERIMENT if self.request.user.userprofile.mturk else None).exclude(user = self.request.user).values('user').distinct()
 
 
 class AnnotationViewSet(generics.ListAPIView):

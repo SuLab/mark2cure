@@ -52,11 +52,15 @@ block post-footer
           $('#worker_submit').submit();
         });
 
-
     script.
-        var $sections = $('div.paragraph p')
-        var color_scale = d3.scale.category10();
+        var $sections = $('div.paragraph p');
+        var color_scale = d3.scale.category20c();
 
+        var generate_legend = function(data) {
+            _.each(data, function(item, i) {
+              $('tbody').append('<tr><td><div style="height: 10px; width: 16px; border-bottom:5px solid '+color_scale(i)+'"></div></td><td>User '+item.id+'</td></tr>')
+            });
+        };
 
         var handle_annotations = function(document_id, section_id, user_id, depth_index) {
           //-- Add the other community memebers annotations
@@ -136,7 +140,7 @@ block post-footer
         };
 
 
-        $.each($sections, function() {
+        $.each($sections, function(idx, i) {
           var section = $(this);
           var $words = section.find('span');
           var document_id = #{ doc.pk }
@@ -167,6 +171,8 @@ block post-footer
             cache: false,
             async: false,
             success: function(data) {
+              if(idx == 0) { generate_legend(data); }
+
               _.each(data, function(item, i) {
                 handle_annotations(document_id, section_id, item.id, i);
               });
