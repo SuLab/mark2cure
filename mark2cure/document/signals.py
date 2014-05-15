@@ -43,7 +43,7 @@ def activity_save_handler(sender, instance, **kwargs):
                     user_profile.softblock = True
                     user_profile.save()
                     send_mail('[Mark2Cure #{0}] softblock',
-                                '{1} was blocked due to document id {3}'.format(settings.EXPERIMENT, user.pk, activity.document.pk),
+                                '{1} was blocked due to document id {2}'.format(settings.EXPERIMENT, user.pk, activity.document.pk),
                                 settings.SERVER_EMAIL,
                                 [email[1] for email in settings.MANAGERS])
 
