@@ -67,6 +67,9 @@ class Document(models.Model):
 
 
     def is_golden(self):
+        if self.pk in settings.EXPERIMENT_DOCS:
+            False
+
         return Annotation.objects.filter(view__user__username = 'goldenmaster', view__section__document = self).exists()
 
 

@@ -36,7 +36,8 @@ def experiment_routing(user, n_count, gm_occurance = 4, k_max = 3):
       4. Array of (1 - 2) - 3
     '''
     prev_docs = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None).values_list('document__pk', flat=True).all()
-    experiment_docs = [2787, 3195, 3357, 2726, 2637, 3030, 3203, 3314, 3077, 2369, 2394, 3003, 3567, 3166, 3177, 2152, 2661, 2236, 2193, 2878]
+    # Make a copy so we can remove from copy
+    experiment_docs = settings.EXPERIMENT_DOCS
     for x in prev_docs:
         if x in experiment_docs: experiment_docs.remove(x)
 
