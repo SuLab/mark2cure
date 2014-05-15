@@ -72,7 +72,7 @@ block post-footer
 
               var $el = $('div.paragraph#'+ section_id);
               _.each(data, function(annotation) {
-                // console.log(' - - - - - - - ');
+                console.log(' - - - - - - - ');
                 var $word = $el.find("p span[data-starti='"+ annotation.start +"']");
                 if( $word.length == 1 ) {
                   var neighbor = $word.next(),
@@ -92,18 +92,19 @@ block post-footer
                   var current_line_index = 0,
                       covered_distance = $word.html().trim().length;
 
-                  //console.log(annotation, ' | ', covered_distance, ' | ', annotation.text.length);
+                  console.log(annotation, ' | ', covered_distance, ' | ', annotation.text.length);
                   // If the word has chars that were sanitized
                   if(covered_distance > annotation.text.length) {
+                    console.log('test');
                     lines[0]['x2'] = $word.position().left + $word.width();
                     lines[0]['y2'] = $word.position().top + height + 2 + (depth_index * 3);
                   }
 
-                  while(covered_distance <= annotation.text.length) {
+                  while( ($word.data('starti') - annotation.start) < annotation.text.length ) {
                     lines[current_line_index]['x2'] = $word.position().left + $word.width();
                     lines[current_line_index]['y2'] = $word.position().top + height + 2 + (depth_index * 3);
 
-                    //console.log(covered_distance, ' | ', annotation.text.length, ' | ', neighbor.data('starti'), ' | ', current_line_index, ' | ', lines);
+                    console.log(covered_distance, ' | ', annotation.text.length, ' | ', neighbor.data('starti'), ' | ', current_line_index, ' | ', lines);
                     if(neighbor.length) {
                         if($word.position().top != neighbor.position().top) {
                           lines.push({
@@ -117,7 +118,7 @@ block post-footer
                         neighbor = $word.next();
                     }
                   }
-                  //console.log(lines);
+                  console.log(lines);
 
                   // Draw the actual line(s) onto the page
                   // with the computed coordinates
