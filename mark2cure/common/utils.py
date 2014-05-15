@@ -47,10 +47,11 @@ def experiment_routing(user, n_count, gm_occurance = 4, k_max = 5):
     for x in experiment_docs_completed:
         if x in experiment_docs: experiment_docs.remove(x)
 
-
     random.shuffle(experiment_docs)
-    return experiment_docs[0]
-
-
+    if len(experiment_docs) == 0:
+        # All the docs have been completed (allow unlimited HITs with extra protection)
+        return False
+    else:
+        return experiment_docs[0]
 
 

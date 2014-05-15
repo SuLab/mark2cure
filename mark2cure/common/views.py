@@ -80,7 +80,11 @@ def mturk(request):
     if n_count < 4:
         return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
 
-    return redirect('mark2cure.document.views.identify_annotations', experiment_routing(user, n_count))
+    document = experiment_routing(user, n_count)
+    if document:
+        return redirect('mark2cure.document.views.identify_annotations', document)
+    else:
+        return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
 
 
 @login_required
@@ -95,7 +99,11 @@ def router(request):
     if n_count < 4:
         return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
 
-    return redirect('mark2cure.document.views.identify_annotations', experiment_routing(request.user, n_count))
+    document = experiment_routing(request.user, n_count)
+    if document:
+        return redirect('mark2cure.document.views.identify_annotations', document)
+    else:
+        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
 
 def softblock(request):
