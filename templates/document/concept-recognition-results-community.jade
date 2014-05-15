@@ -54,7 +54,7 @@ block post-footer
 
     script.
         var $sections = $('div.paragraph p');
-        var color_scale = d3.scale.category20c();
+        var color_scale = d3.scale.ordinal().domain([0,1,2,3,4]).range(['#E64C66', '#2D3E50', '#1BBC9B', '#AEAEAE', '#FFFF92']);
 
         var generate_legend = function(data) {
             _.each(data, function(item, i) {
