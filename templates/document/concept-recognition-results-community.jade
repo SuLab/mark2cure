@@ -54,11 +54,11 @@ block post-footer
 
     script.
         var $sections = $('div.paragraph p');
-        var color_scale = d3.scale.ordinal().domain([0,1,2,3,4]).range(['#00E820', '#E83008', '#0073FF', '#FFD200', '#0073FF']);
+        var color_scale = d3.scale.ordinal().domain([0,1,2,3,4]).range(['#00E820', '#0073FF', '#E83008', '#67067F', '#FFD200']);
 
         var generate_legend = function(data) {
             _.each(data, function(item, i) {
-              $('tbody').append('<tr><td><div style="height: 10px; width: 16px; border-bottom:5px solid '+color_scale(i)+'"></div></td><td>User '+item.id+'</td></tr>')
+              $('tbody').append('<tr><td><div style="height: 10px; width: 16px; border-bottom:5px solid '+color_scale(i)+'"></div></td><td>Worker '+(i+1)+'</td></tr>')
             });
         };
 
@@ -79,14 +79,14 @@ block post-footer
                       position = $word.position(),
                       // The height is always a consistant value
                       height = $word.height(),
-                      width = $word.width();
+                      drop_distance = height + 3 + (depth_index * 4);
 
                   // Track this annotation's lines, and we
                   // know where the line will start
                   var lines = [];
                   lines.push({
                     'x1': position.left,
-                    'y1': position.top + height + 2 + (depth_index * 3)
+                    'y1': position.top + drop_distance
                   });
 
                   var current_line_index = 0;
@@ -97,17 +97,17 @@ block post-footer
                   // If the word has chars that were sanitized or don't span
                   if($word.html().trim().length >= annotation.text.length) {
                     lines[0]['x2'] = $word.position().left + $word.width();
-                    lines[0]['y2'] = $word.position().top + height + 2 + (depth_index * 3);
+                    lines[0]['y2'] = $word.position().top + drop_distance;
                   } else {
                     do {
                         lines[current_line_index]['x2'] = $word.position().left + $word.width();
-                        lines[current_line_index]['y2'] = $word.position().top + height + 2 + (depth_index * 3);
+                        lines[current_line_index]['y2'] = $word.position().top + drop_distance;
                         // console.log(($word.data('starti') - annotation.start), ' | ', annotation.text.length, ' | ', current_line_index, ' | ', lines);
                         if(neighbor.length) {
                             if($word.position().top != neighbor.position().top && neighbor.data('starti') - annotation.start < annotation.text.length) {
                               lines.push({
                                 'x1': neighbor.position().left,
-                                'y1': neighbor.position().top + height + 2 + (depth_index * 3)
+                                'y1': neighbor.position().top + drop_distance
                               });
                               current_line_index += 1;
                             }
@@ -129,7 +129,7 @@ block post-footer
                               .attr("y1", function(d) { return d['y1'] })
                               .attr("x2", function(d) { return d['x2'] })
                               .attr("y2", function(d) { return d['y2'] })
-                              .attr("stroke-width", 2)
+                              .attr("stroke-width", 3)
                               .attr("stroke", function() { return color_scale(depth_index);} );
 
 
