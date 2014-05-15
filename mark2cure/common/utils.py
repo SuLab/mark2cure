@@ -8,7 +8,7 @@ from datetime import datetime
 import datetime, random
 
 
-def experiment_routing(user, n_count, gm_occurance = 4, k_max = 3):
+def experiment_routing(user, n_count, gm_occurance = 4, k_max = 5):
     user_profile = user.userprofile
 
     gm_dict = {
@@ -45,7 +45,7 @@ def experiment_routing(user, n_count, gm_occurance = 4, k_max = 3):
     experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= k_max]
 
     for x in experiment_docs_completed:
-        experiment_docs.remove(x)
+        if x in experiment_docs: experiment_docs.remove(x)
 
 
     random.shuffle(experiment_docs)
