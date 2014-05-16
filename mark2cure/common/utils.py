@@ -8,7 +8,7 @@ from datetime import datetime
 import datetime, random
 
 
-def experiment_routing(user, n_count, gm_occurance = 4, k_max = 5):
+def experiment_routing(user, n_count, k_max = 5):
     user_profile = user.userprofile
 
     gm_dict = {
@@ -21,11 +21,6 @@ def experiment_routing(user, n_count, gm_occurance = 4, k_max = 5):
 
     if n_count in gm_dict:
         return gm_dict[n_count]
-
-    # if n_count % gm_occurance == 0:
-    #     gm_index = (n_count / gm_occurance) - 1
-    #     if (gm_index+1) > len(gm_docs):
-    #         return gm_docs[gm_index]
 
     '''
       I need to figure out which of the current experiment
