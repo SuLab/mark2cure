@@ -36,6 +36,9 @@ def mturk(request):
     turk_sub_location = request.GET.get('turkSubmitTo')
 
     if request.user.is_authenticated():
+        if request.user.userprofile.banned:
+            return redirect('mark2cure.common.views.banned')
+
         if request.user.userprofile.softblock:
             return redirect('mark2cure.common.views.softblock')
 
@@ -105,6 +108,9 @@ def router(request):
     else:
         return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
+
+def banned(request):
+    return render_to_response('common/banned.jade', context_instance=RequestContext(request))
 
 def softblock(request):
     return render_to_response('common/softblock.jade', context_instance=RequestContext(request))

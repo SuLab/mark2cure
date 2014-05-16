@@ -32,7 +32,7 @@ def activity_save_handler(sender, instance, **kwargs):
 
 
     '''
-      Softblock on poor performance
+      Ban on poor performance
     '''
     if user_profile.mturk and activity.submission_type == "gm":
         if activity.f_score <= 0.5:
@@ -40,9 +40,9 @@ def activity_save_handler(sender, instance, **kwargs):
 
             if len(latest_results) == 3:
                 if latest_results[1].f_score < .5 and latest_results[2].f_score < .5:
-                    user_profile.softblock = True
+                    user_profile.banned = True
                     user_profile.save()
-                    send_mail('[Mark2Cure #{0}] softblock',
+                    send_mail('[Mark2Cure #{0}] banned',
                                 '{1} was blocked due to document id {2}'.format(settings.EXPERIMENT, user.pk, activity.document.pk),
                                 settings.SERVER_EMAIL,
                                 [email[1] for email in settings.MANAGERS])

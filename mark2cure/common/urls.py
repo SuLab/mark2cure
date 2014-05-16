@@ -10,6 +10,7 @@ urlpatterns = patterns('mark2cure.common.views',
     url(r'^router/$', r'router'),
 
     url(r'^softblock/$', r'softblock'),
+    url(r'^banned/$', r'banned'),
 
     url(r'^library/page/(?P<page_num>\d+)/$', r'library'),
     url(r'^signup/$', r'signup'),

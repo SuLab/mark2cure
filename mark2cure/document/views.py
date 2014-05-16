@@ -370,7 +370,7 @@ class TopUserViewSet(generics.ListAPIView):
             task_type = 'cr',
             completed = True,
             section__document__id = doc_id,
-            experiment= settings.EXPERIMENT if self.request.user.userprofile.mturk else None).exclude(user = self.request.user).values('user').distinct()
+            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user).values('user').distinct()[:4]
 
 
 class AnnotationViewSet(generics.ListAPIView):

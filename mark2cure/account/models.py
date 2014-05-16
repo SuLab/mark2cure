@@ -27,6 +27,7 @@ class UserProfile(models.Model):
     email_notify  = models.BooleanField(default = False, blank = True)
 
     mturk           = models.BooleanField(default = False, blank = True)
+    banned          = models.BooleanField(default = False, blank = True)
     softblock       = models.BooleanField(default = False, blank = True)
     ignore          = models.BooleanField(default = False, blank = True)
     turk_last_assignment_id = models.CharField(max_length=200, blank = True)

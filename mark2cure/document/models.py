@@ -240,6 +240,7 @@ class View(models.Model):
         get_latest_by = 'updated'
         ordering = ('-updated',)
 
+
 class Activity(models.Model):
     user = models.ForeignKey(User)
     document = models.ForeignKey(Document)
