@@ -74,7 +74,7 @@ def mturk(request):
         user_profile.save()
 
     # Handle training or max allowed
-    n_count = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).count()
+    n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
     training_order = [869, 956, 1018, 520]
 
     if n_count >= 24:
@@ -93,7 +93,7 @@ def mturk(request):
 @login_required
 def router(request):
     # Handle training or max allowed
-    n_count = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).count()
+    n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
     training_order = [869, 956, 1018, 520]
 
     if n_count >= 24:
