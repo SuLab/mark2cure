@@ -366,11 +366,14 @@ class TopUserViewSet(generics.ListAPIView):
         doc_id = self.kwargs['doc_id']
         section_id = self.kwargs['section_id']
         # (TODO) Test distinct + limit
-        return View.objects.filter(
+        top_users =  View.objects.filter(
             task_type = 'cr',
             completed = True,
             section__document__id = doc_id,
-            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user).values('user').distinct()[:4]
+            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user).values('user')
+        top_users = [dict(y) for y in set(tuple(x.items()) for x in top_users)]
+        # print 'Top Users: ', top_users[:4]
+        return top_users[:4]
 
 
 class AnnotationViewSet(generics.ListAPIView):
@@ -379,7 +382,12 @@ class AnnotationViewSet(generics.ListAPIView):
     def get_queryset(self):
         section_id = self.kwargs['section_id']
         user_id = self.kwargs['user_id']
-        return Annotation.objects.filter(view__section__id = section_id, view__user__id = user_id).all()[:10]
+
+        section = get_object_or_404(Section, pk=section_id)
+        user = get_object_or_404(User, pk=user_id)
+        annotations = section.latest_annotations(user = user)
+        # print 'User ', user_id, ' Annotations: ', annotations
+        return annotations
 
 
 class RelationshipTypeViewSet(viewsets.ModelViewSet):

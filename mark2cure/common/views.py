@@ -75,9 +75,10 @@ def mturk(request):
 
     # Handle training or max allowed
     n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
+    # print 'N Count: ', n_count
     training_order = [869, 956, 1018, 520]
 
-    if n_count >= 24:
+    if n_count > 24:
         return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
     if n_count < 4:
@@ -93,10 +94,13 @@ def mturk(request):
 @login_required
 def router(request):
     # Handle training or max allowed
+    user = request.user
+    user_profile = user.userprofile
     n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
+    # print 'N Count: ', n_count
     training_order = [869, 956, 1018, 520]
 
-    if n_count >= 24:
+    if n_count > 24:
         return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
     if n_count < 4:
@@ -196,7 +200,7 @@ def message(request):
 @login_required
 def survey(request):
     for k, v in request.POST.iteritems():
-        print k, v
+        # print k, v
         if(k != "csrfmiddlewaretoken"):
           sf = SurveyFeedback(question = k, response = v, user = request.user)
           sf.save()
