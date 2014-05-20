@@ -58,7 +58,7 @@ block post-footer
 
         var generate_legend = function(data) {
             _.each(data, function(item, i) {
-              $('tbody').append('<tr><td><div style="height: 10px; width: 16px; border-bottom:5px solid '+color_scale(i)+'"></div></td><td>Worker '+(i+1)+'</td></tr>')
+              $('tbody').append('<tr><td><div style="height: 10px; width: 16px; border-bottom:5px solid '+color_scale(i)+'"></div></td><td>Worker '+item.id+'</td></tr>')
             });
         };
 

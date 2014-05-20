@@ -42,6 +42,8 @@ def experiment_routing(user, n_count, k_max = 5):
     for x in experiment_docs_completed:
         if x in experiment_docs: experiment_docs.remove(x)
 
+    logger.debug("Experiment Docs remaining count {0} for {1} in experiment {2}".format(len(experiment_docs), user.username, settings.EXPERIMENT))
+
     random.shuffle(experiment_docs)
     if len(experiment_docs) == 0:
         # All the docs have been completed (allow unlimited HITs with extra protection)

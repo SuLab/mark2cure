@@ -16,7 +16,8 @@ from mark2cure.common.utils import experiment_routing
 from mark2cure.account.utils import get_mturk_account
 
 from datetime import datetime, timedelta
-import math, random
+import math, random, logging
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -75,7 +76,7 @@ def mturk(request):
 
     # Handle training or max allowed
     n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
-    # print 'N Count: ', n_count
+    logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
     training_order = [869, 956, 1018, 520]
 
     if n_count > 24:
@@ -97,7 +98,7 @@ def router(request):
     user = request.user
     user_profile = user.userprofile
     n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
-    # print 'N Count: ', n_count
+    logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
     training_order = [869, 956, 1018, 520]
 
     if n_count > 24:
