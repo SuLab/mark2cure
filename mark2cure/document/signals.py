@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 def comment_save_handler(sender, instance, **kwargs):
     comment = instance
 
-    send_mail('[Mark2Cure #{0}] Document comment',
-              '{1} commented: {2} on document id {3}'.format(settings.EXPERIMENT, comment.user.pk, comment.message, comment.document.pk),
+    send_mail('[Mark2Cure #{0}] Document comment'.format(settings.EXPERIMENT),
+              '{0} commented: {1} on document id {2}'.format(comment.user.pk, comment.message, comment.document.pk),
               settings.SERVER_EMAIL,
               [email[1] for email in settings.MANAGERS])
 
@@ -25,10 +25,10 @@ def activity_save_handler(sender, instance, **kwargs):
       Email notify monitors
     '''
     if activity.f_score == 1.0 or activity.f_score == 0.0:
-        send_mail('[Mark2Cure #{0}] HIT completion',
-                      '{1} scored {2} on document id {3}'.format(settings.EXPERIMENT, user.pk, activity.f_score, activity.document.pk),
-                       settings.SERVER_EMAIL,
-                       [email[1] for email in settings.MANAGERS])
+        send_mail('[Mark2Cure #{0}] HIT completion'.format(settings.EXPERIMENT),
+                  '{0} scored {1} on document id {2}'.format(user.pk, activity.f_score, activity.document.pk),
+                   settings.SERVER_EMAIL,
+                   [email[1] for email in settings.MANAGERS])
 
 
     '''
@@ -42,8 +42,8 @@ def activity_save_handler(sender, instance, **kwargs):
                 if latest_results[1].f_score < .5 and latest_results[2].f_score < .5:
                     user_profile.banned = True
                     user_profile.save()
-                    send_mail('[Mark2Cure #{0}] banned',
-                                '{1} was blocked due to document id {2}'.format(settings.EXPERIMENT, user.pk, activity.document.pk),
+                    send_mail('[Mark2Cure #{0}] banned'.format(settings.EXPERIMENT),
+                                '{0} was blocked due to document id {1}'.format(user.pk, activity.document.pk),
                                 settings.SERVER_EMAIL,
                                 [email[1] for email in settings.MANAGERS])
 

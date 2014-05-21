@@ -5,7 +5,8 @@ from django.db.models import Count
 from mark2cure.document.models import Activity
 
 from datetime import datetime
-import datetime, random
+import datetime, random, logging
+logger = logging.getLogger(__name__)
 
 
 def experiment_routing(user, n_count, k_max = 5):

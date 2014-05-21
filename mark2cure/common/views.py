@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.core.mail import send_mail
 
 from mark2cure.document.models import Document, View, Annotation, Activity
 from mark2cure.common.forms import MessageForm
@@ -180,6 +181,12 @@ def signup(request):
         profile.email_notify = notify
         profile.save()
       u.save()
+
+      send_mail('[Mark2Cure] New User Signup',
+                'Email: {0}'.format(email),
+                settings.SERVER_EMAIL,
+                [email[1] for email in settings.MANAGERS])
+
       return redirect('/')
     return HttpResponse('Unauthorized', status=401)
 
