@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         elif command == "create_hits":
             for idx in range(hit_count):
-                turk.hit_for_document(max_assignments = 1, minutes = 10)
+                turk.hit_for_document(max_assignments = 1, minutes = 10, approval_delay_days = 2)
                 print idx
 
 

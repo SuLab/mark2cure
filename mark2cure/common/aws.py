@@ -28,7 +28,7 @@ class Turk():
 
   def external_question(self):
       # Would be cool to pull the length of the document to know the correct size of the window to show
-      return ExternalQuestion("https://mark2cure.org/mturk/", 1000)
+      return ExternalQuestion("https://mark2cure.org/mturk/", 1200)
 
 
   def make_qualification_test(self):

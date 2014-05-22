@@ -99,7 +99,7 @@ def identify_annotations_submit(request, doc_id, section_id):
         return HttpResponse(200)
     return HttpResponse(500)
 
-
+@login_required
 def identify_annotations_results(request, doc_id):
     '''
       After a document has been submitted, show the results and handle score keeping details
