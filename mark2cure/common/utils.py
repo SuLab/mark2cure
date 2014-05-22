@@ -10,15 +10,15 @@ import datetime, random, logging
 logger = logging.getLogger(__name__)
 
 
-def experiment_routing(user, n_count, k_max = 8):
+def experiment_routing(user, n_count, k_max = 5):
     user_profile = user.userprofile
 
     gm_dict = {
-        9: 282,
-        17: 310,
-        40: 363,
-        41: 326,
-        42: 322
+        11: 282,
+        19: 310,
+        26: 363,
+        32: 326,
+        44: 322
         }
 
     if n_count in gm_dict:
@@ -48,6 +48,13 @@ def experiment_routing(user, n_count, k_max = 8):
         experiment= settings.EXPERIMENT if user.userprofile.mturk else None).exclude(submission_type='gm').values('document').annotate(Count('document'))
     experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= k_max]
 
+    # Email us to let us know when the K saturates on these
+    if len(experiment_docs_completed) > 15:
+        send_mail('[Mark2Cure] Document Completion Milestone #{0}'.format(settings.EXPERIMENT),
+                '{0} documents have had all their work completed.'.format(len(experiment_docs_completed)),
+                settings.SERVER_EMAIL,
+                [email[1] for email in settings.MANAGERS])
+
     for x in experiment_docs_completed:
         if x in experiment_docs: experiment_docs.remove(x)
 
@@ -55,9 +62,10 @@ def experiment_routing(user, n_count, k_max = 8):
 
     random.shuffle(experiment_docs)
 
-    if len(experiment_docs) < 5:
-        send_mail('[Mark2Cure] Experiment Doc Remaining #{0}'.format(settings.EXPERIMENT),
-                'There are only {0} documents that have work left to be done.'.format(len(experiment_docs)),
+    # Email us to alert of a user who is about to finish!
+    if len(experiment_docs) <= 5:
+        send_mail('[Mark2Cure] User Docs Remaining #{0}'.format(settings.EXPERIMENT),
+                '{0} only has {1} documents left to do.'.format(user.username, len(experiment_docs)),
                 settings.SERVER_EMAIL,
                 [email[1] for email in settings.MANAGERS])
 
