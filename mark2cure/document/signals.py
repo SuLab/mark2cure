@@ -36,7 +36,11 @@ def activity_save_handler(sender, instance, **kwargs):
     '''
     if user_profile.mturk and activity.submission_type == "gm":
         if activity.f_score <= 0.5:
-            latest_results = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None)[:3]
+            latest_results = Activity.objects.filter(
+                user=user,
+                experiment= settings.EXPERIMENT if user.userprofile.mturk else None,
+                task_type='cr',
+                submission_type='gm')[:3]
 
             if len(latest_results) == 3:
                 if latest_results[1].f_score < .5 and latest_results[2].f_score < .5:
