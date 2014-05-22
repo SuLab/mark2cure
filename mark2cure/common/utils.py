@@ -10,7 +10,7 @@ import datetime, random, logging
 logger = logging.getLogger(__name__)
 
 
-def experiment_routing(user, n_count, k_max = 5):
+def experiment_routing(user, n_count, k_max = 8):
     user_profile = user.userprofile
 
     gm_dict = {
