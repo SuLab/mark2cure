@@ -1,0 +1,81 @@
+extends base
+
+- load humanize
+
+block content
+
+    .row
+      .col-sm-4.col-sm-offset-4
+          h1
+            | Experiment # {{exp_id}}
+    .row
+      .col-sm-4.col-sm-offset-1
+          h2
+            | Total Views: {{total_activities}} (${{cost}})
+
+      .col-sm-4.col-sm-offset-1
+          h2
+            | Average F <small>(of GM)</small>: {{avg_f|floatformat:4}}
+
+    hr
+    .row
+      .col-sm-4.col-sm-offset-1.head-space
+        table.table.table-striped.table-hover
+          - if workers.count == 0
+            tr
+              td
+                | No Workers
+          - else
+            tr
+              th
+                | #
+              th
+                | Worker
+              th
+                | Completions
+
+            - for worker, idx in workers
+              tr
+                td
+                  | #{ idx }
+
+                td
+                  | #{ worker.user } (
+                  a(href="https://requester.mturk.com/workers/{{worker.user__username}}", target='_blank')
+                    |#{ worker.user__username }
+                  | )
+
+                td
+                  | #{ worker.user__count }
+
+
+      .col-sm-4.col-sm-offset-1.head-space
+        table.table.table-striped.table-hover
+          - if documents.count == 0
+            tr
+              td
+                | No Documents (what?)
+          - else
+            tr
+              th
+                | #
+              th
+                | Document
+              th
+                | Completions
+
+            - for document, idx in documents
+              tr
+                td
+                  | #{ idx }
+
+                td
+                  | #{ document.document } (
+                  a(href="http://www.ncbi.nlm.nih.gov/pubmed/{{document.document__document_id}}", target='_blank')
+                    |#{ document.document__document_id }
+                  | )
+
+                td
+                  | #{ document.document__count }
+
+

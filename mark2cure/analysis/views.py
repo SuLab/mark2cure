@@ -4,11 +4,48 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.db.models import Count
+from django.conf import settings
+
 
 from mark2cure.document.models import *
 from mark2cure.analysis.utils import clean
 
 import json
+
+@login_required
+def experiment_details(request, exp_id):
+
+    total_activities = Activity.objects.filter(task_type='cr', experiment=exp_id).count()
+
+    workers = Activity.objects.filter(
+        task_type='cr',
+        experiment=exp_id).values('user', 'user__username').annotate(Count('user')).order_by('-user__count')
+
+    documents = Activity.objects.filter(
+        task_type='cr',
+        experiment=exp_id).exclude(submission_type='gm').values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+
+    f_scores = Activity.objects.filter(
+        task_type='cr',
+        submission_type='gm',
+        experiment=exp_id).values_list('f_score', flat=True).order_by('-f_score')
+
+    avg_f = reduce(lambda x, y: x + y, f_scores) / len(f_scores)
+
+
+    return render_to_response('analysis/experiment_details.jade', {
+      'exp_id' : exp_id,
+      'total_activities' : total_activities,
+      'cost' : total_activities*.06,
+      'avg_f' : avg_f,
+
+      'workers' : workers,
+      'documents' : documents,
+      }, context_instance=RequestContext(request))
+
+
+
 
 @login_required
 def network(request):

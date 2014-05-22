@@ -14,6 +14,9 @@ router.register(r'relationshiptypes', RelationshipTypeViewSet)
 
 urlpatterns = patterns('mark2cure.analysis.views',
     url(r'^network$', r'network'),
+
+    url(r'^experiment/(?P<exp_id>\d+)/results/$', r'experiment_details'),
+
     # url(r'^page/(?P<page_num>\d+)/$', r'list'),
 )
 
