@@ -80,7 +80,7 @@ def mturk(request):
     logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
     training_order = [869, 956, 1018, 520]
 
-    if n_count > 24:
+    if n_count > 54:
         return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
     if n_count < 4:
@@ -102,7 +102,7 @@ def router(request):
     logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
     training_order = [869, 956, 1018, 520]
 
-    if n_count > 24:
+    if n_count > 54:
         return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
     if n_count < 4:
