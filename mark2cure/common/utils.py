@@ -10,7 +10,7 @@ import datetime, random, logging
 logger = logging.getLogger(__name__)
 
 
-def experiment_routing(user, n_count, k_max = 5):
+def experiment_routing(user, n_count, n = 50):
     user_profile = user.userprofile
 
     gm_dict = {
@@ -46,7 +46,7 @@ def experiment_routing(user, n_count, k_max = 5):
         document__pk__in=experiment_docs,
         task_type='cr',
         experiment= settings.EXPERIMENT if user.userprofile.mturk else None).exclude(submission_type='gm').values('document').annotate(Count('document'))
-    experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= k_max]
+    experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= n]
 
     # Email us to let us know when the K saturates on these
     if len(experiment_docs_completed) > 15:
