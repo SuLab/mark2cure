@@ -76,20 +76,43 @@ def mturk(request):
         user_profile.save()
 
     # Handle training or max allowed
-    n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
-    logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
-    training_order = [869, 956, 1018, 520]
+    hit_index = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
+    logger.debug("MTurk Routing N count {0} for {1}".format(hit_index, user.username))
 
-    if n_count > 54:
-        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
+    gm_dict = {
+        0: 869,
+        1: 956,
+        2: 1018,
+        3: 520,
+        11: 282,
+        19: 310,
+        26: 363,
+        32: 326,
+        44: 322
+    }
 
-    if n_count < 4:
-        return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
+    if hit_index in gm_dict:
+        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
 
-    document = experiment_routing(user, n_count)
+    if hit_index >= (len(gm_dict) + len(settings.EXPERIMENT_DOCS)):
+        return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
+
+    if hit_index in [4,10,15]:
+        send_mail('[Mark2Cure] User Milestone',
+                'User {0} is on the flow, currently at document index {1}'.format(user.pk, hit_index),
+                settings.SERVER_EMAIL,
+                [email[1] for email in settings.MANAGERS])
+
+
+    document = experiment_routing(user)
     if document:
         return redirect('mark2cure.document.views.identify_annotations', document)
     else:
+        send_mail('[Mark2Cure] ALERT',
+                'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated',
+                settings.SERVER_EMAIL,
+                [email[1] for email in settings.MANAGERS])
+
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
 
 

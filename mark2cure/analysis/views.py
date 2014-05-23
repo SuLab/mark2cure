@@ -17,6 +17,7 @@ import json
 def experiment_details(request, exp_id):
 
     total_activities = Activity.objects.filter(task_type='cr', experiment=exp_id).count()
+    total_experimental_activities = Activity.objects.filter(task_type='cr', experiment=exp_id).exclude(submission_type='gm').count()
 
     workers = Activity.objects.filter(
         task_type='cr',
@@ -25,6 +26,16 @@ def experiment_details(request, exp_id):
     documents = Activity.objects.filter(
         task_type='cr',
         experiment=exp_id).exclude(submission_type='gm').values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+
+    gold_documents = Activity.objects.filter(
+        task_type='cr',
+        submission_type='gm',
+        experiment=exp_id).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+
+
+
+    for doc in documents: doc['comment_count'] = Comment.objects.filter(document__pk = doc['document']).count()
+    for doc in gold_documents: doc['comment_count'] = Comment.objects.filter(document__pk = doc['document']).count()
 
     f_scores = Activity.objects.filter(
         task_type='cr',
@@ -37,11 +48,14 @@ def experiment_details(request, exp_id):
     return render_to_response('analysis/experiment_details.jade', {
       'exp_id' : exp_id,
       'total_activities' : total_activities,
+      'total_experimental_activities': total_experimental_activities,
+
       'cost' : total_activities*.06,
       'avg_f' : avg_f,
 
       'workers' : workers,
       'documents' : documents,
+      'gold_documents' : gold_documents,
       }, context_instance=RequestContext(request))
 
 
