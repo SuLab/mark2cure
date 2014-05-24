@@ -97,13 +97,6 @@ def mturk(request):
     if hit_index >= (len(gm_dict) + len(settings.EXPERIMENT_DOCS)):
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
 
-    if hit_index in [4,5,6,10,15]:
-        send_mail('[Mark2Cure] User Milestone',
-                'User {0} is on the flow, currently at document index {1}'.format(user.pk, hit_index),
-                settings.SERVER_EMAIL,
-                [email[1] for email in settings.MANAGERS])
-
-
     document = experiment_routing(user)
     if document:
         return redirect('mark2cure.document.views.identify_annotations', document)
