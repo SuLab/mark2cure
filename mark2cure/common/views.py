@@ -102,7 +102,7 @@ def mturk(request):
         return redirect('mark2cure.document.views.identify_annotations', document)
     else:
         send_mail('[Mark2Cure] ALERT',
-                'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated',
+                'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated, User: {0}, Index: {1}'.format(user.pk, hit_index),
                 settings.SERVER_EMAIL,
                 [email[1] for email in settings.MANAGERS])
 
