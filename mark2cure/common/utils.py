@@ -22,7 +22,7 @@ def experiment_routing(user, n_value = 50):
     '''
     prev_docs = Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user.userprofile.mturk else None).values_list('document__pk', flat=True).all()
     # Make a copy so we can remove from copy
-    experiment_docs = settings.EXPERIMENT_DOCS
+    experiment_docs = list(settings.EXPERIMENT_DOCS)
     for x in prev_docs:
         if x in experiment_docs: experiment_docs.remove(x)
 
