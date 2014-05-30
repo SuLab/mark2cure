@@ -35,8 +35,50 @@ class UserProfile(models.Model):
     ncbo            = models.BooleanField(default = False, blank = True)
 
 
+    GENDER_CHOICES = (
+      ('m', 'Male'),
+      ('f', 'Female'),
+    )
+    gender = models.CharField(max_length = 1, choices = GENDER_CHOICES, blank = True, null = True, default = None)
+    age = models.IntegerField()
+    #location
+    #occupation
+
+    EDUCATION_CHOICES = (
+      (0, 'Some elementary'),
+      (1, 'Finished elementary'),
+      (2, 'Some high school'),
+      (3, 'Finished high school'),
+      (4, 'Some community college'),
+      (5, 'Finished community college'),
+      (6, 'Some 4-year college'),
+      (7, 'Finished 4-year college'),
+      (8, 'Some masters program'),
+      (9, 'Finished masters program'),
+      (10, 'Some PhD program'),
+      (11, 'Finished PhD program'),
+    )
+    education = models.IntegerField(choices = EDUCATION_CHOICES, blank = True, null = True, default = None)
+
+    MOTIVATION_CHOICES = (
+        (0, 'Monetary'), 
+        (1, 'Purpose'),
+        (2, 'Achievement'),
+        (3, 'Social'),
+        (4, 'Immersion'),
+        (5, 'Learning'),
+    )
+
+    motivation = models.IntegerField(choices = MOTIVATION_CHOICES, blank = True, null = True, default = None)
+
+
+
     def score(self, task_type="cr"):
         return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type="gm").values_list('f_score', flat=True).all())
+
+
+    def profile_complete(self):
+        pass
 
 
     def __unicode__(self):
