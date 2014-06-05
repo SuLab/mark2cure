@@ -1,19 +1,70 @@
 extends base
 
 - load humanize
+- load widget_tweaks
 
 block content
 
   .row
     .jumbotron
       h1.text-center
-        | We're sorry to bother you but we have a few questions 
-      p.head-space-xl
+        | We have a few questions...
+      p.head-space-xl.text-center
         strong
           | Don't worry!
-        | this counts as a HIT $$$ (&hearts; Thank you! &hearts;).
+        | this counts as a HIT $$$, we just want to find out a little more information about you
 
-      form
+      form(method='post', role='form')
+          {% csrf_token %}
+
+          .form-group
+              label
+                | #{form.gender.label_tag}
+              - for error in form.gender.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.gender|add_class:'form-control'|add_class:'selectize-basic'}
+
+          .form-group
+              label
+                | #{form.age.label_tag}
+              - for error in form.age.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.age|add_class:'form-control'}
+
+          .form-group
+              label
+                  | #{form.occupation.label_tag}
+              - for error in form.age.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.occupation|add_class:'form-control'|add_class:'selectize-occupation'}
+
+          .form-group
+              label
+                | #{form.education.label_tag}
+              - for error in form.age.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+             #{form.education|add_class:'form-control'|add_class:'selectize-basic'}
+
+          .form-group
+              label
+                | #{form.motivation.label_tag}
+               - for error in form.motivation.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.motivation|add_class:'form-control'|add_class:'selectize-basic'}
+
+
+          button(type='submit', value='Submit').btn.btn-default
+              | Submit
 
 
       p.head-space-xl

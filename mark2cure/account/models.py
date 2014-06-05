@@ -12,10 +12,10 @@ import datetime
 class UserProfile(models.Model):
     user                  = models.OneToOneField(User, unique=True)
 
-    created_by            = models.ForeignKey(User, null=True, blank=True, related_name="children")
+    created_by            = models.ForeignKey(User, null=True, blank = True, related_name = 'children')
     timezone              = TimeZoneField(default='America/Los_Angeles')
 
-    instructions_enabled  = models.BooleanField(default=True, verbose_name="Display Extra Instructions")
+    instructions_enabled  = models.BooleanField(default = True, verbose_name = 'Display Extra Instructions')
 
     experience  = models.IntegerField(default=0)
     feedback_0  = models.IntegerField(default=0)
@@ -31,18 +31,20 @@ class UserProfile(models.Model):
     softblock       = models.BooleanField(default = False, blank = True)
     ignore          = models.BooleanField(default = False, blank = True)
     turk_last_assignment_id = models.CharField(max_length=200, blank = True)
-    turk_submit_to  = models.CharField(max_length=200, blank = True, default = "http://example.com")
+    turk_submit_to  = models.CharField(max_length = 200, blank = True, default = 'http://example.com')
     ncbo            = models.BooleanField(default = False, blank = True)
 
 
+    '''
+        Profiling our users
+    '''
     GENDER_CHOICES = (
       ('m', 'Male'),
       ('f', 'Female'),
     )
     gender = models.CharField(max_length = 1, choices = GENDER_CHOICES, blank = True, null = True, default = None)
-    age = models.IntegerField()
-    #location
-    #occupation
+    age = models.IntegerField(blank = True, null = True, default = None)
+    occupation = models.CharField(max_length = 255, blank = True)
 
     EDUCATION_CHOICES = (
       (0, 'Some elementary'),
@@ -61,24 +63,23 @@ class UserProfile(models.Model):
     education = models.IntegerField(choices = EDUCATION_CHOICES, blank = True, null = True, default = None)
 
     MOTIVATION_CHOICES = (
-        (0, 'Monetary'), 
+        (0, 'Monetary'),
         (1, 'Purpose'),
         (2, 'Achievement'),
         (3, 'Social'),
         (4, 'Immersion'),
         (5, 'Learning'),
     )
-
     motivation = models.IntegerField(choices = MOTIVATION_CHOICES, blank = True, null = True, default = None)
 
 
+    def score(self, task_type = 'cr'):
+        return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type='gm').values_list('f_score', flat=True).all())
 
-    def score(self, task_type="cr"):
-        return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type="gm").values_list('f_score', flat=True).all())
 
-
-    def profile_complete(self):
-        pass
+    def survey_complete(self):
+        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.motivation == None: return False
+        return True
 
 
     def __unicode__(self):
@@ -102,3 +103,4 @@ class Ncbo(models.Model):
 
 
 User.ncbo = property(lambda u: Ncbo.objects.get_or_create(user=u)[0])
+

@@ -102,6 +102,7 @@ def activate(request, user_id):
     else:
         return HttpResponse('Unauthorized', status=401)
 
+
 @login_required
 @require_http_methods(["POST"])
 def delete(request, user_id):

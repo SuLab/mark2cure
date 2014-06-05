@@ -141,6 +141,31 @@ $(document).ready(function() {
     // $(this).closest('form').submit();
   });
 
+  $('.selectize-basic').selectize();
+  $('.selectize-occupation').selectize({
+    valueField: 'name',
+    labelField: 'name',
+    searchField: 'name',
+    options: [
+      {name: 'Student'},
+      {name: 'Computer'},
+      {name: 'Labor'},
+      {name: 'Unemployed'},
+      {name: 'Technical'},
+      {name: 'Programmer'},
+      {name: 'Science'},
+      {name: 'Bussiness'},
+      {name: 'Finance'},
+      {name: 'Legal'},
+      {name: 'Art'},
+      {name: 'Education'},
+      {name: 'Retired'},
+    ],
+    create: true,
+    maxItems: 5,
+  })
+
+
   $('.selectize-relationshiptypes').selectize({
       valueField: 'id',
       labelField: 'full_name',

@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 
 from mark2cure.document.models import Document, View, Annotation, Activity
-from mark2cure.common.forms import MessageForm
+from mark2cure.common.forms import MessageForm, ProfileSurveyForm
 from mark2cure.common.models import SurveyFeedback
 from mark2cure.common.utils import experiment_routing
 from mark2cure.account.utils import get_mturk_account
@@ -91,6 +91,9 @@ def mturk(request):
         44: 322
     }
 
+    if not user_profile.survey_complete():
+        return redirect('mark2cure.common.views.profile_survey')
+
     if hit_index in gm_dict:
         return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
 
@@ -134,8 +137,29 @@ def router(request):
 def banned(request):
     return render_to_response('common/banned.jade', context_instance=RequestContext(request))
 
+
 def softblock(request):
     return render_to_response('common/softblock.jade', context_instance=RequestContext(request))
+
+
+@login_required
+def profile_survey(request):
+    user_profile = request.user.userprofile
+
+    if request.method == 'POST':
+        form = ProfileSurveyForm(request.POST, instance = user_profile)
+        if form.is_valid():
+            form.save()
+
+            if user_profile.mturk:
+                return render_to_response('includes/mturk_submit.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
+            else:
+                redirect('mark2cure.common.views.library')
+
+    else:
+        form = ProfileSurveyForm(instance = user_profile)
+
+    return render_to_response('common/survey.jade', {'user_profile': user_profile, 'form': form }, context_instance=RequestContext(request))
 
 
 @login_required
