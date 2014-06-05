@@ -62,6 +62,9 @@ def identify_annotations(request, doc_id):
 
     doc.create_views(request.user, 'cr')
     user_profile = request.user.userprofile
+    user_profile.user_agent = request.META['HTTP_USER_AGENT']
+    user_profile.player_ip = request.META['REMOTE_ADDR']
+
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
@@ -86,14 +89,8 @@ def identify_annotations_submit(request, doc_id, section_id):
     form = AnnotationForm(request.POST, view)
     if form.is_valid():
         ann = form.save(commit=False)
-
         ann.view = view
         ann.type = "disease"
-        ann.user_agent = request.META['HTTP_USER_AGENT']
-        ann.player_ip = request.META['REMOTE_ADDR']
-
-        if request.user.profile.mturk:
-          ann.experiment = settings.EXPERIMENT
 
         ann.save()
         return HttpResponse(200)

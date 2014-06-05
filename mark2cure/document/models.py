@@ -221,12 +221,12 @@ TASK_TYPE_CHOICE = (
 )
 
 class View(models.Model):
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now = True)
+    created = models.DateTimeField(auto_now_add = True)
 
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
-    completed = models.BooleanField(default = False, blank=True)
-    experiment  = models.IntegerField(blank=True, null=True)
+    task_type = models.CharField(max_length = 3, choices = TASK_TYPE_CHOICE, blank = True, default = 'cr')
+    completed = models.BooleanField(default = False, blank = True)
+    experiment  = models.IntegerField(blank = True, null = True)
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
@@ -244,15 +244,15 @@ class View(models.Model):
 class Activity(models.Model):
     user = models.ForeignKey(User)
     document = models.ForeignKey(Document)
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
-    experiment  = models.IntegerField(blank=True, null=True)
+    task_type = models.CharField(max_length = 3, choices = TASK_TYPE_CHOICE, blank = True, default = 'cr')
+    experiment  = models.IntegerField(blank = True, null = True)
 
     SUBMISSION_TYPE = (
       ('gm', 'Golden Master'),
       ('cc', 'Community Consensus'),
       ('na', 'Never Annotated'),
     )
-    submission_type = models.CharField(max_length=3, choices=SUBMISSION_TYPE, blank=True, default='gm')
+    submission_type = models.CharField(max_length = 3, choices = SUBMISSION_TYPE, blank = True, default = 'gm')
 
     precsion = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
     recall = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
@@ -332,10 +332,6 @@ class Annotation(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
-    user_agent  = models.CharField(max_length=150, blank=True, null=True)
-    player_ip   = models.GenericIPAddressField(blank=True, null=True)
-    experiment  = models.IntegerField(blank=True, null=True)
 
     view = models.ForeignKey(View)
 
