@@ -9,10 +9,15 @@ block content
     .jumbotron
       h1.text-center
         | We have a few questions...
-      p.head-space-xl.text-center
-        strong
-          | Don't worry!
-        | this counts as a HIT $$$, we just want to find out a little more information about you
+
+      p.head-space.text-center
+        | Thank for your work on this important scientific study. Before we begin, your first HIT is simply to fill in this short survey honestly. This information will only be used when we analyze the results collected from all workers. It will not be redistributed nor impact your standing within the AMT in any way. If you have questions, please 
+        a(href="mailto:nanis@scripps.edu,bgood@scripps.edu?subject=Mark2Cure Worker Banned")
+          | contact us
+        small
+          | (please include your Worker ID)
+
+
 
       form(method='post', role='form')
           {% csrf_token %}
@@ -55,12 +60,12 @@ block content
 
           .form-group
               label
-                | #{form.motivation.label_tag}
+                | #{form.motivation.label_tag} (Can pick multiple or write your own)
                - for error in form.motivation.errors
                   .alert.alert-danger
                       strong
                           | {{ error|escape }}
-              #{form.motivation|add_class:'form-control'|add_class:'selectize-basic'}
+              #{form.motivation|add_class:'form-control'|add_class:'selectize-motivation'}
 
 
           button(type='submit', value='Submit').btn.btn-default

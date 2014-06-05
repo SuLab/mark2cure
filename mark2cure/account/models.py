@@ -62,24 +62,14 @@ class UserProfile(models.Model):
       (11, 'Finished PhD program'),
     )
     education = models.IntegerField(choices = EDUCATION_CHOICES, blank = True, null = True, default = None)
-
-    MOTIVATION_CHOICES = (
-        (0, 'Monetary'),
-        (1, 'Purpose'),
-        (2, 'Achievement'),
-        (3, 'Social'),
-        (4, 'Immersion'),
-        (5, 'Learning'),
-    )
-    motivation = models.IntegerField(choices = MOTIVATION_CHOICES, blank = True, null = True, default = None)
-
+    motivation = models.CharField(max_length = 255, blank = True)
 
     def score(self, task_type = 'cr'):
         return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type='gm').values_list('f_score', flat=True).all())
 
 
     def survey_complete(self):
-        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.motivation == None: return False
+        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.motivation == '': return False
         return True
 
 

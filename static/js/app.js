@@ -165,6 +165,18 @@ $(document).ready(function() {
     maxItems: 5,
   })
 
+  $('.selectize-motivation').selectize({
+    valueField: 'name',
+    labelField: 'name',
+    searchField: 'name',
+    options: [
+      {name: 'I want to make money'},
+      {name: 'I want entertainment'},
+      {name: 'I want to help science'},
+    ],
+    create: true,
+    maxItems: 5,
+  })
 
   $('.selectize-relationshiptypes').selectize({
       valueField: 'id',
