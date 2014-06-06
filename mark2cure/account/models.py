@@ -81,13 +81,13 @@ User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
 
 class Ncbo(models.Model):
-    user = models.OneToOneField(User, unique=True, null=True)
+    user = models.OneToOneField(User, unique = True, null = True)
 
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now = True)
+    created = models.DateTimeField(auto_now_add = True)
 
     min_term_size = models.IntegerField()
-    score         = models.IntegerField()
+    score = models.IntegerField()
 
     def __unicode__(self):
       return u'NCBO Settings : %s' % self.user.username

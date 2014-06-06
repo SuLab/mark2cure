@@ -165,3 +165,5 @@ from django.contrib.auth.models import User
 user = User.objects.get(username="admin")
 user.userprofile.score()
 
+
+In [3]: t.mtc.notify_workers(['A2SHY0YV9UW6SC'], "Software glitch, additional HITs available", "Hi – I first wanted to thank you for going through the HITs. Secondly, I wanted to apologize because I accidentally cut you short at ~25 documents. We actually had 30 more available per user or so which you were cut short from because of a software glitch. If you would like, I updated our software so you have access to the remaining HITS. Thanks again! Best, Max")
