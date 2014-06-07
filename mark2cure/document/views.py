@@ -8,8 +8,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from mark2cure.document.models import *
-from mark2cure.document.forms import DocumentForm, AnnotationForm, RefuteForm, CommentForm
+from mark2cure.document.models import Document, Activity, View, Annotation, ConceptRelationship, RelationshipType, Section
+from mark2cure.document.forms import DocumentForm, AnnotationForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id
 from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
 
@@ -57,14 +57,14 @@ def identify_annotations(request, doc_id):
     '''
 
     # Make sure there is an abstract to annotate
-    if sections.filter(kind="a").count() is 0:
+    if sections.filter(kind='a').count() is 0:
         return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
     doc.create_views(request.user, 'cr')
     user_profile = request.user.userprofile
     user_profile.user_agent = request.META['HTTP_USER_AGENT']
     user_profile.player_ip = request.META['REMOTE_ADDR']
-
+    user_profile.save()
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
@@ -76,7 +76,7 @@ def identify_annotations(request, doc_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def identify_annotations_submit(request, doc_id, section_id):
     '''
       This is broken out because there can be many submissions per document
@@ -86,15 +86,15 @@ def identify_annotations_submit(request, doc_id, section_id):
     # Save this as not complete until they all complete
     view = section.update_view(request.user, 'cr', False)
 
-    form = AnnotationForm(request.POST, view)
+    form = AnnotationForm(request.POST)
     if form.is_valid():
         ann = form.save(commit=False)
         ann.view = view
-        ann.type = "disease"
-
         ann.save()
+
         return HttpResponse(200)
     return HttpResponse(500)
+
 
 @login_required
 def identify_annotations_results(request, doc_id):
@@ -110,8 +110,8 @@ def identify_annotations_results(request, doc_id):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     for section in sections:
-      setattr(section, "words", section.resultwords(request.user))
-      setattr(section, "user_annotations", section.latest_annotations(request.user))
+      setattr(section, 'words', section.resultwords(request.user))
+      setattr(section, 'user_annotations', section.latest_annotations(request.user))
 
     '''
       1) It's a GM doc with GM annotations used to score
@@ -166,22 +166,7 @@ def identify_annotations_results(request, doc_id):
             context_instance=RequestContext(request))
 
 
-@require_http_methods(["POST"])
-@login_required
-def refute_section(request,  doc_id, section_id):
-    view = get_object_or_404(View, section__pk = section_id, user = request.user, completed = True, task_type="cr")
-
-    form = RefuteForm(request.POST)
-    if form.is_valid():
-      refute = form.save(commit=False)
-      refute.view = view
-      refute.save()
-      return HttpResponse("Success")
-
-    return HttpResponse('Unauthorized', status=401)
-
-
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 @login_required
 def comment_document(request,  doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
@@ -192,7 +177,7 @@ def comment_document(request,  doc_id):
       refute.document = doc
       refute.user = request.user
       refute.save()
-      return HttpResponse("Success")
+      return HttpResponse('Success')
 
     return HttpResponse('Unauthorized', status=401)
 
@@ -200,7 +185,7 @@ def comment_document(request,  doc_id):
 '''
   Views for completing the Verify Concept task
 '''
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 @login_required
 def validate_concepts(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
@@ -217,7 +202,7 @@ def validate_concepts(request, doc_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def validate_concepts_submit(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     validating_cr = get_object_or_404(ConceptRelationship, pk=request.POST.get('concept_relationship'))
@@ -254,7 +239,7 @@ def identify_concepts(request, doc_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def identify_concepts_submit(request, doc_id):
     '''
       This is broken out because there can be many submissions per document
@@ -264,13 +249,13 @@ def identify_concepts_submit(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     overview = doc.section_set.filter(kind = 'o').first()
 
-    subject_concept = get_object_or_404(Concept, concept_id=request.POST["c_one"])
-    object_concept = get_object_or_404(Concept, concept_id=request.POST["c_two"])
+    subject_concept = get_object_or_404(Concept, concept_id=request.POST['c_one'])
+    object_concept = get_object_or_404(Concept, concept_id=request.POST['c_two'])
 
     view, vc = View.objects.get_or_create(section = overview, user = request.user)
     ann, ac = Annotation.objects.get_or_create(view = view, kind = 'r')
 
-    for r in request.POST["relation"].split(","):
+    for r in request.POST['relation'].split(','):
       relationship_type = get_object_or_404(RelationshipType, pk=r)
 
       ConceptRelationship.objects.get_or_create(
@@ -333,18 +318,7 @@ def next(request, doc_id):
 
 
 @login_required
-def delete(request, doc_id):
-    ###############
-    # (TODO) MUST BE ADMIN
-    ###############
-
-    # doc = get_object_or_404(Document, pk=doc_id)
-    # doc.delete()
-    return redirect('/document/')
-
-
-@login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def create(request):
     '''
       Takes the document_id from POST and directs the
@@ -369,7 +343,7 @@ class TopUserViewSet(generics.ListAPIView):
             section__document__id = doc_id,
             experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user).values('user')
         top_users = [dict(y) for y in set(tuple(x.items()) for x in top_users)]
-        # print 'Top Users: ', top_users[:4]
+
         return top_users[:4]
 
 
@@ -388,9 +362,9 @@ class AnnotationViewSet(generics.ListAPIView):
 
 
 class RelationshipTypeViewSet(viewsets.ModelViewSet):
-    """
+    '''
     API endpoint that allows users to be viewed or edited.
-    """
+    '''
     queryset = RelationshipType.objects.all()
     serializer_class = RelationshipTypeSerializer
 

@@ -1,27 +1,27 @@
 from django import forms
 
-from mark2cure.document.models import Document, Annotation, Refute, Comment
+from mark2cure.document.models import Document, Annotation, Comment
 
 
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
-
         fields = ['document_id']
 
+
 class AnnotationForm(forms.ModelForm):
+
+    '''
+    def __init__(self, *args, **kwargs):
+        self.view = kwargs.pop('view')
+        super(AnnotationForm, self).__init__(*args, **kwargs)
+        self.fields['view_id'].initial = self.view.pk
+    '''
+
     class Meta:
         model = Annotation
-
         fields = ['kind', 'text', 'start']
 
-        # unique = ['start', 'text', 'fk_view_id']
-
-
-class RefuteForm(forms.ModelForm):
-    class Meta:
-        model = Refute
-        fields = ['message']
 
 class CommentForm(forms.ModelForm):
     class Meta:
