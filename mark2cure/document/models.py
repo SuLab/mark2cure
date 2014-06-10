@@ -349,7 +349,7 @@ class Annotation(models.Model):
 
     class Meta:
         get_latest_by = 'updated'
-
+        unique_together = ['kind', 'type', 'text', 'start', 'view']
 
 
 class Concept(models.Model):

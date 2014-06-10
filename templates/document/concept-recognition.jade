@@ -70,6 +70,7 @@ block post-footer
       YPet.start();
 
       $('button.done').click(function(evt) {
+        $(this).attr('disabled', 'disabled');
         //-- Submit the annotations to the server, then tell the server
         //-- you're done with that document.
 
