@@ -50,8 +50,11 @@ class Turk():
                                         '<ul>'
                                           '<li>'
                                             '<h3>Rule #1: Highlight <u>all</u> diseases and disease abbreviations</h3>'
-                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/8/1.png" />'
-                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/8/2.png" />'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/11/1.png" />'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/11/2.png" />'
+                                            '<br />'
+                                            '<h4>and NOT like this! (spaces between the words indicate incorrect highlighting)</h4>'
+                                            '<img alt="Highlight all diseases and disease abbreviations" src="http://mark2cure.org/static/images/experiment/11/3.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -59,10 +62,10 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Rule #2: Highlight the longest span of text specific to a disease</h3>'
-                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/3.png" />'
-                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/4.png" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/11/4.png" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/11/5.png" />'
                                             '<p>and not just "cancer"</p>'
-                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/8/5.png" />'
+                                            '<img alt="Highlight the longest span of text specific to a disease" src="http://mark2cure.org/static/images/experiment/11/6.png" />'
                                             '<p>and not just "breast cancer"</p>'
                                             '<br />'
                                             '<br />'
@@ -71,8 +74,8 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Rule #3: Highlight disease conjunctions as single, long spans.</h3>'
-                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/8/6.png" />'
-                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/8/7.png" />'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/11/7.png" />'
+                                            '<img alt="Highlight disease conjunctions as single, long spans" src="http://mark2cure.org/static/images/experiment/11/8.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -80,7 +83,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                           '<h3>Rule #4: Highlight symptoms - physical results of having a disease</h3>'
-                                            '<img alt="Highlight symptoms - physical results of having a disease" src="http://mark2cure.org/static/images/experiment/8/8.png" />'
+                                            '<img alt="Highlight symptoms - physical results of having a disease" src="http://mark2cure.org/static/images/experiment/11/9.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -88,7 +91,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Rule #5: Highlight <u>all</u> occurrences of disease terms</h3>'
-                                            '<img alt="Highlight all occurrences of disease terms" src="http://mark2cure.org/static/images/experiment/8/9.png" />'
+                                            '<img alt="Highlight all occurrences of disease terms" src="http://mark2cure.org/static/images/experiment/11/10.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -96,7 +99,7 @@ class Turk():
                                           '</li>'
                                           '<li>'
                                             '<h3>Rule #6: Highlight <u>all</u> diseases, disease groups and key disease symptoms</h3>'
-                                            '<img alt="Highlight all diseases, disease groups and key disease symptoms" src="http://mark2cure.org/static/images/experiment/8/10.png" />'
+                                            '<img alt="Highlight all diseases, disease groups and key disease symptoms" src="http://mark2cure.org/static/images/experiment/11/11.png" />'
                                             '<br />'
                                             '<br />'
                                             '<br />'
@@ -104,11 +107,11 @@ class Turk():
                                           '</li>'
                                            '<li>'
                                             '<h3>Rule #7: Do not highlight gene names</h3>'
-                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/11.png" />'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/11/12.png" />'
                                             '<p>highlight only the disease mention, not the gene</p>'
-                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/12.png" />'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/11/13.png" />'
                                             '<p>the disease is highlighted, but the related gene is not.</p>'
-                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/8/13.png" />'
+                                            '<img alt="Do not highlight gene names" src="http://mark2cure.org/static/images/experiment/11/14.png" />'
                                             '<p>In some cases the name of the gene may be the same as the name of the disease.  In these cases you should only highlight the text if it is referring to the disease and not to the gene.  The first NAS is highlighted while the second is not.</p>'
                                             '<br />'
                                             '<br />'
@@ -601,11 +604,10 @@ class Turk():
 
                         </AnswerKey>'''
 
-      qual_name = 'Annotation Instructions & Qualification Questions (Jan. 2014)'
-
-      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_4,
-      # qual_test = self.mtc.create_qualification_type(
-        # name = qual_name,
+      qual_name = 'Annotation Instructions & Qualification Questions (June 2014)'
+      #qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_4,
+      qual_test = self.mtc.create_qualification_type(
+        name = qual_name,
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
