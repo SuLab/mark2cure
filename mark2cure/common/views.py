@@ -48,7 +48,7 @@ def mturk(request):
     if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
         logout(request)
 
-        doc = Document.objects.get(pk=278)
+        doc = Document.objects.get(pk = 278)
         sections = doc.available_sections()
 
         return render_to_response('document/concept-recognition.jade',
@@ -79,23 +79,28 @@ def mturk(request):
     hit_index = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
     logger.debug("MTurk Routing N count {0} for {1}".format(hit_index, user.username))
 
+    # This is actually very fast, returns 593 doc ids
+    experiment_docs = Document.objects.filter(source = 'NCBI_corpus_training').values_list('pk', flat = True).all()
+
     gm_dict = {
         0: 869,
         1: 956,
         2: 1018,
         3: 520,
-        11: 282,
-        19: 310,
-        26: 363,
-        32: 326,
-        44: 322
     }
 
     if not user_profile.survey_complete():
         return redirect('mark2cure.common.views.profile_survey')
 
+    # Start off with 4 consistent GMs
     if hit_index in gm_dict:
         return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
+
+    # GM Interspersed
+    if random.random() < .1:
+        # Show GM
+        pass
+
 
     if hit_index >= (len(gm_dict) + len(settings.EXPERIMENT_DOCS)):
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
@@ -110,28 +115,6 @@ def mturk(request):
                 [email[1] for email in settings.MANAGERS])
 
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
-
-
-@login_required
-def router(request):
-    # Handle training or max allowed
-    user = request.user
-    user_profile = user.userprofile
-    n_count = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
-    logger.debug("MTurk Routing N count {0} for {1}".format(n_count, user.username))
-    training_order = [869, 956, 1018, 520]
-
-    if n_count > 54:
-        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
-
-    if n_count < 4:
-        return redirect('mark2cure.document.views.identify_annotations', training_order[n_count])
-
-    document = experiment_routing(request.user, n_count)
-    if document:
-        return redirect('mark2cure.document.views.identify_annotations', document)
-    else:
-        return render_to_response('common/nohits.jade', {'user_profile': request.user.userprofile }, context_instance=RequestContext(request))
 
 
 def banned(request):

@@ -1,18 +1,14 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.encoding import smart_text
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
-from mark2cure.document.managers import DocumentManager, AnnotationManager
+from mark2cure.document.managers import DocumentManager
 
-from ttp import ttp
 from decimal import Decimal as D
-from copy import copy
 from nltk.tokenize import WhitespaceTokenizer
 
-import requests, random, datetime, itertools
+import random, itertools
 
 
 class Document(models.Model):
@@ -322,16 +318,10 @@ class Annotation(models.Model):
     text = models.TextField(blank = True, null = True)
     start = models.IntegerField(blank = True, null = True)
 
-    updated = models.DateTimeField(auto_now = True)
     created = models.DateTimeField(auto_now_add = True)
 
     view = models.ForeignKey(View)
 
-    objects = AnnotationManager()
-
-
-    def simple(self):
-        return (self.text, int(self.start))
 
 
     def is_exact_match(self, comparing_annotation):
@@ -349,7 +339,8 @@ class Annotation(models.Model):
 
     class Meta:
         get_latest_by = 'updated'
-        unique_together = ['kind', 'type', 'text', 'start', 'view']
+        # (TODO) This is not supported by MySQL but would help prevent dups in this table
+        #unique_together = ['kind', 'type', 'text', 'start', 'view']
 
 
 class Concept(models.Model):

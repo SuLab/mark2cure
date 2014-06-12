@@ -8,8 +8,6 @@ from mark2cure.document.models import Document, Section, View, Annotation
 from datetime import datetime
 from Bio import Entrez, Medline
 
-import re, nltk, datetime
-
 
 def determine_f(true_positive, false_positive, false_negative):
     if float(true_positive + false_positive) == 0.0:

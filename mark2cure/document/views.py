@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -6,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from mark2cure.document.models import Document, Activity, View, Annotation, ConceptRelationship, RelationshipType, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm, CommentForm
@@ -14,11 +14,6 @@ from mark2cure.document.utils import generate_results, create_from_pubmed_id
 from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
 
 from rest_framework import viewsets, generics
-
-from copy import copy
-import oauth2 as oauth
-import json, itertools, logging
-logger = logging.getLogger(__name__)
 
 
 @login_required

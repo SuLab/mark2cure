@@ -5,12 +5,14 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 
 
 class SimpleTest(TestCase):
+
     def setUp(self):
         self.client = Client()
 
         user = User.objects.create_user('test-admin', 'test-admin@localhost.com', 'test-admin-password')
         user.is_staff = True
         user.save()
+
 
     def test_landing(self):
         '''
