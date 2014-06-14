@@ -10,32 +10,33 @@ import datetime
 
 
 class UserProfile(models.Model):
-    user                  = models.OneToOneField(User, unique=True)
+    user = models.OneToOneField(User, unique=True)
 
-    created_by            = models.ForeignKey(User, null=True, blank = True, related_name = 'children')
-    timezone              = TimeZoneField(default='America/Los_Angeles')
+    created_by = models.ForeignKey(User, null=True, blank = True, related_name = 'children')
+    timezone = TimeZoneField(default='America/Los_Angeles')
 
-    instructions_enabled  = models.BooleanField(default = True, verbose_name = 'Display Extra Instructions')
+    instructions_enabled = models.BooleanField(default = True, verbose_name = 'Display Extra Instructions')
 
-    experience  = models.IntegerField(default=0)
-    feedback_0  = models.IntegerField(default=0)
-    feedback_1  = models.IntegerField(default=0)
-    feedback_2  = models.IntegerField(default=0)
-    feedback_3  = models.IntegerField(default=0)
+    experience = models.IntegerField(default=0)
+    feedback_0 = models.IntegerField(default=0)
+    feedback_1 = models.IntegerField(default=0)
+    feedback_2 = models.IntegerField(default=0)
+    feedback_3 = models.IntegerField(default=0)
 
-    first_run   = models.BooleanField(default = False, blank = True)
-    email_notify  = models.BooleanField(default = False, blank = True)
+    first_run = models.BooleanField(default = False, blank = True)
+    email_notify = models.BooleanField(default = False, blank = True)
 
-    mturk           = models.BooleanField(default = False, blank = True)
-    banned          = models.BooleanField(default = False, blank = True)
-    softblock       = models.BooleanField(default = False, blank = True)
-    ignore          = models.BooleanField(default = False, blank = True)
+    mturk = models.BooleanField(default = False, blank = True)
+    banned = models.BooleanField(default = False, blank = True)
+    softblock = models.BooleanField(default = False, blank = True)
+    ignore = models.BooleanField(default = False, blank = True)
+    current_gm = models.BooleanField(default = False)
     turk_last_assignment_id = models.CharField(max_length=200, blank = True)
-    turk_submit_to  = models.CharField(max_length = 200, blank = True, default = 'http://example.com')
-    ncbo            = models.BooleanField(default = False, blank = True)
+    turk_submit_to = models.CharField(max_length = 200, blank = True, default = 'http://example.com')
+    ncbo = models.BooleanField(default = False, blank = True)
 
-    user_agent  = models.CharField(max_length = 150, blank = True, null = True)
-    player_ip   = models.GenericIPAddressField(blank = True, null = True)
+    user_agent = models.CharField(max_length = 150, blank = True, null = True)
+    player_ip = models.GenericIPAddressField(blank = True, null = True)
     '''
         Profiling our users
     '''

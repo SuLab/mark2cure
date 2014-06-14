@@ -76,42 +76,41 @@ def mturk(request):
         user_profile.save()
 
     # Handle training or max allowed
-    hit_index = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat=True)))
+    hit_index = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat = True)))
     logger.debug("MTurk Routing N count {0} for {1}".format(hit_index, user.username))
 
-    # This is actually very fast, returns 593 doc ids
-    experiment_docs = Document.objects.filter(source = 'NCBI_corpus_training').values_list('pk', flat = True).all()
-
+    # This is actually very fast
+    gm_pool = [1024, 685, 710, 689, 708, 992, 771, 608, 905, 960, 706, 556, 595, 628, 712, 844, 560, 957, 764, 593, 609, 1059, 780, 554, 734, 707, 903, 763, 580, 824, 927, 936, 499, 964, 657, 501, 1048, 480, 637, 737, 518, 568, 904, 670, 566, 1054, 667, 788, 519, 1056, 719, 842, 811, 1020, 787, 1066, 745, 970]
     gm_dict = {
         0: 869,
         1: 956,
         2: 1018,
         3: 520,
     }
+    experiment_docs = Document.objects.filter(source = 'NCBI_corpus_training').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
 
     if not user_profile.survey_complete():
         return redirect('mark2cure.common.views.profile_survey')
 
     # Start off with 4 consistent GMs
     if hit_index in gm_dict:
-        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
+        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index], True)
 
-    # GM Interspersed
-    if random.random() < .1:
-        # Show GM
-        pass
-
-
-    if hit_index >= (len(gm_dict) + len(settings.EXPERIMENT_DOCS)):
+    if hit_index >= (len(gm_pool) + len(gm_dict.values()) + len(experiment_docs)):
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
 
-    document = experiment_routing(user)
+    document = experiment_routing(user, experiment_docs)
     if document:
-        return redirect('mark2cure.document.views.identify_annotations', document)
+
+        if random.random() < .1:
+            return redirect('mark2cure.document.views.identify_annotations', experiment_gm_routing(user, gm_pool), True)
+        else:
+            return redirect('mark2cure.document.views.identify_annotations', document, False)
+
     else:
         send_mail('[Mark2Cure] ALERT',
                 'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated, User: {0}, Index: {1}'.format(user.pk, hit_index),
-                settings.SERVER_EMAIL,
+                settings.SERVER_EMAI,
                 [email[1] for email in settings.MANAGERS])
 
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))

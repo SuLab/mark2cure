@@ -62,7 +62,7 @@ class Document(models.Model):
             annotation__view__user__username = 'semmed').all()
 
 
-    def is_golden(self):
+    def has_golden(self):
         # (TODO) Change so that documents can be golden or normal cases, don't tie to the exisitance of a user's annotations
         return Annotation.objects.filter(view__user__username = 'goldenmaster', view__section__document = self).exists()
 

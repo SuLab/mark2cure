@@ -37,12 +37,18 @@ def list(request, page_num=1):
   Views for completing the Concept Recognition task
 '''
 @login_required
-def identify_annotations(request, doc_id):
+def identify_annotations(request, doc_id, treat_as_gm = False):
     # If they're attempting to view or work on the document
     doc = get_object_or_404(Document, pk=doc_id)
     sections = doc.available_sections()
+    user = request.user
+    user_profile = user.userprofile
 
-    if request.user.userprofile.softblock:
+    # Can't use a Document as a Golden Master if no GM annotations exist
+    if doc.has_golden() and treat_as_gm:
+        user_profile.current_gm = True
+
+    if user_profile.softblock:
         return redirect('mark2cure.common.views.softblock')
 
     '''
@@ -55,8 +61,7 @@ def identify_annotations(request, doc_id):
     if sections.filter(kind='a').count() is 0:
         return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
-    doc.create_views(request.user, 'cr')
-    user_profile = request.user.userprofile
+    doc.create_views(user, 'cr')
     user_profile.user_agent = request.META['HTTP_USER_AGENT']
     user_profile.player_ip = request.META['REMOTE_ADDR']
     user_profile.save()
@@ -101,22 +106,22 @@ def identify_annotations_results(request, doc_id):
     user = request.user
     user_profile = user.userprofile
 
-    if not doc.is_complete(request.user, user_profile, sections):
+    if not doc.is_complete(user, user_profile, sections):
       return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     for section in sections:
-      setattr(section, 'words', section.resultwords(request.user))
-      setattr(section, 'user_annotations', section.latest_annotations(request.user))
+      setattr(section, 'words', section.resultwords(user))
+      setattr(section, 'user_annotations', section.latest_annotations(user))
 
     '''
       1) It's a GM doc with GM annotations used to score
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    activity = Activity(user=user, document=doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None )
-    previous_activities_available = Activity.objects.filter(document = doc, task_type='cr', experiment= settings.EXPERIMENT if user_profile.mturk else None).exclude(user=request.user).exists()
+    activity = Activity(user = user, document = doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None)
+    previous_activities_available = Activity.objects.filter(document = doc, task_type = 'cr', experiment = settings.EXPERIMENT if user_profile.mturk else None).exclude(user = user).exists()
 
-    if doc.is_golden():
+    if user_profile.current_gm:
         results = {}
         score, true_positives, false_positives, false_negatives = generate_results(doc, user)
         results['score'] = score
@@ -129,6 +134,9 @@ def identify_annotations_results(request, doc_id):
         activity.recall = score[1]
         activity.f_score = score[2]
         activity.save()
+
+        user_profile.current_gm = False
+        user_profile.save()
 
         return render_to_response('document/concept-recognition-results-gold.jade',
             { 'doc': doc,
