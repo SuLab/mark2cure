@@ -115,7 +115,7 @@ def identify_annotations_results(request, doc_id):
       3) It's a novel document annotated by the worker
     '''
     activity = Activity(user = user, document = doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None)
-    previous_activities_available = Activity.objects.filter(document = doc, task_type = 'cr', experiment = settings.EXPERIMENT if user_profile.mturk else None).exclude(user = user).exists()
+    previous_activities_available = Activity.objects.filter(document = doc, task_type = 'cr', experiment = settings.EXPERIMENT if user_profile.mturk else None).exclude(user = user, user__userprofile__ignore = True).exists()
 
     # Can't use a Document as a Golden Master if no GM annotations exist
     if doc.has_golden() and user_profile.current_gm:
@@ -336,12 +336,11 @@ class TopUserViewSet(generics.ListAPIView):
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
         section_id = self.kwargs['section_id']
-        # (TODO) Test distinct + limit
         top_users =  View.objects.filter(
             task_type = 'cr',
             completed = True,
             section__document__id = doc_id,
-            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user).values('user')
+            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user, user__userprofile__ignore = True).values('user')
         top_users = [dict(y) for y in set(tuple(x.items()) for x in top_users)]
 
         return top_users[:4]

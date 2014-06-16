@@ -612,7 +612,7 @@ class Turk():
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        retry_delay = 60,
+        #retry_delay = 60,
         test_duration = 25 * 60)
 
       return qual_test

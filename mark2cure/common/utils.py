@@ -23,7 +23,7 @@ def experiment_gm_routing(user, doc_arr):
     return doc_arr[0]
 
 
-def experiment_routing(user, doc_arr, n_value = 20):
+def experiment_routing(user, doc_arr, n_value = 15):
     user_profile = user.userprofile
     '''
       I need to figure out which of the current experiment
@@ -34,7 +34,7 @@ def experiment_routing(user, doc_arr, n_value = 20):
       4. Array of (1 - 2) - 3
     '''
 
-    prev_docs = Activity.objects.filter(user = user, experiment = settings.EXPERIMENT if user.userprofile.mturk else None).values_list('document__pk', flat = True).all()
+    prev_docs = Activity.objects.filter(user = user, experiment = settings.EXPERIMENT if user.userprofile.mturk else None).exclude(user__userprofile__ignore = True).values_list('document__pk', flat = True).all()
 
     # This is actually very fast, returns 593 doc ids
     #experiment_docs = Document.objects.filter(source = 'NCBI_corpus_training').values_list('pk', flat = True).all()
@@ -50,16 +50,16 @@ def experiment_routing(user, doc_arr, n_value = 20):
     activities = Activity.objects.filter(
         document__pk__in = experiment_docs,
         task_type = 'cr',
-        experiment = settings.EXPERIMENT if user.userprofile.mturk else None).exclude(submission_type = 'gm').values('document').annotate(Count('document'))
+        experiment = settings.EXPERIMENT if user.userprofile.mturk else None).exclude(submission_type = 'gm', user__userprofile__ignore = True).values('document').annotate(Count('document'))
 
     experiment_docs_completed = [item['document'] for item in activities if item['document__count'] >= n_value]
 
     # Email us to let us know when the K saturates on these
-    if len(experiment_docs_completed) > 15:
-        send_mail('[Mark2Cure] Document Completion Milestone #{0}'.format(settings.EXPERIMENT),
-                '{0} documents have had all their work completed.'.format(len(experiment_docs_completed)),
-                settings.SERVER_EMAIL,
-                [email[1] for email in settings.MANAGERS])
+    #if len(experiment_docs_completed) > 15:
+    #    send_mail('[Mark2Cure] Document Completion Milestone #{0}'.format(settings.EXPERIMENT),
+    #            '{0} documents have had all their work completed.'.format(len(experiment_docs_completed)),
+    #            settings.SERVER_EMAIL,
+    #            [email[1] for email in settings.MANAGERS])
 
     for x in experiment_docs_completed:
         if x in experiment_docs: experiment_docs.remove(x)
