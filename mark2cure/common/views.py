@@ -94,7 +94,9 @@ def mturk(request):
 
     # Start off with 4 consistent GMs
     if hit_index in gm_dict:
-        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index], True)
+        user_profile.current_gm = True
+        user_profile.save()
+        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
 
     if hit_index >= (len(gm_pool) + len(gm_dict.values()) + len(experiment_docs)):
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
@@ -103,14 +105,16 @@ def mturk(request):
     if document:
 
         if random.random() < .1:
-            return redirect('mark2cure.document.views.identify_annotations', experiment_gm_routing(user, gm_pool), True)
+            user_profile.current_gm = True
+            user_profile.save()
+            return redirect('mark2cure.document.views.identify_annotations', experiment_gm_routing(user, gm_pool))
         else:
-            return redirect('mark2cure.document.views.identify_annotations', document, False)
+            return redirect('mark2cure.document.views.identify_annotations', document)
 
     else:
         send_mail('[Mark2Cure] ALERT',
                 'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated, User: {0}, Index: {1}'.format(user.pk, hit_index),
-                settings.SERVER_EMAI,
+                settings.SERVER_EMAIL,
                 [email[1] for email in settings.MANAGERS])
 
         return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))

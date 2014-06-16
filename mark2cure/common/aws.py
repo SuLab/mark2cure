@@ -623,6 +623,9 @@ class Turk():
       description = ('You will be presented with text from the biomedical literature which we believe may help resolve some important medically related questions. The task is to highlight words and phrases in that text which are, or are highly related to, diseases.  This work will help advance research in cancer and many other diseases!')
       keywords = 'science, abstract, primary literature, annotation, disease, text, highlight, annotation, medicine, term recognition'
 
+      qualifications = Qualifications()
+      qualifications.add( Requirement( settings.AWS_QUAL_TEST_5, 'GreaterThanOrEqualTo', 20 ) )
+
       hit = self.mtc.create_hit(
           hit_type = None,
           question = self.external_question(),
@@ -637,6 +640,7 @@ class Turk():
           approval_delay = 60 * 60 * 24 * approval_delay_days,
           annotation = None,
           questions = None,
+          qualifications = qualifications,
           layout_params = None,
           response_groups = None
           )

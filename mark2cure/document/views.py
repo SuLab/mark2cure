@@ -44,10 +44,6 @@ def identify_annotations(request, doc_id, treat_as_gm = False):
     user = request.user
     user_profile = user.userprofile
 
-    # Can't use a Document as a Golden Master if no GM annotations exist
-    if doc.has_golden() and treat_as_gm:
-        user_profile.current_gm = True
-
     if user_profile.softblock:
         return redirect('mark2cure.common.views.softblock')
 
@@ -121,7 +117,8 @@ def identify_annotations_results(request, doc_id):
     activity = Activity(user = user, document = doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None)
     previous_activities_available = Activity.objects.filter(document = doc, task_type = 'cr', experiment = settings.EXPERIMENT if user_profile.mturk else None).exclude(user = user).exists()
 
-    if user_profile.current_gm:
+    # Can't use a Document as a Golden Master if no GM annotations exist
+    if doc.has_golden() and user_profile.current_gm:
         results = {}
         score, true_positives, false_positives, false_negatives = generate_results(doc, user)
         results['score'] = score
