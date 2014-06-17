@@ -605,14 +605,14 @@ class Turk():
                         </AnswerKey>'''
 
       qual_name = 'Annotation Instructions & Qualification Questions (June 2014)'
-      #qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_4,
-      qual_test = self.mtc.create_qualification_type(
-        name = qual_name,
+      qual_test = self.mtc.update_qualification_type(settings.AWS_QUAL_TEST_5,
+      #qual_test = self.mtc.create_qualification_type(
+        #name = qual_name,
         description = 'Detailed annotation instructions. Multiple-choice questions to assess concept understanding.',
         status = 'Active',
         test = question_form,
         answer_key = answer_logic,
-        #retry_delay = 60,
+        retry_delay = 3 * 60,
         test_duration = 25 * 60)
 
       return qual_test

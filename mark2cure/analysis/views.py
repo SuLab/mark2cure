@@ -16,31 +16,29 @@ import json
 @login_required
 def experiment_details(request, exp_id):
 
-    total_activities = Activity.objects.filter(task_type='cr', experiment=exp_id).count()
-    total_experimental_activities = Activity.objects.filter(task_type='cr', experiment=exp_id).exclude(submission_type='gm').count()
+    total_activities = Activity.objects.filter(task_type = 'cr', experiment = exp_id).exclude(user__userprofile__ignore = True).count()
+    total_experimental_activities = Activity.objects.filter(task_type = 'cr', experiment = exp_id).exclude(submission_type = 'gm', user__userprofile__ignore = True).count()
 
     workers = Activity.objects.filter(
-        task_type='cr',
-        experiment=exp_id).values('user', 'user__username').annotate(Count('user')).order_by('-user__count')
+        task_type = 'cr',
+        experiment = exp_id).exclude(user__userprofile__ignore = True).values('user', 'user__username').annotate(Count('user')).order_by('-user__count')
 
     documents = Activity.objects.filter(
-        task_type='cr',
-        experiment=exp_id).exclude(submission_type='gm').values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+        task_type = 'cr',
+        experiment = exp_id).exclude(submission_type = 'gm', user__userprofile__ignore = True).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
 
     gold_documents = Activity.objects.filter(
-        task_type='cr',
-        submission_type='gm',
-        experiment=exp_id).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
-
-
+        task_type = 'cr',
+        submission_type = 'gm',
+        experiment=exp_id).exclude(user__userprofile__ignore = True).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
 
     for doc in documents: doc['comment_count'] = Comment.objects.filter(document__pk = doc['document']).count()
     for doc in gold_documents: doc['comment_count'] = Comment.objects.filter(document__pk = doc['document']).count()
 
     f_scores = Activity.objects.filter(
-        task_type='cr',
-        submission_type='gm',
-        experiment=exp_id).values_list('f_score', flat=True).order_by('-f_score')
+        task_type = 'cr',
+        submission_type = 'gm',
+        experiment = exp_id).exclude(user__userprofile__ignore = True).values_list('f_score', flat = True).order_by('-f_score')
 
     avg_f = reduce(lambda x, y: x + y, f_scores) / len(f_scores)
 
