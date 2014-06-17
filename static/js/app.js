@@ -154,7 +154,7 @@ $(document).ready(function() {
       {name: 'Technical'},
       {name: 'Programmer'},
       {name: 'Science'},
-      {name: 'Bussiness'},
+      {name: 'Business'},
       {name: 'Finance'},
       {name: 'Legal'},
       {name: 'Art'},
