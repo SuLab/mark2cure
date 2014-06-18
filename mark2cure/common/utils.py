@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def experiment_gm_routing(user, doc_arr):
-    user_profile = user.userprofile
+    #user_profile = user.userprofile
     '''
       I need to figure out which of the current golden
       documents have been done the least

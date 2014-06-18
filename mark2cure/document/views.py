@@ -147,6 +147,10 @@ def identify_annotations_results(request, doc_id):
     elif previous_activities_available:
         activity.submission_type = 'cc'
         activity.save()
+
+        user_profile.current_gm = False
+        user_profile.save()
+
         return render_to_response('document/concept-recognition-results-community.jade',
             { 'doc': doc,
               'user_profile' : user_profile,
@@ -158,6 +162,10 @@ def identify_annotations_results(request, doc_id):
     elif not previous_activities_available:
         activity.submission_type = 'na'
         activity.save()
+
+        user_profile.current_gm = False
+        user_profile.save()
+
         return render_to_response('document/concept-recognition-results-not-available.jade',
             { 'doc': doc,
               'user_profile' : user_profile,

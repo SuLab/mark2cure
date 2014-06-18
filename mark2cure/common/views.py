@@ -109,6 +109,8 @@ def mturk(request):
             user_profile.save()
             return redirect('mark2cure.document.views.identify_annotations', experiment_gm_routing(user, gm_pool))
         else:
+            user_profile.current_gm = False
+            user_profile.save()
             return redirect('mark2cure.document.views.identify_annotations', document)
 
     else:
