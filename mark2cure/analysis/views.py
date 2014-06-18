@@ -23,9 +23,10 @@ def experiment_details(request, exp_id):
         task_type = 'cr',
         experiment = exp_id).exclude(user__userprofile__ignore = True).values('user', 'user__username').annotate(Count('user')).order_by('-user__count')
 
+    # (TODO) multiple excludes?
     documents = Activity.objects.filter(
         task_type = 'cr',
-        experiment = exp_id).exclude(submission_type = 'gm', user__userprofile__ignore = True).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+        experiment = exp_id).exclude(submission_type = 'gm').values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
 
     gold_documents = Activity.objects.filter(
         task_type = 'cr',
@@ -39,6 +40,12 @@ def experiment_details(request, exp_id):
         task_type = 'cr',
         submission_type = 'gm',
         experiment = exp_id).exclude(user__userprofile__ignore = True).values_list('f_score', flat = True).order_by('-f_score')
+
+    f_scores_non_first = Activity.objects.filter(
+        task_type = 'cr',
+        submission_type = 'gm',
+        experiment = exp_id).exclude(document_id__in = [869, 956, 1018, 520]).values_list('f_score', flat = True).order_by('-f_score')
+
 
     avg_f = reduce(lambda x, y: x + y, f_scores) / len(f_scores)
 
