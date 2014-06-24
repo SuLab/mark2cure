@@ -1,7 +1,6 @@
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 
 from mark2cure.document.models import Document, Section, View, Annotation
 
@@ -21,9 +20,6 @@ class Command(BaseCommand):
 
         if command == "import":
           self.import_golden_documents(document_set)
-
-        elif command == "randomly_make_validation_documents":
-          self.randomly_make_validation_documents(document_set) #ALREADY RAN ONCE ON PROD
 
         elif command == "annotate":
           self.annotate_golden_documents(document_set)
@@ -55,22 +51,6 @@ class Command(BaseCommand):
                 sec, sec_c = Section.objects.get_or_create(kind = "a", document = doc)
                 sec.text = text
                 sec.save()
-
-
-
-    def randomly_make_validation_documents(self, document_set):
-        documents = Document.objects.filter(source = document_set).all()
-        # for doc in documents:
-        #   for sec in doc.section_set.all():
-        #     print sec.validate
-
-        # doc_ids = [doc.id for doc in documents]
-        # random.shuffle(doc_ids)
-        # for doc_id in doc_ids[:10]:
-        #     document = Document.objects.get(pk = doc_id)
-        #     for section in document.section_set.all():
-        #       section.validate = True
-        #       section.save()
 
 
     def annotate_golden_documents(self, document_set):

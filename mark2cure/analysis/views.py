@@ -49,6 +49,20 @@ def experiment_details(request, exp_id):
     '''
 
 
+    '''
+    gold_documents = Activity.objects.filter(
+        task_type = 'cr',
+        submission_type = 'gm',
+        experiment=exp_id).exclude(user__userprofile__ignore = True).values('document', 'document__document_id').annotate(Count('document')).order_by('-document__count')
+
+    gm_pool = [1024, 685, 710, 689, 708, 992, 771, 608, 905, 960, 706, 556, 595, 628, 712, 844, 560, 957, 764, 593, 609, 1059, 780, 554, 734, 707, 903, 763, 580, 824, 927, 936, 499, 964, 657, 501, 1048, 480, 637, 737, 518, 568, 904, 670, 566, 1054, 667, 788, 519, 1056, 719, 842, 811, 1020, 787, 1066, 745, 970]
+    non_gm_docs = [doc for doc in gold_documents if doc['document'] not in gm_pool]
+    len(non_gm_docs) - 4
+
+    June 18th @4pm: 17
+
+    '''
+
     avg_f = reduce(lambda x, y: x + y, f_scores) / len(f_scores)
 
 
