@@ -24,6 +24,15 @@ block content
 
           .form-group
               label
+                | #{form.country.label_tag}
+              - for error in form.country.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.country|add_class:'form-control'}
+
+          .form-group
+              label
                 | #{form.gender.label_tag}
               - for error in form.gender.errors
                   .alert.alert-danger
@@ -42,8 +51,8 @@ block content
 
           .form-group
               label
-                  | #{form.occupation.label_tag}
-              - for error in form.age.errors
+                | #{form.occupation.label_tag}
+              - for error in form.occupation.errors
                   .alert.alert-danger
                       strong
                           | {{ error|escape }}
@@ -52,11 +61,20 @@ block content
           .form-group
               label
                 | #{form.education.label_tag}
-              - for error in form.age.errors
+              - for error in form.education.errors
                   .alert.alert-danger
                       strong
                           | {{ error|escape }}
-             #{form.education|add_class:'form-control'|add_class:'selectize-basic'}
+              #{form.education|add_class:'form-control'|add_class:'selectize-basic'}
+
+          .form-group
+              label
+                | #{form.science_education.label_tag}
+              - for error in form.science_education.errors
+                  .alert.alert-danger
+                      strong
+                          | {{ error|escape }}
+              #{form.science_education|add_class:'form-control'|add_class:'selectize-basic'}
 
           .form-group
               label

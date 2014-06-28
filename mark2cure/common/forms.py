@@ -15,7 +15,7 @@ class ProfileSurveyForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['gender', 'age', 'occupation', 'education', 'motivation']
+        fields = ['country', 'gender', 'age', 'occupation', 'education', 'science_education', 'motivation']
 
 
 class MessageForm(forms.ModelForm):

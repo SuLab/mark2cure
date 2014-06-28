@@ -80,14 +80,14 @@ def mturk(request):
     logger.debug("MTurk Routing N count {0} for {1}".format(hit_index, user.username))
 
     # This is actually very fast
-    gm_pool = [1024, 685, 710, 689, 708, 992, 771, 608, 905, 960, 706, 556, 595, 628, 712, 844, 560, 957, 764, 593, 609, 1059, 780, 554, 734, 707, 903, 763, 580, 824, 927, 936, 499, 964, 657, 501, 1048, 480, 637, 737, 518, 568, 904, 670, 566, 1054, 667, 788, 519, 1056, 719, 842, 811, 1020, 787, 1066, 745, 970]
+    gm_pool = [1067, 545, 1005, 621, 555, 820, 997, 609, 1032, 852, 748, 553, 478, 1061, 847, 515, 531, 550, 541, 780, 537, 800, 559, 951, 542, 557, 806, 594, 783, 523, 640, 672, 980, 591, 502, 593, 586, 982, 849, 633, 507, 777, 521, 589, 822, 896, 620, 567, 608, 737, 561, 671, 628, 656, 1069, 1038, 622, 658, 596, 1008, 897, 1000, 865, 1056, 1034, 584, 889, 838, 953, 1027, 539, 619, 511, 874, 978, 627, 850, 912, 961, 538, 701, 907, 755, 760, 689, 796, 927, 851, 1012, 958]
     gm_dict = {
         0: 869,
         1: 956,
         2: 1018,
-        3: 520,
+        3: 876,
     }
-    experiment_docs = Document.objects.filter(source = 'NCBI_corpus_training').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
+    experiment_docs = Document.objects.filter(source = 'NCBIDiseaseCrowdExtension-DEV').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
 
     if not user_profile.survey_complete():
         return redirect('mark2cure.common.views.profile_survey')

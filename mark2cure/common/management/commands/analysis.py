@@ -3,9 +3,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, Section, View, Annotation
-from mark2cure.document.utils import check_validation_status
 from mark2cure.account.models import Ncbo
-from mark2cure.common.utils import Turk
+from mark2cure.common.aws import Turk
 
 import os, os.path, csv
 
@@ -66,10 +65,10 @@ class Command(BaseCommand):
         workers = User.objects.filter(userprofile__mturk = True).all()
         turk = Turk()
         results = []
-        with open('mturk_qual_2_summary.tsv', 'wb') as csvfile:
+        with open('mturk_qual_5_summary.tsv', 'wb') as csvfile:
           writer = csv.writer(csvfile, delimiter='\t')
           for page in range(1,5):
-            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_2, page_number = page)
+            quals = turk.mtc.get_qualifications_for_qualification_type(settings.AWS_QUAL_TEST_5, page_number = page)
             for qi in quals:
               writer.writerow([qi.Status, qi.SubjectId, qi.IntegerValue, qi.GrantTime])
 

@@ -6,6 +6,8 @@ from mark2cure.common.models import Message
 from mark2cure.document.models import Document, View, Activity
 
 from timezone_field import TimeZoneField
+from django_countries.fields import CountryField
+
 import datetime
 
 
@@ -63,14 +65,16 @@ class UserProfile(models.Model):
       (11, 'Finished PhD program'),
     )
     education = models.IntegerField(choices = EDUCATION_CHOICES, blank = True, null = True, default = None)
+    science_education = models.IntegerField(choices = EDUCATION_CHOICES, blank = True, null = True, default = None)
     motivation = models.CharField(max_length = 255, blank = True)
+    country = CountryField(blank = True)
 
     def score(self, task_type = 'cr'):
         return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type='gm').values_list('f_score', flat=True).all())
 
 
     def survey_complete(self):
-        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.motivation == '': return False
+        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.science_education == None or self.motivation == '' or self.country.name == '': return False
         return True
 
 
