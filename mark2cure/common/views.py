@@ -87,7 +87,7 @@ def mturk(request):
         2: 1018,
         3: 876,
     }
-    experiment_docs = Document.objects.filter(source = 'NCBIDiseaseCrowdExtension-DEV').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
+    experiment_docs = Document.objects.filter(source = 'NCBIDiseaseCrowdExtension-TRAIN').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
 
     if not user_profile.survey_complete():
         return redirect('mark2cure.common.views.profile_survey')
