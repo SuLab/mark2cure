@@ -4,10 +4,10 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('mark2cure.common.views',
     url(r'^$', r'home'),
-    url(r'^library/$', r'library'),
+    url(r'^introduction/(?P<introduction_num>\d+)/$', r'introduction'),
+    url(r'^dashboard/$', r'dashboard'),
 
     url(r'^mturk/$', r'mturk'),
-
     url(r'^softblock/$', r'softblock'),
     url(r'^banned/$', r'banned'),
 

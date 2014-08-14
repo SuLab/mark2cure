@@ -6,8 +6,9 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
 
-from mark2cure.account.models import UserProfile, Message, Ncbo
+from mark2cure.account.models import UserProfile, Message
 from mark2cure.account.forms import UserForm, ProfileForm
 
 import datetime
@@ -23,18 +24,19 @@ def reset_thanks(request):
 @login_required
 def settings(request):
     user = request.user
-
     profileForm = ProfileForm(instance=user.profile)
+    passwordChangeForm = PasswordChangeForm(user)
 
+    print passwordChangeForm
 
     return render_to_response('account/settings.jade',
-                              {'profileForm': profileForm},
-                              context_instance=RequestContext(request))
-
+            {'passwordChangeForm': passwordChangeForm,
+             'profileForm': profileForm},
+              context_instance=RequestContext(request))
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def update_profile(request, profile_id):
     profile = get_object_or_404(UserProfile, pk=profile_id)
     form = ProfileForm(request.POST, instance=profile)
@@ -70,7 +72,7 @@ def create(request):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def inactivate(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return HttpResponse('Unauthorized', status=401)
@@ -87,7 +89,7 @@ def inactivate(request, user_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def activate(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return HttpResponse('Unauthorized', status=401)
@@ -104,7 +106,7 @@ def activate(request, user_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def delete(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return HttpResponse('Unauthorized', status=401)
@@ -121,7 +123,7 @@ def delete(request, user_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def staffify(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return HttpResponse('Unauthorized', status=401)
@@ -138,7 +140,7 @@ def staffify(request, user_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(['POST'])
 def destaffify(request, user_id):
     if not (request.user.is_staff or request.user.is_superuser):
         return HttpResponse('Unauthorized', status=401)

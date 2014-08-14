@@ -1,0 +1,102 @@
+extends base
+
+- load widget_tweaks
+
+block header
+  .container-fluid
+    .row
+      .col-md-12
+        h1.text-center
+          | Mark2Cure
+
+
+block content
+  #carousel-features(data-ride='carousel').carousel.slide
+    ol.carousel-indicators
+      li(data-target='#carousel-features', data-slide-to='0').active
+
+    .carousel-inner
+      .item.active
+        img('#')
+        .container
+          .carousel-caption
+            h1
+             | Scientific communication is broken.
+            p
+             | Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
+            p
+             | To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+
+    a(href='#carousel-features', role='button', data-slide='prev').left.carousel-control
+      span.glyphicon.glyphicon-chevron-left
+
+    a(href='#carousel-features', role='button', data-slide='next').right.carousel-control
+      span.glyphicon.glyphicon-chevron-right
+
+
+  .container
+    .row
+      .col-md-6
+        .row
+          .col-md-12
+            h2.text-center
+              | Get Started
+
+        .row
+          .col-md-10.col-md-offset-1
+            p
+              | The process only takes five minutes! Join an international community of citizen Scientists dedicated to making a difference.
+
+            a(href='/introduction/1/').btn.btn-default
+              | Start Now
+
+        .row
+          .col-md-10.col-md-offset-1
+          - if form.errors
+            p Your username and password didn't match. Please try again.
+            #{form.errors}
+
+           form(role='form', action='/account/login/', method='post').form-horizontal
+              {% csrf_token %}
+
+              .form-group
+                label(for='exampleInputEmail1')
+                  | Username
+                #{form.username|add_class:"form-control"|attr:"placeholder:username"}
+
+              .form-group
+                label(for='exampleInputPassword1')
+                  | Password
+                #{form.password|add_class:"form-control"|attr:"placeholder:password"}
+
+              p.text-right.breathe-top-mid
+                  a(href="/account/reset/")
+                      | Forgot password?
+
+              button(type='submit').btn.btn-default
+                | Login
+
+
+
+
+
+
+
+
+
+
+
+
+
+      .col-md-6
+        .row
+          .col-md-10.col-md-offset-1.well
+            p
+              | Yuppp....
+
+
+block post-footer
+    #fb-root
+    script.
+      // CSS Toggle for landing page & background
+      $('body').addClass('landing');

@@ -1,11 +1,9 @@
-"""
-Code adapted from
-https://groups.google.com/forum/#!msg/celery-users/CZXCh8sCK5Q/ihZgMV2HWWYJ
-"""
+'''
+    Code adapted from
+    https://groups.google.com/forum/#!msg/celery-users/CZXCh8sCK5Q/ihZgMV2HWWYJ
+'''
 from django.db import models
-
 from djcelery.models import PeriodicTask, IntervalSchedule
-from celery.app.control import Control
 
 import datetime
 
@@ -16,7 +14,6 @@ class TaskScheduler(models.Model):
 
       TODO: Learn in more detail
     '''
-
 
     periodic_task = models.ForeignKey(PeriodicTask, on_delete=models.DO_NOTHING)
 
@@ -37,12 +34,12 @@ class TaskScheduler(models.Model):
             raise Exception('Invalid "every" specified')
 
         # create the periodic task and the interval
-        ptask_name = "%s_%s" % (task_name, datetime.datetime.now()) # create some name for the period task
+        ptask_name = "%s_%s" % (task_name, datetime.datetime.now())  # create some name for the period task
         interval_schedules = IntervalSchedule.objects.filter(period=period, every=every)
 
-        if interval_schedules: # just check if interval schedules exist like that already and reuse em
+        if interval_schedules:  # just check if interval schedules exist like that already and reuse em
             interval_schedule = interval_schedules[0]
-        else: # create a brand new interval schedule
+        else:  # create a brand new interval schedule
             interval_schedule = IntervalSchedule()
 
             if int(every) > 0:

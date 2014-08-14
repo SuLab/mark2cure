@@ -1,97 +1,128 @@
 extends base
 
-- load template_extras
 - load widget_tweaks
 - load humanize
 
 
+block header
+  .container-fluid
+    .row
+      .col-md-2
+        a(href='/')
+          h1.text-center Mark2Cure
+      .col-md-8
+        h1.text-center My Settings
+      .col-md-2
+        .row
+          .col-md-6
+            p Hello {{user}}
+          .col-md-3
+            img(src='#')
+          .col-md-3
+            span.glyphicon.glyphicon-align-justify
+        .row
+          .col-md-6
+            a(href='/account/settings/')
+              p Settings
+          .col-md-6
+            a(href='/account/logout/')
+              p Logout
+
+
 block content
-
+  .container
     .row
-        .col-md-12
-            h1
-              | Account Settings
-            h3
-              | Hello {{user.username}}
-    .row.breathe-top
-        .col-md-3
-            .row
-                .col-md-12
-                    a(href="/account/change/").btn.btn-info.full-width
-                        | Change Password
+      .col-md-6
+            - if passwordChangeForm.errors
+                p Your passwords didn't match. Please try again.
 
-            - if user.is_staff
-                .row.breathe-top-mid
-                    .col-md-12
-                        a(href="/account/create/").btn.btn-info.full-width
-                          | Create Account
-        .col-md-3
-            .row
-                a(href="/account/logout/").btn.btn-warning.full-width
-                    | Logout
+            form(method='post', action='/account/change/').form-horizontal
+              - csrf_token
+
+              .form-group
+                label(for='id_username').control-label.col-md-4 Username
+                .col-md-8
+                  input(name='username', type='text', id='id_username', value='{{user.username}}', disabled).form-control
+
+              .form-group
+                label(for='id_email').control-label.col-md-4 Email
+                .col-md-8
+                  input(name='email', type='text', id='id_email', value='{{user.email}}', disabled).form-control
+
+
+              .form-group
+                label(for='id_old_password').control-label.col-md-4 Old Password
+                .col-md-8
+                  input(name='old_password', type='password', id='id_old_password').form-control
+
+              .form-group
+                label(for='id_new_password1').control-label.col-md-4 New Password
+                .col-md-8
+                  input(name='old_password1', type='password', id='id_new_password1').form-control
+
+              .form-group
+                label(for='id_new_password2').control-label.col-md-4 Verify New Password
+                .col-md-8
+                  input(name='new_password2', type='password', id='id_new_password2').form-control
+
+
+              input(type='submit', value='Save New Password').btn.btn-primary.full-width
+
+      .col-md-6
+        img(src='#').img-responsive
 
     hr
-    .row
-        .col-md-3
-            .row
-                .col-md-12.breathe-top-mid
-                    form(method="post", action="/account/{{user.profile.pk}}/profile/")
-                        - csrf_token
-                        .form-group
-                            p.lead
-                                | Timezone
-                            #{profileForm.timezone|add_class:"form-control"}
-                        p.lead
-                            | Other Settings
-                        .checkbox
-                            label
-                                #{profileForm.instructions_enabled}
-                                #{profileForm.instructions_enabled.label}
-                        input(type="submit", value="Update Settings").btn.btn-primary.full-width.breathe-top-mid
 
+    .row
+      .col-md-12
+        h2 Profile Information
+
+        form(method='post', action='/account/change/').form-horizontal
+          - csrf_token
+
+          .row
+            .col-md-6
+              .form-group
+                label(for='id_f_name').control-label.col-md-4 Name
+                .col-md-8
+                  input(name='f_name', type='text', id='id_f_name', value='{{user.first_name}}').form-control
+                  input(name='l_name', type='text', id='id_l_name', value='{{user.last_name}}').form-control
+
+              .form-group
+                .col-md-6
+                  input(name='country', type='text', id='id_country').form-control
+                .col-md-6
+                  input(name='state', type='text', id='id_state').form-control
+
+              .form-group
+                label(for='id_birthday').control-label.col-md-4 Birthday
+                .col-md-8
+                  input(name='birthday', type='text', id='id_birthday').form-control
+
+            .col-md-6
+              .form-group
+                label(for='id_contribue') I contribute to Mark2Cure because:
+                textarea#id_contribute(name='contribute').form-control
+
+              .form-group
+                label(for='id_referral') I heard about Mark2Cure form:
+                textarea#id_referral(name='referral').form-control
+
+            .col-md-12
+              .form-group
+                label(for='id_signature') Qoute / Signature:
+                textarea#id_signature(name='signature').form-control
 
     hr
+
     .row
-        .col-md-4
-            - if user.is_staff and user.children.all|length > 0
-                .row
-                    .col-md-12
-                        h3
-                            | Managing Accounts
+      .col-md-12
+        h2 Privacy Controls
+          form(method='post', action='/account/{{user.profile.pk}}/profile/')
+            - csrf_token
+            .form-group
+              #{profileForm.timezone|add_class:'form-control'}
 
-                .row
-                    .col-md-12
-                        - for child in user.children.all
-                            .row
-                                .col-md-12
-                                    h3
-                                        | #{child.user.username}
+              input(type='submit', value='Update Settings').btn.btn-primary.full-width.breathe-top-mid
 
-                                    .row
-                                        .col-md-4
-                                            - if child.user.is_active
-                                                form(action="/account/{{child.user.pk}}/inactivate/", method="post")
-                                                    {% csrf_token %}
-                                                    input(type="submit", value="Inactivate").btn.btn-warning.full-width
-                                            - else
-                                                form(action="/account/{{child.user.pk}}/activate/", method="post")
-                                                    {% csrf_token %}
-                                                    input(type="submit", value="Activate").btn.btn-primary.full-width
-
-
-                                        .col-md-4
-                                            - if child.user.is_staff
-                                                form(action="/account/{{child.user.pk}}/destaffify/", method="post")
-                                                    {% csrf_token %}
-                                                    input(type="submit", value="Revoke Admin").btn.btn-warning.full-width
-                                            - else
-                                                form(action="/account/{{child.user.pk}}/staffify/", method="post")
-                                                    {% csrf_token %}
-                                                    input(type="submit", value="Make Admin").btn.btn-primary.full-width
-
-
-                                        .col-md-4
-                                            form(action="/account/{{child.user.pk}}/destaffify/", method="post")
-                                                {% csrf_token %}
-                                                input(type="submit", value="Delete").btn.btn-danger.full-width
 

@@ -1,0 +1,137 @@
+extends base
+
+- load widget_tweaks
+
+
+block header
+  .container-fluid
+    .row
+      .col-md-2
+        a(href='/')
+          h1.text-center Mark2Cure
+      .col-md-8
+        h1.text-center Community Dashboard
+      .col-md-2
+        .row
+          .col-md-6
+            p Hello {{user}}
+          .col-md-3
+            img(src='{{user.profile.country.flag}}')
+          .col-md-3
+            span.glyphicon.glyphicon-align-justify
+        .row
+          .col-md-6
+            a(href='/account/settings/')
+              p Settings
+          .col-md-6
+            a(href='/account/logout/')
+              p Logout
+
+
+block content
+  .container
+    .row
+      .col-md-4
+        .row
+          .col-md-10.col-md-offset-1
+            p
+              | Mark2Cure aims to speed up progress in biomedical research by applying the collective intelligence of users just like you! By "marking" docus, you help to annotate biomedical research literature, allowing researchers to gather information...
+        .row
+          .col-md-10.col-md-offset-1
+            h3
+              | I'm here because:
+            p
+              | I'm here because I want science to move forward FASTER
+
+      .col-md-4
+        .row
+          .col-md-12
+            h2
+              | Start
+
+            a(href='#').btn.btn-default
+              | Marking Docs
+
+            h2
+              | now!
+
+      .col-md-4
+        .row
+          .col-md-12
+            h3
+              | Chordoma publications
+
+            p
+              | [dataviz here]
+
+    .row
+      .col-md-4
+        h3
+          | Productivity Log:
+
+        ol.list-view
+          li.list-view-item
+            | xyz
+          li.list-view-item
+            | xyz
+          li.list-view-item
+            | xyz
+
+          hr
+
+          p.text-center
+            | Total Annotations: 0123
+
+
+      .col-md-4
+        h3.text-center
+          | Mark2Cure Community
+
+        ol.list-view
+          li.list-view-item
+            | Sara: 19195
+          li.list-view-item
+            | Jackson: 15824
+          li.list-view-item
+            | Lisa: 12726
+
+
+      .col-md-4
+        .row
+          .col-md-10.col-md-offset-1
+            h3
+              | My Score: 26842
+            p
+              | Level: Marker Bee
+
+            p
+              small
+                | progress to next level:
+
+        .row
+          .col-md-10.col-md-offset-1
+            ol.list-view
+              li.list-view-item
+                | Most Docs Mared in One Session: 176
+              li.list-view-item
+                | Total Docs Marked: 18435
+              li.list-view-item
+                | Total Docs skipped: 192
+
+    .row
+      .col-md-10.col-md-offset1
+        h3
+          | News -
+        - for post in posts
+          .row
+            .col-md-12
+              h4 #{post.title}
+              p #{post.excerpt}
+
+
+
+block post-footer
+    #fb-root
+    script.
+      // CSS Toggle for landing page & background
+      //$('body').addClass('landing');

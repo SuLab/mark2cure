@@ -1,20 +1,23 @@
-from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
+
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+
 from django.http import HttpResponse
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from mark2cure.document.models import Document, View, Annotation, Activity
 from mark2cure.common.forms import MessageForm, ProfileSurveyForm
 from mark2cure.common.models import SurveyFeedback
 from mark2cure.common.utils import experiment_routing, experiment_gm_routing
 from mark2cure.account.utils import get_mturk_account
+from zinnia.models import Entry
 
 from datetime import datetime, timedelta
 import math, random, logging
@@ -22,10 +25,22 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
-    if request.user.is_authenticated():
-      return redirect('mark2cure.common.views.library')
 
-    return render_to_response('landing/index.jade', context_instance=RequestContext(request))
+    if request.user.is_authenticated():
+      return redirect('mark2cure.common.views.dashboard')
+
+    form = AuthenticationForm()
+    return render_to_response('common/index.jade', {'form': form}, context_instance=RequestContext(request))
+
+
+def introduction(request, introduction_num):
+    return render_to_response('introduction/step{0}.jade'.format(introduction_num), { 'introduction_num': introduction_num }, context_instance=RequestContext(request))
+
+
+@login_required
+def dashboard(request):
+    posts = Entry.objects.all()[:3]
+    return render_to_response('common/dashboard.jade', {'posts': posts}, context_instance=RequestContext(request))
 
 
 def mturk(request):

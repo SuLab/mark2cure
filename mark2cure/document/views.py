@@ -5,10 +5,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.db.models import Q
 from django.contrib.auth.models import User
 
-from mark2cure.document.models import Document, Activity, View, Annotation, ConceptRelationship, RelationshipType, Section
+from mark2cure.document.models import Document, Activity, View, RelationshipType, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id
 from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
@@ -36,8 +35,10 @@ def list(request, page_num=1):
 '''
   Views for completing the Concept Recognition task
 '''
+
+
 @login_required
-def identify_annotations(request, doc_id, treat_as_gm = False):
+def identify_annotations(request, doc_id, treat_as_gm=False):
     # If they're attempting to view or work on the document
     doc = get_object_or_404(Document, pk=doc_id)
     sections = doc.available_sections()
@@ -64,8 +65,8 @@ def identify_annotations(request, doc_id, treat_as_gm = False):
 
     return render_to_response('document/concept-recognition.jade',
                               { 'doc': doc,
-                                'sections' : sections,
-                                'user_profile' : user_profile,
+                                'sections': sections,
+                                'user_profile': user_profile,
                                 'task_type': 'concept-recognition' },
                               context_instance=RequestContext(request))
 
@@ -87,7 +88,6 @@ def identify_annotations_submit(request, doc_id, section_id):
         ann = form.save(commit=False)
         ann.view = view
         ann.save()
-
         return HttpResponse(200)
     return HttpResponse(500)
 
@@ -103,19 +103,19 @@ def identify_annotations_results(request, doc_id):
     user_profile = user.userprofile
 
     if not doc.is_complete(user, user_profile, sections):
-      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
+        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
     for section in sections:
-      setattr(section, 'words', section.resultwords(user))
-      setattr(section, 'user_annotations', section.latest_annotations(user))
+        setattr(section, 'words', section.resultwords(user))
+        setattr(section, 'user_annotations', section.latest_annotations(user))
 
     '''
       1) It's a GM doc with GM annotations used to score
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    activity = Activity(user = user, document = doc, task_type = 'cr', experiment= settings.EXPERIMENT if user_profile.mturk else None)
-    previous_activities_available = Activity.objects.filter(document = doc, task_type = 'cr', experiment = settings.EXPERIMENT if user_profile.mturk else None).exclude(user = user, user__userprofile__ignore = True).exists()
+    activity = Activity(user=user, document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None)
+    previous_activities_available = Activity.objects.filter(document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None).exclude(user=user, user__userprofile__ignore=True).exists()
 
     # Can't use a Document as a Golden Master if no GM annotations exist
     if doc.has_golden() and user_profile.current_gm:
@@ -137,9 +137,9 @@ def identify_annotations_results(request, doc_id):
 
         return render_to_response('document/concept-recognition-results-gold.jade',
             { 'doc': doc,
-              'user_profile' : user_profile,
-              'sections' : sections,
-              'results' : results,
+              'user_profile': user_profile,
+              'sections': sections,
+              'results': results,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
 
@@ -153,8 +153,8 @@ def identify_annotations_results(request, doc_id):
 
         return render_to_response('document/concept-recognition-results-community.jade',
             { 'doc': doc,
-              'user_profile' : user_profile,
-              'sections' : sections,
+              'user_profile': user_profile,
+              'sections': sections,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
 
@@ -168,112 +168,26 @@ def identify_annotations_results(request, doc_id):
 
         return render_to_response('document/concept-recognition-results-not-available.jade',
             { 'doc': doc,
-              'user_profile' : user_profile,
-              'sections' : sections,
+              'user_profile': user_profile,
+              'sections': sections,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
 
 
 @require_http_methods(['POST'])
 @login_required
-def comment_document(request,  doc_id):
+def comment_document(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
 
     form = CommentForm(request.POST)
     if form.is_valid():
-      refute = form.save(commit=False)
-      refute.document = doc
-      refute.user = request.user
-      refute.save()
-      return HttpResponse('Success')
+        refute = form.save(commit=False)
+        refute.document = doc
+        refute.user = request.user
+        refute.save()
+        return HttpResponse('Success')
 
     return HttpResponse('Unauthorized', status=401)
-
-
-'''
-  Views for completing the Verify Concept task
-'''
-@require_http_methods(['POST'])
-@login_required
-def validate_concepts(request, doc_id):
-    doc = get_object_or_404(Document, pk=doc_id)
-    relationships = doc.get_conceptrelation_entries_to_validate()
-
-    if len(relationships) is 0:
-      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
-
-    return render_to_response('document/verify-relationships.jade',
-        { 'doc': doc,
-          'relationships' : relationships,
-          'task_type': 'validate-concepts' },
-        context_instance=RequestContext(request))
-
-
-@login_required
-@require_http_methods(['POST'])
-def validate_concepts_submit(request, doc_id):
-    doc = get_object_or_404(Document, pk=doc_id)
-    validating_cr = get_object_or_404(ConceptRelationship, pk=request.POST.get('concept_relationship'))
-    overview = get_object_or_404(Section, kind='o', document=doc)
-
-    view, vc = View.objects.get_or_create(section = overview, user = request.user)
-    ann, ac = Annotation.objects.get_or_create(kind = 'r', view = view)
-
-    concept_relationship = ConceptRelationship(
-        concept = validating_cr.concept,
-        relationship = validating_cr.relationship,
-        target = validating_cr.target,
-        annotation = ann,
-        validate = validating_cr,
-        confidence = 0 if request.POST.get('vote') == 'false' else 1)
-    concept_relationship.save()
-
-    return HttpResponse(200)
-
-
-'''
-  Views for other task types [IN PROGRESS]
-'''
-@login_required
-def identify_concepts(request, doc_id):
-    # If they're attempting to view or work on the document
-    doc = get_object_or_404(Document, pk=doc_id)
-    concepts = doc.get_concepts_for_classification()
-    return render_to_response('document/identify-concepts.jade',
-        { 'doc': doc,
-          'concepts': concepts[:3],
-          'task_type': 'validate-concepts' },
-        context_instance=RequestContext(request))
-
-
-@login_required
-@require_http_methods(['POST'])
-def identify_concepts_submit(request, doc_id):
-    '''
-      This is broken out because there can be many submissions per document
-      We don't want to use these submission to direct the user to elsewhere in the app
-    '''
-
-    doc = get_object_or_404(Document, pk=doc_id)
-    overview = doc.section_set.filter(kind = 'o').first()
-
-    subject_concept = get_object_or_404(Concept, concept_id=request.POST['c_one'])
-    object_concept = get_object_or_404(Concept, concept_id=request.POST['c_two'])
-
-    view, vc = View.objects.get_or_create(section = overview, user = request.user)
-    ann, ac = Annotation.objects.get_or_create(view = view, kind = 'r')
-
-    for r in request.POST['relation'].split(','):
-      relationship_type = get_object_or_404(RelationshipType, pk=r)
-
-      ConceptRelationship.objects.get_or_create(
-          concept = subject_concept,
-          relationship = relationship_type,
-          target = object_concept,
-          annotation = ann)
-
-
-    return HttpResponse(200)
 
 
 '''
@@ -288,17 +202,9 @@ def submit(request, doc_id):
     doc = get_object_or_404(Document, pk=doc_id)
     task_type = request.POST.get('task_type')
 
-
     if task_type == 'concept-recognition':
         doc.update_views(request.user, 'cr', True)
         return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
-
-    elif task_type == 'validate-concepts':
-        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
-    elif task_type == 'identify-concepts':
-        return redirect('mark2cure.document.views.identify_concepts', doc.pk)
-
-
     else:
         doc.update_views(request.user, 'cr', True)
         return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
@@ -334,8 +240,8 @@ def create(request):
     '''
     form = DocumentForm(request.POST)
     if form.is_valid():
-      doc = create_from_pubmed_id( request.POST['document_id'] )
-      return redirect('mark2cure.document.views.identify_annotations', doc.pk)
+        doc = create_from_pubmed_id(request.POST.get('document_id'))
+        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
 
 class TopUserViewSet(generics.ListAPIView):
@@ -343,14 +249,8 @@ class TopUserViewSet(generics.ListAPIView):
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
-        section_id = self.kwargs['section_id']
-        top_users =  View.objects.filter(
-            task_type = 'cr',
-            completed = True,
-            section__document__id = doc_id,
-            experiment = settings.EXPERIMENT if self.request.user.userprofile.mturk else None ).exclude(user = self.request.user, user__userprofile__ignore = True).values('user')
+        top_users = View.objects.filter(task_type='cr', completed=True, section__document__id=doc_id, experiment=settings.EXPERIMENT if self.request.user.userprofile.mturk else None).exclude(user=self.request.user, user__userprofile__ignore=True).values('user')
         top_users = [dict(y) for y in set(tuple(x.items()) for x in top_users)]
-
         return top_users[:4]
 
 
@@ -363,7 +263,7 @@ class AnnotationViewSet(generics.ListAPIView):
 
         section = get_object_or_404(Section, pk=section_id)
         user = get_object_or_404(User, pk=user_id)
-        annotations = section.latest_annotations(user = user)
+        annotations = section.latest_annotations(user=user)
         # print 'User ', user_id, ' Annotations: ', annotations
         return annotations
 

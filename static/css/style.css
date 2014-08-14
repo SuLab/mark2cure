@@ -6,6 +6,7 @@ body.landing {
   background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;
 }
 
+/*
 body.landing .jumbotron {
   margin-top: 40px;
   background-color: #fff;
@@ -37,6 +38,7 @@ svg {
   display: block;
   margin: 0 auto;
 }
+*/
 
 /* =========================
         Header
@@ -287,6 +289,20 @@ a.close-btn {
 #footer a {
   text-decoration: none;
   color: #B2365F;
+}
+
+.line {
+  background: #777777;
+  height: 1px;
+}
+
+.line-text {
+  position: relative;
+  background: #ffffff;
+  color: #777777;
+  display: inline;
+  top: -.6em;
+  padding: 0px 6px;
 }
 
 /* Analytics View */

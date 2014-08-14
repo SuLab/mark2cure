@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.conf.urls import patterns, include, url
 
 from rest_framework import routers
@@ -18,12 +17,6 @@ urlpatterns = patterns('mark2cure.document.views',
     url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$', r'identify_annotations_submit'),
     url(r'^(?P<doc_id>\d+)/comment/create/$', r'comment_document'),
 
-    url(r'^(?P<doc_id>\d+)/concepts/validate/$', r'validate_concepts'),
-    url(r'^(?P<doc_id>\d+)/concepts/validate/submit/$', r'validate_concepts_submit'),
-
-    url(r'^(?P<doc_id>\d+)/concepts/identify/$', r'identify_concepts'),
-    url(r'^(?P<doc_id>\d+)/concepts/identify/submit/$', r'identify_concepts_submit'),
-
     url(r'^(?P<doc_id>\d+)/submit/$', r'submit'),
     url(r'^(?P<doc_id>\d+)/next/$', r'next'),
     url(r'^create/$', r'create'),
@@ -33,12 +26,5 @@ urlpatterns = patterns('mark2cure.document.views',
     url(r'^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/results/top/$', TopUserViewSet.as_view()),
     url('^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/user/(?P<user_id>\d+)/annotations/$', AnnotationViewSet.as_view()),
     url(r'^', include(router.urls)),
-)
+    )
 
-# //-- Specific Doc for relationships
-# 'document/:doc_id/relationship' : 'showDocRelationship',
-#
-# //-- Specific Document
-# 'document/:doc_id?assignmentId=:var1&hitId=:var2&workerId=:var3&turkSubmitTo=:var4' : 'showDocument',
-# 'document/:doc_id?assignmentId=:var1&hitId=:var2' : 'showDocument',
-# 'document/:doc_id' : 'showDocument',
