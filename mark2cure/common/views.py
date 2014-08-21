@@ -33,9 +33,14 @@ def home(request):
     return render_to_response('common/index.jade', {'form': form}, context_instance=RequestContext(request))
 
 
+def introduction(request):
+    return render_to_response('introduction/basics.jade', {}, context_instance=RequestContext(request))
+
+
+'''
 def introduction(request, introduction_num):
     return render_to_response('introduction/step{0}.jade'.format(introduction_num), { 'introduction_num': introduction_num }, context_instance=RequestContext(request))
-
+'''
 
 @login_required
 def dashboard(request):

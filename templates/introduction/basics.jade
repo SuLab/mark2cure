@@ -1,0 +1,74 @@
+extends base
+
+block header
+  - with headerMessage='Introduction'
+    include includes/header-anon
+
+block content
+  .container
+    .row.foot-space-xl
+      .col-md-12
+        h2.lead Welcome, new trainee, let's start with the basics...
+
+    .row.head-space-xl
+      #basics.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information. By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help.
+
+    .row.head-space
+      a(href='#', id='next', disabled).btn.btn-default.pull-right Next
+
+block post-footer
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    script.
+      var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+      var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+      var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+      var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+      var isIE = /*@cc_on!@*/false || !!document.documentMode;   // At least IE6
+
+      if(!isChrome && !isSafari) {
+        alert("Google Chrome or Safari required.")
+      }
+
+      YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions({basics: '#basics'});
+        // Add our views for each section
+        var p = new Paragraph({'text': $('#basics').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        YPet['basics'].show( view );
+      });
+      YPet.start();
+
+      function startIntro(){
+        var intro = introJs();
+        intro.setOptions({
+          'skipLabel': 'Exit',
+          'tooltipPosition': 'top',
+          'showButtons': false,
+          steps: [
+            {
+              element: '#basics',
+              intro: 'Hightlight words by clicking on them. Hightlight the word \'Biomedical\'',
+            },
+            {
+              element: '#basics',
+              intro: 'Remove the highlight by clicking again. Un-highlight the word \'information\'',
+            },
+            {
+              element: '#basics',
+              intro: 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \'I am ready to help\'',
+            },
+            {
+              element: '#next',
+              intro: 'Click Next to continue!'
+            }
+          ]
+        });
+        intro.start();
+        intro.onchange(function(a,b,c,d) {
+          console.log(a,b,c,d);
+        });
+      }
+
