@@ -6,26 +6,31 @@ block header
   .container-fluid
     .row
       .col-md-12
-        h1.text-center
-          | Mark2Cure
+        h1.text-center Mark2Cure
 
 
 block content
   #carousel-features(data-ride='carousel').carousel.slide
     ol.carousel-indicators
       li(data-target='#carousel-features', data-slide-to='0').active
+      li(data-target='#carousel-features', data-slide-to='1')
 
     .carousel-inner
       .item.active
-        img('#')
+        img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
         .container
           .carousel-caption
-            h1
-             | Scientific communication is broken.
-            p
-             | Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
-            p
-             | To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+            h1 Scientific communication is broken.
+            p Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
+            p To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+
+      .item
+        img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
+        .container
+          .carousel-caption
+            h1 Scientific communication is broken. 2
+            p 2 Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
+            p 2 To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
 
     a(href='#carousel-features', role='button', data-slide='prev').left.carousel-control
       span.glyphicon.glyphicon-chevron-left
@@ -33,70 +38,57 @@ block content
     a(href='#carousel-features', role='button', data-slide='next').right.carousel-control
       span.glyphicon.glyphicon-chevron-right
 
-
-  .container
+  .container.head-space
     .row
       .col-md-6
         .row
           .col-md-12
-            h2.text-center
-              | Get Started
+            h2.text-center Get Started
 
         .row
-          .col-md-10.col-md-offset-1
-            p
-              | The process only takes five minutes! Join an international community of citizen Scientists dedicated to making a difference.
+          .col-md-8.col-md-offset-2
+            p.text-center The process only takes five minutes! Join an international community of citizen Scientists dedicated to making a difference.
+          .col-md-6.col-md-offset-3
+            a(href='/introduction/1/').btn.btn-default.btn-block Start Now
 
-            a(href='/introduction/1/').btn.btn-default
-              | Start Now
+        .row.head-space
+          .col-md-8.col-md-offset-2
+            p.text-center Already a contributer?
+          .col-md-8.col-md-offset-2
+            ul.list-inline.text-center
+              li
+                a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}")
+                  i.fa.fa-twitter.fa-2x
+              li
+                a(href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}")
+                  i.fa.fa-facebook.fa-2x
+              li
+                a(href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}")
+                  i.fa.fa-google.fa-2x
 
-        .row
-          .col-md-10.col-md-offset-1
-          - if form.errors
-            p Your username and password didn't match. Please try again.
-            #{form.errors}
+          .col-md-8.col-md-offset-2
+            - if form.errors
+              p Your username and password didn't match. Please try again.
+              #{form.errors}
 
-           form(role='form', action='/account/login/', method='post').form-horizontal
-              {% csrf_token %}
-
+            form(role='form', action='/account/login/', method='post').form-horizontal
+              - csrf_token
               .form-group
-                label(for='exampleInputEmail1')
-                  | Username
+                label(for='exampleInputEmail1') Username
                 #{form.username|add_class:"form-control"|attr:"placeholder:username"}
 
               .form-group
-                label(for='exampleInputPassword1')
-                  | Password
+                label(for='exampleInputPassword1') Password
                 #{form.password|add_class:"form-control"|attr:"placeholder:password"}
 
-              p.text-right.breathe-top-mid
-                  a(href="/account/reset/")
-                      | Forgot password?
-
-              button(type='submit').btn.btn-default
-                | Login
-
-
-
-
-
-
-
-
-
-
-
+              .form-group
+                p.pull-right
+                  a(href="/account/reset/") Forgot password?
+                button(type='submit').btn.btn-default Login
 
 
       .col-md-6
         .row
           .col-md-10.col-md-offset-1.well
-            p
-              | Yuppp....
+            p Lorem ipsum dolor sit amet, mel eu doctus nonumes, ea idque moderatius eam. Ei malis epicurei placerat est, ei nam tacimates molestiae. An commodo legimus has, vis quaeque officiis accusata ne. Impedit fuisset his ne, alii delectus eleifend eum ex. Graeco delicata an eum. Per alterum gloriatur cu, sit facilis disputando cu, sit te aperiam debitis. Qui te ipsum iuvaret.
 
-
-block post-footer
-    #fb-root
-    script.
-      // CSS Toggle for landing page & background
-      $('body').addClass('landing');

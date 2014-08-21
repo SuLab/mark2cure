@@ -1,20 +1,24 @@
-hr
-
-.container
+.container.head-space-xl
   .row
     .col-xs-12.line
-
     .col-md-12
-      p.text-center Stay Connected
+      p.line-text.text-center Stay Connected
     .col-md-12
-      .line-text
-        a(href='https://twitter.com/share', data-url='http://mark2cure.org', data-text='Help fix scientific communication!', data-hashtags='mark2cure', data-dnt='true Tweet').twitter-share-button
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+      ul.list-inline
+        li
+          a(href='mailto:mark2cure@gmail.com?subject=hello')
+            i.fa.fa-envelope.fa-2x
+        li
+          a(href='https://www.facebook.com/pages/Mark2Cure/586806781439862', target='_blank')
+            i.fa.fa-facebook-square.fa-2x
+        li
+          a(href='https://twitter.com/share', data-url='http://mark2cure.org', data-text='Help fix scientific communication!', data-hashtags='mark2cure', data-dnt='true Tweet').twitter-share-button
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
     .col-md-12
       div(data-href='http://mark2cure.org/', data-width='450', data-layout='button_count', data-show-faces='true', data-send='true').fb-like
 
-       .row
+   .row
     .col-sm-12
       ul.list-inline.text-center
         li
@@ -23,11 +27,9 @@ hr
         li
           p
             a(href='/help/') Help / FAQ
-
         li
           p
             a(href='/blog/') Blog / News
-
         li
           p
             a(href='/tos/') Terms of Service / Privacy Policy

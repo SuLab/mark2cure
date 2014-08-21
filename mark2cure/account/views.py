@@ -15,10 +15,7 @@ import datetime
 
 
 def reset_thanks(request):
-    return render_to_response('account/reset-thanks.jade',
-                              {},
-                              context_instance=RequestContext(request))
-
+    return render_to_response('account/reset-thanks.jade', {}, context_instance=RequestContext(request))
 
 
 @login_required
@@ -48,11 +45,7 @@ def update_profile(request, profile_id):
     return redirect('/account/')
 
 
-@login_required
 def create(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
@@ -66,9 +59,7 @@ def create(request):
     else:
         form = UserForm()
 
-    return render_to_response('account/create.jade',
-                              {'form': form},
-                              context_instance=RequestContext(request))
+    return render_to_response('account/create.jade', {'form': form}, context_instance=RequestContext(request))
 
 
 @login_required

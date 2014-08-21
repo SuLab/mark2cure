@@ -1,38 +1,8 @@
 extends base
 
 block header
-  .container-fluid
-    .row
-      .col-md-2
-        h1
-          | Mark2Cure
-
-      .col-md-6
-        h1.text-center
-          | Introduction Page 1 / 2
-
-      .col-md-2
-        .row
-          .col-md-12
-            p
-              | Hi new trainee!
-        .row
-          .col-md-4
-            p
-              a(href='#')
-                | Settings
-          .col-md-4
-            p
-              a(href='#')
-                | Sign Out
-
-          .col-md-4
-            p
-              | Score: 0
-
-      .col-md-2
-        p
-          | Session Total: 0
+  - with headerMessage='Introduction 1/2'
+    include includes/header-anon
 
 block content
   .container

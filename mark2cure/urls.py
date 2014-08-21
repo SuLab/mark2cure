@@ -12,6 +12,9 @@ urlpatterns = patterns('',
     url(r'^document/', include('mark2cure.document.urls')),
     url(r'^analysis/', include('mark2cure.analysis.urls')),
 
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('', include('django.contrib.auth.urls', namespace='auth')),
+
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),

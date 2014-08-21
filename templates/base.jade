@@ -13,7 +13,9 @@ head
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-theme.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-switch.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/selectize.bootstrap3.css')
+    link(rel='stylesheet', href='#{STATIC_URL}css/font-awesome.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
+    link(rel='stylesheet', href='#{STATIC_URL}css/document-style.css')
 
 body
     block header
@@ -41,17 +43,17 @@ body
         // App
         script(src='#{STATIC_URL}js/ypet.js')
         script(src='#{STATIC_URL}js/app.js')
-
-        script.
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-43341013-1']);
-          _gaq.push(['_setDomainName', 'mark2cure.org']);
-          _gaq.push(['_trackPageview']);
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
+        - if not debug
+          script.
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-43341013-1']);
+            _gaq.push(['_setDomainName', 'mark2cure.org']);
+            _gaq.push(['_trackPageview']);
+            (function() {
+              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
 
     block post-footer
     block modals

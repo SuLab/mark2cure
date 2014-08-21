@@ -3,31 +3,9 @@ extends base
 - load widget_tweaks
 - load humanize
 
-
 block header
-  .container-fluid
-    .row
-      .col-md-2
-        a(href='/')
-          h1.text-center Mark2Cure
-      .col-md-8
-        h1.text-center My Settings
-      .col-md-2
-        .row
-          .col-md-6
-            p Hello {{user}}
-          .col-md-3
-            img(src='#')
-          .col-md-3
-            span.glyphicon.glyphicon-align-justify
-        .row
-          .col-md-6
-            a(href='/account/settings/')
-              p Settings
-          .col-md-6
-            a(href='/account/logout/')
-              p Logout
-
+  - with headerMessage='Community Dashboard'
+    include includes/header
 
 block content
   .container

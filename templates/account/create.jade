@@ -2,49 +2,74 @@ extends base
 
 - load widget_tweaks
 
+block header
+  - with headerMessage='Registration'
+    include includes/header-anon
+
 block content
+  .container
+
     .row
-        .col-md-6.col-md-offset-3
-            .row
-                block form-header
-                    .col-md-8.columns
-                        h1
-                            | Create User
-            .row
-                .col-md-6
-                    form(method="post").breathe-top
-                        {% csrf_token %}
-                        #{form.errors}
-                        .row
-                            .col-md-12
-                                label
-                                    | username
-                                #{form.username|add_class:"form-control"}
-                        .row
-                            .col-md-12
-                                label
-                                    | First Name
-                                #{form.first_name|add_class:"form-control"}
-                        .row
-                            .col-md-12
-                                label
-                                    | Last Name
-                                #{form.last_name|add_class:"form-control"}
-                        .row
-                            .col-md-12
-                                label
-                                    | Email
-                                #{form.email|add_class:"form-control"}
-                        .row
-                            .col-md-12
-                                label
-                                    | Password
-                                #{form.password|add_class:"form-control"|attr:"type:password"}
-                        block form-submit
-                            .form-submit
-                                .row.breathe-top-mid
-                                    .col-md-12
-                                        input(type="submit", value="Submit").btn.btn-primary.form-control
-                                        br
-                                        a(href="#cancel").btn.btn-default.full-width.action-back.breathe-top-mid
-                                            | Cancel
+      .col-md-12
+        p.lead You have now completed the tutorial and are ready to Mark to Cure. To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
+
+    .row
+      .col-md-5.col-md-offset-1
+        .row
+          h3 Register for an account
+        .row
+          form(role='form', method='post').form-horizontal
+            - csrf_token
+            #{form.errors}
+            .form-group
+              label.col-sm-4.control-label Login
+              .col-sm-8 #{form.username|add_class:'form-control'}
+            .form-group
+              label.col-sm-4.control-label Email
+              .col-sm-8 #{form.email|add_class:'form-control'}
+            .form-group
+              label.col-sm-4.control-label Password
+              .col-sm-8 #{form.password|add_class:'form-control'|attr:'type:password'}
+            .form-group
+              label.col-sm-4.control-label Verify Password
+              .col-sm-8 #{form.password|add_class:'form-control'|attr:'type:password'}
+            .form-group
+              .col-sm-4.col-sm-offset-4
+                input(type='submit', value='Submit').btn.btn-default.btn-block
+
+      .col-md-5.col-md-offset-1
+        .row
+          h3 Use an OpenID account
+        .row
+          ul.list-unstyled
+            li
+              a(href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}") Login with Facebook
+            li
+              a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}") Login with Twitter
+            li
+              a(href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}") Login with Google
+
+    .row
+      .col-md-10.col-md-offset-1
+        .row
+          h3 Profile Information
+          small (this is option, you can always edit it later)
+
+        .row
+          form(role='form', method='post')
+            - csrf_token
+            #{form.errors}
+            .form-group
+              label.col-sm-4.control-label Email
+              .col-sm-8 #{form.email|add_class:'form-control'}
+
+
+            .form-group
+              label.col-sm-4.control-label Quote / Signature:
+              textarea(rows='3').form-control
+
+            .form-group
+              p.pull-right By registering, I agree to abide by the Mark2Cure <a href='/tos/', target='_blank'>Terms of Service</a>
+
+            .form-group
+              button(type='submit').btn.btn-success Start Now!

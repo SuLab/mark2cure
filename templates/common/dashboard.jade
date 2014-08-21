@@ -4,29 +4,8 @@ extends base
 
 
 block header
-  .container-fluid
-    .row
-      .col-md-2
-        a(href='/')
-          h1.text-center Mark2Cure
-      .col-md-8
-        h1.text-center Community Dashboard
-      .col-md-2
-        .row
-          .col-md-6
-            p Hello {{user}}
-          .col-md-3
-            img(src='{{user.profile.country.flag}}')
-          .col-md-3
-            span.glyphicon.glyphicon-align-justify
-        .row
-          .col-md-6
-            a(href='/account/settings/')
-              p Settings
-          .col-md-6
-            a(href='/account/logout/')
-              p Logout
-
+  - with headerMessage='Community Dashboard'
+    include includes/header
 
 block content
   .container
@@ -34,50 +13,48 @@ block content
       .col-md-4
         .row
           .col-md-10.col-md-offset-1
-            p
-              | Mark2Cure aims to speed up progress in biomedical research by applying the collective intelligence of users just like you! By "marking" docus, you help to annotate biomedical research literature, allowing researchers to gather information...
+            p Mark2Cure aims to speed up progress in biomedical research by applying the collective intelligence of users just like you! By "marking" docus, you help to annotate biomedical research literature, allowing researchers to gather information...
         .row
           .col-md-10.col-md-offset-1
-            h3
-              | I'm here because:
-            p
-              | I'm here because I want science to move forward FASTER
+            h3 I'm here because:
+            p I'm here because I want science to move forward FASTER
+
+      .col-md-4
+        .row
+          .col-md-8.col-md-offset-2
+            h2.text-center Start
+            a(href='#').btn.btn-block.btn-success Marking Docs
+            h2.text-center now!
 
       .col-md-4
         .row
           .col-md-12
-            h2
-              | Start
+            h3 Chordoma publications
+            p [dataviz here]
 
-            a(href='#').btn.btn-default
-              | Marking Docs
-
-            h2
-              | now!
-
-      .col-md-4
-        .row
-          .col-md-12
-            h3
-              | Chordoma publications
-
-            p
-              | [dataviz here]
+    .row
+      .col-xs-12.line
 
     .row
       .col-md-4
         h3
           | Productivity Log:
 
-        ol.list-view
-          li.list-view-item
-            | xyz
-          li.list-view-item
-            | xyz
-          li.list-view-item
-            | xyz
-
-          hr
+        .col
+          .col-md-10.col-md-offset-1
+            .list-group
+              li.list-group-item
+                h4.list-group-item-heading 5/13/2014
+                p.list-group-item-text Session Total 52
+              li.list-group-item
+                h4.list-group-item-heading 5/18/2014
+                p.list-group-item-text Session Tota 23
+              li.list-group-item
+                h4.list-group-item-heading 5/19/2014
+                p.list-group-item-text Session Total 75
+              li.list-group-item
+                h4.list-group-item-heading 5/19/2014
+                p.list-group-item-text Session Total 6
 
           p.text-center
             | Total Annotations: 0123
@@ -99,29 +76,32 @@ block content
       .col-md-4
         .row
           .col-md-10.col-md-offset-1
-            h3
-              | My Score: 26842
-            p
-              | Level: Marker Bee
+            h3 My Score: 26842
+            h4 Level: Marker Bee
 
-            p
-              small
-                | progress to next level:
+            small progress to next level:
+            .progress
+              div(role='progressbar', aria-valuenow='60', aria-valuemin='0', aria-valuemax='100', style='width: 60%;').progress-bar.progress-bar-success.progress-bar-striped.active 60%
 
         .row
           .col-md-10.col-md-offset-1
-            ol.list-view
-              li.list-view-item
-                | Most Docs Mared in One Session: 176
-              li.list-view-item
-                | Total Docs Marked: 18435
-              li.list-view-item
-                | Total Docs skipped: 192
+            ul.list-group
+              li.list-group-item
+                span.badge 176
+                | Most Docs marked in one session
+              li.list-group-item
+                span.badge 18,435
+                | Total Docs marked
+              li.list-group-item
+                span.badge 192
+                | Total Docs skipped
 
+  .container.head-space
     .row
-      .col-md-10.col-md-offset1
-        h3
-          | News -
+      .col-md-12.line
+      .col-md-12
+        p.line-text.text-center News
+      .col-md-10.col-md-offset-1
         - for post in posts
           .row
             .col-md-12

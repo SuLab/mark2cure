@@ -6,40 +6,6 @@ body.landing {
   background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;
 }
 
-/*
-body.landing .jumbotron {
-  margin-top: 40px;
-  background-color: #fff;
-  background-color: rgba(238, 238, 238, .85);
-}
-
-body.landing .jumbotron h1 {
-  font-size: 40px;
-}
-
-body.landing form {
-  padding: 12px;
-  background-color: #fff;
-  background-color: rgba(238, 238, 238, .85);
-}
-
-body.landing .input label {
-  font-weight: normal;
-}
-
-body.landing #footer {
-  margin-top: 200px;
-  height: 120px;
-}
-
-body { padding-top: 70px; }
-
-svg {
-  display: block;
-  margin: 0 auto;
-}
-*/
-
 /* =========================
         Header
 ========================= */
@@ -49,165 +15,10 @@ svg {
         Footer
 ========================= */
 
-#footer {
-  margin-top: 80px;
-  height: 60px;
-}
-
-/* =========================
-        Library
-========================= */
-
-.library-view td.status span {
-  font-size: 28px;
-  display: block;
-  margin-top: 6px;
-}
-
-/* =========================
-    Entity Selection Game
-========================= */
-
-.paragraph p {
-  font-family: "Palatino Linotype", "Book Antiqua", "Palatino", "serif";
-  line-height: 2.1em;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 20px;
-}
-
-/* Entity Tag */
-
-.paragraph.entity_tag {
-  /* (TODO) Why doesn't this work? */
-  cursor: pointer;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.paragraph.entity_tag p span:hover {
-  cursor: pointer;
-  color: steelblue;
-}
-
-.paragraph.entity_tag p span.selected {
-  background-color: #0cf;
-  animation:highlight .25s;
-  -webkit-animation:highlight .25s;
-}
-
-@keyframes highlight {
-  from {background-color:#fff;}
-  to {background-color:#0cf;}
-}
-
-@-webkit-keyframes highlight {
-  from {background-color:#fff;}
-  to {background-color:#0cf;}
-}
-
-.paragraph.entity_tag p span.neighbor {
-  margin-right: 5px;
-}
-
-.paragraph.results p span.neighbor_gm,
-.paragraph.results p span.neighbor_u {
-  margin-right: 5px;
-}
-
-.paragraph.results p span.neighbor_gm.neighbor_u {
-}
-
-.paragraph.results p.putty-rect {
-  position: absolute;
-
-  width: 5px;
-  background-color: #0cf;
-}
-
-.paragraph svg {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-
-/* Community Consensus */
-.paragraph.results p span.selected {
-  border-top: 3px solid #0cf;
-  border-bottom: 3px solid #0cf;
-}
-
-/*
- *
- * Community Consensus & Results page paragraph classes
- *
- */
-
-.paragraph.results p span.golden,
-.paragraph.results p.golden {
-  /* Word span when simply showing golden master (not community consensus) */
-  border-bottom: 6px solid #00CC00;
-}
-
-.paragraph.results p span.user_annotated,
-.paragraph.results p.user_annotated {
-  /* Word span when simply showing user selection */
-  background-color: #0cf;
-}
-
-.paragraph.results p span.focused {
-  /* Word span when bringing attention to it via table hover */
-  /* font-weight: 600; */
-  font-weight: bold;
-  /* box-shadow: 0px 0px 5px yellow; */
-}
-
-.no-annotations,
-.f-score h2 {
-  font-size: 52px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-/* Relationships */
-
-.list-group-item:hover {
-  cursor: pointer;
-}
-
-.ui-list-group-item-dragging {
-  z-index: 99999;
-}
-
-.ui-list-group-item-hover {
-  background-color: #d9edf7
-}
-
-/* =========================
-      Analytics View
-========================= */
-
-#analytics-network .node {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-#analytics-network .link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
 
 /* =========================
         Utilities
 ========================= */
-div.popover.top {
-  z-index: 10001;
-}
-
 .head-space { margin-top: 20px; }
 .head-space-xl { margin-top: 60px; }
 .foot-space { margin-bottom: 20px; }
@@ -236,61 +47,6 @@ a.close-btn {
   padding: 20px;
 }
 
-.complete-modal h3 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  line-height: 1.2em;
-  font-size: 26px;
-  color: #006699;
-  text-align: center;
-  width: 400px;
-  margin: 0 auto;
-  padding-top: 20px;
-}
-
-.complete-modal span.follow-up {
-  color: #999;
-  font-weight: 100;
-}
-
-.complete-modal ul li {
-  font-size: 16px;
-  padding: 6px;
-  margin: 6px;
-}
-
-.complete-modal ul li p input {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: #333333;
-  width: 140px;
-  margin: -2px 2px 0px 0px;
-  padding: 2px 4px 2px 4px;
-  border: none;
-}
-
-.feedback-modal .feedback-item {
-  padding: 20px;
-}
-
-.feedback-modal .feedback-item h4 {
-  color: #006699;
-}
-
-.feedback-modal .feedback-item label {
-  color: #999;
-}
-
-.feedback-modal .feedback-item label:hover {
-  color: #333;
-}
-
-#footer a {
-  text-decoration: none;
-  color: #B2365F;
-}
-
 .line {
   background: #777777;
   height: 1px;
@@ -301,8 +57,8 @@ a.close-btn {
   background: #ffffff;
   color: #777777;
   display: inline;
-  top: -.6em;
+  top: -.7em;
+  font-size: 1.6em;
   padding: 0px 6px;
 }
 
-/* Analytics View */

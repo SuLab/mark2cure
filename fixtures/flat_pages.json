@@ -1,0 +1,47 @@
+[
+{
+    "pk": 1, 
+    "model": "flatpages.flatpage", 
+    "fields": {
+        "registration_required": false, 
+        "title": "About", 
+        "url": "/about/", 
+        "template_name": "", 
+        "sites": [
+            1
+        ], 
+        "content": "<p>Hello</p>", 
+        "enable_comments": false
+    }
+},
+{
+    "pk": 2, 
+    "model": "flatpages.flatpage", 
+    "fields": {
+        "registration_required": false, 
+        "title": "Help", 
+        "url": "/help/", 
+        "template_name": "", 
+        "sites": [
+            1
+        ], 
+        "content": "<p>Hello HELP</p>", 
+        "enable_comments": false
+    }
+},
+{
+    "pk": 3, 
+    "model": "flatpages.flatpage", 
+    "fields": {
+        "registration_required": false, 
+        "title": "Terms of Service", 
+        "url": "/tos/", 
+        "template_name": "", 
+        "sites": [
+            1
+        ], 
+        "content": "<p>Hello Terms of Service!</p>", 
+        "enable_comments": false
+    }
+}
+]
