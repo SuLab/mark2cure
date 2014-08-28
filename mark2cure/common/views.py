@@ -34,13 +34,16 @@ def home(request):
 
 
 def introduction(request):
-    return render_to_response('introduction/basics.jade', {}, context_instance=RequestContext(request))
+    return render_to_response('training/basics.jade', {}, context_instance=RequestContext(request))
 
 
-'''
-def introduction(request, introduction_num):
-    return render_to_response('introduction/step{0}.jade'.format(introduction_num), { 'introduction_num': introduction_num }, context_instance=RequestContext(request))
-'''
+def quest_read(request):
+    return render_to_response('training/training_read.jade', {}, context_instance=RequestContext(request))
+
+
+def quest(request, quest_num, step_num):
+    return render_to_response('training/intro-{0}/step-{1}.jade'.format(quest_num, step_num), {'training_num': quest_num, 'step_num': step_num}, context_instance=RequestContext(request))
+
 
 @login_required
 def dashboard(request):

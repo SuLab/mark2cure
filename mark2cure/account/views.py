@@ -8,6 +8,8 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 
+from django.contrib.auth import authenticate, login
+
 from mark2cure.account.models import UserProfile, Message
 from mark2cure.account.forms import UserForm, ProfileForm
 
@@ -51,10 +53,12 @@ def create(request):
         if form.is_valid():
             user = form.save()
             profile = user.profile
-            profile.created_by = request.user
+            #profile.created_by = request.user
             profile.save()
 
-            return redirect('/account/')
+            user = authenticate(username=request.POST['username'], password=request.POST['password'])
+            login(request, user)
+            return redirect('mark2cure.common.views.quest_read')
 
     else:
         form = UserForm()

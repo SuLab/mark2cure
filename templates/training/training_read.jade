@@ -1,0 +1,30 @@
+extends base
+
+block header
+  - if user.is_authenticated
+    - with headerMessage='Select a Quest'
+      include includes/header
+  - else
+    - with headerMessage='Select a Quest'
+      include includes/header-anon
+
+
+block content
+  .container
+    .row
+      .col-md-12
+        h2.lead Welcome, now that you passed the basic introduction, try out these introduction quests
+
+
+    .row
+      .col-md-12
+        a(href='/training/intro/1/step/1/')
+          h3 Training #1: Acquire a new skill: Disease Marking
+
+      .col-md-12
+        - if user.is_authenticated
+          a(href='/training/intro/2/step/1/')
+            h3 Training #2: Avoid Common Pitfalls
+        - else
+          h3.text-muted Training #2: Avoid Common Pitfalls (locked)
+

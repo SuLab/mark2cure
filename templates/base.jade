@@ -48,6 +48,16 @@ body
         script(src='#{STATIC_URL}js/app.js')
         - if not debug
           script.
+            var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+            var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+            var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+            var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;   // At least IE6
+
+            if(!isChrome && !isSafari) {
+              alert("Google Chrome or Safari required.")
+            }
+
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-43341013-1']);
             _gaq.push(['_setDomainName', 'mark2cure.org']);

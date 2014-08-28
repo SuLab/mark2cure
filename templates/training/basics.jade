@@ -1,0 +1,100 @@
+extends base
+
+block header
+  - with headerMessage='Introduction'
+    include includes/header-anon
+
+block content
+  .container
+    .row.foot-space-xl
+      .col-md-12
+        h2.lead Welcome, new trainee, let's start with the basics...
+
+    .row.head-space-xl
+      #basics.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information. By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help.
+
+    .row.head-space
+      a(href='/training/intro/', id='next', disabled).btn.btn-default.pull-right Next
+
+block post-footer
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    script.
+      YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions({basics: '#basics'});
+        // Add our views for each section
+        var p = new Paragraph({'text': $('#basics').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        console.log(view);
+        YPet['basics'].show( view );
+      });
+      YPet.start();
+
+      var intro = introJs();
+      intro.setOptions({
+        'skipLabel': 'Exit',
+        'showButtons': false,
+        'showBullets': false,
+        'keyboardNavigation': false,
+        steps: [
+          {
+            element: '#basics',
+            intro: 'Hightlight words by clicking on them. Hightlight the word \'Biomedical\'',
+            position: 'top',
+          },
+          {
+            element: '#basics',
+            intro: 'Remove the highlight by clicking again. Un-highlight the word \'information\'',
+            position: 'left',
+          },
+          {
+            element: '#basics',
+            intro: 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \'I am ready to help\'',
+            position: 'bottom',
+          },
+          {
+            element: '#next',
+            intro: 'Click Next to continue!',
+            position: 'left',
+          }
+        ]
+      });
+
+      intro.start();
+      intro.onchange(function() {
+        console.log(intro._currentStep)
+        switch (intro._currentStep)
+        {
+          case 0:
+            //function1();
+            break;
+
+          case 1:
+            $('.paragraph span:nth-child(20)').trigger('mousedown')
+            $('.paragraph span:nth-child(20)').trigger('mouseup')
+            break;
+
+          case 2:
+            break;
+
+          case 3:
+            $('#next').attr('disabled', false);
+            break;
+        }
+      });
+
+      YPet['basics'].currentView.collection.parentDocument.get('annotations').toJSON()
+
+      YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        // Step 1
+        if(model.get('text') == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
+        // Step 3
+        if(model.get('text') == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
+      });
+
+      YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
+        // Step 2
+        if(model.get('text') == 'information' && collection.length == 1) { intro.nextStep(); }
+      });

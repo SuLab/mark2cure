@@ -5,15 +5,12 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('mark2cure.common.views',
     url(r'^$', r'home'),
 
-    url(r'^introduction/basics/$', r'introduction'),
-    #url(r'^introduction/(?P<introduction_num>\d+)/$', r'introduction'),
+    url(r'^training/basics/$', r'introduction'),
+    url(r'^training/intro/(?P<quest_num>\d+)/step/(?P<step_num>\w+)/$', r'quest'),
+    url(r'^training/intro/$', r'quest_read'),
+
     url(r'^dashboard/$', r'dashboard'),
 
-    url(r'^mturk/$', r'mturk'),
-    url(r'^softblock/$', r'softblock'),
-    url(r'^banned/$', r'banned'),
-
-    url(r'^library/page/(?P<page_num>\d+)/$', r'library'),
     url(r'^signup/$', r'signup'),
     url(r'^message/$', r'message'),
     url(r'^profile-survey/$', r'profile_survey'),
