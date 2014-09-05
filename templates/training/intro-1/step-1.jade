@@ -39,7 +39,7 @@ block post-footer
         var p = new Paragraph({'text': $('#quest').text().trim()});
         p.parseText();
         var view = new WordCollectionView({collection: p.get('words')});
-        YPet['quest'].show( view );
+        YPet['quest'].show(view);
       });
       YPet.start();
 
