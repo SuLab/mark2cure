@@ -12,11 +12,11 @@ block content
         h2 Sometimes a single symptom is described with a long block of text and may have joining terms such as 'and' or 'or'.
         h3.lead In that case, highlihgt the entire symptom as a single span of text. Finish Quest #1 by marking the symptom in the text below.
 
-    #partner(style='display: none;').row.head-space
-      .col-md-10.col-md-offset-1
-        p You were paired with Doc_G-man <small>Level: Gold Master Marker</small>
+    block paired-with
+      include training/includes/paired-with
 
     .row.head-space-xl
+      #quest-alerts.col-md-10.col-md-offset-1
       #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
         p Another crucial symptom that we will investigate includes tingling sensations and/or numbness in the hands or feet.
 
@@ -32,26 +32,30 @@ block content
 
 block post-footer
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    <script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
     script.
       YPet.addInitializer(function(options) {
-        // Create our regions
         YPet.addRegions({quest: '#quest'});
-        // Add our views for each section
         var p = new Paragraph({'text': $('#quest').text().trim()});
         p.parseText();
         var view = new WordCollectionView({collection: p.get('words')});
-        YPet['quest'].show( view );
+        YPet['quest'].show(view);
       });
       YPet.start();
 
       var correct = function() {
-        $('#partner').slideDown(function() {
-          diabetes_intro.start();
-        });
+        $('#partner').slideDown();
         $('#next').attr('disabled', false);
-      }
+      };
 
-      var answers = ['tingling sensations and/or numbness in the hands or feet']
-      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); } });
+      var answers = ['tingling sensations and/or numbness in the hands or feet'];
+      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        if(!_.contains(answers, model.get('text'))) {
+          var temp = _.template($('#alert-template').html());
+          $('#quest-alerts').append(temp({'selection': model.get('text')}));
+        };
+        if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); }
+      });
       YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); } });
+
 

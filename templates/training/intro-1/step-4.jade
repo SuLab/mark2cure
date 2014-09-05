@@ -12,12 +12,11 @@ block content
         h2 Sometimes the disease conjunctions are separated by words like 'and/or'. Decide if there are two distinct diseases to highlight, or if it is a single disease conjunction.
         h3.lead Mark all the disease terms in the sentence below.
 
-    #partner(style='display: none;').row.head-space
-      .col-md-10.col-md-offset-1
-        p You were paired with Doc_G-man <small>Level: Gold Master Marker</small>
-
+     block paired-with
+      include training/includes/paired-with
 
     .row.head-space-xl
+      #quest-alerts.col-md-10.col-md-offset-1
       #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
         p The remaining 3 had inherited and/or type I diabetes mellitus.
 
@@ -33,11 +32,10 @@ block content
 
 block post-footer
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    <script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
     script.
       YPet.addInitializer(function(options) {
-        // Create our regions
         YPet.addRegions({quest: '#quest'});
-        // Add our views for each section
         var p = new Paragraph({'text': $('#quest').text().trim()});
         p.parseText();
         var view = new WordCollectionView({collection: p.get('words')});
@@ -46,13 +44,17 @@ block post-footer
       YPet.start();
 
       var correct = function() {
-        $('#partner').slideDown(function() {
-          diabetes_intro.start();
-        });
+        $('#partner').slideDown();
         $('#next').attr('disabled', false);
-      }
+      };
 
-      var answers = ['inherited and/or type I diabetes mellitus']
-      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); } });
+      var answers = ['inherited and/or type I diabetes mellitus'];
+      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        if(!_.contains(answers, model.get('text'))) {
+          var temp = _.template($('#alert-template').html());
+          $('#quest-alerts').append(temp({'selection': model.get('text')}));
+        };
+        if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); }
+      });
       YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers.sort().join(',')) { correct(); } });
 
