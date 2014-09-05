@@ -21,14 +21,11 @@ block post-footer
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
     script.
       YPet.addInitializer(function(options) {
-        // Create our regions
         YPet.addRegions({basics: '#basics'});
-        // Add our views for each section
         var p = new Paragraph({'text': $('#basics').text().trim()});
         p.parseText();
         var view = new WordCollectionView({collection: p.get('words')});
-        console.log(view);
-        YPet['basics'].show( view );
+        YPet['basics'].show(view);
       });
       YPet.start();
 
@@ -64,16 +61,14 @@ block post-footer
 
       intro.start();
       intro.onchange(function() {
-        console.log(intro._currentStep)
         switch (intro._currentStep)
         {
           case 0:
-            //function1();
             break;
 
           case 1:
-            $('.paragraph span:nth-child(20)').trigger('mousedown')
-            $('.paragraph span:nth-child(20)').trigger('mouseup')
+            $('.paragraph span:nth-child(20)').trigger('mousedown');
+            $('.paragraph span:nth-child(20)').trigger('mouseup');
             break;
 
           case 2:
@@ -85,16 +80,11 @@ block post-footer
         }
       });
 
-      YPet['basics'].currentView.collection.parentDocument.get('annotations').toJSON()
-
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-        // Step 1
         if(model.get('text') == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
-        // Step 3
         if(model.get('text') == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
-        // Step 2
         if(model.get('text') == 'information' && collection.length == 1) { intro.nextStep(); }
       });
