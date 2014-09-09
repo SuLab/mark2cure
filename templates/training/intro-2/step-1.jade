@@ -32,85 +32,17 @@ block content
 
 
 block post-footer
-    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
-    <script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
-    script.
-      var textControl = function(fade, start_index, end_index, region) {
-        fade = fade || 'in';
-        start_index = start_index || 0;
-        end_index = end_index || 10000;
-        region = region || 'quest-2';
-
-        YPet[region].currentView.children.each(function(view, idx) {
-          if(idx >= start_index && idx <= end_index) {
-            if (fade == 'out') {
-              view.$el.fadeOut();
-            } else {
-              view.$el.fadeIn();
-            }
-          }
-        });
-      };
-
-      var validate = function(needle, gold, slice) {
-        console.log(needle, gold, slice);
-        slice = slice || false;
-        if(slice) {
-          console.log(slice, needle.pluck('text').sort(), gold.slice(0, slice) );
-          res = needle.pluck('text').join(',') == gold.slice(0, slice).join(',');
-        } else {
-          res = needle.pluck('text').join(',') == gold.join(',');
-        }
-        console.log(res);
-        console.log('- - - - -  validate - - - - -');
-        return res;
-      };
-
-      YPet.addInitializer(function(options) {
-        YPet.addRegions({'quest-1': '#quest-1'});
-        var p = new Paragraph({'text': $('#quest-1').text().trim()});
-        p.parseText();
-        var view = new WordCollectionView({collection: p.get('words')});
-        YPet['quest-1'].show(view);
-
-        YPet.addRegions({'quest-2': '#quest-2'});
-        var p = new Paragraph({'text': $('#quest-2').text().trim()});
-        p.parseText();
-        var view = new WordCollectionView({collection: p.get('words')});
-        YPet['quest-2'].show(view);
-        textControl('out', 23);
-      });
-      YPet.start();
-
-      var correct1 = function() {
-        $('#quest-2').slideDown();
-      };
-
-      var correct2 = function() {
-        $('#partner').slideDown();
-        $('#next').attr('disabled', false);
-      };
-
+  include training/includes/intro-2-js
+  script.
+      textControl('out', 23);
       var answers1 = ['Duchenne muscular dystrophy'];
-      YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-        if(!_.contains(answers1, model.get('text'))) {
-          var temp = _.template($('#alert-template').html());
-          $('#quest-alerts').append(temp({'selection': model.get('text')}));
-        };
-        if(validate(collection, answers1)) { correct1(); }
-      });
-      YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers1.sort().join(',')) { correct1(); } });
-
       var answers2 = ['Duchenne muscular dystrophy', 'DMD', 'DMD', 'DMD'];
-      YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-        if(!_.contains(answers2, model.get('text'))) {
-          var temp = _.template($('#alert-template').html());
-          $('#quest-alerts').append(temp({'selection': model.get('text')}));
-        };
-
+      var validation_check1 = function(collection) {
+        if(validate(collection, answers1)) { correct1(); }
+      };
+      var validation_check2 = function(collection) {
         if(validate(collection, answers2)) { correct2(); }
         if(validate(collection, answers2, 2)) { textControl('in', 0, 38); }
         if(validate(collection, answers2, 3)) { textControl('in', 0); }
-      });
-      YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers2.sort().join(',')) { correct2(); } });
+      };
 

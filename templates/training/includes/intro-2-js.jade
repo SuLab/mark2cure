@@ -1,0 +1,75 @@
+<script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+<script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
+script.
+  var textControl = function(fade, start_index, end_index, region) {
+    fade = fade || 'in';
+    start_index = start_index || 0;
+    end_index = end_index || 10000;
+    region = region || 'quest-2';
+
+    YPet[region].currentView.children.each(function(view, idx) {
+      if(idx >= start_index && idx <= end_index) {
+        if (fade == 'out') {
+          view.$el.fadeOut();
+        } else {
+          view.$el.fadeIn();
+        }
+      }
+    });
+  };
+
+  var validate = function(needle, gold, slice) {
+    /*
+      This is not sorted, assumines the needle collection is returned sorted by word index and that
+      the gold array is in order of how the words appear in the section in order to work
+    */
+    slice = slice || false;
+    if(slice) {
+      return needle.pluck('text').join(',') == gold.slice(0, slice).join(',');
+    } else {
+      return needle.pluck('text').join(',') == gold.join(',');
+    }
+  };
+
+  YPet.addInitializer(function(options) {
+    YPet.addRegions({'quest-1': '#quest-1'});
+    var p = new Paragraph({'text': $('#quest-1').text().trim()});
+    p.parseText();
+    var view = new WordCollectionView({collection: p.get('words')});
+    YPet['quest-1'].show(view);
+
+    YPet.addRegions({'quest-2': '#quest-2'});
+    var p = new Paragraph({'text': $('#quest-2').text().trim()});
+    p.parseText();
+    var view = new WordCollectionView({collection: p.get('words')});
+    YPet['quest-2'].show(view);
+  });
+  YPet.start();
+
+  var correct1 = function() {
+    $('#quest-2').slideDown();
+  };
+
+  var correct2 = function() {
+    $('#partner').slideDown();
+    $('#next').attr('disabled', false);
+  };
+
+  YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+    if(!_.contains(answers1, model.get('text'))) {
+      var temp = _.template($('#alert-template').html());
+      $('#quest-alerts').append(temp({'selection': model.get('text')}));
+    };
+    validation_check1(collection);
+  });
+  YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check1(collection); });
+
+  YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+    if(!_.contains(answers2, model.get('text'))) {
+      var temp = _.template($('#alert-template').html());
+      $('#quest-alerts').append(temp({'selection': model.get('text')}));
+    };
+    validation_check2(collection)
+  });
+  YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check2(collection); });
+
