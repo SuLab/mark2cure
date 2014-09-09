@@ -47,7 +47,8 @@ def quest(request, quest_num, step_num):
 
 @login_required
 def dashboard(request):
-    posts = Entry.objects.all()[:3]
+    #posts = Entry.objects.all()[:3]
+    posts = []
     return render_to_response('common/dashboard.jade', {'posts': posts}, context_instance=RequestContext(request))
 
 

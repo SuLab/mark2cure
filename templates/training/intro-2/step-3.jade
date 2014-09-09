@@ -1,0 +1,81 @@
+extends base
+
+block header
+  - with headerMessage='Quest #2: Avoiding Common Pitfalls'
+    include includes/header
+
+
+block content
+  .container
+    .row
+      .col-md-12
+        h2 Let's start by marking diseases.
+        h3.lead Click on the disease term in the sentence below to mark it.
+
+    block paired-with
+      include training/includes/paired-with
+
+    .row.head-space-xl
+      #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p Recombinations in individuals homozygous by descent localize the Friedreich ataxia locus in a cloned 450-kb interval.
+        p The locus for Friedreich ataxia ( FRDA ) , a severe neurodegenerative disease , is tightly linked to markers D9S5 and D9S15 , and analysis of rare recombination events has suggested the order cen-FRDA-D9S5-D9S15-qter . We report here the construction of a YAC contig extending 800 kb centromeric to D9S5 and the isolation of five new microsatellite markers from this region . In order to map these markers with respect to the FRDA locus , all within a 1-cM confidence interval , we sought to increase the genetic information of available FRDA families by considering homozygosity by descent and association with founder haplotypes in isolated populations . This approach allowed us to identify one phase-known recombination and one probable historic recombination on haplotypes from Reunion Island patients , both of which place three of the five markers proximal to FRDA . This represents the first identification of close FRDA flanking markers on the centromeric side . The two other markers allowed us to narrow the breakpoint of a previously identified distal recombination that is > 180 kb from D9S5 ( 26P ) . Taken together , the results place the FRDA locus in a 450-kb interval , which is small enough for direct search of candidate genes . A detailed rare cutter restriction map and a cosmid contig covering this interval were constructed and should facilitate the search of genes in this region . .
+
+
+    .row.head-space-xl
+      .col-md-10.col-md-offset-1
+        .progress
+          div(role='progressbar', aria-valuenow='5', aria-valuemin='0', aria-valuemax='100', style='width: 5%;').progress-bar.progress-bar-striped.active
+            .sr-only 50% Complete
+
+    .row.head-space
+      a(href='/training/intro/2/step/4/', id='next', disabled).btn.btn-default.pull-right Next
+
+
+block post-footer
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    script.
+      YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions({quest: '#quest'});
+        // Add our views for each section
+        var p = new Paragraph({'text': $('#quest').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        YPet['quest'].show( view );
+      });
+      YPet.start();
+
+      var diabetes_intro = introJs();
+      diabetes_intro.setOptions({
+        'skipLabel': 'Exit',
+        'keyboardNavigation': false,
+        steps: [
+          {
+            element: '#partner',
+            intro: 'This is an example of a Mark2Cure contributer you could be partnered with.',
+            position: 'top',
+          },
+          {
+            element: '.progress',
+            intro: 'You will receive points based on how well you and your partner\'s markings matched.',
+            position: 'left',
+          },
+          {
+            element: '.paragraph',
+            intro: 'The colored lines show how your partner marked this doc.',
+            position: 'bottom',
+          },
+        ]
+      });
+
+      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        // Step 1
+        if(model.get('text') == 'diabetes' && collection.length == 1) {
+          $('#partner').slideDown(function() {
+            diabetes_intro.start();
+          });
+          $('#next').attr('disabled', false);
+        }
+
+      });
+

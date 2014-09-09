@@ -9,75 +9,108 @@ block content
   .container
     .row
       .col-md-12
-        h2 Let's start by marking diseases.
-        h3.lead Click on the disease term in the sentence below to mark it.
+        h2 Use your Disease Marking Skill to Mark this Doc
 
-
-    #partner(style='display: none;').row.head-space
-      .col-md-10.col-md-offset-1
-        p You were paired with Doc_G-man <small>Level: Gold Master Marker</small>
-
+    block paired-with
+      include training/includes/paired-with
 
     .row.head-space-xl
-      #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
-        p Does choice of insulin regimen really matter in the management of diabetes?
-
+      #quest-alerts.col-md-10.col-md-offset-1
+      #quest-1.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p Estimation of the male to female ratio of mutation rates from the segregation of X-chromosomal DNA haplotypes in Duchenne muscular dystrophy families.
+      #quest-2(style='display:none;').col-md-10.col-md-offset-1.paragraph.entity_tag
+        p A novel procedure is presented to estimate the ratio of male to female mutation rates for Duchenne muscular dystrophy ( DMD ) . X-specific restriction fragment length polymorphisms are used to establish DNA haplotypes in three-generation DMD families . From the proportion of DMD patients who have inherited their maternal grandfathers X chromosome , the ratio of mutation rates can be calculated . In contrast to classical methods , the proposed procedure is not restricted to sporadic or familiar cases nor is any information on the carrier status of female relatives required . .
 
     .row.head-space-xl
       .col-md-10.col-md-offset-1
         .progress
-          div(role='progressbar', aria-valuenow='5', aria-valuemin='0', aria-valuemax='100', style='width: 5%;').progress-bar.progress-bar-striped.active
-            .sr-only 5% Complete
+          div(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100', style='width: 0%;').progress-bar.progress-bar-striped.active
+            .sr-only 0% Complete
 
     .row.head-space
-      a(href='/introduction/quest/1/step/2/', id='next', disabled).btn.btn-default.pull-right Next
+      a(href='/training/intro/2/step/2/', id='next', disabled).btn.btn-default.pull-right Next
 
 
 block post-footer
     <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    <script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
     script.
+      var textControl = function(fade, start_index, end_index, region) {
+        fade = fade || 'in';
+        start_index = start_index || 0;
+        end_index = end_index || 10000;
+        region = region || 'quest-2';
+
+        YPet[region].currentView.children.each(function(view, idx) {
+          if(idx >= start_index && idx <= end_index) {
+            if (fade == 'out') {
+              view.$el.fadeOut();
+            } else {
+              view.$el.fadeIn();
+            }
+          }
+        });
+      };
+
+      var validate = function(needle, gold, slice) {
+        console.log(needle, gold, slice);
+        slice = slice || false;
+        if(slice) {
+          console.log(slice, needle.pluck('text').sort(), gold.slice(0, slice) );
+          res = needle.pluck('text').join(',') == gold.slice(0, slice).join(',');
+        } else {
+          res = needle.pluck('text').join(',') == gold.join(',');
+        }
+        console.log(res);
+        console.log('- - - - -  validate - - - - -');
+        return res;
+      };
+
       YPet.addInitializer(function(options) {
-        // Create our regions
-        YPet.addRegions({quest: '#quest'});
-        // Add our views for each section
-        var p = new Paragraph({'text': $('#quest').text().trim()});
+        YPet.addRegions({'quest-1': '#quest-1'});
+        var p = new Paragraph({'text': $('#quest-1').text().trim()});
         p.parseText();
         var view = new WordCollectionView({collection: p.get('words')});
-        YPet['quest'].show( view );
+        YPet['quest-1'].show(view);
+
+        YPet.addRegions({'quest-2': '#quest-2'});
+        var p = new Paragraph({'text': $('#quest-2').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        YPet['quest-2'].show(view);
+        textControl('out', 23);
       });
       YPet.start();
 
-      var diabetes_intro = introJs();
-      diabetes_intro.setOptions({
-        'skipLabel': 'Exit',
-        'keyboardNavigation': false,
-        steps: [
-          {
-            element: '#partner',
-            intro: 'This is an example of a Mark2Cure contributer you could be partnered with.',
-            position: 'top',
-          },
-          {
-            element: '.progress',
-            intro: 'You will receive points based on how well you and your partner\'s markings matched.',
-            position: 'left',
-          },
-          {
-            element: '.paragraph',
-            intro: 'The colored lines show how your partner marked this doc.',
-            position: 'bottom',
-          },
-        ]
-      });
+      var correct1 = function() {
+        $('#quest-2').slideDown();
+      };
 
-      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-        // Step 1
-        if(model.get('text') == 'diabetes' && collection.length == 1) {
-          $('#partner').slideDown(function() {
-            diabetes_intro.start();
-          });
-          $('#next').attr('disabled', false);
-        }
+      var correct2 = function() {
+        $('#partner').slideDown();
+        $('#next').attr('disabled', false);
+      };
 
+      var answers1 = ['Duchenne muscular dystrophy'];
+      YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        if(!_.contains(answers1, model.get('text'))) {
+          var temp = _.template($('#alert-template').html());
+          $('#quest-alerts').append(temp({'selection': model.get('text')}));
+        };
+        if(validate(collection, answers1)) { correct1(); }
       });
+      YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers1.sort().join(',')) { correct1(); } });
+
+      var answers2 = ['Duchenne muscular dystrophy', 'DMD', 'DMD', 'DMD'];
+      YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        if(!_.contains(answers2, model.get('text'))) {
+          var temp = _.template($('#alert-template').html());
+          $('#quest-alerts').append(temp({'selection': model.get('text')}));
+        };
+
+        if(validate(collection, answers2)) { correct2(); }
+        if(validate(collection, answers2, 2)) { textControl('in', 0, 38); }
+        if(validate(collection, answers2, 3)) { textControl('in', 0); }
+      });
+      YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { if(collection.pluck('text').sort().join(',') == answers2.sort().join(',')) { correct2(); } });
 

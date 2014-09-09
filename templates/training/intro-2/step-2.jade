@@ -1,0 +1,81 @@
+extends base
+
+block header
+  - with headerMessage='Quest #2: Avoiding Common Pitfalls'
+    include includes/header
+
+
+block content
+  .container
+    .row
+      .col-md-12
+        h2 Let's start by marking diseases.
+        h3.lead Click on the disease term in the sentence below to mark it.
+
+    block paired-with
+      include training/includes/paired-with
+
+    .row.head-space-xl
+      #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p Age at diagnosis as an indicator of eligibility for BRCA1 DNA testing in familial breast cancer.
+        p We searched for criteria that could indicate breast cancer families with a high prior probability of being caused by the breast / ovarian cancer susceptibility locus BRCA1 on chromosome 17 . To this end , we performed a linkage study with 59 consecutively collected Dutch breast cancer families , including 16 with at least one case of ovarian cancer . We used an intake cut-off of at least three first-degree relatives with breast and / or ovarian cancer at any age . Significant evidence for linkage was found only among the 13 breast cancer families with a mean age at diagnosis of less than 45 years . An unexpectedly low proportion of the breast-ovarian cancer families were estimated to be linked to BRCA1 , which could be due to a founder effect in the Dutch population . Given the expected logistical problems in clinical management now that BRCA1 has been identified , we propose an interim period in which only families with a strong positive family history for early onset breast and / or ovarian cancer will be offered BRCA1 mutation testing . .
+
+
+    .row.head-space-xl
+      .col-md-10.col-md-offset-1
+        .progress
+          div(role='progressbar', aria-valuenow='5', aria-valuemin='0', aria-valuemax='100', style='width: 5%;').progress-bar.progress-bar-striped.active
+            .sr-only 25% Complete
+
+    .row.head-space
+      a(href='/training/intro/2/step/3/', id='next', disabled).btn.btn-default.pull-right Next
+
+
+block post-footer
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    script.
+      YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions({quest: '#quest'});
+        // Add our views for each section
+        var p = new Paragraph({'text': $('#quest').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        YPet['quest'].show( view );
+      });
+      YPet.start();
+
+      var diabetes_intro = introJs();
+      diabetes_intro.setOptions({
+        'skipLabel': 'Exit',
+        'keyboardNavigation': false,
+        steps: [
+          {
+            element: '#partner',
+            intro: 'This is an example of a Mark2Cure contributer you could be partnered with.',
+            position: 'top',
+          },
+          {
+            element: '.progress',
+            intro: 'You will receive points based on how well you and your partner\'s markings matched.',
+            position: 'left',
+          },
+          {
+            element: '.paragraph',
+            intro: 'The colored lines show how your partner marked this doc.',
+            position: 'bottom',
+          },
+        ]
+      });
+
+      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        // Step 1
+        if(model.get('text') == 'diabetes' && collection.length == 1) {
+          $('#partner').slideDown(function() {
+            diabetes_intro.start();
+          });
+          $('#next').attr('disabled', false);
+        }
+
+      });
+

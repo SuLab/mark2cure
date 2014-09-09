@@ -1,0 +1,81 @@
+extends base
+
+block header
+  - with headerMessage='Quest #2: Avoiding Common Pitfalls'
+    include includes/header
+
+
+block content
+  .container
+    .row
+      .col-md-12
+        h2 Let's start by marking diseases.
+        h3.lead Click on the disease term in the sentence below to mark it.
+
+    block paired-with
+      include training/includes/paired-with
+
+    .row.head-space-xl
+      #quest.col-md-10.col-md-offset-1.paragraph.entity_tag
+        p MEFV-Gene analysis in armenian patients with Familial Mediterranean fever: diagnostic value and unfavorable renal prognosis of the M694V homozygous genotype-genetic and therapeutic implications.
+        p Familial Mediterranean fever ( FMF ) is a recessively inherited disorder that is common in patients of Armenian ancestry . To date , its diagnosis , which can be made only retrospectively , is one of exclusion , based entirely on nonspecific clinical signs that result from serosal inflammation and that may lead to unnecessary surgery . Renal amyloidosis , prevented by colchicine , is the most severe complication of FMF , a disorder associated with mutations in the MEFV gene . To evaluate the diagnostic and prognostic value of MEFV-gene analysis , we investigated 90 Armenian FMF patients from 77 unrelated families that were not selected through genetic-linkage analysis . Eight mutations , one of which ( R408Q ) is new , were found to account for 93 % of the 163 independent FMF alleles , with both FMF alleles identified in 89 % of the patients . In several instances , family studies provided molecular evidence for pseudodominant transmission and incomplete penetrance of the disease phenotype . The M694V homozygous genotype was found to be associated with a higher prevalence of renal amyloidosis and arthritis , compared with other genotypes ( P = . 0002 and P = . 006 , respectively ) . The demonstration of both the diagnostic and prognostic value of MEFV analysis and particular modes of inheritance should lead to new ways for management of FMF-including genetic counseling and therapeutic decisions in affected families .
+
+
+    .row.head-space-xl
+      .col-md-10.col-md-offset-1
+        .progress
+          div(role='progressbar', aria-valuenow='5', aria-valuemin='0', aria-valuemax='100', style='width: 5%;').progress-bar.progress-bar-striped.active
+            .sr-only 75% Complete
+
+    .row.head-space
+      a(href='/training/intro/2/step/complete/', id='next', disabled).btn.btn-default.pull-right Next
+
+
+block post-footer
+    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
+    script.
+      YPet.addInitializer(function(options) {
+        // Create our regions
+        YPet.addRegions({quest: '#quest'});
+        // Add our views for each section
+        var p = new Paragraph({'text': $('#quest').text().trim()});
+        p.parseText();
+        var view = new WordCollectionView({collection: p.get('words')});
+        YPet['quest'].show( view );
+      });
+      YPet.start();
+
+      var diabetes_intro = introJs();
+      diabetes_intro.setOptions({
+        'skipLabel': 'Exit',
+        'keyboardNavigation': false,
+        steps: [
+          {
+            element: '#partner',
+            intro: 'This is an example of a Mark2Cure contributer you could be partnered with.',
+            position: 'top',
+          },
+          {
+            element: '.progress',
+            intro: 'You will receive points based on how well you and your partner\'s markings matched.',
+            position: 'left',
+          },
+          {
+            element: '.paragraph',
+            intro: 'The colored lines show how your partner marked this doc.',
+            position: 'bottom',
+          },
+        ]
+      });
+
+      YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        // Step 1
+        if(model.get('text') == 'diabetes' && collection.length == 1) {
+          $('#partner').slideDown(function() {
+            diabetes_intro.start();
+          });
+          $('#next').attr('disabled', false);
+        }
+
+      });
+
