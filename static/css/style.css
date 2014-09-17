@@ -1,3 +1,11 @@
+/*
+  Yellow: E8DB47
+  Green: 4AFF5A
+  Purple: 7F3CFF
+  Red: E85997
+  Teal: 41FFD8
+*/
+
 /* =========================
         Landing
 ========================= */
@@ -10,11 +18,32 @@ body.landing {
         Header
 ========================= */
 
+.navbar-default p {
+  padding-top: 4px;
+}
+
+.navbar-default p a {
+  color: #7F3CFF;
+}
+
+.navbar-default p a:hover {
+  text-decoration: none;
+  color: #fff;
+  background-color: #7F3CFF;
+}
 
 /* =========================
         Footer
 ========================= */
 
+#footer p,
+#footer p a {
+ font-family: 'Px Grotesk Light';
+}
+
+#footer p a {
+  color: #E85997;
+}
 
 /* =========================
         Utilities
@@ -23,6 +52,8 @@ body.landing {
 .head-space-xl { margin-top: 60px; }
 .foot-space { margin-bottom: 20px; }
 .foot-space-xl { margin-bottom: 60px; }
+.foot-space-xl-xl { margin-bottom: 200px; }
+
 
 .tooltip {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -48,11 +79,12 @@ a.close-btn {
 }
 
 .line {
-  background: #777777;
+  background: #e7e7e7;
   height: 1px;
 }
 
 .line-text {
+  font-family: 'Px Grotesk Light';
   position: relative;
   background: #ffffff;
   color: #777777;
@@ -62,3 +94,8 @@ a.close-btn {
   padding: 0px 6px;
 }
 
+
+.paragraph.entity_tag {
+  padding: 30px 60px 20px 60px;
+  border: 16px solid #f5f5f5;
+}

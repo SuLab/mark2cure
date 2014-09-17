@@ -10,143 +10,108 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 from django.contrib.auth import authenticate, login
 
-from mark2cure.account.models import UserProfile, Message
-from mark2cure.account.forms import UserForm, ProfileForm
+from mark2cure.account.models import UserProfile
+from mark2cure.account.forms import UserForm, UserProfileForm
 
 import datetime
 
 
-def reset_thanks(request):
-    return render_to_response('account/reset-thanks.jade', {}, context_instance=RequestContext(request))
-
-
 @login_required
 def settings(request):
+    """"
+        Use this endpoint for strict user setting modifications
+        like password (auth.user)
+    """
     user = request.user
-    profileForm = ProfileForm(instance=user.profile)
-    passwordChangeForm = PasswordChangeForm(user)
 
-    print passwordChangeForm
+
+    if request.method == 'POST':
+        print ">>>", 'Settings POST', request.POST
+        profileForm = UserProfileForm(request.POST, instance=user.profile)
+        print profileForm.is_valid(), profileForm.errors
+        if profileForm.is_valid():
+            profileForm.save()
+
+    profileForm = UserProfileForm(instance=user.profile)
+    passwordChangeForm = PasswordChangeForm(user)
 
     return render_to_response('account/settings.jade',
             {'passwordChangeForm': passwordChangeForm,
-             'profileForm': profileForm},
+             'user_profile': user.profile,
+             'user_profile_form': profileForm},
               context_instance=RequestContext(request))
+
+
+def create(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+            form = UserProfileForm(request.POST, instance=request.user.profile)
+            if form.is_valid():
+                form.save()
+                # They already have an account, let's get them
+                # started!
+                return redirect('mark2cure.common.views.dashboard')
+
+        else:
+            form = UserForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                profile = user.profile
+                profile.save()
+
+                user = authenticate(
+                    username=request.POST['username'],
+                    password=request.POST['password'])
+                login(request, user)
+
+                # Redirect them back b/c of the UserProfileForm
+                return redirect('mark2cure.account.views.create')
+
+
+    if request.user.is_authenticated():
+        user_form = UserForm(instance=request.user)
+        user_profile_form = UserProfileForm(instance=request.user.profile)
+    else:
+        user_form = UserForm()
+        user_profile_form = UserProfileForm()
+
+    return render_to_response('account/create.jade',
+                              {'user_form': user_form,
+                               'user_profile_form': user_profile_form},
+                              context_instance=RequestContext(request))
+
+
+@require_http_methods(["POST"])
+def newsletter_subscribe(request):
+    email = request.POST.get('email', None)
+    notify = request.POST.get('email_notify', False)
+    if notify is not False:
+      notify = True
+
+    if email:
+      u, created = User.objects.get_or_create(username=email, email=email)
+      if created:
+        u.set_password('')
+        profile = u.profile
+        profile.email_notify = notify
+        profile.save()
+      u.save()
+
+      return redirect('/')
+    return HttpResponse('Unauthorized', status=401)
 
 
 @login_required
 @require_http_methods(['POST'])
 def update_profile(request, profile_id):
+    """
+        User this endpoint for updating profile and game
+        specific traits about a profile (auth.user.userprofile)
+    """
     profile = get_object_or_404(UserProfile, pk=profile_id)
-    form = ProfileForm(request.POST, instance=profile)
+    form = UserProfileForm(request.POST, instance=profile)
 
     if form.is_valid():
-        # print form
         profile = form.save()
 
     return redirect('/account/')
-
-
-def create(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            profile = user.profile
-            #profile.created_by = request.user
-            profile.save()
-
-            user = authenticate(username=request.POST['username'], password=request.POST['password'])
-            login(request, user)
-            return redirect('mark2cure.common.views.quest_read')
-
-    else:
-        form = UserForm()
-
-    return render_to_response('account/create.jade', {'form': form}, context_instance=RequestContext(request))
-
-
-@login_required
-@require_http_methods(['POST'])
-def inactivate(request, user_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
-    user = get_object_or_404(User, pk=user_id)
-
-    if request.user.is_superuser or user.profile.created_by.pk == request.user.pk:
-        user.is_active = False
-        user.save()
-        return redirect('/account/')
-
-    else:
-        return HttpResponse('Unauthorized', status=401)
-
-
-@login_required
-@require_http_methods(['POST'])
-def activate(request, user_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
-    user = get_object_or_404(User, pk=user_id)
-
-    if request.user.is_superuser or user.profile.created_by.pk == request.user.pk:
-        user.is_active = True
-        user.save()
-        return redirect('/account/')
-
-    else:
-        return HttpResponse('Unauthorized', status=401)
-
-
-@login_required
-@require_http_methods(['POST'])
-def delete(request, user_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
-    user = get_object_or_404(User, pk=user_id)
-
-    if request.user.is_superuser or user.profile.created_by.pk == request.user.pk:
-        user.delete()
-        return redirect('/account/')
-
-    else:
-        return HttpResponse('Unauthorized', status=401)
-
-
-
-@login_required
-@require_http_methods(['POST'])
-def staffify(request, user_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
-    user = get_object_or_404(User, pk=user_id)
-
-    if request.user.is_superuser or user.profile.created_by.pk == request.user.pk:
-        user.is_staff = True
-        user.save()
-        return redirect('/account/')
-
-    else:
-        return HttpResponse('Unauthorized', status=401)
-
-
-@login_required
-@require_http_methods(['POST'])
-def destaffify(request, user_id):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return HttpResponse('Unauthorized', status=401)
-
-    user = get_object_or_404(User, pk=user_id)
-
-    if request.user.is_superuser or user.profile.created_by.pk == request.user.pk:
-        user.is_staff = False
-        user.save()
-        return redirect('/account/')
-
-    else:
-        return HttpResponse('Unauthorized', status=401)
-

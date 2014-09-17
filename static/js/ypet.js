@@ -106,7 +106,7 @@ Paragraph = Backbone.RelationalModel.extend({
         space_padding,
         word_obj,
         text = this.get('text'),
-        words = _.map(_.string.words( text ), function(word) {
+        words = _.map(_.str.words( text ), function(word) {
           word_obj = {
             'text'      : word,
             'length'    : word.length,

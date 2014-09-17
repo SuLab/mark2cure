@@ -2,26 +2,25 @@ extends base
 
 block header
   - if user.is_authenticated
-    - with headerMessage='Select a Quest'
+    - with headerMessage='Training Steps'
       include includes/header
   - else
-    - with headerMessage='Select a Quest'
+    - with headerMessage='Training Steps'
       include includes/header-anon
 
 
 block content
-  .container
+  .container.foot-space-xl-xl
     .row
-      .col-md-12
-        h2.lead Welcome, now that you passed the basic introduction, try out these introduction quests
-
+      .col-md-6.col-md-offset-3
+        h2.lead Welcome! Now that you passed the basic introduction, try out these training steps
 
     .row
-      .col-md-12
+      .col-md-6.col-md-offset-3
         a(href='/training/intro/1/step/1/')
           h3 Training #1: Acquire a new skill: Disease Marking
 
-      .col-md-12
+      .col-md-6.col-md-offset-3
         - if user.is_authenticated
           a(href='/training/intro/2/step/1/')
             h3 Training #2: Avoid Common Pitfalls

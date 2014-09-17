@@ -1,29 +1,22 @@
 nav(role='navigation').navbar.navbar-default.navbar-static-top
   .container-fluid
-    .navbar-header
+    .row
+      .col-sm-3
+        h1
+          a(href='/') Mark2Cure
+
+      .col-sm-6
+        h2.text-center #{headerMessage}
+
+      .col-sm-3
+        #example-foo-collapse-1.collapse.navbar-collapse
+          .row
+            .col-xs-6
+            .col-xs-6
+
+    .row
       button(type='button', data-toggle='collapse', data-target='#example-foo-collapse-1').navbar-toggle
         span.sr-only Toggle navigation
         span.icon-bar
         span.icon-bar
         span.icon-bar
-
-      a(href='/').navbar-brand Mark2Cure
-
-    #example-foo-collapse-1.collapse.navbar-collapse
-      .nav.navbar-nav
-        h2.navbar-text #{headerMessage}
-
-      ul.nav.navbar-nav.navbar-right
-        li
-          ol
-            li
-              p Hello!
-            li
-              img(src='#')
-
-        li
-          ol
-            li
-            li
-
-

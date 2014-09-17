@@ -1,12 +1,14 @@
 extends base
 
 - load widget_tweaks
+- load webdesign
 
 block header
   .container-fluid
     .row
       .col-md-12
-        h1.text-center Mark2Cure
+        h1.text-center
+          a(href='/') Mark2Cure
 
 
 block content
@@ -20,17 +22,17 @@ block content
         img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
         .container
           .carousel-caption
-            h1 Scientific communication is broken.
-            p Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
-            p To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+            h2 Scientific communication is broken.
+            p {% lorem 1 p %}
+            p {% lorem 20 w %}
 
       .item
         img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
         .container
           .carousel-caption
-            h1 Scientific communication is broken. 2
-            p 2 Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
-            p 2 To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+            h2 Scientific communication is broken. 2
+            p {% lorem 1 p %}
+            p {% lorem 20 w %}
 
     a(href='#carousel-features', role='button', data-slide='prev').left.carousel-control
       span.glyphicon.glyphicon-chevron-left
@@ -43,7 +45,7 @@ block content
       .col-md-6
         .row
           .col-md-12
-            h2.text-center Get Started
+            h3.text-center Get Started
 
         .row
           .col-md-8.col-md-offset-2
@@ -53,18 +55,12 @@ block content
 
         .row.head-space
           .col-md-8.col-md-offset-2
-            p.text-center Already a contributer?
+            h3.text-center Already a contributer?
           .col-md-8.col-md-offset-2
             ul.list-inline.text-center
               li
                 a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}")
                   i.fa.fa-twitter.fa-2x
-              li
-                a(href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}")
-                  i.fa.fa-facebook.fa-2x
-              li
-                a(href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}")
-                  i.fa.fa-google.fa-2x
 
           .col-md-8.col-md-offset-2
             - if form.errors
@@ -75,11 +71,11 @@ block content
               - csrf_token
               .form-group
                 label(for='exampleInputEmail1') Username
-                #{form.username|add_class:"form-control"|attr:"placeholder:username"}
+                #{form.username|add_class:"form-control"|attr:"placeholder:Username"}
 
               .form-group
                 label(for='exampleInputPassword1') Password
-                #{form.password|add_class:"form-control"|attr:"placeholder:password"}
+                #{form.password|add_class:"form-control"|attr:"placeholder:Password"}
 
               .form-group
                 p.pull-right
@@ -90,5 +86,4 @@ block content
       .col-md-6
         .row
           .col-md-10.col-md-offset-1.well
-            p Lorem ipsum dolor sit amet, mel eu doctus nonumes, ea idque moderatius eam. Ei malis epicurei placerat est, ei nam tacimates molestiae. An commodo legimus has, vis quaeque officiis accusata ne. Impedit fuisset his ne, alii delectus eleifend eum ex. Graeco delicata an eum. Per alterum gloriatur cu, sit facilis disputando cu, sit te aperiam debitis. Qui te ipsum iuvaret.
-
+            p {% lorem 2 p %}

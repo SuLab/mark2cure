@@ -5,32 +5,60 @@ html.no-js(lang='en')
 head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    meta(property='og:title', content='Mark2Cure')
-    meta(property='og:image', content='http://beta.mark2cure.org/img/mark2cure.png')
 
-    title Mark2Cure
+    block social-tags
+        meta(name='description', content='Mark2Cure – Scientific communication is broken')
+        meta(name='keywords', content='mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology')
+
+        meta(name='author', content='Mark2Cure')
+        meta(name='copyright', content='Mark2Cure')
+        meta(name='application-name', content='Mark2Cure')
+
+        meta(property='og:title', content='Mark2Cure')
+        meta(property='og:type', content='article')
+        meta(property='og:image', content='#{STATIC_URL}static/img/mark2ure.png')
+        meta(property='og:url', content='http://mark2cure.org')
+        meta(property='og:description', content='')
+
+        meta(name='twitter:card', content='summary')
+        meta(name='twitter:title', content='Mark2Cure')
+        meta(name='twitter:description', content='')
+        meta(name='twitter:image', content='#{STATIC_URL}static/img/profile.jpg')
+
+
+    block head-title
+      title Mark2Cure
+
+    // Libs
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap.min.css')
-    link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-theme.css')
-    link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-switch.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/selectize.bootstrap3.css')
-    link(rel='stylesheet', href='#{STATIC_URL}css/font-awesome.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/introjs.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/introjs-nassim.css')
+
+    // Fonts
+    link(rel='stylesheet', href='#{STATIC_URL}fonts/equity_text_b_regular/equity.css')
+    link(rel='stylesheet', href='#{STATIC_URL}fonts/px-grotesk/PxGrotesk-font.css')
+    link(rel='stylesheet', href='#{STATIC_URL}fonts/font-awesome/font-awesome.min.css')
+
+    // Site Styles
+    link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-theme.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/document-style.css')
 
 body
     block header
+
     block content
+
     block pre-footer
+
     block footer
         include includes/footer
 
         script(src='#{STATIC_URL}js/libs/jquery-2.1.1.min.js')
         script(src='#{STATIC_URL}js/libs/bootstrap.min.js')
-        script(src='#{STATIC_URL}js/libs/bootstrap-switch.min.js')
         script(src='#{STATIC_URL}js/libs/underscore.js')
-        script(src='#{STATIC_URL}js/libs/underscore.string.js')
+        script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
 
         script(src='#{STATIC_URL}js/libs/backbone.js')
         script(src='#{STATIC_URL}js/libs/backbone-relational.js')
@@ -39,7 +67,6 @@ body
         script(src='#{STATIC_URL}js/libs/d3.v3.js')
         script(src='#{STATIC_URL}js/libs/md5.js')
         script(src='#{STATIC_URL}js/libs/moment.js')
-        script(src='#{STATIC_URL}js/libs/webtoolkit.base64.js')
         script(src='#{STATIC_URL}js/libs/selectize.js')
         script(src='#{STATIC_URL}js/libs/intro.min.js')
 
@@ -69,5 +96,5 @@ body
             })();
 
     block post-footer
-    block modals
 
+    block modals

@@ -13,11 +13,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from mark2cure.document.models import Document, View, Annotation, Activity
-from mark2cure.common.forms import MessageForm, ProfileSurveyForm
-from mark2cure.common.models import SurveyFeedback
-from mark2cure.common.utils import experiment_routing, experiment_gm_routing
-from mark2cure.account.utils import get_mturk_account
-#from zinnia.models import Entry
+from zinnia.models import Entry
 
 from datetime import datetime, timedelta
 import math, random, logging
@@ -30,128 +26,128 @@ def home(request):
       return redirect('mark2cure.common.views.dashboard')
 
     form = AuthenticationForm()
-    return render_to_response('common/index.jade', {'form': form}, context_instance=RequestContext(request))
+    return render_to_response('common/index.jade',
+                              {'form': form},
+                              context_instance=RequestContext(request))
 
 
 def introduction(request):
-    return render_to_response('training/basics.jade', {}, context_instance=RequestContext(request))
+    return render_to_response('training/basics.jade',
+                              {}, context_instance=RequestContext(request))
 
 
-def quest_read(request):
-    return render_to_response('training/training_read.jade', {}, context_instance=RequestContext(request))
+def training_read(request):
+    return render_to_response('training/training_read.jade',
+                              {}, context_instance=RequestContext(request))
 
+def training_one(request, step_num):
+    if step_num == 'complete':
+        return render_to_response(
+            'training/intro-1/complete.jade',
+            {}, context_instance=RequestContext(request))
 
-def quest(request, quest_num, step_num):
-    return render_to_response('training/intro-{0}/step-{1}.jade'.format(quest_num, step_num), {'training_num': quest_num, 'step_num': step_num}, context_instance=RequestContext(request))
+    step_num = int(step_num)
+    next_ = step_num+1
+    if step_num == 1:
+        header1 = "Let's start by marking diseases"
+        header2 = "Mark all the disease terms in the sentence below."
+        paragraph = "Does choice of insulin regimen really matter in the management of diabetes?"
+        answers = ['diabetes']
+
+    if step_num == 2:
+        header1 = "Sometimes you will see multiple instances of the same disease - Be sure to mark them all!"
+        header2 = "Mark all the disease terms in the sentence below."
+        paragraph = "To assess the management of diabetes, we reviewed records of 20 diabetes patients."
+        answers = ['diabetes', 'diabetes']
+
+    if step_num == 3:
+        header1 = "Sometimes the disease is described by a conjuction of several words. Mark these disease conjunctions as a single span of text."
+        header2 = "Mark all the disease terms in the sentence below."
+        answers = ['diabetes', 'type 2 diabetes mellitus'];
+        paragraph = "Of the 20 diabetes patients, 17 had type 2 diabetes mellitus."
+
+    if step_num == 4:
+        header1 = "Sometimes the disease conjunctions are separated by words like 'and/or'. Decide if there are two distinct diseases to highlight, or if it is a single disease conjunction."
+        header2 = "Mark all the disease terms in the sentence below."
+        paragraph = "The remaining 3 had inherited and/or type I diabetes mellitus."
+        answers = ['inherited and/or type I diabetes mellitus'];
+
+    if step_num == 5:
+        header1 = "Sometimes different diseases are discussed. Mark all the diseases below."
+        header2 = "Remember to mark disease conjunction as spans and to mark different diseases separately."
+        paragraph = "Of the 20 patients, 10 patients were also diagnosed with heart disease or rheumatoid arthritis."
+        answers = ['heart disease', 'rheumatoid arthritis'];
+
+    if step_num == 6:
+        header1 = "Sometimes the disease terms are abbreviated. Mark all instances of disease abbreviations."
+        header2 = "Mark all disease terms in the sentence below."
+        paragraph = "We will discuss the effect of different insulin regimen on type 2 diabetes mellitus patients (ie- T2DM patients) ..."
+        answers = ['type 2 diabetes mellitus', 'T2DM'];
+
+    if step_num == 7:
+        header1 = "Practice what you've learned so far..."
+        header2 = "Try marking the disease and disease abbreviations in this phrase now!"
+        paragraph = "... with or without rheumatoid arthritis ( RA ) or heart disease ( HD )."
+        answers = ['rheumatoid arthritis', 'RA', 'heart disease', 'HD'];
+
+    if step_num == 8:
+        header1 = "Now let's mark some symptoms."
+        header2 = "Symptoms are the physical manifestations of the disease. Mark the symptoms in the sentence below."
+        paragraph = "In particular, we will examine the effects of these insulin regimen on the symptoms of the diseases. We will focus on some common symptoms such as fatigue as well as ..."
+        answers = ['fatigue'];
+
+    if step_num == 9:
+        header1 = "Sometimes a single symptom is described using more than one word."
+        header2 = "Mark these symptoms as single spans of text. Mark the symptom in the text below."
+        paragraph = "... as well as frequent urination. Another crucial symptom ..."
+        answers = ['frequent urination'];
+
+    if step_num == 10:
+        header1 = "Sometimes a single symptom is described with a long block of text and may have joining terms such as 'and' or 'or'."
+        header2 = "In that case, highlihgt the entire symptom as a single span of text. Finish Training #1 by marking the symptom in the text below."
+        paragraph = "Another crucial symptom that we will investigate includes tingling sensations and/or numbness in the hands or feet."
+        answers = ['tingling sensations and/or numbness in the hands or feet'];
+        next_ = 'complete'
+
+    return render_to_response(
+        'training/intro-1/read.jade',
+        {'training_num': 1,
+         'step_num': step_num,
+         'header1': header1,
+         'header2': header2,
+         'paragraph': paragraph,
+         'answers': answers,
+         'next': next_},
+        context_instance=RequestContext(request))
+
+@login_required
+def training_two(request, step_num):
+    if step_num == 'complete':
+        profile = request.user.profile
+        profile.training_complete = True
+        profile.save()
+
+        return redirect('mark2cure.common.views.dashboard')
+
+    return render_to_response(
+        'training/intro-2/step-{step_num}.jade'.format(step_num=step_num),
+        {'step_num': step_num,
+         'paragraph': 'abc 123 dance with me!',
+         'percentDone': 5},
+        context_instance=RequestContext(request))
 
 
 @login_required
 def dashboard(request):
-    #posts = Entry.objects.all()[:3]
-    posts = []
-    return render_to_response('common/dashboard.jade', {'posts': posts}, context_instance=RequestContext(request))
+    if not request.user.profile.training_complete:
+        return redirect('mark2cure.common.views.training_read')
 
-
-def mturk(request):
-    '''
-      All AWS people will come in through here
-      document app will *always* require authentication
-    '''
-    assignment_id = request.GET.get('assignmentId') #ASSIGNMENT_ID_NOT_AVAILABLE
-    worker_id = request.GET.get('workerId')
-    turk_sub_location = request.GET.get('turkSubmitTo')
-
-    if request.user.is_authenticated():
-        if request.user.userprofile.banned:
-            return redirect('mark2cure.common.views.banned')
-
-        if request.user.userprofile.softblock:
-            return redirect('mark2cure.common.views.softblock')
-
-    # If mTurk user not logged in, make a new account for them and set the session
-    if assignment_id == 'ASSIGNMENT_ID_NOT_AVAILABLE':
-        logout(request)
-
-        doc = Document.objects.get(pk = 278)
-        sections = doc.available_sections()
-
-        return render_to_response('document/concept-recognition.jade',
-                                  { 'doc': doc,
-                                    'sections' : sections,
-                                    'user_profile' : None,
-                                    'task_type': 'concept-recognition' },
-                                  context_instance=RequestContext(request))
-
-    user = request.user
-
-    # If they've accepted a HIT
-    if worker_id and not user.is_authenticated():
-        # If it's accepted and a worker that doesn't have an account
-        # Make one and log them in
-        user = get_mturk_account(worker_id)
-        user = authenticate(username=user.username, password='')
-        login(request, user)
-
-    user_profile = user.userprofile
-
-    if assignment_id and turk_sub_location and worker_id:
-        user_profile.turk_submit_to = turk_sub_location
-        user_profile.turk_last_assignment_id = assignment_id
-        user_profile.save()
-
-    # Handle training or max allowed
-    hit_index = len(set(Activity.objects.filter(user=user, experiment= settings.EXPERIMENT if user_profile.mturk else None ).values_list('document', flat = True)))
-    logger.debug("MTurk Routing N count {0} for {1}".format(hit_index, user.username))
-
-    # This is actually very fast
-    gm_pool = [1067, 545, 1005, 621, 555, 820, 997, 609, 1032, 852, 748, 553, 478, 1061, 847, 515, 531, 550, 541, 780, 537, 800, 559, 951, 542, 557, 806, 594, 783, 523, 640, 672, 980, 591, 502, 593, 586, 982, 849, 633, 507, 777, 521, 589, 822, 896, 620, 567, 608, 737, 561, 671, 628, 656, 1069, 1038, 622, 658, 596, 1008, 897, 1000, 865, 1056, 1034, 584, 889, 838, 953, 1027, 539, 619, 511, 874, 978, 627, 850, 912, 961, 538, 701, 907, 755, 760, 689, 796, 927, 851, 1012, 958]
-    gm_dict = {
-        0: 869,
-        1: 956,
-        2: 1018,
-        3: 876,
-    }
-    experiment_docs = Document.objects.filter(source = 'NCBIDiseaseCrowdExtension-TRAIN').exclude(pk__in = gm_dict.values() + gm_pool).values_list('pk', flat = True).all()
-
-    if not user_profile.survey_complete():
-        return redirect('mark2cure.common.views.profile_survey')
-
-    # Start off with 4 consistent GMs
-    if hit_index in gm_dict:
-        user_profile.current_gm = True
-        user_profile.save()
-        return redirect('mark2cure.document.views.identify_annotations', gm_dict[hit_index])
-
-    if hit_index >= (len(gm_pool) + len(gm_dict.values()) + len(experiment_docs)):
-        return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
-
-    document = experiment_routing(user, experiment_docs)
-    if document:
-
-        if random.random() < .1:
-            user_profile.current_gm = True
-            user_profile.save()
-            return redirect('mark2cure.document.views.identify_annotations', experiment_gm_routing(user, gm_pool))
-        else:
-            user_profile.current_gm = False
-            user_profile.save()
-            return redirect('mark2cure.document.views.identify_annotations', document)
-
-    else:
-        send_mail('[Mark2Cure] ALERT',
-                'Experimental routing returned no docs. This might not be a problem, but make sure the N is saturated, User: {0}, Index: {1}'.format(user.pk, hit_index),
-                settings.SERVER_EMAIL,
-                [email[1] for email in settings.MANAGERS])
-
-        return render_to_response('common/nohits.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
-
-
-def banned(request):
-    return render_to_response('common/banned.jade', context_instance=RequestContext(request))
-
-
-def softblock(request):
-    return render_to_response('common/softblock.jade', context_instance=RequestContext(request))
+    profile = request.user.profile
+    posts = Entry.objects.all()[:3]
+    return render_to_response('common/dashboard.jade',
+                              {'posts': posts,
+                               'profile': profile},
+                              context_instance=RequestContext(request))
 
 
 @login_required
@@ -162,85 +158,14 @@ def profile_survey(request):
         form = ProfileSurveyForm(request.POST, instance = user_profile)
         if form.is_valid():
             form.save()
-
-            if user_profile.mturk:
-                return render_to_response('includes/mturk_submit.jade', {'user_profile': user_profile }, context_instance=RequestContext(request))
-            else:
-                redirect('mark2cure.common.views.library')
+            return redirect('mark2cure.common.views.library')
 
     else:
         form = ProfileSurveyForm(instance = user_profile)
 
-    return render_to_response('common/survey.jade', {'user_profile': user_profile, 'form': form }, context_instance=RequestContext(request))
-
-
-@login_required
-def library(request, page_num=1):
-    doc_list = Document.objects.all()
-    user = request.user
-    user_profile = user.userprofile
-
-    doc_list_paginator = Paginator(doc_list, 18)
-    try:
-        docs = doc_list_paginator.page(page_num)
-    except PageNotAnInteger:
-        docs = doc_list_paginator.page(1)
-    except EmptyPage:
-        docs = doc_list_paginator.page(paginator.num_pages)
-
-    recent_docs = Document.objects\
-        .filter(section__view__user = request.user)\
-        .order_by('-created')\
-        .distinct()[:3]
-
-    '''
-      Calc stats for player
-    '''
-    stats = []
-    # Count total seconds spent working
-    views = list(View.objects.filter(user = user).all().distinct().values_list('updated', 'created', 'section__document'))
-    seen = set()
-    u_views = [item for item in views if item[2] not in seen and not seen.add(item[2])]
-    total_seconds = 0
-    for updated, created, document in u_views:
-      timediff = (updated - created).total_seconds()
-      total_seconds += timediff if (timediff > 3 and timediff < 600) else 0
-
-    stats.append({'t':'Total docs', 'v': len(u_views) })
-    stats.append({'t':'Total annotations', 'v': Annotation.objects.filter(view__user = request.user).count()})
-    stats.append({'t':'Total time', 'v': str(int(math.floor(total_seconds / 60))) +" mins" })
-
-
-    return render_to_response('library/index.jade', {
-      'docs' : docs,
-      'user_profile' : user_profile,
-      'recent': recent_docs,
-      'stats': stats}, context_instance=RequestContext(request))
-
-
-@require_http_methods(["POST"])
-def signup(request):
-    email = request.POST.get('email', None)
-    notify = request.POST.get('email_notify', False)
-    if notify is not False:
-      notify = True
-
-    if email:
-      u, created = User.objects.get_or_create(username=email, email=email)
-      if created:
-        u.set_password('')
-        profile = u.profile
-        profile.email_notify = notify
-        profile.save()
-      u.save()
-
-      send_mail('[Mark2Cure] New User Signup',
-                'Email: {0}'.format(email),
-                settings.SERVER_EMAIL,
-                [email[1] for email in settings.MANAGERS])
-
-      return redirect('/')
-    return HttpResponse('Unauthorized', status=401)
+    return render_to_response('common/survey.jade',
+                              {'user_profile': user_profile, 'form': form },
+                              context_instance=RequestContext(request))
 
 
 @require_http_methods(["POST"])

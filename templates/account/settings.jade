@@ -44,18 +44,35 @@ block content
                   input(name='new_password2', type='password', id='id_new_password2').form-control
 
 
-              input(type='submit', value='Save New Password').btn.btn-primary.full-width
+              input(type='submit', value='Save New Password').btn.btn-default.full-width
 
       .col-md-6
-        img(src='#').img-responsive
+        form(method='post', action='/account/settings/')
+          - csrf_token
+          .row
+            .col-sm-12
+              label.col-sm-4.control-label Avatar:
+
+            .col-sm-6
+              img(src='#{user_profile.avatar.url}').img-responsive
+            .col-sm-6
+              #{user_profile_form.avatar|add_class:'form-control'}
+
+          .row.head-space
+            .col-sm-6.col-sm-offset-3
+              button(type='submit').btn.btn-default.btn-block Update Avatar
 
     hr
 
     .row
-      .col-md-12
+      .col-md-3
         h2 Profile Information
+      .col-md-9
+        h5
+          a(href='#') [View public profile]
 
-        form(method='post', action='/account/change/').form-horizontal
+      .col-md-12
+        form(method='post', action='/account/settings/').form-horizontal
           - csrf_token
 
           .row
@@ -78,22 +95,30 @@ block content
                   input(name='birthday', type='text', id='id_birthday').form-control
 
             .col-md-6
-              .form-group
-                label(for='id_contribue') I contribute to Mark2Cure because:
-                textarea#id_contribute(name='contribute').form-control
+              .row
+                .col-sm-12
+                  label(for='id_motivation') I contribute to Mark2Cure because:
+                .col-sm-10.col-sm-offset-1
+                  #{user_profile_form.motivation|add_class:'form-control'}
 
-              .form-group
-                label(for='id_referral') I heard about Mark2Cure form:
-                textarea#id_referral(name='referral').form-control
+              .row.head-space
+                .col-sm-12
+                  label(for='id_referal') I heard about Mark2Cure from:
+                .col-sm-10.col-sm-offset-1
+                  #{user_profile_form.referral|add_class:'form-control'}
 
-            .col-md-12
-              .form-group
-                label(for='id_signature') Qoute / Signature:
-                textarea#id_signature(name='signature').form-control
+          .row
+            .col-sm-12
+              label(for='id_signature') Qoute / Signature:
 
-    hr
+            .col-sm-10.col-sm-offset-1
+                #{user_profile_form.quote|add_class:'form-control'}
 
-    .row
+          .row.head-space
+            .col-sm-3.col-sm-offset-8
+              button(type='submit').btn.btn-default.btn-block.pull-right Update
+
+    .row(style='display:none;')
       .col-md-12
         h2 Privacy Controls
           form(method='post', action='/account/{{user.profile.pk}}/profile/')

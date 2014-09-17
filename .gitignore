@@ -73,5 +73,5 @@ docs/_build/
 /mark2cure/aws_settings.py
 
 /..bfg-report
-
+/static/fonts/*
 /mark2cure/beat_settings.py

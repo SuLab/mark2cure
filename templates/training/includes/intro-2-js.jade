@@ -1,5 +1,5 @@
 <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
-<script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</div></script>
+<script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct. <strong><%= help_message %></strong></div></script>
 script.
   var textControl = function(fade, start_index, end_index, region) {
     fade = fade || 'in';
@@ -19,17 +19,21 @@ script.
   };
 
   var validate = function(needle, gold, slice) {
-    /*
-      This is not sorted, assumines the needle collection is returned sorted by word index and that
-      the gold array is in order of how the words appear in the section in order to work
-    */
     slice = slice || false;
     if(slice) {
-      return needle.pluck('text').join(',') == gold.slice(0, slice).join(',');
+      return _.map(needle.sortBy('start'), function(item) { return item.get('text'); }).join(',') == gold.slice(0, slice).join(',');
     } else {
-      return needle.pluck('text').join(',') == gold.join(',');
+      return _.map(needle.sortBy('start'), function(item) { return item.get('text'); }).join(',') == gold.join(',');
     }
   };
+
+  $('#next-container').popover({
+    trigger: "hover",
+    title: "Keep Going!",
+    content: "Please complete the task before moving forward.",
+    placement: "top",
+    container: "body"
+  });
 
   YPet.addInitializer(function(options) {
     YPet.addRegions({'quest-1': '#quest-1'});
@@ -52,24 +56,86 @@ script.
 
   var correct2 = function() {
     $('#partner').slideDown();
+    $('#next-container').popover('disable');
     $('#next').attr('disabled', false);
   };
 
   YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+    /*
+    * Check if the array doesn't contain the selected word.
+    * 1) Alert if (contains/overlap/miss)error 2) Unselect
+    */
     if(!_.contains(answers1, model.get('text'))) {
+      var template_data = {
+        'selection': model.get('text'),
+        'help_message': ''};
+      /*
+      * Contains check
+      */
+      if( _.filter(answers1, function(answer_word) { return _.str.include(answer_word, model.get('text')); }).length ) {
+        template_data.help_message = "(Please check that your selection contains all required words)"
+      }
+
+      /*
+      * Overlaps check
+      */
+      if( _.filter(answers1, function(answer_word) { return _.str.include(model.get('text'), answer_word) }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)"
+      }
+
       var temp = _.template($('#alert-template').html());
-      $('#quest-alerts').append(temp({'selection': model.get('text')}));
+      $('#quest-alerts').fadeOut('fast', function() {
+        $(this).html(temp(template_data));
+        $(this).fadeIn('fast');
+      });
+
+      YPet['quest-1'].currentView.children.each(function(view, idx) {
+        if(model.get('start') == view.model.get('start')) {
+          view.$el.trigger('mousedown');
+          view.$el.trigger('mouseup');
+        };
+      });
     };
     validation_check1(collection);
   });
   YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check1(collection); });
 
   YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+    /*
+    * Check if the array doesn't contain the selected word.
+    * 1) Alert if (contains/overlap/miss)error 2) Unselect
+    */
     if(!_.contains(answers2, model.get('text'))) {
+      var template_data = {
+        'selection': model.get('text'),
+        'help_message': ''};
+      /*
+      * Contains check
+      */
+      if( _.filter(answers2, function(answer_word) { return _.str.include(answer_word, model.get('text')); }).length ) {
+        template_data.help_message = "(Please check that your selection contains all required words)"
+      }
+
+      /*
+      * Overlaps check
+      */
+      if( _.filter(answers2, function(answer_word) { return _.str.include(model.get('text'), answer_word) }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)"
+      }
+
       var temp = _.template($('#alert-template').html());
-      $('#quest-alerts').append(temp({'selection': model.get('text')}));
+      $('#quest-alerts').fadeOut('fast', function() {
+        $(this).html(temp(template_data));
+        $(this).fadeIn('fast');
+      });
+
+      YPet['quest-2'].currentView.children.each(function(view, idx) {
+        if(model.get('start') == view.model.get('start')) {
+          view.$el.trigger('mousedown');
+          view.$el.trigger('mouseup');
+        };
+      });
     };
-    validation_check2(collection)
+    validation_check2(collection);
   });
   YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check2(collection); });
-

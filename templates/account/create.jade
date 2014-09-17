@@ -3,73 +3,110 @@ extends base
 - load widget_tweaks
 
 block header
-  - with headerMessage='Registration'
+  - with headerMessage='Account Registration'
     include includes/header-anon
 
 block content
   .container
 
-    .row
+    .row.foot-space
       .col-md-12
-        p.lead You have now completed the tutorial and are ready to Mark to Cure. To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
+        h2 You have now completed the tutorial and are ready to Mark2Cure!
+        h4 To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
 
-    .row
-      .col-md-5.col-md-offset-1
-        .row
-          h3 Register for an account
-        .row
-          form(role='form', method='post').form-horizontal
-            - csrf_token
-            #{form.errors}
-            .form-group
-              label.col-sm-4.control-label Login
-              .col-sm-8 #{form.username|add_class:'form-control'}
-            .form-group
-              label.col-sm-4.control-label Email
-              .col-sm-8 #{form.email|add_class:'form-control'}
-            .form-group
-              label.col-sm-4.control-label Password
-              .col-sm-8 #{form.password|add_class:'form-control'|attr:'type:password'}
-            .form-group
-              label.col-sm-4.control-label Verify Password
-              .col-sm-8 #{form.password|add_class:'form-control'|attr:'type:password'}
-            .form-group
-              .col-sm-4.col-sm-offset-4
-                input(type='submit', value='Submit').btn.btn-default.btn-block
+    - if not user.is_authenticated
+      .row.foot-space-xl
+        .col-md-5.col-md-offset-1
+          .row
+            h3 Register for an account
+          .row
+            form(role='form', method='post').form-horizontal
+              - csrf_token
+              #{user_form.errors}
+              .form-group
+                label.col-sm-4.control-label Login
+                - if user.is_authenticated
+                  .col-sm-8 #{user_form.username|add_class:'form-control'|attr:'disabled'}
+                - else
+                  .col-sm-8 #{user_form.username|add_class:'form-control'}
 
-      .col-md-5.col-md-offset-1
-        .row
-          h3 Use an OpenID account
-        .row
-          ul.list-unstyled
-            li
-              a(href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}") Login with Facebook
-            li
-              a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}") Login with Twitter
-            li
-              a(href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}") Login with Google
-
-    .row
-      .col-md-10.col-md-offset-1
-        .row
-          h3 Profile Information
-          small (this is option, you can always edit it later)
-
-        .row
-          form(role='form', method='post')
-            - csrf_token
-            #{form.errors}
-            .form-group
-              label.col-sm-4.control-label Email
-              .col-sm-8 #{form.email|add_class:'form-control'}
+              .form-group
+                label.col-sm-4.control-label Email
+                - if user.is_authenticated
+                  .col-sm-8 #{user_form.email|add_class:'form-control'|attr:'disabled'}
+                - else
+                  .col-sm-8 #{user_form.email|add_class:'form-control'}
 
 
-            .form-group
-              label.col-sm-4.control-label Quote / Signature:
-              textarea(rows='3').form-control
+              .form-group
+                label.col-sm-4.control-label Password
+                - if user.is_authenticated
+                  .col-sm-8 #{user_form.password|add_class:'form-control'|attr:'type:password'|attr:'disabled'}
+                - else
+                  .col-sm-8 #{user_form.password|add_class:'form-control'|attr:'type:password'}
 
-            .form-group
-              p.pull-right By registering, I agree to abide by the Mark2Cure <a href='/tos/', target='_blank'>Terms of Service</a>
+              .form-group
+                label.col-sm-4.control-label Verify Password
+                - if user.is_authenticated
+                  .col-sm-8 #{user_form.password|add_class:'form-control'|attr:'type:password'|attr:'disabled'}
+                - else
+                  .col-sm-8 #{user_form.password|add_class:'form-control'|attr:'type:password'}
 
-            .form-group
-              button(type='submit').btn.btn-success Start Now!
+              .form-group
+                .col-sm-4.col-sm-offset-4
+                  - if user.is_authenticated
+                    input(type='submit', value='Submit', disabled).btn.btn-default.btn-block
+                  - else
+                    input(type='submit', value='Submit').btn.btn-default.btn-block
+
+        .col-md-5.col-md-offset-1
+          .row
+            h3 Use an OpenID account
+          .row
+            ul.list-unstyled
+              li
+                a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}") Login with Twitter
+
+    - if user.is_authenticated
+      .row.foot-space-xl
+        .col-md-10.col-md-offset-1
+          .row.foot-space
+            h3 Profile Information <small>(this is option, you can always edit it later)</small>
+
+          .row
+            form(role='form', method='post')
+              - csrf_token
+              #{user_profile_form.errors}
+              .row
+                .col-sm-6
+                  .row
+                    .col-sm-12
+                      label.control-label Avatar:
+                    .col-sm-12
+                      .row
+                        .col-sm-6
+                          img(src='#{user.profile.avatar.url}').img-responsive
+                        .col-sm-6
+                          #{user_profile_form.avatar|add_class:'form-control'}
+
+                .col-sm-6
+                  label.col-sm-4.control-label Motivation:
+                  .row
+                    .col-sm-10.col-sm-offset-1
+                      #{user_profile_form.motivation|add_class:'form-control'}
+
+              .row.foot-space
+                .col-sm-12
+                  label.col-sm-4.control-label Quote / Signature:
+                  .row
+                    .col-sm-10.col-sm-offset-1
+                      #{user_profile_form.quote|add_class:'form-control'}
+
+
+              .row.head-space
+                .col-sm-8.col-sm-offset-2
+                  p.text-center.text-muted By registering, I agree to abide by the Mark2Cure <a href='/tos/', target='_blank'>Terms of Service</a>
+
+              .row.head-space
+                .col-sm-4.col-sm-offset-4
+                  button(type='submit').btn.btn-success.btn-block Start Now!

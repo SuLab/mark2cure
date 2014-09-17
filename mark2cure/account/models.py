@@ -17,26 +17,22 @@ def _createHash():
 
 def _content_file_name(instance, filename):
     name = _createHash() + os.path.splitext(filename)[1]
-    return '/'.join(['images', name])
+
+    print ">> NAME: ", name
+    return '/'.join(['avatars', name])
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
 
-    created_by = models.ForeignKey(User, null=True, blank=True, related_name='children')
-    timezone = TimeZoneField(default='America/Los_Angeles')
-    avatar = models.ImageField(upload_to=_content_file_name, default='images/default_truck.jpg')
+    timezone = TimeZoneField(default='America/Los_Angeles',
+                             blank=True, null=True)
+    avatar = models.ImageField(upload_to=_content_file_name,
+                               default='images/default.jpg',
+                               blank=True)
 
-    instructions_enabled = models.BooleanField(default=True, verbose_name='Display Extra Instructions')
-
-    experience = models.IntegerField(default=0)
-    feedback_0 = models.IntegerField(default=0)
-    feedback_1 = models.IntegerField(default=0)
-    feedback_2 = models.IntegerField(default=0)
-    feedback_3 = models.IntegerField(default=0)
-
-    first_run = models.BooleanField(default=False, blank=True)
-    email_notify = models.BooleanField(default=False, blank=True)
+    training_complete = models.BooleanField(default=False)
+    email_notify = models.BooleanField(default=False)
     user_agent = models.CharField(max_length=150, blank=True, null=True)
     player_ip = models.GenericIPAddressField(blank=True, null=True)
 
@@ -49,7 +45,9 @@ class UserProfile(models.Model):
       (MALE, 'Male'),
       (FEMALE, 'Female'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True, default=None)
+    gender = models.CharField(max_length=1,
+                              choices=GENDER_CHOICES,
+                              blank=True, null=True, default=None)
     age = models.IntegerField(blank=True, null=True, default=None)
     occupation = models.CharField(max_length=255, blank=True)
 
@@ -67,19 +65,40 @@ class UserProfile(models.Model):
       (10, 'Some PhD program'),
       (11, 'Finished PhD program'),
     )
-    education = models.IntegerField(choices=EDUCATION_CHOICES, blank=True, null=True, default=None)
-    science_education = models.IntegerField(choices=EDUCATION_CHOICES, blank=True, null=True, default=None)
-    motivation = models.CharField(max_length=255, blank=True)
+    education = models.IntegerField(choices=EDUCATION_CHOICES,
+                                    blank=True, null=True, default=None)
+    science_education = models.IntegerField(choices=EDUCATION_CHOICES,
+                                            blank=True, null=True,
+                                            default=None)
     country = CountryField(blank=True)
+
+    '''
+        Profile page features
+    '''
+
+    referral = models.TextField(blank=True)
+    motivation = models.TextField(blank=True)
+    quote = models.TextField(blank=True)
+
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
 
     def score(self, task_type = 'cr'):
-        return sum(Activity.objects.filter(user=self.user, task_type=task_type, submission_type='gm').values_list('f_score', flat=True).all())
+        return sum(Activity.objects.filter(
+            user=self.user,
+            task_type=task_type,
+            submission_type='gm'
+            ).values_list('f_score', flat=True).all())
 
     def survey_complete(self):
-        if self.gender == None or self.age == None or self.occupation == '' or self.education == None or self.science_education == None or self.motivation == '' or self.country.name == '': return False
+        if self.gender == None or \
+            self.age == None or \
+            self.occupation == '' or \
+            self.education == None or \
+            self.science_education == None or \
+            self.motivation == '' or \
+            self.country.name == '': return False
         return True
 
 

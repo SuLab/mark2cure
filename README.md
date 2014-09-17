@@ -167,3 +167,15 @@ user.userprofile.score()
 
 
 In [3]: t.mtc.notify_workers(['A2SHY0YV9UW6SC'], "Software glitch, additional HITs available", "Hi – I first wanted to thank you for going through the HITs. Secondly, I wanted to apologize because I accidentally cut you short at ~25 documents. We actually had 30 more available per user or so which you were cut short from because of a software glitch. If you would like, I updated our software so you have access to the remaining HITS. Thanks again! Best, Max")
+
+
+[done] Next button tooltip for encouragement on disabled state
+[done] auto-remove after unselect. add text- 'unclick to remove alert'
+[done] Alert template changes
+  * miss = plz note you messed up
+  * contains = plz make sure to include all. if answer key items is contains
+  * overlap = plz make sure to refine select
+
+[done]
+3rd documetn show the title, and the abstract in two parts
+4th document show the title and abstract at the same time

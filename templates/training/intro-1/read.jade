@@ -1,0 +1,43 @@
+extends base
+
+
+block header
+  - with headerMessage='Training #1: Acquire Disease Marking Skill'
+    include includes/header-anon
+
+
+block content
+  .container
+    .row.foot-space
+      .col-md-12
+        h2 #{header1}
+        h4 #{header2}
+
+    #partner(style='display: none;').row.head-space
+      .row
+        .col-md-4.col-md-offset-4
+          .alert.alert-success
+            h2.text-center Good job!
+
+    .row
+      #quest-alerts.col-md-10.col-md-offset-1
+      #quest(data-answers="{{answers}}").col-md-10.col-md-offset-1.paragraph.entity_tag
+        p #{paragraph}
+
+    .row.head-space-xl
+      .col-md-8.col-md-offset-2
+        .progress
+          div(role='progressbar', aria-valuenow='#{(step_num-1) * 10}', aria-valuemin='0', aria-valuemax='100', style='width: #{(step_num-1) * 10}%;').progress-bar.progress-bar-striped.active
+      .col-md-8.col-md-offset-2
+        #next-container.pull-right
+          a(href='/training/intro/#{training_num}/step/#{next}/', id='next', disabled).btn.btn-default Next
+
+
+block post-footer
+  include training/includes/intro-1-js
+  script.
+      var answers = eval($('#quest').data('answers'));
+      var validation_check = function(collection) {
+        if(validate(collection, answers)) { correct(); }
+      };
+

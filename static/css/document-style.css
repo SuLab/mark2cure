@@ -28,7 +28,8 @@
   color: steelblue;
 }
 
-.paragraph.entity_tag p span.selected {
+.paragraph.entity_tag p span.selected,
+span.selected {
   background-color: #0cf;
   animation:highlight .25s;
   -webkit-animation:highlight .25s;
