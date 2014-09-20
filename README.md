@@ -179,3 +179,7 @@ In [3]: t.mtc.notify_workers(['A2SHY0YV9UW6SC'], "Software glitch, additional HI
 [done]
 3rd documetn show the title, and the abstract in two parts
 4th document show the title and abstract at the same time
+
+
+/account/create/
+ -- start now / skip >> same /dashboard/

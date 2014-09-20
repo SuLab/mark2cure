@@ -60,6 +60,73 @@ script.
     $('#next').attr('disabled', false);
   };
 
+  var check_common_mistakes = function(text) {
+    msg = "";
+    switch (text) {
+      case "Familial Mediterranean fever ( FMF":
+      case "Duchenne muscular dystrophy ( DMD":
+      case "Friedreich ataxia ( FRDA":
+        msg = "Treat disease abbreviations like the words they represent. Don't mark them as a single span with the disease terms they represent. Eg- Bipolar Disorder (BD) = Bipolar Disorder (Bipolar Disorder) and should not be marked as 2 distinct instances of the disease";
+        break;
+
+      case "unfavorable renal prognosis":
+      case "inherited disorder":
+      case "disease":
+      case "severe neurodegenerative disease":
+      case "Duchenne muscular":
+      case "mutation":
+      case "mutation rates":
+      case "dystrophy":
+      case "Friedreich":
+        msg = "Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.";
+        break;
+
+      case "brest cancer (missing familial or inherited)":
+      case "amyloidosis":
+        msg = "If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease";
+        break;
+
+      case "Dutch breast cancer":
+      case "breast cancer families":
+      case "Friedreich ataxia locus 65":
+      case "FRDA locus":
+        msg = "If a descriptive term does not specify a particular form of the disease, do not mark that term. Do not mark non-disease terms that are modified by disease terms such as 'family', 'gene', 'locus', 'patients'";
+        break;
+
+      case "renal amyloidosis and arthritis":
+        msg = "When marking disease symptoms, if the symptoms can stand alone, mark them as individual symptoms";
+        break;
+
+      case "MEFV":
+      case "BRCA1":
+        msg = "Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.";
+        break;
+
+      case "colchicine":
+        msg = "Do not mark drug names";
+        break;
+
+      case "FMF-including":
+      case "early onset breast and / or ovarian cancer":
+        msg = "Sometimes even experts do not agree on the answers. These are two such ambiguous cases.";
+        break;
+
+      case "Duchenne":
+      case "muscular":
+      case "dystrophy":
+      case "ovarian cancer":
+      case "breast":
+      case "cancer":
+      case "ovarian":
+      case "breast":
+      case "breast / ovarian":
+        msg = "Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.";
+        break;
+    };
+
+    return msg
+  };
+
   YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     /*
     * Check if the array doesn't contain the selected word.
@@ -83,6 +150,11 @@ script.
         template_data.help_message = "(Please check that your selection only includes required terms)"
       }
 
+      var specific_message = check_common_mistakes(model.get('text'));
+      if(specific_message.length) {
+        template_data.help_message = specific_message;
+      }
+
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
         $(this).html(temp(template_data));
@@ -95,8 +167,10 @@ script.
           view.$el.trigger('mouseup');
         };
       });
+    } else {
+      $('#quest-alerts').fadeOut('fast');
+      validation_check1(collection);
     };
-    validation_check1(collection);
   });
   YPet['quest-1'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check1(collection); });
 
@@ -123,6 +197,11 @@ script.
         template_data.help_message = "(Please check that your selection only includes required terms)"
       }
 
+      var specific_message = check_common_mistakes(model.get('text'));
+      if(specific_message.length) {
+        template_data.help_message = specific_message;
+      }
+
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
         $(this).html(temp(template_data));
@@ -135,7 +214,9 @@ script.
           view.$el.trigger('mouseup');
         };
       });
+    } else {
+      $('#quest-alerts').fadeOut('fast');
+      validation_check2(collection);
     };
-    validation_check2(collection);
   });
   YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check2(collection); });

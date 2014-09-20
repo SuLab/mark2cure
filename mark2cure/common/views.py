@@ -131,9 +131,7 @@ def training_two(request, step_num):
 
     return render_to_response(
         'training/intro-2/step-{step_num}.jade'.format(step_num=step_num),
-        {'step_num': step_num,
-         'paragraph': 'abc 123 dance with me!',
-         'percentDone': 5},
+        {'step_num': step_num},
         context_instance=RequestContext(request))
 
 

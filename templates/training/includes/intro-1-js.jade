@@ -63,8 +63,9 @@ script.
           view.$el.trigger('mouseup');
         };
       });
+    } else {
+     $('#quest-alerts').fadeOut('fast');
+     validation_check(collection);
     };
-
-    validation_check(collection);
   });
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
