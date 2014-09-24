@@ -32,8 +32,16 @@ block content
 block post-footer
   include training/includes/intro-2-js
   script.
-      var answers1 = ['Familial Mediterranean fever'];
-      var answers2 = ['Familial Mediterranean fever', 'FMF', 'Renal amyloidosis', 'FMF', 'FMF', 'FMF', 'FMF', 'renal amyloidosis and arthritis'];
+      var answers1 = [{'text': 'Familial Mediterranean fever', 'start': 45}];
+      var answers2 = [{'text': 'Familial Mediterranean fever', 'start': 0},
+      {'text': 'FMF', 'start': 31},
+      {'text': 'Renal amyloidosis', 'start': 338},
+      {'text': 'FMF', 'start': 419},
+      {'text': 'FMF', 'start': 581},
+      {'text': 'FMF', 'start': 783},
+      {'text': 'FMF', 'start': 807},
+      {'text': 'renal amyloidosis and arthritis', 'start': 1092}];
+
       var validation_check1 = function(collection) {
         if(validate(collection, answers1)) { correct1(); }
       };

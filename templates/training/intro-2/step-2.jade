@@ -33,8 +33,16 @@ block post-footer
   include training/includes/intro-2-js
   script.
       textControl('out', 31);
-      var answers1 = ['familial breast cancer'];
-      var answers2 = ['breast cancer', 'breast / ovarian cancer', 'breast cancer', 'ovarian cancer', 'breast and / or ovarian cancer', 'breast cancer', 'breast-ovarian cancer', 'breast and / or ovarian cancer' ];
+      var answers1 = [{'text': 'familial breast cancer', 'start': 73}];
+      var answers2 = [{'text': 'breast cancer', 'start': 45},
+      {'text': 'breast / ovarian cancer', 'start': 121},
+      {'text': 'breast cancer', 'start': 272},
+      {'text': 'ovarian cancer', 'start': 336},
+      {'text': 'breast and / or ovarian cancer', 'start': 425},
+      {'text': 'breast cancer', 'start': 530},
+      {'text': 'breast-ovarian cancer', 'start': 644},
+      {'text': 'breast and / or ovarian cancer', 'start': 984}];
+
       var validation_check1 = function(collection) {
         if(validate(collection, answers1)) { correct1(); }
       };

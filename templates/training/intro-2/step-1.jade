@@ -33,8 +33,11 @@ block post-footer
   include training/includes/intro-2-js
   script.
       textControl('out', 23);
-      var answers1 = ['Duchenne muscular dystrophy'];
-      var answers2 = ['Duchenne muscular dystrophy', 'DMD', 'DMD', 'DMD'];
+      var answers1 = [{'text': 'Duchenne muscular dystrophy', 'start': 113}];
+      var answers2 = [{'text': 'Duchenne muscular dystrophy', 'start': 90},
+        {'text': 'DMD', 'start': 120},
+        {'text': 'DMD', 'start': 238},
+        {'text': 'DMD', 'start': 276}];
       var validation_check1 = function(collection) {
         if(validate(collection, answers1)) { correct1(); }
       };

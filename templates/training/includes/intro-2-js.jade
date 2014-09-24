@@ -19,12 +19,17 @@ script.
   };
 
   var validate = function(needle, gold, slice) {
+    var all_match = true;
     slice = slice || false;
-    if(slice) {
-      return _.map(needle.sortBy('start'), function(item) { return item.get('text'); }).join(',') == gold.slice(0, slice).join(',');
-    } else {
-      return _.map(needle.sortBy('start'), function(item) { return item.get('text'); }).join(',') == gold.join(',');
-    }
+    if(slice) { gold = gold.slice(0, slice); }
+
+    _.each(gold, function(gold_item) {
+      var matches = _.filter(needle.models, function(obj) {
+        return obj.get('start') == gold_item.start && obj.get('text') == gold_item.text }).length;
+      if(!matches) { all_match = false; }
+    });
+
+    return all_match;
   };
 
   $('#next-container').popover({
@@ -81,7 +86,7 @@ script.
         msg = "Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.";
         break;
 
-      case "brest cancer (missing familial or inherited)":
+      case "breast cancer":
       case "amyloidosis":
         msg = "If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease";
         break;
@@ -132,22 +137,35 @@ script.
     * Check if the array doesn't contain the selected word.
     * 1) Alert if (contains/overlap/miss)error 2) Unselect
     */
-    if(!_.contains(answers1, model.get('text'))) {
+    if( !_.filter(answers1, function(obj) { return model.get('start') == obj.start && model.get('text') == obj.text; }).length ) {
       var template_data = {
         'selection': model.get('text'),
         'help_message': ''};
+
       /*
-      * Contains check
+      * Overlaps (start or before) check
       */
-      if( _.filter(answers1, function(answer_word) { return _.str.include(answer_word, model.get('text')); }).length ) {
-        template_data.help_message = "(Please check that your selection contains all required words)"
+      if( _.filter(answers1, function(answer) {
+        return  model.get('start') < answer.start &&
+                _.str.include(model.get('text'), answer.text); }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)";
+      }
+
+      if( _.filter(answers1, function(answer) {
+        return  model.get('start') >= answer.start &&
+                model.get('start')+model.get('text').length > answer.start+answer.text.length &&
+                _.str.include(model.get('text'), answer.text); }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)";
       }
 
       /*
-      * Overlaps check
+      * Contains check
       */
-      if( _.filter(answers1, function(answer_word) { return _.str.include(model.get('text'), answer_word) }).length ) {
-        template_data.help_message = "(Please check that your selection only includes required terms)"
+      if( _.filter(answers1, function(answer) {
+        return  model.get('start') >= answer.start &&
+                model.get('start')+model.get('text').length <= answer.start+answer.text.length &&
+                _.str.include(answer.text, model.get('text')); }).length ) {
+        template_data.help_message = "(Please check that your selection contains all required words)";
       }
 
       var specific_message = check_common_mistakes(model.get('text'));
@@ -179,22 +197,35 @@ script.
     * Check if the array doesn't contain the selected word.
     * 1) Alert if (contains/overlap/miss)error 2) Unselect
     */
-    if(!_.contains(answers2, model.get('text'))) {
+    if( !_.filter(answers2, function(obj) { return model.get('start') == obj.start && model.get('text') == obj.text; }).length ) {
       var template_data = {
         'selection': model.get('text'),
         'help_message': ''};
+
       /*
-      * Contains check
+      * Overlaps (start or before) check
       */
-      if( _.filter(answers2, function(answer_word) { return _.str.include(answer_word, model.get('text')); }).length ) {
-        template_data.help_message = "(Please check that your selection contains all required words)"
+      if( _.filter(answers2, function(answer) {
+        return  model.get('start') < answer.start &&
+                _.str.include(model.get('text'), answer.text); }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)";
+      }
+
+      if( _.filter(answers2, function(answer) {
+        return  model.get('start') >= answer.start &&
+                model.get('start')+model.get('text').length > answer.start+answer.text.length &&
+                _.str.include(model.get('text'), answer.text); }).length ) {
+        template_data.help_message = "(Please check that your selection only includes required terms)";
       }
 
       /*
-      * Overlaps check
+      * Contains check
       */
-      if( _.filter(answers2, function(answer_word) { return _.str.include(model.get('text'), answer_word) }).length ) {
-        template_data.help_message = "(Please check that your selection only includes required terms)"
+      if( _.filter(answers2, function(answer) {
+        return  model.get('start') >= answer.start &&
+                model.get('start')+model.get('text').length <= answer.start+answer.text.length &&
+                _.str.include(answer.text, model.get('text')); }).length ) {
+        template_data.help_message = "(Please check that your selection contains all required words)";
       }
 
       var specific_message = check_common_mistakes(model.get('text'));
