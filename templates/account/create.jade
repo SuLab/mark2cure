@@ -12,7 +12,8 @@ block content
     .row.foot-space
       .col-md-12
         h2 You have now completed the tutorial and are ready to Mark2Cure!
-        h4 To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
+        - if not user.is_authenticated
+          h4 To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
 
     - if not user.is_authenticated
       .row.foot-space-xl
@@ -77,30 +78,33 @@ block content
             form(role='form', method='post')
               - csrf_token
               #{user_profile_form.errors}
-              .row
+              .row.foot-space
                 .col-sm-6
+                  .row.foot-space
+                    .col-sm-6
+                      #{user_profile_form.first_name|add_class:'form-control'|attr:'placeholder:First Name'}
+                    .col-sm-6
+                      #{user_profile_form.last_name|add_class:'form-control'|attr:'placeholder:Last Name'}
+
                   .row
                     .col-sm-12
-                      label.control-label Avatar:
-                    .col-sm-12
+                      label.col-sm-4.control-label Country:
                       .row
-                        .col-sm-6
-                          img(src='#{user.profile.avatar.url}').img-responsive
-                        .col-sm-6
-                          #{user_profile_form.avatar|add_class:'form-control'}
+                        .col-sm-10.col-sm-offset-1
+                          #{user_profile_form.country|add_class:'form-control'}
 
                 .col-sm-6
                   label.col-sm-4.control-label Motivation:
                   .row
                     .col-sm-10.col-sm-offset-1
-                      #{user_profile_form.motivation|add_class:'form-control'}
+                      #{user_profile_form.motivation|add_class:'form-control'|attr:'rows:3'}
 
               .row.foot-space
                 .col-sm-12
                   label.col-sm-4.control-label Quote / Signature:
                   .row
                     .col-sm-10.col-sm-offset-1
-                      #{user_profile_form.quote|add_class:'form-control'}
+                      #{user_profile_form.quote|add_class:'form-control'|attr:'rows:4'}
 
 
               .row.head-space

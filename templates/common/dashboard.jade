@@ -10,7 +10,7 @@ block header
 block content
   .container
     .row
-      .col-md-4
+      .col-md-4.well
         .row
           .col-md-10.col-md-offset-1
             p Mark2Cure aims to speed up progress in biomedical research by applying the collective intelligence of users just like you! By "marking" docus, you help to annotate biomedical research literature, allowing researchers to gather information...
@@ -21,16 +21,22 @@ block content
 
       .col-md-4
         .row
-          .col-md-8.col-md-offset-2
-            h2.text-center Start
-            a(href='#').btn.btn-block.btn-success Marking Docs
-            h2.text-center now!
+          .col-md-12.text-center
+            h3 Library
+
+          .col-md-12
+            ul.list-group
+              li.list-group-item Yo
+              li.list-group-item there
 
       .col-md-4
         .row
-          .col-md-12
-            h3 Chordoma publications
-            p [dataviz here]
+          .col-md-8.col-md-offset-2.head-space-xl
+            form(method='post', role='form', action="/marathon")
+              - csrf_token
+              input(id='id_submit_gift', type='submit', value='Start Marathon Mode').btn.btn-default
+
+
 
     .row.head-space.foot-space
       .col-xs-12.line

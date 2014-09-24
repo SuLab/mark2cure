@@ -1,9 +1,9 @@
 .introjs-overlay {
   position: absolute;
-  z-index: 999999;
+  z-index: 1020 !important;
   background: #181818;
   opacity: 0;
-  
+
   -webkit-transition: all 0.3s ease-out;
      -moz-transition: all 0.3s ease-out;
       -ms-transition: all 0.3s ease-out;
@@ -17,7 +17,8 @@
 }
 
 .introjs-showElement {
-  z-index: 9999999 !important;
+  z-index: 1040 !important;
+  background-color: #fff;
 }
 
 .introjs-relativePosition {
@@ -26,7 +27,7 @@
 
 .introjs-helperLayer {
   position: absolute;
-  z-index: 9999998;
+  z-index: auto !important;
   background-color: #FFF;
   background-color: rgba(255,255,255,.9);
   border: 1px solid #777;
@@ -44,7 +45,7 @@
   position: absolute;
   top: -18px;
   left: -9px;
-  z-index: 9999999999 !important;
+  z-index: 9999 !important;
   padding: 2px;
   font-family: Arial, verdana, tahoma;
   font-size: 13px;
@@ -110,6 +111,7 @@
 }
 
 .introjs-tooltip {
+  z-index: 999999 !important;
   position: absolute;
   padding: 10px 10px;
   background-color: #ecf0f1;
@@ -128,13 +130,10 @@
 
 .introjs-tooltiptext {
     margin-left: -10px;
-  
+
     margin-right: -10px;
-    /* border-top: 1px solid #FFFFFF; */
-    /* background: #FAFAFA; */
     color: #2c3e50;
     padding: 25px 30px 15px;
-    /* border-bottom: 1px solid #FFFFFF; */
 }
 
 .introjs-tooltipbuttons {
@@ -144,8 +143,8 @@
   padding-bottom: 10px;
 }
 
-/* 
- Buttons style by http://nicolasgallagher.com/lab/css3-github-buttons/ 
+/*
+ Buttons style by http://nicolasgallagher.com/lab/css3-github-buttons/
  Changed by Afshin Mehrabani
 */
 .introjs-button {
@@ -153,21 +152,19 @@
   overflow: visible;
   display: inline-block;
   padding: 0.5em 0.8em;
-  /* box-shadow: 0 2px 0px -0px #306588; */
   margin: 0;
   outline: none;
   border: 2px solid;
   background: transparent;
   text-decoration: none;
   font: 11px/normal sans-serif;
-  color: ##2980b9 !important;
+  color: #2980b9 !important;
   white-space: nowrap;
   cursor: pointer;
   outline: none !important;
   -webkit-background-clip: padding;
   -moz-background-clip: padding;
   -o-background-clip: padding-box;
-  /*background-clip: padding-box;*/ /* commented out due to Opera 11.10 bug */
   -webkit-border-radius: 0.2em;
   -moz-border-radius: 0.2em;
   border-radius: 0.2em;
@@ -185,13 +182,13 @@
 .introjs-button:hover {
   color: #fff;
   background: #2671A2;
-  text-decoration: none; 
+  text-decoration: none;
   border-color: #235677;
 }
 
 .introjs-button:focus,
 .introjs-button:active {
-    background: #23587A;  text-decoration: none;  
+    background: #23587A;  text-decoration: none;
     color: #fff;
     /* bottom: -1px; */
     box-shadow: none;
@@ -211,15 +208,13 @@
 }
 
 .introjs-skipbutton:hover {
-    background: #EB1540;  
+    background: #EB1540;
     border-color: #B91D0D;
-  
+
 }
 
 .introjs-skipbutton:active, .introjs-skipbutton:focus {
-    background: #C02312;  
-    /* box-shadow: 0 1px 0px -0px #6F1309; */
-  
+    background: #C02312;
 }
 
 .introjs-prevbutton {
@@ -239,7 +234,6 @@
   color: #C2C2C2 !important;
   border-color: #d4d4d4;
   cursor: default;
-  /* box-shadow: 0 2px 0px -0px #CACED1; */
   background-color: #E6E6E6;
   background-image: none;
   text-decoration: none;

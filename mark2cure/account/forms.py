@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.forms.models import model_to_dict, fields_for_model
 
 from mark2cure.account.models import UserProfile
 
@@ -26,12 +27,12 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-
-        # for key in self.fields:
-        #     self.fields[key].required = True
+        instance = kwargs.pop('instance', None)
+        _fields = ('first_name', 'last_name', 'email',)
+        _initial = model_to_dict(instance.user, _fields) if instance is not None else {}
+        super(UserProfileForm, self).__init__(initial=_initial, instance=instance, *args, **kwargs)
+        self.fields.update(fields_for_model(User, _fields))
 
     class Meta:
         model = UserProfile
@@ -39,3 +40,13 @@ class UserProfileForm(forms.ModelForm):
                   'gender', 'age', 'occupation', 'education',
                   'science_education', 'country', 'referral',
                   'motivation', 'quote']
+        exclude = ['user',]
+
+    def save(self, *args, **kwargs):
+        u = self.instance.user
+        u.first_name = self.cleaned_data['first_name']
+        u.last_name = self.cleaned_data['last_name']
+        u.email = self.cleaned_data['email']
+        u.save()
+        profile = super(UserProfileForm, self).save(*args,**kwargs)
+        return profile

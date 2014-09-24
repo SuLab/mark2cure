@@ -47,7 +47,7 @@ block post-footer
           {
             element: '#basics',
             intro: "Remove the highlight by clicking again. Un-highlight the word <span class='selected'>information</span>",
-            position: 'left',
+            position: 'top',
           },
           {
             element: '#basics',
@@ -63,18 +63,27 @@ block post-footer
       });
 
       intro.start();
+      var target = $('p.paragraph span:nth(0)').position();
+      $('.introjs-tooltip').animate({left: target.left+20});
+
       intro.onchange(function() {
+        console.log('asdf', intro._currentStep);
         switch (intro._currentStep)
         {
           case 0:
             break;
 
           case 1:
+            var target = $('p.paragraph span:nth(19)').position();
+            $('.introjs-tooltip').animate({left: target.left+20});
+
             $('.paragraph span:nth-child(20)').trigger('mousedown');
             $('.paragraph span:nth-child(20)').trigger('mouseup');
             break;
 
           case 2:
+            var target = $('p.paragraph span:nth(56)').position();
+            $('.introjs-tooltip').animate({left: target.left+20});
             break;
 
           case 3:
@@ -84,6 +93,16 @@ block post-footer
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+
+        if( !_.contains(['Biomedical', 'information', 'I am ready to help'], model.get('text')) ) {
+          YPet['basics'].currentView.children.each(function(view, idx) {
+            if(model.get('start') == view.model.get('start')) {
+              view.$el.trigger('mousedown');
+              view.$el.trigger('mouseup');
+            };
+          });
+        }
+
         if(model.get('text') == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
         if(model.get('text') == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
       });

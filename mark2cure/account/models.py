@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Count
 from django.contrib.auth.models import User
 
-from mark2cure.common.models import Message
 from mark2cure.document.models import Document, View, Activity
 
 from timezone_field import TimeZoneField
