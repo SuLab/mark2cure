@@ -7,14 +7,6 @@
 */
 
 /* =========================
-        Landing
-========================= */
-
-body.landing {
-  background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;
-}
-
-/* =========================
         Header
 ========================= */
 
@@ -50,6 +42,7 @@ body.landing {
 ========================= */
 .head-space { margin-top: 20px; }
 .head-space-xl { margin-top: 60px; }
+.head-space-xl-xl { margin-top: 100px; }
 .foot-space { margin-bottom: 20px; }
 .foot-space-xl { margin-bottom: 60px; }
 .foot-space-xl-xl { margin-bottom: 200px; }
