@@ -1,0 +1,29 @@
+#/etc/nginx/sites-available/default
+
+server {
+	listen 80 default;
+
+	server_name *.mark2cure.org mark2cure.org default;
+
+	access_log  /var/log/nginx/mark2cure.log;
+
+	location /static/grappelli {
+		autoindex on;
+		alias /opt/mark2cure-venv/local/lib/python2.7/site-packages/grappelli/static/grappelli/;
+	}
+
+	location /static {
+	  autoindex on;
+	  alias /home/deploy/webapps/mark2cure/static;
+	}
+
+	location / {
+	  proxy_pass_header Server;
+	  proxy_set_header Host $http_host;
+	  proxy_redirect off;
+	  proxy_set_header X-Real-IP $remote_addr;
+	  proxy_set_header X-Scheme $scheme;
+	  proxy_pass http://localhost:8080/;
+	}
+
+}

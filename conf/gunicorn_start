@@ -1,0 +1,30 @@
+#!/bin/bash
+#/bin/gunicorn_start
+
+NAME="mark2cure-app"
+LOGFILE=/home/deploy/webapps/mark2cure/logs/gunicorn.log
+LOGDIR=$(dirname $LOGFILE)
+DJANGO_SETTINGS_MODULE=mark2cure.settings
+DJANGO_WSGI_MODULE=mark2cure.wsgi
+
+DJANGODIR=/home/deploy/webapps/mark2cure
+VENVDIR=/opt/mark2cure-venv/bin/activate
+
+USER=deploy
+GROUP=deploy
+NUM_WORKERS=3
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+source $VENVDIR
+
+cd $DJANGODIR
+test -d $LOGDIR || mkdir -p $LOGDIR
+exec /opt/mark2cure-venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
+--name $NAME \
+--workers $NUM_WORKERS \
+--user=$USER --group=$GROUP \
+--log-level=debug \
+--bind=0.0.0.0:8080 \
+--log-file=$LOGFILE

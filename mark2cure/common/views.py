@@ -20,6 +20,10 @@ import math, random, logging
 logger = logging.getLogger(__name__)
 
 
+def signup_home(request):
+    return render_to_response('common/landing.jade', {}, context_instance=RequestContext(request))
+
+
 def home(request):
 
     if request.user.is_authenticated():
@@ -104,7 +108,7 @@ def training_one(request, step_num):
 
     if step_num == 10:
         header1 = "Sometimes a single symptom is described with a long block of text and may have joining terms such as 'and' or 'or'."
-        header2 = "In that case, highlihgt the entire symptom as a single span of text. Finish Training #1 by marking the symptom in the text below."
+        header2 = "In that case, highlight the entire symptom as a single span of text. Finish Training #1 by marking the symptom in the text below."
         paragraph = "Another crucial symptom that we will investigate includes tingling sensations and/or numbness in the hands or feet."
         answers = [{'text': 'tingling sensations and/or numbness in the hands or feet', 'start': 58}];
         next_ = 'complete'
