@@ -53,6 +53,12 @@
   font-size: 13px;
 }
 
+#quest-alerts.affix {
+  top: 0;
+  z-index: 999;
+  left: 0;
+}
+
 a.close-btn {
   display: block;
   position: absolute;

@@ -5,6 +5,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns(
     'mark2cure.common.views',
     url(r'^$', r'signup_home'),
+    url(r'^index/$', r'home'),
+
 
     # Initial training for fresh signups
     url(r'^training/basics/$', r'introduction'),

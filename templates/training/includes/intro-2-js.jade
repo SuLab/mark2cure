@@ -1,5 +1,11 @@
 <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
-<script id="alert-template" type="text/template"><div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>Sorry! <strong><%= selection %></strong> doesn't appear to be correct. <strong><%= help_message %></strong></div></script>
+<script id="alert-template" type="text/template">
+<div class="alert alert-warning" role="alert">
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class="lead">Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</p></div></div>
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= help_message %></div></div>
+</div>
+</script>
+
 script.
   var textControl = function(fade, start_index, end_index, region) {
     fade = fade || 'in';
@@ -40,6 +46,15 @@ script.
     container: "body"
   });
 
+  $('#quest-alerts').affix({
+    offset: {
+      top: function() { return $('#quest-1').position().top-60 },
+      bottom: function () {
+        return (this.bottom = $('.footer').outerHeight(true))
+      }
+    },
+  });
+
   YPet.addInitializer(function(options) {
     YPet.addRegions({'quest-1': '#quest-1'});
     var p = new Paragraph({'text': $('#quest-1').text().trim()});
@@ -71,7 +86,7 @@ script.
       case "Familial Mediterranean fever ( FMF":
       case "Duchenne muscular dystrophy ( DMD":
       case "Friedreich ataxia ( FRDA":
-        msg = "Treat disease abbreviations like the words they represent. Don't mark them as a single span with the disease terms they represent. Eg- Bipolar Disorder (BD) = Bipolar Disorder (Bipolar Disorder) and should not be marked as 2 distinct instances of the disease";
+        msg = "<p>Treat disease abbreviations like the words they represent. Don't mark them as a single span with the disease terms they represent. Eg- <span class='selected'>Bipolar Disorder</span> ( <span class='selected'>BD</span> ) = Bipolar Disorder (Bipolar Disorder) and should not be marked as 2 distinct instances of the disease</p>";
         break;
 
       case "unfavorable renal prognosis":
@@ -83,36 +98,32 @@ script.
       case "mutation rates":
       case "dystrophy":
       case "Friedreich":
-        msg = "Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.";
+        msg = "<p>Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.</p>";
         break;
 
       case "breast cancer":
       case "amyloidosis":
-        msg = "If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease";
+        msg = "<p>If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease.</p>";
         break;
 
       case "Dutch breast cancer":
       case "breast cancer families":
       case "Friedreich ataxia locus 65":
       case "FRDA locus":
-        msg = "If a descriptive term does not specify a particular form of the disease, do not mark that term. Do not mark non-disease terms that are modified by disease terms such as 'family', 'gene', 'locus', 'patients'";
+        msg = "<p>If a descriptive term does not specify a particular form of the disease, do not mark that term. Do not mark non-disease terms that are modified by disease terms such as 'family', 'gene', 'locus', 'patients'.</p>";
         break;
 
       case "renal amyloidosis and arthritis":
-        msg = "When marking disease symptoms, if the symptoms can stand alone, mark them as individual symptoms";
+        msg = "<p>When marking disease symptoms, if the symptoms can stand alone, mark them as individual symptoms.</p>";
         break;
 
       case "MEFV":
       case "BRCA1":
-        msg = "Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.";
+        msg = "<p>Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.</p>";
         break;
 
       case "colchicine":
-        msg = "Do not mark drug names";
-        break;
-
-      case "early onset breast and / or ovarian cancer":
-        msg = "Sometimes even experts do not agree on the answers. These are two such ambiguous cases.";
+        msg = "<p>Do not mark drug names.</p>";
         break;
 
       case "Duchenne":
@@ -124,7 +135,7 @@ script.
       case "ovarian":
       case "breast":
       case "breast / ovarian":
-        msg = "Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.";
+        msg = "<p>Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.</p>";
         break;
     };
 
@@ -147,14 +158,14 @@ script.
       if( _.filter(answers1, function(answer) {
         return  model.get('start') < answer.start &&
                 _.str.include(model.get('text'), answer.text); }).length ) {
-        template_data.help_message = "(Please check that your selection only includes required terms)";
+        template_data.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
       }
 
       if( _.filter(answers1, function(answer) {
         return  model.get('start') >= answer.start &&
                 model.get('start')+model.get('text').length > answer.start+answer.text.length &&
                 _.str.include(model.get('text'), answer.text); }).length ) {
-        template_data.help_message = "(Please check that your selection only includes required terms)";
+        template_data.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
       }
 
       /*
@@ -164,7 +175,7 @@ script.
         return  model.get('start') >= answer.start &&
                 model.get('start')+model.get('text').length <= answer.start+answer.text.length &&
                 _.str.include(answer.text, model.get('text')); }).length ) {
-        template_data.help_message = "(Please check that your selection contains all required words)";
+        template_data.help_message = "<p>(Please check that your selection contains <strong>all</strong> required words)</p>";
       }
 
       var specific_message = check_common_mistakes(model.get('text'));
