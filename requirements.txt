@@ -17,6 +17,7 @@ billiard==3.3.0.18
 biopython==1.64
 blinker==1.3
 boto==2.32.1
+brabeion==0.1
 celery==3.1.14
 certifi==14.05.14
 django-blog-zinnia==0.14.1
