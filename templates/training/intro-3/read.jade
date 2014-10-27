@@ -1,0 +1,238 @@
+extends base
+
+- load brabeion_tags
+
+
+block header
+  - with headerMessage='Training #3: About Feedback and Scoring'
+    include includes/header-anon
+
+
+block content
+  .container
+
+    #warning(style='display:none;').row.head-space
+      .col-md-10.col-md-offset-1.alert.alert-warning.paragraph-box
+          .row
+            .col-xs-10.col-xs-offset-1.text-center
+              p.lead <strong>Sorry!</strong> a higher score is needed to pass.
+          .row
+            p.col-xs-10.col-xs-offset-1.text-center Now try this doc again and see if you can improve your score
+
+    #partner(style='display:none;').row.head-space
+      .col-sm-4.col-sm-offset-1
+        h3 #{user}
+        - badges_for_user user as badges
+        h4 Level: #{badges.0.name}
+        h5 #{user.profile.quote}
+
+      .col-sm-2
+        .panel.panel-default
+          .panel-heading.text-center Score
+          .panel-body.f-score
+            h2.text-center
+
+      #partner-info.col-sm-4
+        h3 Doc_G-man
+        h4 Level: Gold Master Marker
+        h5 "Be the change you wish to see in the world."
+
+
+    .row.head-space
+      #quest-alerts.col-md-10.col-md-offset-1
+      #quest-1.col-md-10.col-md-offset-1.paragraph-box
+        p.paragraph The intron 7 donor splice site transition : a second Tay-Sachs disease mutation in French Canada .
+      #quest-2.col-md-10.col-md-offset-1.paragraph-box
+        p.paragraph Mutations at the hexosaminidase A ( HEXA ) gene which cause Tay-Sachs disease ( TSD ) have elevated frequency in the Ashkenazi Jewish and French-Canadian populations . We report a novel TSD allele in the French-Canadian population associated with the infantile form of the disease . The mutation , a G-->A transition at the +1 position of intron 7 , abolishes the donor splice site . Cultured human fibroblasts from a compound heterozygote for this transition ( and for a deletion mutation ) produce no detectable HEXA mRNA . The intron 7 + 1 mutation occurs in the base adjacent to the site of the adult-onset TSD mutation ( G805A ) . In both mutations a restriction site for the endonuclease EcoRII is abolished . Unambiguous diagnosis , therefore , requires allele-specific oligonucleotide hybridization to distinguish between these two mutant alleles . The intron 7 + 1 mutation has been detected in three unrelated families . Obligate heterozygotes for the intron 7 + 1 mutation were born in the Saguenay-Lac-St-Jean region of Quebec . The most recent ancestors common to obligate carriers of this mutation were from the Charlevoix region of the province of Quebec . This mutation thus has a different geographic centre of diffusion and is probably less common than the exon 1 deletion TSD mutation in French Canadians . Neither mutation has been detected in France , the ancestral homeland of French Canada .
+
+    .row.head-space-xl
+      .col-md-8.col-md-offset-2
+        #next-container.pull-right
+          a(href='#', id='next').btn.btn-default Submit
+          #retry(style='display:none;')
+            form(method="GET")
+              button.btn.btn-default Retry
+
+          #complete(style='display:none;')
+            form(method="POST")
+              - csrf_token
+              button.btn.btn-default Next
+
+
+block post-footer
+  script.
+    var drawGoldenUnderlines = function() {
+      var $sections = $('p.paragraph');
+
+      $.each($sections, function() {
+        var section = $(this);
+        var $words = section.find('span');
+
+        $.each($words, function(w) {
+          var word = $(this),
+              next_word = word.next(),
+
+              gm_ann = word.data('gmannid') || "None",
+              next_word_gm_ann = next_word.data('gmannid') || "None",
+
+              u_ann = word.data('uannid') || "None",
+              next_word_u_ann = next_word.data('uannid') || "None";
+
+          console.log(gm_ann, next_word_gm_ann,
+                      u_ann, next_word_u_ann);
+          if(gm_ann != "None") { word.addClass('golden'); }
+          if(u_ann != "None") { word.addClass('user_annotated'); }
+
+          if( gm_ann != "None" && gm_ann != next_word_gm_ann ) {
+            word.html( word.html().trim() );
+            word.addClass('neighbor_gm');
+            word.css({'margin-right': '5px'});
+
+            /* Check if it messes up user anns */
+            if( u_ann != "None" && u_ann == next_word_u_ann) {
+              var $putty = $("<span class='putty-rect user_annotated'></span>").appendTo(section),
+                  section_offset = section.offset(),
+                  word_offset = word.offset(),
+                  word_pos = word.position();
+              $putty.css({'top' : word_pos.top, 'left' : word_pos.left + word.width() - 1, 'height': word.height() });
+            }
+
+          }
+
+          if( u_ann != "None" && u_ann != next_word_u_ann ) {
+            word.html( word.html().trim() );
+            word.addClass('neighbor_u');
+            word.css({'margin-right': '5px'});
+
+            /* Check if it messes up GM anns */
+            if( gm_ann != "None" && gm_ann == next_word_gm_ann) {
+              var $putty = $("<span class='putty-rect golden'></span>").appendTo(section),
+                  position = word.position();
+              $putty.css({'top' : position.top + word.height(), 'left' : position.left + word.width() - 1, 'height': '6px' });
+            }
+
+          }
+        });
+
+      });
+    };
+
+    YPet.addInitializer(function(options) {
+      YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
+
+      var p = new Paragraph({'text': $('#quest-1').text().trim()});
+      YPet.addRegions({'quest-1': '#quest-1'});
+      YPet['quest-1'].show(new WordCollectionView({collection: p.get('words')}));
+
+      var p = new Paragraph({'text': $('#quest-2').text().trim()});
+      YPet.addRegions({'quest-2': '#quest-2'});
+      YPet['quest-2'].show(new WordCollectionView({collection: p.get('words')}));
+    });
+    YPet.start();
+
+    var answers1 = [{'text': 'Tay-Sachs disease', 'start': 53}];
+    var answers2 = [{'text': 'Tay-Sachs disease', 'start': 60},
+    {'text': 'TSD', 'start': 80},
+    {'text': 'TSD', 'start': 186},
+    {'text': 'TSD', 'start': 611},
+    {'text': 'TSD', 'start': 1291}];
+
+    var determine_f = function(true_positive, false_positive, false_negative) {
+      if(true_positive + false_positive == 0) {
+        return {'precision': 0.0, 'recall': 0.0, 'f': 0.0}
+      }
+      if(true_positive + false_negative == 0) {
+        return {'precision': 0.0, 'recall': 0.0, 'f': 0.0}
+      }
+
+      var precision = true_positive / (true_positive + false_positive);
+      var recall = true_positive / (true_positive + false_negative);
+
+      if(precision + recall > 0) {
+        var f = ( 2 * precision * recall ) / ( precision + recall );
+        return {'precision': precision, 'recall': recall, 'f': f}
+      } else {
+        return {'precision': 0.0, 'recall': 0.0, 'f': 0.0}
+      }
+    };
+
+    $('#next').on('click', function(evt) {
+      evt.preventDefault();
+      var self = this;
+      var anns_1 = YPet['quest-1'].currentView.collection.parentDocument.get('annotations');
+      var anns_2 = YPet['quest-2'].currentView.collection.parentDocument.get('annotations');
+      var combine_anns = _.union(anns_1.toJSON(), anns_2.toJSON());
+      var combine_answers = _.union(answers1, answers2);
+
+      var matches = _.filter(combine_anns, function(annotation) {
+        var results = [];
+        _.each(combine_answers, function(answer) {
+          results.push( annotation.text == answer.text &&
+                        annotation.start == answer.start);
+        });
+        return _.contains(results, true);
+      });
+      var score_full = determine_f(matches.length, combine_anns.length - matches.length, combine_answers.length - matches.length);
+      var f_score = Math.round(score_full.f*100);
+
+      /* Ugly but works for this one-off */
+      $('#quest-1 p.paragraph span:nth(10)').data('gmannid', '1');
+      $('#quest-1 p.paragraph span:nth(11)').data('gmannid', '1');
+      $('#quest-2 p.paragraph span:nth(11)').data('gmannid', '2');
+      $('#quest-2 p.paragraph span:nth(12)').data('gmannid', '2');
+      $('#quest-2 p.paragraph span:nth(14)').data('gmannid', '3');
+      $('#quest-2 p.paragraph span:nth(31)').data('gmannid', '4');
+      $('#quest-2 p.paragraph span:nth(106)').data('gmannid', '5');
+      $('#quest-2 p.paragraph span:nth(216)').data('gmannid', '6');
+
+      drawGoldenUnderlines();
+
+      /* Prep walk through */
+      var intro = introJs();
+      intro.setOptions({
+        'skipLabel': 'Exit',
+        'showButtons': true,
+        'showBullets': true,
+        'keyboardNavigation': true,
+        'exitOnOverlayClick': false,
+        'exitOnEsc': false,
+        'showStepNumbers': true,
+        steps: [
+          {
+            element: '#partner-info h3',
+            intro: "From now on, you will be paired with another user.",
+            position: 'bottom',
+          }, {
+            element: '#partner-info h4',
+            intro: "The user's level is indicated here. It's a good idea to study how higher level users mark the docs in order to improve.",
+            position: 'bottom',
+          }, {
+            element: '.f-score',
+            intro: "This is the score you recieved based on how well you and your partner's markings matched.",
+            position: 'bottom',
+          }, {
+            element: '#quest-2',
+            intro: 'The green lines show how your partner marked this doc.',
+            position: 'left',
+          }
+        ]
+      });
+
+      console.log(intro);
+
+      $('.f-score h2').html(f_score);
+      $(this).hide();
+      $('#partner').slideDown(function() {
+        if(f_score >= 75) {
+          $('#complete').show();
+        } else {
+          $('#warning').show();
+          $('#retry').show();
+          intro._options.steps.push({element: '#warning', intro: "You'll have to keep trying for a higher score in order to proceed.", position: "bottom"});
+        }
+        window.scrollTo(0,0);
+        intro._options.steps.push({element: '#next-container', intro: "Click to continue!", position: "top"});
+        intro.start();
+      });
+    });
+

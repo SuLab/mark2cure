@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from mark2cure.document.models import Annotation, RelationshipType
+from mark2cure.document.models import Annotation
 
 from rest_framework import serializers
 
@@ -8,12 +8,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Annotation
         fields = ('text', 'start',)
-
-
-class RelationshipTypeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = RelationshipType
-        fields = ('id', 'full_name', 'type', 'parent')
 
 
 class TopUserFromViewsSerializer(serializers.ModelSerializer):

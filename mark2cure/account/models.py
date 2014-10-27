@@ -1,13 +1,14 @@
 from django.db import models
-from django.db.models import Count
 from django.contrib.auth.models import User
-
-from mark2cure.document.models import Document, View, Activity
 
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
 
-import datetime, os
+from brabeion import badges
+from brabeion.models import BadgeAward
+from djangoratings.fields import RatingField
+
+import os
 
 
 def _createHash():
@@ -29,8 +30,8 @@ class UserProfile(models.Model):
     avatar = models.ImageField(upload_to=_content_file_name,
                                default='images/default.jpg',
                                blank=True)
+    rating = RatingField(range=100000, allow_anonymous=True)
 
-    training_complete = models.BooleanField(default=False)
     email_notify = models.BooleanField(default=False)
     user_agent = models.CharField(max_length=150, blank=True, null=True)
     player_ip = models.GenericIPAddressField(blank=True, null=True)
@@ -83,13 +84,6 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
 
-    def score(self, task_type = 'cr'):
-        return sum(Activity.objects.filter(
-            user=self.user,
-            task_type=task_type,
-            submission_type='gm'
-            ).values_list('f_score', flat=True).all())
-
     def survey_complete(self):
         if self.gender == None or \
             self.age == None or \
@@ -99,6 +93,13 @@ class UserProfile(models.Model):
             self.motivation == '' or \
             self.country.name == '': return False
         return True
+
+    def highest_level(self, slug):
+        res =  BadgeAward.objects.filter(user=self.user, slug=slug).order_by('-level').first()
+        if res:
+            return res
+        else:
+            return BadgeAward(name='', level=0)
 
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

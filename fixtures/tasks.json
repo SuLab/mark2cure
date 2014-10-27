@@ -1,0 +1,226 @@
+[
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:49Z",
+        "name": "Training #1: Acquire a new skill: Disease Marking",
+        "created": "2014-10-01T18:40:37Z",
+        "meta_url": "/training/intro/1/step/1/",
+        "provides_qualification": 1,
+        "points": 30,
+        "requires_qualification": 0
+    },
+    "model": "common.task",
+    "pk": 1
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training #2: Avoiding Common Pitfalls",
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/2/step/1/",
+        "provides_qualification": 2,
+        "points": 50,
+        "requires_qualification": 1
+    },
+    "model": "common.task",
+    "pk": 2
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training #3: About Feedback and Scoring",
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/3/",
+        "provides_qualification": 3,
+        "points": 50,
+        "requires_qualification": 2
+    },
+    "model": "common.task",
+    "pk": 3
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:33:43Z",
+        "name": "Quest #1",
+        "created": "2014-10-01T19:33:43Z",
+        "meta_url": "",
+        "provides_qualification": 3,
+        "points": 50,
+        "requires_qualification": 3
+    },
+    "model": "common.task",
+    "pk": 4
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:33:54Z",
+        "name": "Quest #2",
+        "created": "2014-10-01T19:33:54Z",
+        "meta_url": "",
+        "provides_qualification": 3,
+        "points": 50,
+        "requires_qualification": 3
+    },
+    "model": "common.task",
+    "pk": 5
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:33:59Z",
+        "name": "Quest #3",
+        "created": "2014-10-01T19:33:59Z",
+        "meta_url": "",
+        "provides_qualification": 3,
+        "points": 50,
+        "requires_qualification": 3
+    },
+    "model": "common.task",
+    "pk": 6
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:34:06Z",
+        "name": "Quest #4",
+        "created": "2014-10-01T19:34:06Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 3
+    },
+    "model": "common.task",
+    "pk": 7
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:40Z",
+        "name": "Quest #5",
+        "created": "2014-10-01T19:37:40Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 8
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #6",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 9
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #7",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 10
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #8",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 11
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #9",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 12
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #10",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 13
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #11",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 14
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #12",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 15
+},
+{
+    "fields": {
+        "kind": "q",
+        "updated": "2014-10-01T19:37:46Z",
+        "name": "Quest #13",
+        "created": "2014-10-01T19:37:46Z",
+        "meta_url": "",
+        "provides_qualification": 4,
+        "points": 50,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": 16
+}
+]

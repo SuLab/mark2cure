@@ -1,7 +1,6 @@
-<script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
 <script id="alert-template" type="text/template">
 <div class="alert alert-warning" role="alert">
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'>Sorry! <strong><%= selection %></strong> doesn't appear to be correct.</p></div></div>
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
 <div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= help_message %></div></div>
 </div>
 </script>
@@ -9,10 +8,9 @@
 script.
   var validate = function(needle, gold) {
     var all_match = true;
-
     _.each(gold, function(gold_item) {
-      var matches = _.filter(needle.models, function(obj) {
-        return obj.get('start') == gold_item.start && obj.get('text') == gold_item.text }).length;
+      var matches = _.filter(needle.toJSON(), function(obj) {
+        return obj.start == gold_item.start && obj.text == gold_item.text }).length;
       if(!matches) { all_match = false; }
     });
 
@@ -37,11 +35,10 @@ script.
   });
 
   YPet.addInitializer(function(options) {
+    var p = new Paragraph({'text': $('p.paragraph').text().trim()});
+    YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
     YPet.addRegions({'quest': '#quest'});
-    var p = new Paragraph({'text': $('#quest').text().trim()});
-    p.parseText();
-    var view = new WordCollectionView({collection: p.get('words')});
-    YPet['quest'].show(view);
+    YPet['quest'].show(new WordCollectionView({collection: p.get('words')}));
   });
   YPet.start();
 
@@ -49,55 +46,50 @@ script.
     $('#partner').slideDown();
     $('#next-container').popover('disable');
     $('#next').attr('disabled', false);
+    window.scrollTo(0,document.body.scrollHeight);
   };
 
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+    var model_json = model.toJSON();
     /*
-    * Check if the array doesn't contain the selected word.
-    * 1) Alert if (contains/overlap/miss)error 2) Unselect
-    */
-    if( !_.filter(answers, function(obj) { return model.get('start') == obj.start && model.get('text') == obj.text; }).length ) {
-      var template_data = {
-        'selection': model.get('text'),
-        'help_message': ''};
+     * Check if the array doesn't contain the selected word.
+     * 1) Alert if (contains/overlap/miss)error 2) Unselect
+     */
+    if( !_.filter(answers, function(obj) { return model_json.start == obj.start && model_json.text == obj.text; }).length ) {
+      model_json['help_message'] = '';
       /*
       * Overlaps (start or before) check
       */
       if( _.filter(answers, function(answer) {
-        return  model.get('start') < answer.start &&
-                _.str.include(model.get('text'), answer.text); }).length ) {
-        template_data.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
+        return  model_json.start < answer.start &&
+                _.str.include(model_json.text, answer.text); }).length ) {
+        model_json.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
       }
 
       if( _.filter(answers, function(answer) {
-        return  model.get('start') >= answer.start &&
-                model.get('start')+model.get('text').length > answer.start+answer.text.length &&
-                _.str.include(model.get('text'), answer.text); }).length ) {
-        template_data.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
+        return  model_json.start >= answer.start &&
+                model_json.start+model_json.text.length > answer.start+answer.text.length &&
+                _.str.include(model_json.text, answer.text); }).length ) {
+        model_json.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
       }
 
       /*
       * Contains check
       */
       if( _.filter(answers, function(answer) {
-        return  model.get('start') >= answer.start &&
-                model.get('start')+model.get('text').length <= answer.start+answer.text.length &&
-                _.str.include(answer.text, model.get('text')); }).length ) {
-        template_data.help_message = "(Please check that your selection contains <strong>all</strong> required words)";
+        return  model_json.start >= answer.start &&
+                model_json.start+model_json.text.length <= answer.start+answer.text.length &&
+                _.str.include(answer.text, model_json.text); }).length ) {
+        model_json.help_message = "(Please check that your selection contains <strong>all</strong> required words)";
       }
 
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
-        $(this).html(temp(template_data));
+        $(this).html(temp(model_json));
         $(this).fadeIn('fast');
       });
 
-      YPet['quest'].currentView.children.each(function(view, idx) {
-        if(model.get('start') == view.model.get('start')) {
-          view.$el.trigger('mousedown');
-          view.$el.trigger('mouseup');
-        };
-      });
+      model.destroy()
     } else {
      $('#quest-alerts').fadeOut('fast');
      validation_check(collection);

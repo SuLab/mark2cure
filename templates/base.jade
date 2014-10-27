@@ -55,14 +55,13 @@ body
     block footer
         include includes/footer
 
-        script(src='#{STATIC_URL}js/libs/jquery-2.1.1.min.js')
-        script(src='#{STATIC_URL}js/libs/bootstrap.min.js')
-        script(src='#{STATIC_URL}js/libs/underscore.js')
+        script(src="//code.jquery.com/jquery-1.11.1.min.js")
+        script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
+        script(src="//underscorejs.org/underscore-min.js")
+        script(src="//backbonejs.org/backbone-min.js")
         script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
-
-        script(src='#{STATIC_URL}js/libs/backbone.js')
         script(src='#{STATIC_URL}js/libs/backbone-relational.js')
-        script(src='#{STATIC_URL}js/libs/backbone.marionette.js')
+        script(src='#{STATIC_URL}js/libs/backbone.marionette.min.js')
 
         script(src='#{STATIC_URL}js/libs/d3.v3.js')
         script(src='#{STATIC_URL}js/libs/md5.js')
@@ -70,20 +69,10 @@ body
         script(src='#{STATIC_URL}js/libs/selectize.js')
         script(src='#{STATIC_URL}js/libs/intro.min.js')
 
-        // App
         script(src='#{STATIC_URL}js/ypet.js')
         script(src='#{STATIC_URL}js/app.js')
         - if not debug
           script.
-            var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-            var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
-            var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
-            var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
-            var isIE = /*@cc_on!@*/false || !!document.documentMode;   // At least IE6
-
-            if(!isChrome && !isSafari) {
-              alert("Google Chrome or Safari required.")
-            }
 
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-43341013-1']);

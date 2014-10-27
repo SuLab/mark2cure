@@ -8,8 +8,6 @@ from mark2cure.document.managers import DocumentManager
 from decimal import Decimal as D
 from nltk.tokenize import WhitespaceTokenizer
 
-import random, itertools
-
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -25,12 +23,8 @@ class Document(models.Model):
     def __unicode__(self):
         return self.title
 
-    def submitted(self):
-        return Activity.objects.filter(document=self).count()
-
     def available_sections(self):
         return self.section_set.exclude(kind='o').all()
-
 
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
@@ -39,23 +33,20 @@ class Document(models.Model):
         # (TODO) Change so that documents can be golden or normal cases, don't tie to the exisitance of a user's annotations
         return Annotation.objects.filter(view__user__username='goldenmaster', view__section__document = self).exists()
 
-
-    def is_complete(self, user, user_profile, sections, task_type='cr'):
-        # Stick w/ Views b/c the Activity results haven't been logged yet
-        query = View.objects.filter(user=user, completed=True, task_type=task_type, section__document=self, experiment=settings.EXPERIMENT if user_profile.mturk else None)
-        return True if query.count() >= len(sections) else False
-
-
     def create_views(self, user, task_type, completed=False):
         '''
           We never want to 'recycle' a View, always make a new one, even if there
           are currently 'open' / uncompleted ones from the same doc
         '''
         for sec in self.available_sections():
-            view = View(task_type=task_type, section=sec, user=user, experiment=settings.EXPERIMENT if user.userprofile.mturk else None)
+            view = View(task_type=task_type, section=sec, user=user)
             view.completed = completed
             view.save()
 
+    def is_complete(self, user, user_profile, sections, task_type='cr'):
+        # Stick w/ Views b/c the Activity results haven't been logged yet
+        query = View.objects.filter(user=user, completed=True, task_type=task_type, section__document=self)
+        return True if query.count() >= len(sections) else False
 
     def update_views(self, user, task_type, completed=False):
         for sec in self.available_sections():
@@ -64,7 +55,7 @@ class Document(models.Model):
             view.save()
 
     def latest_views(self, user, task_type='cr', completed=True):
-        return View.objects.filter(user=user, task_type=task_type, completed=completed, experiment=settings.EXPERIMENT if user.userprofile.mturk else None, section__document=self)[:2]
+        return View.objects.filter(user=user, task_type=task_type, completed=completed, section__document=self)[:2]
 
     def latest_annotations(self, user=None):
         if user is None:
@@ -90,8 +81,7 @@ class Section(models.Model):
     kind = models.CharField(max_length=1, choices=SECTION_KIND_CHOICE)
     text = models.TextField(blank=True)
     source = models.ImageField(blank=True, upload_to='media/images/', default='images/figure.jpg')
-    cache = models.TextField(blank=True)
-    concepts = models.ManyToManyField('Concept', blank=True, null=True)
+
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -99,7 +89,7 @@ class Section(models.Model):
 
 
     def latest_view(self, user, task_type='cr', completed=True):
-        return View.objects.filter(user=user, task_type=task_type, completed=completed, experiment=settings.EXPERIMENT if user.userprofile.mturk else None, section=self).first()
+        return View.objects.filter(user=user, task_type=task_type, completed=completed, section=self).first()
 
 
     def latest_annotations(self, user = None):
@@ -177,7 +167,6 @@ class View(models.Model):
 
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default=False, blank=True)
-    experiment = models.IntegerField(blank=True, null=True)
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
@@ -188,36 +177,6 @@ class View(models.Model):
     class Meta:
         get_latest_by = 'updated'
         ordering = ('-updated',)
-
-
-class Activity(models.Model):
-    '''
-      The way to store out progress of completions and scores of worker permformance
-    '''
-    user = models.ForeignKey(User)
-    document = models.ForeignKey(Document)
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
-    experiment = models.IntegerField(blank=True, null=True)
-
-    SUBMISSION_TYPE = (
-      ('gm', 'Golden Master'),
-      ('cc', 'Community Consensus'),
-      ('na', 'Never Annotated'),
-    )
-    submission_type = models.CharField(max_length=3, choices=SUBMISSION_TYPE, blank=True, default='gm')
-
-    precsion = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
-    recall = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
-    f_score = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], null=True, blank=True)
-
-    created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('-created',)
-        get_latest_by = 'created'
-
-    def __unicode__(self):
-        return u'Activity {0}'.format(self.user)
 
 
 class Refute(models.Model):
@@ -295,60 +254,5 @@ class Annotation(models.Model):
         get_latest_by = 'updated'
         # (TODO) This is not supported by MySQL but would help prevent dups in this table
         # unique_together = ['kind', 'type', 'text', 'start', 'view']
-
-
-class Concept(models.Model):
-    concept_id = models.TextField(blank=False)
-    preferred_name = models.TextField(blank=True)
-    definition = models.TextField(blank=True)
-    semantic_type = models.TextField(blank=True)
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return '{0} ({1})'.format(self.preferred_name, self.concept_id)
-
-
-class RelationshipType(models.Model):
-    full_name = models.CharField(max_length=80)
-    type = models.CharField(max_length=80)
-    definition = models.TextField(blank=True)
-
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        names = []
-        current = self.parent
-        while current:
-            names.append(current.full_name)
-            current = current.parent
-
-        names = list(reversed(names))
-        path = ' :: '.join(names)
-
-        return '{0}:: {1}'.format(path, self.full_name)
-
-
-class ConceptRelationship(models.Model):
-    concept = models.ForeignKey(Concept, related_name='actor')
-    relationship = models.ForeignKey('RelationshipType', blank=True, null=True)
-    target = models.ForeignKey(Concept, blank=True, null=True, related_name='target')
-
-    annotation = models.ForeignKey(Annotation, blank=True, null=True)
-
-    validate = models.ForeignKey('self', blank=True, null=True)
-    confidence = models.DecimalField(max_digits=11, decimal_places=5, validators=[MaxValueValidator(1), MinValueValidator(0)], default=0)
-
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return '{0} >> {1} >> {2}'.format(self.concept.preferred_name,
-                                          self.relationship.full_name,
-                                          self.target)
 
 

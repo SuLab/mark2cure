@@ -1,86 +1,45 @@
-extends base
-
 - load humanize
 
 block content
+  .row
+    .col-sm-10.col-sm-offset-1.head-space
+      .alert.alert-success.alert-paragraph-box
+        h2.text-center New Annotations!
+        p.text-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
 
-    .row
-      .col-sm-8.col-sm-offset-2
-        .alert.alert-success
-          h3.text-center
-            | New Annotations!
-          p.text-center
-            | You were the first person to annotate this document,
-            strong
-              | thank you
-            | for your contribution to science!
-          p.text-center
-            | If you have any thoughts about this task,
-            a(data-toggle="modal", data-target="#comment", href="#")
-              | please share
-            |.
-        - with modalMsg="We welcome any feedback"
-            include includes/comment
-
-
-    - for section in sections
-        .row
-          .col-sm-10.col-sm-offset-1
-            h4
-              | #{ section.get_kind_display }
-
-          .col-sm-10.col-sm-offset-1.head-space.game
-            div(id="{{ section.pk }}").paragraph.results
-              p
-                - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
-                  span( data-counter="{{ counter }}",
-                        data-starti="{{ indexes.0 }}",
-                        data-stopi="{{ indexes.1 }}",
-                        data-gmannid="{{ gm_pk }}",
-                        data-uannid="{{ user_pk }}")
-                    | #{ text } 
+  - for section in sections
+      .row
+        .col-sm-10.col-sm-offset-1.head-space.game
+          div(id="{{ section.pk }}").paragraph.results
+            p
+              - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
+                span( data-counter="{{ counter }}",
+                      data-starti="{{ indexes.0 }}",
+                      data-stopi="{{ indexes.1 }}",
+                      data-gmannid="{{ gm_pk }}",
+                      data-uannid="{{ user_pk }}")
+                  | #{ text } 
 
 
-    .row
-      .col-sm-3.col-sm-offset-1
-        table.table
-          tbody
-            tr
-              td
-                div(style="height: 16px; width: 16px; background-color: #0cf")
-              td
-                | Your annotations
+  .row
+    .col-sm-3.col-sm-offset-1
+      table.table
+        tbody
+          tr
+            td
+              div(style="height: 16px; width: 16px; background-color: #0cf")
+            td
+              | Your annotations
 
 
-    include document/controls-results
 
 block post-footer
-    - if user_profile.mturk
-      script.
-        $("#document_submit").submit(function(evt) {
-          evt.preventDefault();
-          evt.stopPropagation();
-
-          // If the document was completed forget the rest and submit the mturk ajax request to move the turker
-          $('#worker_submit').submit();
-        });
-
-
     script.
-        var $sections = $('div.paragraph p')
-        var color_scale = d3.scale.category10();
-
-        $.each($sections, function() {
-          var section = $(this);
-          var $words = section.find('span');
-          var document_id = #{ doc.pk }
-          var section_id = +section.parent().attr('id');
-
-          //-- Add the current users recently submitted annotations
-          $.each($words, function(w) {
+        $.each($('#doc_{{doc.pk}} div.paragraph p'), function() {
+          /* Add the current users recently submitted annotations */
+          $.each($(this).find('span'), function(w) {
             var word = $(this),
                 next_word = word.next(),
-
                 u_ann = word.data('uannid'),
                 next_word_u_ann = next_word.data('uannid');
 
@@ -94,5 +53,4 @@ block post-footer
           });
 
         });
-
 

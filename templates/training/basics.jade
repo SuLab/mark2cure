@@ -12,20 +12,18 @@ block content
 
     .row.head-space-xl
       #basics.col-md-10.col-md-offset-1.paragraph.entity_tag
-        p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information. By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help.
+        p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
 
     .row.head-space
       a(href='/training/intro/', id='next', disabled).btn.btn-default.pull-right Next
 
 block post-footer
-    <script id="word-template" type="text/template"><% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %></script>
     script.
       YPet.addInitializer(function(options) {
-        YPet.addRegions({basics: '#basics'});
         var p = new Paragraph({'text': $('#basics').text().trim()});
-        p.parseText();
-        var view = new WordCollectionView({collection: p.get('words')});
-        YPet['basics'].show(view);
+        YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
+        YPet.addRegions({'basics': '#basics'});
+        YPet['basics'].show(new WordCollectionView({collection: p.get('words')}))
       });
       YPet.start();
 
@@ -43,18 +41,15 @@ block post-footer
             element: '#basics',
             intro: "Hightlight words by clicking on them. Hightlight the word <span class='selected'>Biomedical</span>",
             position: 'top',
-          },
-          {
+          }, {
             element: '#basics',
             intro: "Remove the highlight by clicking again. Un-highlight the word <span class='selected'>information</span>",
             position: 'top',
-          },
-          {
+          }, {
             element: '#basics',
             intro: "Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase <span class='selected'>I am ready to help</span>",
             position: 'bottom',
-          },
-          {
+          }, {
             element: '#next',
             intro: 'Click Next to continue!',
             position: 'left',
@@ -67,7 +62,6 @@ block post-footer
       $('.introjs-tooltip').animate({left: target.left+20});
 
       intro.onchange(function() {
-        console.log('asdf', intro._currentStep);
         switch (intro._currentStep)
         {
           case 0:
@@ -77,8 +71,8 @@ block post-footer
             var target = $('p.paragraph span:nth(19)').position();
             $('.introjs-tooltip').animate({left: target.left+20});
 
-            $('.paragraph span:nth-child(20)').trigger('mousedown');
-            $('.paragraph span:nth-child(20)').trigger('mouseup');
+            var collection = YPet['basics'].currentView.collection;
+            collection.parentDocument.get('annotations').create({words: collection.where({'text': 'information'})});
             break;
 
           case 2:
@@ -93,20 +87,19 @@ block post-footer
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+        var model_json = model.toJSON();
 
-        if( !_.contains(['Biomedical', 'information', 'I am ready to help'], model.get('text')) ) {
-          YPet['basics'].currentView.children.each(function(view, idx) {
-            if(model.get('start') == view.model.get('start')) {
-              view.$el.trigger('mousedown');
-              view.$el.trigger('mouseup');
-            };
-          });
+        /* Unselect wrong answers */
+        if( !_.contains(['Biomedical', 'information', 'I am ready to help'], model_json.text) ) {
+          model.destroy();
+          collection.drawAnnotations(model);
         }
 
-        if(model.get('text') == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
-        if(model.get('text') == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
+        if(model_json.text == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
+        if(model_json.text == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
-        if(model.get('text') == 'information' && collection.length == 1) { intro.nextStep(); }
+        var model_json = model.toJSON();
+        if(model_json.text == 'information' && collection.length == 1) { intro.nextStep(); }
       });

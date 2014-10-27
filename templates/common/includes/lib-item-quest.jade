@@ -1,0 +1,23 @@
+- if task.enabled
+  .list-group-item
+    h4.list-group-item-heading
+      a(href="/quest/{{task.pk}}/")
+        | #{task.name|safe}
+
+    span.badge + #{task.points}
+
+    .row
+      .col-xs-4
+        p #{task.documents.count} Documents
+
+- else
+  .list-group-item.disabled
+    h4.list-group-item-heading
+      | #{task.name|safe}
+
+    span.badge + #{task.points}
+
+    .row
+      .col-xs-4
+        p #{task.documents.count} Documents
+

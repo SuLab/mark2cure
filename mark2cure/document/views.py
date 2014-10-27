@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
-from mark2cure.document.models import Document, Activity, View, RelationshipType, Section
+from mark2cure.document.models import Document, View, Section
 from mark2cure.document.forms import DocumentForm, AnnotationForm, CommentForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id
-from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer, RelationshipTypeSerializer
+from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer
 
 from rest_framework import viewsets, generics
 
@@ -44,9 +44,6 @@ def identify_annotations(request, doc_id, treat_as_gm=False):
     sections = doc.available_sections()
     user = request.user
     user_profile = user.userprofile
-
-    if user_profile.softblock:
-        return redirect('mark2cure.common.views.softblock')
 
     '''
       Technically we may want a user to do the same document multiple times,
@@ -114,11 +111,14 @@ def identify_annotations_results(request, doc_id):
       2) It has community contributions (from this experiment) for context
       3) It's a novel document annotated by the worker
     '''
-    activity = Activity(user=user, document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None)
-    previous_activities_available = Activity.objects.filter(document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None).exclude(user=user, user__userprofile__ignore=True).exists()
+    #activity = Activity(user=user, document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None)
+    #previous_activities_available = Activity.objects.filter(document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None).exclude(user=user, user__userprofile__ignore=True).exists()
+    previous_activities_available = False
 
     # Can't use a Document as a Golden Master if no GM annotations exist
-    if doc.has_golden() and user_profile.current_gm:
+    # (TODO) resolve the gm stuff
+    #if doc.has_golden() and user_profile.current_gm:
+    if doc.has_golden():
         results = {}
         score, true_positives, false_positives, false_negatives = generate_results(doc, user)
         results['score'] = score
@@ -148,8 +148,8 @@ def identify_annotations_results(request, doc_id):
         activity.submission_type = 'cc'
         activity.save()
 
-        user_profile.current_gm = False
-        user_profile.save()
+        #user_profile.current_gm = False
+        #user_profile.save()
 
         return render_to_response('document/concept-recognition-results-community.jade',
             { 'doc': doc,
@@ -160,11 +160,11 @@ def identify_annotations_results(request, doc_id):
 
 
     elif not previous_activities_available:
-        activity.submission_type = 'na'
-        activity.save()
+        #activity.submission_type = 'na'
+        #activity.save()
 
-        user_profile.current_gm = False
-        user_profile.save()
+        #user_profile.current_gm = False
+        #user_profile.save()
 
         return render_to_response('document/concept-recognition-results-not-available.jade',
             { 'doc': doc,
@@ -266,13 +266,3 @@ class AnnotationViewSet(generics.ListAPIView):
         annotations = section.latest_annotations(user=user)
         # print 'User ', user_id, ' Annotations: ', annotations
         return annotations
-
-
-class RelationshipTypeViewSet(viewsets.ModelViewSet):
-    '''
-    API endpoint that allows users to be viewed or edited.
-    '''
-    queryset = RelationshipType.objects.all()
-    serializer_class = RelationshipTypeSerializer
-
-

@@ -93,8 +93,13 @@ a.close-btn {
   padding: 0px 6px;
 }
 
+.alert-paragraph-box h2 {
+  margin-top: 0px;
+}
 
-.paragraph.entity_tag {
-  padding: 30px 60px 20px 60px;
-  border: 16px solid #f5f5f5;
+.no-annotations,
+.f-score h2 {
+  font-size: 52px;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }

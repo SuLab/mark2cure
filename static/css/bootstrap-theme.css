@@ -202,6 +202,7 @@
 .navbar-default {
   background-image: none;
   border: none;
+  margin-bottom: 0px;
 }
 
 .navbar-default .navbar-nav > .active > a {

@@ -12,11 +12,18 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from mark2cure.document.models import Document, View, Annotation, Activity
-from zinnia.models import Entry
+from mark2cure.document.models import Document, View, Annotation
+from mark2cure.common.models import Task, UserQuestRelationship
+
+from brabeion import badges
+from brabeion.models import BadgeAward
+#from zinnia.models import Entry
 
 from datetime import datetime, timedelta
-import math, random, logging
+import math
+import random
+import os
+import logging
 logger = logging.getLogger(__name__)
 
 
@@ -42,7 +49,8 @@ def introduction(request):
 
 def training_read(request):
     return render_to_response('training/training_read.jade',
-                              {}, context_instance=RequestContext(request))
+                              context_instance=RequestContext(request))
+
 
 def training_one(request, step_num):
     if step_num == 'complete':
@@ -55,32 +63,32 @@ def training_one(request, step_num):
     if step_num == 1:
         header1 = "Let's start by marking diseases"
         header2 = "Mark all the disease terms in the sentence below."
-        paragraph = "Does choice of insulin regimen really matter in the management of diabetes?"
+        paragraph = "Does choice of insulin regimen really matter in the management of diabetes ?"
         answers = [{'text': 'diabetes', 'start': 66}]
 
     if step_num == 2:
         header1 = "Sometimes you will see multiple instances of the same disease - Be sure to mark them all!"
         header2 = "Mark all the disease terms in the sentence below."
-        paragraph = "To assess the management of diabetes, we reviewed records of 20 diabetes patients."
-        answers = [{'text': 'diabetes', 'start': 28}, {'text': 'diabetes', 'start': 64}]
+        paragraph = "To assess the management of diabetes , we reviewed records of 20 diabetes patients ."
+        answers = [{'text': 'diabetes', 'start': 28}, {'text': 'diabetes', 'start': 65}]
 
     if step_num == 3:
         header1 = "Sometimes the disease is described by a conjuction of several words. Mark these disease conjunctions as a single span of text."
         header2 = "Mark all the disease terms in the sentence below."
-        paragraph = "Of the 20 diabetes patients, 17 had type 2 diabetes mellitus."
-        answers = [{'text': 'diabetes', 'start': 10}, {'text': 'type 2 diabetes mellitus', 'start': 36}];
+        paragraph = "Of the 20 diabetes patients , 17 had type 2 diabetes mellitus ."
+        answers = [{'text': 'diabetes', 'start': 10}, {'text': 'type 2 diabetes mellitus', 'start': 37}];
 
     if step_num == 4:
         header1 = "Sometimes the disease conjunctions are separated by words like 'and/or'. Decide if there are two distinct diseases to highlight, or if it is a single disease conjunction."
         header2 = "Mark all the disease terms in the sentence below."
-        paragraph = "The remaining 3 had inherited and/or type I diabetes mellitus."
+        paragraph = "The remaining 3 had inherited and/or type I diabetes mellitus ."
         answers = [{'text': 'inherited and/or type I diabetes mellitus', 'start': 20}];
 
     if step_num == 5:
         header1 = "Sometimes different diseases are discussed. Mark all the diseases below."
         header2 = "Remember to mark disease conjunction as spans and to mark different diseases separately."
-        paragraph = "Of the 20 patients, 10 patients were also diagnosed with heart disease or rheumatoid arthritis."
-        answers = [{'text': 'heart disease', 'start': 57}, {'text': 'rheumatoid arthritis', 'start': 74}];
+        paragraph = "Of the 20 patients , 10 patients were also diagnosed with heart disease or rheumatoid arthritis ."
+        answers = [{'text': 'heart disease', 'start': 58}, {'text': 'rheumatoid arthritis', 'start': 75}];
 
     if step_num == 6:
         header1 = "Sometimes the disease terms are abbreviated. Mark all instances of disease abbreviations."
@@ -91,7 +99,7 @@ def training_one(request, step_num):
     if step_num == 7:
         header1 = "Practice what you've learned so far..."
         header2 = "Try marking the disease and disease abbreviations in this phrase now!"
-        paragraph = "... with or without rheumatoid arthritis ( RA ) or heart disease ( HD )."
+        paragraph = "... with or without rheumatoid arthritis ( RA ) or heart disease ( HD ) ."
         answers = [{'text':'rheumatoid arthritis', 'start': 20}, {'text': 'RA', 'start': 43}, {'text': 'heart disease', 'start': 51}, {'text': 'HD', 'start': 67}];
 
     if step_num == 8:
@@ -103,14 +111,14 @@ def training_one(request, step_num):
     if step_num == 9:
         header1 = "Sometimes a single symptom is described using more than one word."
         header2 = "Mark these symptoms as single spans of text. Mark the symptom in the text below."
-        paragraph = "... as well as frequent urination. Another crucial symptom ..."
+        paragraph = "... as well as frequent urination . Another crucial symptom ..."
         answers = [{'text': 'frequent urination', 'start': 15}];
 
     if step_num == 10:
         header1 = "Sometimes a single symptom is described with a long block of text and may have joining terms such as 'and' or 'or'."
         header2 = "In that case, highlight the entire symptom as a single span of text. Finish Training #1 by marking the symptom in the text below."
-        paragraph = "Another crucial symptom that we will investigate includes tingling sensations and/or numbness in the hands or feet."
-        answers = [{'text': 'tingling sensations and/or numbness in the hands or feet', 'start': 58}];
+        paragraph = "Another crucial symptom that we will investigate includes tingling and/or numbness in the hands or feet ."
+        answers = [{'text': 'tingling and/or numbness in the hands or feet', 'start': 58}];
         next_ = 'complete'
 
     return render_to_response(
@@ -127,10 +135,14 @@ def training_one(request, step_num):
 @login_required
 def training_two(request, step_num):
     if step_num == 'complete':
-        profile = request.user.profile
-        profile.training_complete = True
-        profile.save()
+        if request.user.is_authenticated():
+            task = Task.objects.get(pk=2)
+            UserQuestRelationship.objects.create(task=task, user=request.user)
+            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge("points_awarded", user=request.user)
 
+
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=3)
         return redirect('mark2cure.common.views.dashboard')
 
     return render_to_response(
@@ -140,15 +152,49 @@ def training_two(request, step_num):
 
 
 @login_required
+def training_three(request):
+    if request.method == 'POST':
+        task = Task.objects.get(pk=3)
+        UserQuestRelationship.objects.create(task=task, user=request.user)
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=4)
+        return redirect('mark2cure.common.views.dashboard')
+
+    else:
+        return render_to_response(
+            'training/intro-3/read.jade', {},
+            context_instance=RequestContext(request))
+
+
+@login_required
 def dashboard(request):
-    if not request.user.profile.training_complete:
-        return redirect('mark2cure.common.views.training_read')
+    if request.user.profile.highest_level("skill").level <= 1:
+       return redirect('mark2cure.common.views.training_read')
 
     profile = request.user.profile
-    posts = Entry.objects.all()[:3]
+    # posts = Entry.objects.all()[:3]
+    posts = []
+    tasks = Task.objects.all()
+    for task in tasks:
+        setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification)
+        setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists())
+
     return render_to_response('common/dashboard.jade',
                               {'posts': posts,
+                               'tasks': tasks,
                                'profile': profile},
+                              context_instance=RequestContext(request))
+
+
+@login_required
+def quest_read(request, quest_num):
+    task = get_object_or_404(Task, pk=quest_num)
+    documents = task.documents.all()[:4]
+
+    return render_to_response('common/quest.jade',
+                              {'task': task,
+                               'documents': documents},
                               context_instance=RequestContext(request))
 
 
@@ -193,5 +239,6 @@ def survey(request):
           sf.save()
 
     return HttpResponse("Success")
+
 
 

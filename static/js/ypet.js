@@ -1,79 +1,127 @@
-YPet = new Backbone.Marionette.Application();
+Date.now = Date.now || function() { return +new Date; };
 
-//
-//-- Models & Collections
-//
-
+/*
+ *  Models & Collections
+ */
 Word = Backbone.RelationalModel.extend({
+  /* A Word model repersents each tokenized word present
+   * in the paragraph YPet is attached to. */
   defaults: {
-    text      : '',
-    length    : null,
-    start     : null,
-    stop      : null,
-    latest    : false,
-    selected  : false,
-    neighbor  : false,
+    text: '',
+    start: null,
+    latest: null,
+    neighbor: false,
   }
-});
-
-Annotation = Backbone.RelationalModel.extend({
-  defaults: {
-    kind    : "e",
-    text    : '',
-    length  : null,
-    start   : null,
-    stop    : null,
-  },
-  sync : function() { return false; }
 });
 
 WordList = Backbone.Collection.extend({
-  model   : Word,
-  url     : '/api/v1/words',
+  /* Common utils to perform on an array of Word
+   * models for house keeping and search */
+  model: Word,
+  url: '/api/v1/words',
+});
 
-  clear : function(attr) {
-    return this.each(function(word) { word.set(attr, false); });
+Annotation = Backbone.RelationalModel.extend({
+  /* Each annotation in the paragraph. An Annotation
+   * is composed of an array of Words in order to determine
+   * the full text and position which are not
+   * explicity set */
+  defaults: {
+    /* An annotation doesn't exist when removed so
+     * we can start them all off at 0 and not need to
+     * mix in a null type */
+    type: 0,
+    text: '',
+    start: null,
   },
 
-  selectBetweenRange : function(start, stop) {
-    return this.filter(function(word){
-      return word.get('start') >= start && word.get('start') <= stop;
-    });
+  sync: function () { return false; },
+
+  relations: [{
+    type: 'HasMany',
+    key: 'words',
+
+    relatedModel: Word,
+    collectionType: WordList,
+
+    reverseRelation : {
+      key: 'parentAnnotation',
+      includeInJSON: false,
+    }
+  }],
+
+  toggleType : function() {
+    /* Removes (if only 1 Annotation type) or changes
+     * the Annotation type when clicked after existing */
+    if( this.get('type') == YPet.AnnotationTypes.length-1 ) {
+      this.destroy();
+    } else {
+      this.set('type', this.get('type')+1 );
+    }
   }
 });
 
-AnnotationList = Backbone.Collection.extend({
-  model   : Annotation,
-  url     : '/api/v1/annotations',
+AnnotationTypeList = Backbone.Collection.extend({
+  /* Very simple collection to store the type of
+   * Annotations that the application allows
+   * for paragraphs */
+  model: Backbone.Model.extend({}),
+  url: function() { return false; }
+});
 
-  getRange : function() {
-    //-- Returns back an array of indexes that are occupied by annotations within the text
-    // example, 6 letter annotation: [14, 15, 16, 17, 18, 19]
-    var range = []
-    this.each(function(annotation) {
-      range.push( _.range(annotation.get('start'), annotation.get('stop')+1)  );
-    })
-    return _.uniq( _.flatten(range) );
+AnnotationList = Backbone.Collection.extend({
+  /* Utils for the Paragraph Annotations lists
+   * collectively */
+  model: Annotation,
+  url: '/api/v1/annotations',
+
+  initialize : function(options) {
+    this.listenTo(this, 'add', function(annotation) {
+      annotation.set('text', annotation.get('words').pluck('text').join(' '));
+      annotation.set('start', annotation.get('words').first().get('start'));
+      this.drawAnnotations(annotation);
+    });
+
+    this.listenTo(this, 'change:type', function(annotation) {
+      this.drawAnnotations(annotation);
+    });
+
+    this.listenTo(this, 'remove', function(annotation, collection) {
+      /* Must iterate b/c annotation var "words" attribute is
+       * empty at this point */
+      collection.parentDocument.get('words').each(function(word) {
+        word.trigger('highlight', {'color': '#fff'});
+        word.set('neighbor', false);
+      });
+
+      collection.each(function(annotation) {
+        collection.drawAnnotations(annotation);
+      });
+
+    });
   },
 
-  findContaining : function(index) {
-    return this.filter(function(annotation) {
-      return index >= annotation.get('start') && index <= annotation.get('stop');
+  drawAnnotations: function(annotation) {
+    var annotation_type = YPet.AnnotationTypes.at(annotation.get('type')),
+        words_len = annotation.get('words').length;
+
+    annotation.get('words').each(function(word, word_index) {
+      word.trigger('highlight', {'color': annotation_type.get('color')});
+      word.trigger('label', {'annotation': annotation});
+      if(word_index == words_len-1) { word.set('neighbor', true); }
     });
   },
 
   add : function(ann) {
-    //-- Prevent duplicate annotations from being submitted
-    var isDupe = this.any(function(_ann) {
-        return  _ann.get('text') === ann.get('text') &&
-                _ann.get('start') === ann.get('start');
-    });
-    if (isDupe) { return false; }
+    if (ann.get('words').length==0) { return false; }
     Backbone.Collection.prototype.add.call(this, ann);
   }
+
 });
 
 Paragraph = Backbone.RelationalModel.extend({
+  /* Foundational model for tracking everything going
+   * on within a Paragraph like Words and Annotations */
   defaults: {
     text : '',
   },
@@ -86,7 +134,8 @@ Paragraph = Backbone.RelationalModel.extend({
     collectionType: AnnotationList,
 
     reverseRelation : {
-      includeInJSON: true,
+      key : 'parentDocument',
+      includeInJSON: false,
     }
   }, {
     type: 'HasMany',
@@ -101,202 +150,227 @@ Paragraph = Backbone.RelationalModel.extend({
     }
   }],
 
-  parseText : function() {
+  /* Required step after attaching YPet to a <p> to
+   * extract the individual words */
+  initialize : function(options) {
     var step = 0,
-        space_padding,
-        word_obj,
-        text = this.get('text'),
-        words = _.map(_.str.words( text ), function(word) {
-          word_obj = {
-            'text'      : word,
-            'length'    : word.length,
-            'start'     : step,
-            'stop'      : step + word.length
+        length = 0,
+        words = _.map(options.text.split(/\s+/) , function(word) {
+          length = word.length;
+          step = step + length + 1;
+          return {
+            'text': word,
+            'start': step - length - 1,
           }
-
-          space_padding = (text.substring(step).match(/\s+/g) || [""])[0].length;
-
-          step = step + word.length + space_padding;
-          return word_obj;
         });
 
-      //-- Remove any words if they previously existed and add the new ones
-      _.each(this.get('words'), function(word) { word.destroy(); });
+      this.get('words').each(function(word) { word.destroy(); });
       this.get('words').add(words);
-  }
+  },
 });
 
-//
-//-- Views
-//
-
+/*
+ * Views
+ */
 WordView = Backbone.Marionette.ItemView.extend({
-  template : '#word-template',
-  tagName : 'span',
+  template: _.template('<% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %>'),
+  tagName: 'span',
 
-  className : function() {
-    var classArr = [],
-        self = this;
-    _.each(['selected', 'neighbor', 'latest'], function(v) {
-      if(self.model.get(v)) { classArr.push(v) }
-    });
-    return classArr.join(' ');
-  },
-
+  /* These events are only triggered when over
+   * a span in the paragraph */
   events : {
-    'mousedown'   : 'clickOrInitDrag',
-    'mouseup'     : 'releaseDrag',
-    'mouseover'   : 'hover',
+    'mousedown' : 'mousedown',
+    'mouseover' : 'mouseover',
+    'mouseup'   : 'mouseup',
   },
 
+  /* Setup even listeners for word spans */
   initialize : function(options) {
-    this.listenTo(this.model, 'change:selected', this.render);
     this.listenTo(this.model, 'change:neighbor', this.render);
-    options['auto_select_all'] = false;
-    options['firefox'] = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-  },
-
-  onRender : function() {
-    this.$el.attr('class', _.result(this, 'className'));
-  },
-
-  //
-  //-- Event actions
-  //
-  clickOrInitDrag : function() {
-    //-- onmousedown we just set the word to be the latest so that we can refernce it later
-    //-- whent he user releases after staying put or moving around
-    this.model.collection.clear('latest');
-    this.model.set({'latest': true, 'selected': true});
-  },
-
-  hover : function(evt) {
-    var dragging = this.options.firefox ? 0 : evt.which;
-    //-- If you're dragging with the mouse down to make a large selection
-    if( dragging ) {
-      var last_model = this.model.collection.findWhere({latest: true}) || this.model.collection.at(0),
-          sel = [last_model.get('start'), this.model.get('start')],
-          range = [_.min(sel), _.max(sel)],
-          highlight_list = this.model.collection.selectBetweenRange(range[0], range[1]+1);
-      this.selectWordsOfAnnotations();
-      _.each(highlight_list, function(word) { word.set('selected', true); });
-    }
-  },
-
-  releaseDrag : function(evt) {
-    //-- onmouseup from the user
-    var last_model = this.model.collection.findWhere({latest: true})  || this.model.collection.at(0),
-        annotations = this.model.get('parentDocument').get('annotations');
-
-    //-- If the user just finished making a drag selection
-    if( last_model != this.model ) {
-      var sel = [last_model.get('start'), this.model.get('stop')],
-          range = [_.min(sel), _.max(sel)],
-          start_i = range[0],
-          stop_i = range[1]+1;
-
-      //-- (TODO) http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
-      if( String(sel) !== String(range) ) {
-        //-- They dragged in reverse
-        start_i = this.model.get('start');
-        stop_i = last_model.get('stop')+1;
+    this.listenTo(this.model, 'change:latest', function(model, value, options) {
+      if(this.model.get('latest')) {
+        this.model.trigger('highlight', {'color': '#7FE5FF'});
       }
-
-      this.createAnns(start_i, stop_i)
-
-    //-- If it was a single click
-    } else {
-      //-- If click was on preexisting annotation to delete it
-      if( _.contains(annotations.getRange(), this.model.get('start')) ) {
-        _.each(annotations.findContaining( this.model.get('start') ), function(ann) { ann.destroy(); })
-
-      //-- If a new single annotation or range
-      } else {
-        this.createAnns(this.model.get('start'), this.model.get('stop')+1);
+      if(options.force) {
+        this.model.trigger('highlight', {'color': '#fff'});
       }
-    }
-
-    this.selectWordsOfAnnotations();
-  },
-
-  createAnns : function(start, stop) {
-    var doc = this.model.get('parentDocument'),
-        annotations = doc.get('annotations'),
-        text = doc.get('text').substring(start, stop),
-        annotation = this.sanitizeAnnotation(text, start);
-
-    // if(this.options.auto_select_all) {
-      // _.each(this.getIndicesOf(text, doc.get('text'), false), function(v) {
-      //   annotations.create({
-      //     text      : text,
-      //     length    : text.length,
-      //     start     : v,
-      //     stop      : v+text.length
-      //   });
-      // });
-    // } else {
-      annotations.create({
-        text      : annotation.text,
-        length    : annotation.text.length,
-        start     : annotation.start,
-        stop      : annotation.start + annotation.text.length
-      });
-    // }
-  },
-
-  //-- Utilities for view
-  // getIndicesOf : function(needle, haystack, caseSensitive) {
-  //   var startIndex = 0,
-  //       needleLen = needle.length,
-  //       index,
-  //       indices = [];
-
-  //   if (!caseSensitive) {
-  //       haystack = haystack.toLowerCase();
-  //       needle = needle.toLowerCase();
-  //   }
-
-  //   while ((index = haystack.indexOf(needle, startIndex)) > -1) {
-  //       if(this.clean( haystack.substring(index - 1, index + needleLen + 1) ) === needle) { indices.push(index); }
-  //       startIndex = index + needleLen;
-  //   }
-  //   return indices;
-  // },
-
-  sanitizeAnnotation : function(full_str, start) {
-    //-- Return the cleaned string and the (potentially) new start position
-    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-    return {'text':str, 'start': start+full_str.indexOf(str)};
-  },
-
-  selectWordsOfAnnotations : function() {
-    //-- Iterate over the words and see if they are contained within any of the documents annotations
-    var self = this,
-        annotations = this.model.get('parentDocument').get('annotations'),
-        word_index_average = 0;
-
-    //-- Before we select the words to highlight, remove all the preexisting ones
-    this.model.collection.clear('selected');
-    this.model.collection.clear('neighbor');
-
-    _.each(annotations.models, function(ann) {
-      var words = self.model.collection.filter(function(word) {
-        word_index_average = (word.get('start') + word.get('stop')) / 2;
-        return ann.get('start') < word_index_average && word_index_average < ann.get('stop');
-      });
-
-      if(words.length) {
-        _.each(words, function(word) { word.set('selected', true); })
-        _.last(words).set('neighbor', true);
-      }
-
     });
+    this.listenTo(this.model, 'highlight', function(options) {
+      this.$el.css({'backgroundColor': options.color});
+    });
+    this.listenTo(this.model, 'label', function(options) {
+      this.$el.data('uannid', options.annotation.collection.indexOf(options.annotation));
+    });
+ },
+
+  /* Triggers the proper class assignment
+   * when the word <span> is redrawn */
+  onRender : function() {
+    this.$el.css({'margin-right': this.model.get('neighbor') ? '5px' : '0px'});
+  },
+
+  /* When clicking down, make sure to keep track
+   * that that word has been the latest interacted
+   * element */
+  mousedown : function(evt) {
+    evt.stopPropagation();
+    this.model.set({'latest': 1});
+  },
+
+  mouseover : function(evt) {
+    evt.stopPropagation();
+    var word = this.model,
+        words = word.collection;
+
+    /* You're dragging if another word has a latest timestamp */
+    if(_.compact(words.pluck('latest')).length) {
+      if(_.isNull(word.get('latest'))) { word.set({'latest': Date.now()}); }
+
+      /* If the hover doesn't proceed in ordered fashion
+       * we need to "fill in the blanks" between the words */
+      var current_word_idx = words.indexOf(word);
+      var first_word_idx = words.indexOf( words.find(function(word) { return word.get('latest') == 1; }) );
+
+      /* Select everything from the starting to the end without
+       * updating the timestamp on the first_word */
+      var starting_positions = first_word_idx <= current_word_idx ? [first_word_idx, current_word_idx+1] : [first_word_idx+1, current_word_idx];
+      var selection_indexes = _.range(_.min(starting_positions), _.max(starting_positions));
+      _.each(_.without(selection_indexes, first_word_idx), function(idx) { words.at(idx).set('latest', Date.now()); });
+
+      /* If there are extra word selections up or downstream
+       * from the current selection, remove those */
+      var last_selection_indexes = _.map(words.reject(function(word) { return _.isNull(word.get('latest')); }), function(word) { return words.indexOf(word); });
+      var remove_indexes = _.difference(last_selection_indexes, selection_indexes);
+
+      var word,
+          ann;
+      _.each(remove_indexes, function(idx) {
+        word = words.at(idx);
+        word.set('latest', null, {'force': true});
+        ann = word.get('parentAnnotation');
+        if(ann) { ann.collection.drawAnnotations(ann); }
+      });
+
+    }
+  },
+
+  mouseup : function(evt) {
+    evt.stopPropagation();
+    var word = this.model,
+        words = word.collection;
+
+    var selected = words.filter(function(word) { return word.get('latest') });
+    if(selected.length == 1 && word.get('parentAnnotation') ) {
+      word.get('parentAnnotation').toggleType();
+    } else {
+      /* if selection includes an annotation, delete that one */
+      _.each(selected, function(w) {
+        if(w.get('parentAnnotation')) {
+          w.get('parentAnnotation').destroy();
+        }
+      })
+      word.get('parentDocument').get('annotations').create({words: selected});
+    };
+
+    words.each(function(word) { word.set('latest', null); });
   }
 
 });
 
 WordCollectionView = Backbone.Marionette.CollectionView.extend({
-  itemView: WordView,
-  tagName : 'p',
+  childView  : WordView,
+  tagName   : 'p',
   className : 'paragraph',
+  events : {
+    'mousedown': 'startSideCapture',
+    'mousemove': 'startHoverCapture',
+    'mouseup': 'captureAnnotation',
+    'mouseleave': 'captureAnnotation',
+  },
+
+  outsideBox: function(evt) {
+    var x = evt.pageX,
+        y = evt.pageY;
+
+    var obj;
+    var spaces = _.compact(this.children.map(function(view) {
+      obj = view.$el.offset();
+      if(obj.top && obj.left) {
+        obj.bottom = obj.top + view.$el.height();
+        obj.right = obj.left + view.$el.width();
+        return obj;
+      }
+    }));
+    return (_.first(spaces).left > x || x > _.max(_.pluck(spaces, 'right'))) || (_.first(spaces).top > y || y > _.last(spaces).bottom);
+  },
+
+  startSideCapture: function(evt) {
+    if(this.outsideBox(evt)) {
+      var closest_view = this.getClosestWord(evt);
+      if(closest_view) { closest_view.$el.trigger('mousedown'); }
+    }
+  },
+
+  timedHover: _.throttle(function(evt) {
+    if(this.outsideBox(evt)) {
+      var closest_view = this.getClosestWord(evt);
+      if(closest_view) { closest_view.$el.trigger('mouseover'); }
+    }
+  }, 100),
+
+  startHoverCapture: function(evt) { this.timedHover(evt); },
+
+  captureAnnotation: function(evt) {
+    var selection = this.collection.reject(function(word) { return _.isNull(word.get('latest')); });
+    if(selection.length) {
+      /* Doesn't actually matter which one */
+      var model = selection[0];
+      this.children.find(function(view, idx) { return model.get('start') == view.model.get('start'); }).$el.trigger('mouseup');
+    }
+  },
+
+  getClosestWord: function(evt) {
+    var x = evt.pageX,
+        y = evt.pageY,
+        closest_view = null,
+        word_offset,
+        dx, dy,
+        distance, minDistance,
+        left, top, right, bottom;
+
+    this.children.each(function(view, idx) {
+      word_offset = view.$el.offset();
+      left = word_offset.left;
+      top = word_offset.top;
+      right = left + view.$el.width();
+      bottom = top + view.$el.height();
+
+      var offsets = [
+        [left, top],
+        [right, top],
+        [left, bottom],
+        [right, bottom]
+      ];
+
+      for(off in offsets) {
+        dx = offsets[off][0] - x;
+        dy = offsets[off][1] - y;
+        distance = Math.sqrt((dx*dx) + (dy*dy));
+        if (minDistance === undefined || distance < minDistance) {
+          minDistance = distance;
+          closest_view = view;
+        }
+      }
+
+    });
+    return closest_view;
+  },
+
 });
+
+YPet = new Backbone.Marionette.Application();
+YPet.AnnotationTypes = new AnnotationTypeList([
+  {name: 'Disease', color: '#00ccff'},
+  {name: 'Gene', color: '#22A301'},
+  {name: 'Protein', color: 'yellow'}
+]);

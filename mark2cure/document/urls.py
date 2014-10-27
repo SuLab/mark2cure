@@ -6,7 +6,6 @@ from mark2cure.document.views import *
 
 
 router = routers.DefaultRouter()
-router.register(r'relationshiptypes', RelationshipTypeViewSet)
 
 urlpatterns = patterns(
     'mark2cure.document.views',

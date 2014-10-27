@@ -1,3 +1,5 @@
+
+
 from django.contrib.auth.models import User
 from django.test import TestCase, Client, LiveServerTestCase
 
@@ -87,8 +89,6 @@ class MySeleniumTests(LiveServerTestCase):
         signup_users = User.objects.filter(email = demo_user_email).all()
         self.assertEquals(len(signup_users), 1)
 
-        #Assert: email notify flag saved correctly
+        # Assert: email notify flag saved correctly
         signup_user = signup_users[0]
         self.assertEquals(signup_user.userprofile.email_notify, True)
-
-

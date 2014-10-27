@@ -13,7 +13,11 @@ from django.contrib.auth import authenticate, login
 from mark2cure.account.models import UserProfile
 from mark2cure.account.forms import UserForm, UserProfileForm
 
+from mark2cure.common.models import Task, UserQuestRelationship
+from brabeion import badges
+
 import datetime
+import os
 
 
 @login_required
@@ -63,6 +67,13 @@ def create(request):
                     username=request.POST['username'],
                     password=request.POST['password'])
                 login(request, user)
+
+                # In order to create an account they've already done the
+                # first 2 training Tasks
+                badges.possibly_award_badge("skill_awarded", user=user, level=2)
+                task = Task.objects.first()
+                user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+                UserQuestRelationship.objects.create(task=task, user=user)
 
                 # Redirect them back b/c of the UserProfileForm
                 return redirect('mark2cure.account.views.create')
