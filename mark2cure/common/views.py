@@ -48,7 +48,20 @@ def introduction(request):
 
 
 def training_read(request):
+    tasks = []
+    if request.user.is_authenticated():
+        profile = request.user.profile
+
+    tasks = Task.objects.filter(kind=Task.TRAINING).all()
+    for task in tasks:
+        setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification if request.user.is_authenticated() else False)
+        setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists() if request.user.is_authenticated() else False)
+
+        if task.pk == 1:
+            setattr(task, 'enabled', True)
+
     return render_to_response('training/training_read.jade',
+                              {'tasks': tasks},
                               context_instance=RequestContext(request))
 
 
@@ -143,7 +156,7 @@ def training_two(request, step_num):
 
 
         badges.possibly_award_badge("skill_awarded", user=request.user, level=3)
-        return redirect('mark2cure.common.views.dashboard')
+        return redirect('mark2cure.common.views.training_read')
 
     return render_to_response(
         'training/intro-2/step-{step_num}.jade'.format(step_num=step_num),
@@ -169,13 +182,13 @@ def training_three(request):
 
 @login_required
 def dashboard(request):
-    if request.user.profile.highest_level("skill").level <= 1:
+    if request.user.profile.highest_level("skill").level <= 2:
        return redirect('mark2cure.common.views.training_read')
 
     profile = request.user.profile
     # posts = Entry.objects.all()[:3]
     posts = []
-    tasks = Task.objects.all()
+    tasks = Task.objects.filter(kind=Task.QUEST).all()
     for task in tasks:
         setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification)
         setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists())

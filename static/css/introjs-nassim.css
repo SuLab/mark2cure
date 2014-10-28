@@ -180,7 +180,8 @@
 }
 
 .introjs-button:hover {
-  color: #fff;
+  text-shadow: none;
+  color: #fff !important;
   background: #2671A2;
   text-decoration: none;
   border-color: #235677;
@@ -188,9 +189,9 @@
 
 .introjs-button:focus,
 .introjs-button:active {
+    text-shadow: none;
     background: #23587A;  text-decoration: none;
-    color: #fff;
-    /* bottom: -1px; */
+    color: #fff !important;
     box-shadow: none;
     border-color: #173B53;
 }

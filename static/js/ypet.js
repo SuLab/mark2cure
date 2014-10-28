@@ -258,6 +258,7 @@ WordView = Backbone.Marionette.ItemView.extend({
     evt.stopPropagation();
     var word = this.model,
         words = word.collection;
+    word.trigger('highlight', {'color': '#fff'});
 
     var selected = words.filter(function(word) { return word.get('latest') });
     if(selected.length == 1 && word.get('parentAnnotation') ) {
