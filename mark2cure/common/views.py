@@ -14,6 +14,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from mark2cure.document.models import Document, View, Annotation
 from mark2cure.common.models import Task, UserQuestRelationship
+from mark2cure.common.serializers import QuestSerializer
+from rest_framework import viewsets, generics
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from brabeion import badges
 from brabeion.models import BadgeAward
@@ -198,6 +202,13 @@ def dashboard(request):
                                'tasks': tasks,
                                'profile': profile},
                               context_instance=RequestContext(request))
+
+
+@api_view(['GET'])
+def quest_list(request):
+    queryset = Task.objects.filter(kind=Task.QUEST).all()
+    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
+    return Response(serializer.data)
 
 
 @login_required

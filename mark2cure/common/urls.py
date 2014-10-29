@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 
-
 urlpatterns = patterns(
     'mark2cure.common.views',
     url(r'^$', r'signup_home'),
@@ -21,7 +20,8 @@ urlpatterns = patterns(
 
     # Initial training for fresh signups
     url(r'^quest/(?P<quest_num>\w+)/$', r'quest_read'),
-
+    # REST Framework
+    url(r'^quest/api/read/$', r'quest_list'),
 
     url(r'^message/$', r'message'),
     url(r'^profile-survey/$', r'profile_survey'),
