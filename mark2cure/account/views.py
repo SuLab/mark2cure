@@ -73,7 +73,7 @@ def create(request):
                 badges.possibly_award_badge("skill_awarded", user=user, level=2)
                 task = Task.objects.first()
                 user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-                UserQuestRelationship.objects.create(task=task, user=user)
+                UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
                 # Redirect them back b/c of the UserProfileForm
                 return redirect('mark2cure.account.views.create')

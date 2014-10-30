@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from mark2cure.common.models import Task, UserQuestRelationship
 
 from rest_framework import serializers
-
+from random import randrange
 
 class QuestSerializer(serializers.ModelSerializer):
 
@@ -28,7 +28,7 @@ class QuestSerializer(serializers.ModelSerializer):
         return UserQuestRelationship.objects.filter(task=task, user=self.user, completed=True).exists()
 
     def get_completion_status(self, task):
-        return 5
+        return randrange(10)
 
     class Meta:
         model = Task

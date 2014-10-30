@@ -10,8 +10,8 @@ block content
   - for section in sections
       .row
         .col-sm-10.col-sm-offset-1.head-space.game
-          div(id="{{ section.pk }}").paragraph.results
-            p
+          div(id="{{ section.pk }}").results
+            p.paragraph
               - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
                 span( data-counter="{{ counter }}",
                       data-starti="{{ indexes.0 }}",
@@ -35,7 +35,7 @@ block content
 
 block post-footer
     script.
-        $.each($('#doc_{{doc.pk}} div.paragraph p'), function() {
+        $.each($('#doc_{{doc.pk}} div.results p.paragraph'), function() {
           /* Add the current users recently submitted annotations */
           $.each($(this).find('span'), function(w) {
             var word = $(this),

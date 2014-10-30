@@ -8,9 +8,8 @@ block content
     - for sec in sections
         .row
           .col-sm-10.col-sm-offset-1.head-space.game
-            div(id="{{ sec.pk }}").paragraph.entity_tag
-              p
-                | #{ sec.text } 
+            div(id="{{ sec.pk }}")
+              p.paragraph #{sec.text}
 
 
 block post-footer
@@ -18,8 +17,9 @@ block post-footer
       var sections = {};
       var section_selectors = {};
       YPet.addInitializer(function(options) {
+        YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
 
-        $("#doc_{{doc.pk}} .game .paragraph").each(function( index ) {
+        $("#doc_{{doc.pk}} .game div").each(function( index ) {
           var section_id = $(this).attr('id'),
               section_text = $(this).text().trim();
 
@@ -31,9 +31,7 @@ block post-footer
 
         _.each( _.keys(sections), function(key) {
           var p = new Paragraph({'text': sections[key] });
-          p.parseText();
-          var view = new WordCollectionView({collection: p.get('words')});
-          YPet[key].show( view );
+          YPet[key].show( new WordCollectionView({collection: p.get('words')}) );
         });
 
       });

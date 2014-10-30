@@ -48,21 +48,28 @@ block post-footer
       var draw_dashbaord = function(data) {
         var canvas = d3.select('#dashboard');
 
-        var max_doc_size = _.max(_.map(data, function(item) { return item.documents.length; }));
+        var available_quests = _.filter(data, function(item) { return item.enabled && !item.completed });
+        var max_doc_size = _.max(_.map(available_quests, function(item) { return item.documents.length; }));
+        var completion_size = _.map(available_quests, function(item) { return item.completions; });
 
         var document_pool = d3.scale.linear()
           .domain([0, max_doc_size])
           .range([0, 100]);
 
+        var completion_scale = d3.scale.linear()
+          .domain([_.min(completion_size), _.max(completion_size)])
+          .range(['#00CCFF', '#E64C66']);
+
         var determine_status_icon = function(d) {
           if(!d.enabled) { return 'ban-circle'; }
-          return 'ok-circle';
+          if(d.completed) { return 'star' }
+          return 'star-empty';
         };
 
         var template = _.template("
         <div class='row'>
           <div class='col-xs-12 text-center'>
-            <% if(d.enabled) { %>
+            <% if(d.enabled && !d.completed) { %>
               <p><strong><a href='/quest/<%- d.id %>/'><%- d.name %></a></strong></p>
             <% } else { %>
               <p class='muted'><%- d.name %></p>
@@ -72,11 +79,15 @@ block post-footer
 
         <div class='row'>
           <div class='col-xs-12 text-center'>
-            <span class='glyphicon glyphicon-<%- status %>'></span>
+            <% if(d.enabled && !d.completed) { %>
+              <span class='glyphicon glyphicon-<%- status %>' style='color: <%- completions %>;'></span>
+            <% } else { %>
+              <span class='glyphicon glyphicon-<%- status %> muted'></span>
+            <% } %>
           </div>
         </div>
 
-        <% if(d.enabled) { %>
+        <% if(d.enabled && !d.completed) { %>
         <div class='row'>
           <div class='col-xs-12'>
             <div class='progress'>
@@ -105,18 +116,21 @@ block post-footer
             return template({
               'd': d,
               'document_pool': document_pool(d.documents.length),
-              'status': determine_status_icon(d)
+              'status': determine_status_icon(d),
+              'completions': completion_scale(d.completions),
             });
           });
         quest.transition().attr(attrs);
         quest.exit().remove();
-
       };
 
-      $.ajax({
-        'type': 'GET',
-        'url': '/quest/api/read/',
-        'success': function(data) {
-          draw_dashbaord(data);
-        }
-      });
+      var ajax_settings = {
+          'type': 'GET',
+          'url': '/quest/api/read/',
+          'success': function(data) {
+            draw_dashbaord(data);
+          }
+        };
+
+      /* setInterval(function () { $.ajax(ajax_settings); }, 3000); */
+      $.ajax(ajax_settings);

@@ -103,3 +103,20 @@ a.close-btn {
   margin-top: 0px;
   margin-bottom: 0px;
 }
+
+.quest-guide .doc-item-col.active h4 {
+  color: #7F3CFF;
+  border-bottom: 4px solid #7F3CFF;
+}
+.quest-guide .doc-item-col.muted h4 {
+  color: #f8f8f8;
+}
+#dashboard p {
+}
+#dashboard span.glyphicon {
+  font-size: 32px;
+}
+#dashboard .muted,
+#dashboard span.glyphicon-ban-circle {
+  color: #777777;
+}

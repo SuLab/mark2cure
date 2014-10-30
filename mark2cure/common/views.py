@@ -154,7 +154,7 @@ def training_two(request, step_num):
     if step_num == 'complete':
         if request.user.is_authenticated():
             task = Task.objects.get(pk=2)
-            UserQuestRelationship.objects.create(task=task, user=request.user)
+            UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
             request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
             badges.possibly_award_badge("points_awarded", user=request.user)
 
@@ -172,7 +172,7 @@ def training_two(request, step_num):
 def training_three(request):
     if request.method == 'POST':
         task = Task.objects.get(pk=3)
-        UserQuestRelationship.objects.create(task=task, user=request.user)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
         request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge("points_awarded", user=request.user)
         badges.possibly_award_badge("skill_awarded", user=request.user, level=4)
@@ -214,7 +214,14 @@ def quest_list(request):
 @login_required
 def quest_read(request, quest_num):
     task = get_object_or_404(Task, pk=quest_num)
-    documents = task.documents.all()[:4]
+    documents = task.documents.all()
+
+    if request.method == 'POST':
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+        return redirect('mark2cure.common.views.dashboard')
 
     return render_to_response('common/quest.jade',
                               {'task': task,
