@@ -19,7 +19,7 @@ class QuestSerializer(serializers.ModelSerializer):
 
     enabled = serializers.SerializerMethodField('get_enabled_status')
     completed = serializers.SerializerMethodField('get_completed_status')
-    completions = serializers.SerializerMethodField('get_completion_status')
+    submissions = serializers.SerializerMethodField('get_submissions_status')
 
     def get_enabled_status(self, task):
         return self.profile.highest_level('skill').level >= task.requires_qualification
@@ -27,13 +27,13 @@ class QuestSerializer(serializers.ModelSerializer):
     def get_completed_status(self, task):
         return UserQuestRelationship.objects.filter(task=task, user=self.user, completed=True).exists()
 
-    def get_completion_status(self, task):
-        return randrange(10)
+    def get_submissions_status(self, task):
+        return UserQuestRelationship.objects.filter(task=task, completed=True).count()
 
     class Meta:
         model = Task
         fields = ('id', 'name', 'documents', 'points',
                   'requires_qualification', 'provides_qualification',
                   'meta_url', 'enabled', 'completed',
-                  'completions')
+                  'completions', 'submissions')
 

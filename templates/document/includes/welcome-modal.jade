@@ -1,0 +1,16 @@
+#dashboardWelcomeModal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button(type="button", data-dismiss="modal").close
+          span(aria-hidden="true") &times;
+          span.sr-only Close
+        h4#myModalLabel.modal-title.text-center Welcome to the Dashboard
+
+      .modal-body
+        h3.text-center Congratulations, you've completed training!
+        p.text-center This is your dashbaord, it shows available quests you can go on to get started.
+
+      .modal-footer
+        button(type="button", data-dismiss="modal").btn.btn-default Close
+

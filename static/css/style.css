@@ -104,6 +104,15 @@ a.close-btn {
   margin-bottom: 0px;
 }
 
+#dashboard .quest {
+  height: 90px;
+}
+
+.quest-guide .doc-item-col h4 {
+  font-size: 30px;
+  line-height: 22px;
+}
+
 .quest-guide .doc-item-col.active h4 {
   color: #7F3CFF;
   border-bottom: 4px solid #7F3CFF;

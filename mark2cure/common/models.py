@@ -87,12 +87,13 @@ class Task(models.Model):
     )
     kind = models.CharField(max_length=1, choices=KIND_CHOICES, default=QUEST)
 
+    completions = models.IntegerField(default=10)
     documents = models.ManyToManyField(Document, through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
     points = models.IntegerField(max_length=6, blank=True, default=50)
 
-    requires_qualification = models.IntegerField(max_length=6)
-    provides_qualification = models.IntegerField(max_length=6)
+    requires_qualification = models.IntegerField(max_length=6, blank=True, null=True)
+    provides_qualification = models.IntegerField(max_length=6, blank=True, null=True)
     meta_url = models.CharField(max_length=200, null=True, blank=True)
 
     updated = models.DateTimeField(auto_now=True)
@@ -114,9 +115,6 @@ class UserQuestRelationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    #class Meta():
-    #    auto_created=True
-
     def __unicode__(self):
         return u'User Quest Relationship'
 
@@ -129,9 +127,6 @@ class DocumentQuestRelationship(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
-    #class Meta():
-    #    auto_created=True
 
     def __unicode__(self):
         return u'Document Quest Relationship'

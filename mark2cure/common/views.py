@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.messages import get_messages
+from django.contrib import messages
 
 from django.http import HttpResponse
 from django.conf import settings
@@ -176,6 +178,8 @@ def training_three(request):
         request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge("points_awarded", user=request.user)
         badges.possibly_award_badge("skill_awarded", user=request.user, level=4)
+        messages.success(request, 'dashboard-unlock-success')
+
         return redirect('mark2cure.common.views.dashboard')
 
     else:
@@ -197,9 +201,16 @@ def dashboard(request):
         setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification)
         setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists())
 
+    welcome = False
+    storage = get_messages(request)
+    for message in storage:
+        if message.message == 'dashboard-unlock-success':
+            welcome = True
+
     return render_to_response('common/dashboard.jade',
                               {'posts': posts,
                                'tasks': tasks,
+                               'welcome': welcome,
                                'profile': profile},
                               context_instance=RequestContext(request))
 

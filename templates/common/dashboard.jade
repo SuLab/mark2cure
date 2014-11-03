@@ -15,88 +15,55 @@ block content
           .col-xs-12.text-center
             h2.quest Loading...
 
-  .container.head-space
-    .row
-      .col-md-12.line
-      .col-md-12
-        p.line-text.text-center Details
-      .col-md-10.col-md-offset-1
-        .row
-          .col-md-10.col-md-offset-1
-            p Mark2Cure aims to speed up progress in biomedical research by applying the collective intelligence of users just like you! By "marking" docus, you help to annotate biomedical research literature, allowing researchers to gather information...
-        .row
-          .col-md-10.col-md-offset-1
-            h3 I'm here because:
-            p #{profile.motivation}
-
-  .container.head-space
-    .row
-      .col-md-12.line
-      .col-md-12
-        p.line-text.text-center News
-      .col-md-10.col-md-offset-1
-        - for post in posts
-          .row
-            .col-md-12
-              h4 #{post.title}
-              p #{post.excerpt}
-
+  include document/includes/welcome-modal
 
 block post-footer
     #fb-root
+    - if welcome
+      script.
+        $('#dashboardWelcomeModal').modal('show');
+
     script.
       var draw_dashbaord = function(data) {
+        $('#dashboard').html('');
         var canvas = d3.select('#dashboard');
 
         var available_quests = _.filter(data, function(item) { return item.enabled && !item.completed });
-        var max_doc_size = _.max(_.map(available_quests, function(item) { return item.documents.length; }));
         var completion_size = _.map(available_quests, function(item) { return item.completions; });
-
-        var document_pool = d3.scale.linear()
-          .domain([0, max_doc_size])
-          .range([0, 100]);
 
         var completion_scale = d3.scale.linear()
           .domain([_.min(completion_size), _.max(completion_size)])
           .range(['#00CCFF', '#E64C66']);
 
-        var determine_status_icon = function(d) {
-          if(!d.enabled) { return 'ban-circle'; }
-          if(d.completed) { return 'star' }
-          return 'star-empty';
-        };
-
         var template = _.template("
         <div class='row'>
           <div class='col-xs-12 text-center'>
+
             <% if(d.enabled && !d.completed) { %>
-              <p><strong><a href='/quest/<%- d.id %>/'><%- d.name %></a></strong></p>
-            <% } else { %>
-              <p class='muted'><%- d.name %></p>
+              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/'><%- d.id %></a></strong></p>
             <% } %>
+
+            <% if(d.enabled && d.completed) { %>
+              <span class='glyphicon glyphicon-ok'></span>
+            <% } %>
+
+            <% if(!d.enabled) { %>
+              <span class='glyphicon glyphicon-ban-circle muted'></span>
+            <% } %>
+
           </div>
         </div>
 
-        <div class='row'>
-          <div class='col-xs-12 text-center'>
-            <% if(d.enabled && !d.completed) { %>
-              <span class='glyphicon glyphicon-<%- status %>' style='color: <%- completions %>;'></span>
-            <% } else { %>
-              <span class='glyphicon glyphicon-<%- status %> muted'></span>
-            <% } %>
-          </div>
-        </div>
-
-        <% if(d.enabled && !d.completed) { %>
-        <div class='row'>
-          <div class='col-xs-12'>
-            <div class='progress'>
-              <div class='progress-bar' role='progressbar' aria-valuenow='<%- document_pool %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- document_pool %>%;'>
-                <span><%- d.documents.length %> Documents</span>
+        <% if(d.enabled) { %>
+          <div class='row'>
+            <div class='col-xs-12'>
+              <div class='progress'>
+                <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
+                  <span><%- d.submissions %> Documents</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         <% } %>
           ");
 
@@ -108,16 +75,14 @@ block post-footer
         var quest = canvas.selectAll('.quest').remove();
         var quest = canvas.selectAll('.quest').data(data);
 
-
         quest.enter().append('div')
           .attr(attrs)
           .style(styles)
-          .html(function(d) {
+          .html(function(d, i) {
             return template({
               'd': d,
-              'document_pool': document_pool(d.documents.length),
-              'status': determine_status_icon(d),
-              'completions': completion_scale(d.completions),
+              'progress': (d.submissions/d.completions)*100,
+              'completions_scale': completion_scale(d.completions),
             });
           });
         quest.transition().attr(attrs);
@@ -125,12 +90,10 @@ block post-footer
       };
 
       var ajax_settings = {
-          'type': 'GET',
-          'url': '/quest/api/read/',
-          'success': function(data) {
-            draw_dashbaord(data);
-          }
-        };
+        'type': 'GET',
+        'url': '/quest/api/read/',
+        'success': function(data) { draw_dashbaord(data); }
+      };
 
       /* setInterval(function () { $.ajax(ajax_settings); }, 3000); */
       $.ajax(ajax_settings);

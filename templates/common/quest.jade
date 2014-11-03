@@ -5,7 +5,7 @@ extends base
 
 block header
   - with headerMessage=task.name
-    include includes/header
+    include includes/header-quest
 
 block content
   .container-fluid
@@ -14,7 +14,7 @@ block content
         .row.quest-guide
           - for doc in documents
             div(data-doc="{{doc.pk}}").doc-item-col.col-sm-1.text-center
-              h4 #{doc.pk}
+              h4 &#8226;
 
   #insert
 

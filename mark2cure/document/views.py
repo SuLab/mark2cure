@@ -15,28 +15,9 @@ from mark2cure.document.serializers import TopUserFromViewsSerializer, Annotatio
 from rest_framework import viewsets, generics
 
 
-@login_required
-def list(request, page_num=1):
-    doc_list = Document.objects.all()
-    paginator = Paginator(doc_list, 25)
-
-    try:
-        docs = paginator.page(page_num)
-    except PageNotAnInteger:
-        docs = paginator.page(1)
-    except EmptyPage:
-        docs = paginator.page(paginator.num_pages)
-
-    return render_to_response('document/list.jade',
-                              {'docs': docs},
-                              context_instance=RequestContext(request))
-
-
 '''
   Views for completing the Concept Recognition task
 '''
-
-
 @login_required
 def identify_annotations(request, doc_id, treat_as_gm=False):
     # If they're attempting to view or work on the document
@@ -68,7 +49,6 @@ def identify_annotations(request, doc_id, treat_as_gm=False):
                               context_instance=RequestContext(request))
 
 
-
 @login_required
 @require_http_methods(['POST'])
 def identify_annotations_submit(request, doc_id, section_id):
@@ -77,11 +57,11 @@ def identify_annotations_submit(request, doc_id, section_id):
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
     section = get_object_or_404(Section, pk=section_id)
-    # Save this as not complete until they all complete
     view = section.update_view(request.user, 'cr', False)
 
     form = AnnotationForm(request.POST)
     if form.is_valid():
+
         ann = form.save(commit=False)
         ann.view = view
         ann.save()
@@ -174,22 +154,6 @@ def identify_annotations_results(request, doc_id):
             context_instance=RequestContext(request))
 
 
-@require_http_methods(['POST'])
-@login_required
-def comment_document(request, doc_id):
-    doc = get_object_or_404(Document, pk=doc_id)
-
-    form = CommentForm(request.POST)
-    if form.is_valid():
-        refute = form.save(commit=False)
-        refute.document = doc
-        refute.user = request.user
-        refute.save()
-        return HttpResponse('Success')
-
-    return HttpResponse('Unauthorized', status=401)
-
-
 '''
   Utility views for general document controls
 '''
@@ -208,40 +172,6 @@ def submit(request, doc_id):
     else:
         doc.update_views(request.user, 'cr', True)
         return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
-
-
-@login_required
-@require_http_methods(['POST'])
-def next(request, doc_id):
-    '''
-      If the user if submitting results for a document an document and sections
-    '''
-    # doc = get_object_or_404(Document, pk=doc_id)
-    task_type = request.POST.get('task_type')
-    doc = Document.objects.get_random_document()
-
-    if task_type == 'concept-recognition':
-        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
-
-    elif task_type == 'validate-concepts':
-        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
-    elif task_type == 'identify-concepts':
-        return redirect('mark2cure.document.views.identify_concepts', doc.pk)
-    else:
-        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
-
-
-@login_required
-@require_http_methods(['POST'])
-def create(request):
-    '''
-      Takes the document_id from POST and directs the
-      user to that pubmed document, downloading it if nessesary
-    '''
-    form = DocumentForm(request.POST)
-    if form.is_valid():
-        doc = create_from_pubmed_id(request.POST.get('document_id'))
-        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
 
 
 class TopUserViewSet(generics.ListAPIView):
@@ -264,5 +194,4 @@ class AnnotationViewSet(generics.ListAPIView):
         section = get_object_or_404(Section, pk=section_id)
         user = get_object_or_404(User, pk=user_id)
         annotations = section.latest_annotations(user=user)
-        # print 'User ', user_id, ' Annotations: ', annotations
         return annotations

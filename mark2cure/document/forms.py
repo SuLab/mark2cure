@@ -10,17 +10,9 @@ class DocumentForm(forms.ModelForm):
 
 
 class AnnotationForm(forms.ModelForm):
-
-    '''
-    def __init__(self, *args, **kwargs):
-        self.view = kwargs.pop('view')
-        super(AnnotationForm, self).__init__(*args, **kwargs)
-        self.fields['view_id'].initial = self.view.pk
-    '''
-
     class Meta:
         model = Annotation
-        fields = ['kind', 'text', 'start']
+        fields = ['text', 'start']
 
 
 class CommentForm(forms.ModelForm):
