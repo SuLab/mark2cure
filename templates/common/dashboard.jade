@@ -38,23 +38,23 @@ block post-footer
         var template = _.template("
         <div class='row'>
           <div class='col-xs-12 text-center'>
+            <% if(d.progress.completed) { %>
+              <span>&#8226;</span>
 
-            <% if(d.enabled && !d.completed) { %>
-              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/'><%- d.id %></a></strong></p>
-            <% } %>
-
-            <% if(d.enabled && d.completed) { %>
+            <% } else if (d.user.completed) { %>
               <span class='glyphicon glyphicon-ok'></span>
-            <% } %>
 
-            <% if(!d.enabled) { %>
+            <% } else if (!d.user.enabled) { %>
               <span class='glyphicon glyphicon-ban-circle muted'></span>
-            <% } %>
 
+            <% } else { %>
+              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/'><%- d.id %></a></strong></p>
+
+            <% } %>
           </div>
         </div>
 
-        <% if(d.enabled) { %>
+        <% if(d.user.enabled) { %>
           <div class='row'>
             <div class='col-xs-12'>
               <div class='progress'>
