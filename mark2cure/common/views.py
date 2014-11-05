@@ -105,7 +105,7 @@ def training_one(request, step_num):
 
     if step_num == 5:
         header1 = "Sometimes different diseases are discussed. Mark all the diseases below."
-        header2 = "Remember to mark disease conjunction as spans and to mark different diseases separately."
+        header2 = "Remember to mark disease conjunctions as spans and to mark different diseases separately."
         paragraph = "Of the 20 patients , 10 patients were also diagnosed with heart disease or rheumatoid arthritis ."
         answers = [{'text': 'heart disease', 'start': 58}, {'text': 'rheumatoid arthritis', 'start': 75}];
 
