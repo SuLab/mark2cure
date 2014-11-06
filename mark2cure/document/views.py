@@ -35,11 +35,6 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
       just means that during the community consensus we don't include their own reults
       to compare against
     '''
-
-    # Make sure there is an abstract to annotate
-    if sections.filter(kind='a').count() is 0:
-        return redirect('mark2cure.document.views.validate_concepts', doc.pk)
-
     user_profile.user_agent = request.META['HTTP_USER_AGENT']
     user_profile.player_ip = request.META['REMOTE_ADDR']
     user_profile.save()
@@ -61,16 +56,20 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
     task = get_object_or_404(Task, pk=task_id)
+    document = get_object_or_404(Document, pk=doc_id)
     section = get_object_or_404(Section, pk=section_id)
-    view = section.update_view(request.user, 'cr', False)
 
-    form = AnnotationForm(request.POST)
-    if form.is_valid():
+    user_quest_rel_views = task.userquestrelationship_set.get(user=request.user).views
+    view = user_quest_rel_views.filter(section=section, completed=False).first()
 
-        ann = form.save(commit=False)
-        ann.view = view
-        ann.save()
-        return HttpResponse(200)
+    if view:
+        form = AnnotationForm(request.POST)
+        if form.is_valid():
+            ann = form.save(commit=False)
+            ann.view = view
+            ann.save()
+            return HttpResponse(200)
+
     return HttpResponse(500)
 
 
@@ -86,8 +85,11 @@ def identify_annotations_results(request, task_id, doc_id):
     user = request.user
     user_profile = user.userprofile
 
-    if not doc.is_complete(user, user_profile, sections):
-        return redirect('mark2cure.document.views.identify_annotations', doc.pk)
+    user_quest_rel_views = task.userquestrelationship_set.get(user=user).views
+
+    # (TODO) Validate the number of required views for this document, etc...
+    if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
+        return redirect('mark2cure.document.views.identify_annotations', task.pk, doc.pk)
 
     for section in sections:
         setattr(section, 'words', section.resultwords(user))
@@ -178,11 +180,11 @@ def submit(request, task_id, doc_id):
     task_type = request.POST.get('task_type')
 
     if task_type == 'concept-recognition':
-        doc.update_views(request.user, 'cr', True)
-        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
+        task.complete_views(doc, request.user)
+        return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
     else:
-        doc.update_views(request.user, 'cr', True)
-        return redirect('mark2cure.document.views.identify_annotations_results', doc.pk)
+        task.complete_views(doc, request.user)
+        return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
 
 
 class TopUserViewSet(generics.ListAPIView):

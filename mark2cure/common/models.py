@@ -112,6 +112,13 @@ class Task(models.Model):
                 view = View.objects.create(section=sec, user=user)
                 user_quest_rel_views.add(view)
 
+    def complete_views(self, document, user):
+        user_quest_rel_views = self.userquestrelationship_set.get(user=user).views
+
+        for view in user_quest_rel_views.filter(section__document=document).all():
+            # (TODO) Validate (require 1+ ann for example?) before allowing completion
+            view.completed = True
+            view.save()
 
     def __unicode__(self):
         return self.name

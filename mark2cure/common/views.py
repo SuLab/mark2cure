@@ -230,7 +230,6 @@ def quest_read(request, quest_num):
     # Documents for this quest the user hasn't
     # already done, randomized
     documents = list(task.documents.all())
-    print len(documents)
 
     for document in documents:
         task.create_views(document, request.user)

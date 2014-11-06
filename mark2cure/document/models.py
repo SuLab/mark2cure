@@ -33,11 +33,6 @@ class Document(models.Model):
         # (TODO) Change so that documents can be golden or normal cases, don't tie to the exisitance of a user's annotations
         return Annotation.objects.filter(view__user__username='goldenmaster', view__section__document = self).exists()
 
-    def is_complete(self, user, user_profile, sections, task_type='cr'):
-        # Stick w/ Views b/c the Activity results haven't been logged yet
-        query = View.objects.filter(user=user, completed=True, task_type=task_type, section__document=self)
-        return True if query.count() >= len(sections) else False
-
     def latest_views(self, user, task_type='cr', completed=True):
         return View.objects.filter(user=user, task_type=task_type, completed=completed, section__document=self)[:2]
 

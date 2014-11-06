@@ -50,7 +50,7 @@ $('#quest-submit').on('click', function(evt) {
     /* Iterate over each of the paragraphs or annotatable sections on the page */
     _.each(sections, function(section_id) {
       var annotations = YPet[section_id].currentView.collection.parentDocument.get('annotations').toJSON(),
-          url = '/document/'+ document_id +'/section/'+ section_id +'/annotation/create/';
+          url = '/document/'+ task_id +'/'+ document_id +'/section/'+ section_id +'/annotation/create/';
       ann_counter += annotations.length;
 
       var csrf = $document.find('input[name="csrfmiddlewaretoken"]').val();
