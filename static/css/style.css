@@ -108,6 +108,10 @@ a.close-btn {
   height: 90px;
 }
 
+.quest-guide .doc-item-col {
+  height: 40px;
+}
+
 .quest-guide .doc-item-col h4 {
   font-size: 30px;
   line-height: 22px;

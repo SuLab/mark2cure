@@ -102,12 +102,25 @@ class Task(models.Model):
     def total_points(self):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
 
+    def create_views(self, document, user):
+        user_quest_rel_views = self.userquestrelationship_set.get(user=user).views
+
+        #if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
+        if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
+
+            for sec in document.available_sections():
+                view = View.objects.create(section=sec, user=user)
+                user_quest_rel_views.add(view)
+
+
     def __unicode__(self):
         return self.name
 
 class UserQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
     user = models.ForeignKey(User)
+
+    views = models.ManyToManyField(View)
 
     completed = models.BooleanField(default=False, blank=True)
     score = models.IntegerField(max_length=7, blank=True, default=5)
@@ -123,7 +136,6 @@ class DocumentQuestRelationship(models.Model):
     document = models.ForeignKey(Document)
 
     points = models.IntegerField(max_length=7, blank=True, default=5)
-    views = models.ManyToManyField(View)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

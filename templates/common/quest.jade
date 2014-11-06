@@ -13,7 +13,7 @@ block content
       .col-md-10.col-md-offset-1
         .row.quest-guide
           - for doc in documents
-            div(data-doc="{{doc.pk}}").doc-item-col.col-sm-1.text-center
+            div(data-doc="{{doc.pk}}").doc-item-col.col-xs-2.col-sm-1.text-center
               h4 &#8226;
 
   #insert
@@ -33,10 +33,12 @@ block content
 block post-footer
   script(src='#{STATIC_URL}js/quest-app.js')
   script.
+    var task_id = #{ task.id };
+
     $('.doc-item-col').map(function() { return $(this).data('doc'); }).each(function(i, v) {
 
       var ajax_settings = {
-        url: '/document/'+v+'/',
+        url: '/document/'+ task_id +'/'+v+'/',
         type: 'GET',
         dataType: 'html',
         success: function(data) {

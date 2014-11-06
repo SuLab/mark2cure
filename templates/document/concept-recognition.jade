@@ -1,7 +1,7 @@
 block content
   div(id="doc_{{doc.pk}}", data-doc="{{doc.pk}}", style="display:none;").container.document
     div(style="display:none;")
-      form(method="post", action="/document/{{doc.pk}}/submit/")
+      form(method="post", action="/document/{{task.pk}}/{{doc.pk}}/submit/")
         {% csrf_token %}
         input(type="hidden", name="task_type", value="concept-recognition")
 

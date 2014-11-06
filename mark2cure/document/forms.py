@@ -1,6 +1,6 @@
 from django import forms
 
-from mark2cure.document.models import Document, Annotation, Comment
+from mark2cure.document.models import Document, Annotation
 
 
 class DocumentForm(forms.ModelForm):
@@ -13,10 +13,4 @@ class AnnotationForm(forms.ModelForm):
     class Meta:
         model = Annotation
         fields = ['text', 'start']
-
-
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['message']
 

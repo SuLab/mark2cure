@@ -8,7 +8,9 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 
 from mark2cure.document.models import Document, View, Section
-from mark2cure.document.forms import DocumentForm, AnnotationForm, CommentForm
+from mark2cure.common.models import Task
+
+from mark2cure.document.forms import DocumentForm, AnnotationForm
 from mark2cure.document.utils import generate_results, create_from_pubmed_id
 from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer
 
@@ -19,9 +21,11 @@ from rest_framework import viewsets, generics
   Views for completing the Concept Recognition task
 '''
 @login_required
-def identify_annotations(request, doc_id, treat_as_gm=False):
+def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
     # If they're attempting to view or work on the document
+    task = get_object_or_404(Task, pk=task_id)
     doc = get_object_or_404(Document, pk=doc_id)
+
     sections = doc.available_sections()
     user = request.user
     user_profile = user.userprofile
@@ -36,13 +40,13 @@ def identify_annotations(request, doc_id, treat_as_gm=False):
     if sections.filter(kind='a').count() is 0:
         return redirect('mark2cure.document.views.validate_concepts', doc.pk)
 
-    doc.create_views(user, 'cr')
     user_profile.user_agent = request.META['HTTP_USER_AGENT']
     user_profile.player_ip = request.META['REMOTE_ADDR']
     user_profile.save()
 
     return render_to_response('document/concept-recognition.jade',
-                              { 'doc': doc,
+                              { 'task': task,
+                                'doc': doc,
                                 'sections': sections,
                                 'user_profile': user_profile,
                                 'task_type': 'concept-recognition' },
@@ -51,11 +55,12 @@ def identify_annotations(request, doc_id, treat_as_gm=False):
 
 @login_required
 @require_http_methods(['POST'])
-def identify_annotations_submit(request, doc_id, section_id):
+def identify_annotations_submit(request, task_id, doc_id, section_id):
     '''
       This is broken out because there can be many submissions per document
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
+    task = get_object_or_404(Task, pk=task_id)
     section = get_object_or_404(Section, pk=section_id)
     view = section.update_view(request.user, 'cr', False)
 
@@ -70,11 +75,13 @@ def identify_annotations_submit(request, doc_id, section_id):
 
 
 @login_required
-def identify_annotations_results(request, doc_id):
+def identify_annotations_results(request, task_id, doc_id):
     '''
       After a document has been submitted, show the results and handle score keeping details
     '''
+    task = get_object_or_404(Task, pk=task_id)
     doc = get_object_or_404(Document, pk=doc_id)
+
     sections = doc.available_sections()
     user = request.user
     user_profile = user.userprofile
@@ -116,7 +123,8 @@ def identify_annotations_results(request, doc_id):
         user_profile.save()
 
         return render_to_response('document/concept-recognition-results-gold.jade',
-            { 'doc': doc,
+            { 'task': task,
+              'doc': doc,
               'user_profile': user_profile,
               'sections': sections,
               'results': results,
@@ -132,7 +140,8 @@ def identify_annotations_results(request, doc_id):
         #user_profile.save()
 
         return render_to_response('document/concept-recognition-results-community.jade',
-            { 'doc': doc,
+            { 'task': task,
+              'doc': doc,
               'user_profile': user_profile,
               'sections': sections,
               'task_type': 'concept-recognition' },
@@ -159,11 +168,13 @@ def identify_annotations_results(request, doc_id):
 '''
 @login_required
 @require_http_methods(['POST'])
-def submit(request, doc_id):
+def submit(request, task_id, doc_id):
     '''
       If the user if submitting results for a document an document and sections
     '''
+    task = get_object_or_404(Task, pk=task_id)
     doc = get_object_or_404(Document, pk=doc_id)
+
     task_type = request.POST.get('task_type')
 
     if task_type == 'concept-recognition':

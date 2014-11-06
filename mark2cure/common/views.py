@@ -225,15 +225,27 @@ def quest_list(request):
 @login_required
 def quest_read(request, quest_num):
     task = get_object_or_404(Task, pk=quest_num)
-    documents = task.documents.all()
+    user_quest_rel, user_quest_rel_created = UserQuestRelationship.objects.get_or_create(task=task, user=request.user, completed=False)
 
-    if request.method == 'POST':
-        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+    # Documents for this quest the user hasn't
+    # already done, randomized
+    documents = list(task.documents.all())
+    print len(documents)
+
+    for document in documents:
+        task.create_views(document, request.user)
+
+    if request.method == 'POST' and user_quest_rel_created is False:
+        # (TODO) Add validation check here at some point
+        user_quest_rel.completed = True
+        user_quest_rel.save()
+
         request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge("points_awarded", user=request.user)
         badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
         return redirect('mark2cure.common.views.dashboard')
 
+    user_quest_rel.save()
     return render_to_response('common/quest.jade',
                               {'task': task,
                                'documents': documents},

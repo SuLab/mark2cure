@@ -33,26 +33,10 @@ class Document(models.Model):
         # (TODO) Change so that documents can be golden or normal cases, don't tie to the exisitance of a user's annotations
         return Annotation.objects.filter(view__user__username='goldenmaster', view__section__document = self).exists()
 
-    def create_views(self, user, task_type, completed=False):
-        '''
-          We never want to 'recycle' a View, always make a new one, even if there
-          are currently 'open' / uncompleted ones from the same doc
-        '''
-        for sec in self.available_sections():
-            view = View(task_type=task_type, section=sec, user=user)
-            view.completed = completed
-            view.save()
-
     def is_complete(self, user, user_profile, sections, task_type='cr'):
         # Stick w/ Views b/c the Activity results haven't been logged yet
         query = View.objects.filter(user=user, completed=True, task_type=task_type, section__document=self)
         return True if query.count() >= len(sections) else False
-
-    def update_views(self, user, task_type, completed=False):
-        for sec in self.available_sections():
-            view = View.objects.filter(user=user, task_type=task_type, section=sec).latest()
-            view.completed = completed
-            view.save()
 
     def latest_views(self, user, task_type='cr', completed=True):
         return View.objects.filter(user=user, task_type=task_type, completed=completed, section__document=self)[:2]
@@ -149,10 +133,6 @@ class Section(models.Model):
         else:
           return self.text
 
-    class Meta:
-        get_latest_by = 'updated'
-
-
 TASK_TYPE_CHOICE = (
   ('cr', 'Concept Recognition'),
   ('cn', 'Concept Normalization'),
@@ -162,9 +142,6 @@ TASK_TYPE_CHOICE = (
 )
 
 class View(models.Model):
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default=False, blank=True)
 
@@ -174,51 +151,6 @@ class View(models.Model):
     def __unicode__(self):
         return u'Doc:'+ str(self.section.document.pk) +', Sec:'+ str(self.section.pk) +' by '+ self.user.username
 
-    class Meta:
-        get_latest_by = 'updated'
-        ordering = ('-updated',)
-
-
-class Refute(models.Model):
-    '''
-      I ended up putting this into a separate model after careful thought:
-       - There may be multiple types of refutes in the future
-       - Simple query for # Refutes per section
-       - Separate update/create timestamps, makes a difference if we add
-       a `resolved` boolean in the future
-    '''
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-    message = models.TextField(blank=True)
-    view = models.ForeignKey(View)
-
-    def __unicode__(self):
-        return '{0} {1}'.format(self.message, self.view)
-
-    class Meta:
-        get_latest_by = 'updated'
-
-
-class Comment(models.Model):
-    '''
-      Refutes without dedicated sections
-    '''
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    message = models.TextField(blank=True)
-
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
-    document = models.ForeignKey(Document)
-    user = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return u'{0} {1} {2}'.format(self.message, self.document, self.user)
-
-    class Meta:
-        get_latest_by = 'updated'
-
-
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
       ('e', 'Entities'),
@@ -227,7 +159,7 @@ class Annotation(models.Model):
       ('t', 'Triggers'),
       ('e', 'Events'),
     )
-    kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False)
+    kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
 
     # Disease, Gene, Protein, et cetera...
     type = models.CharField(max_length=40, blank=True, null=True, default='disease')

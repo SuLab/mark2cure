@@ -59,7 +59,7 @@ block post-footer
             <div class='col-xs-12'>
               <div class='progress'>
                 <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
-                  <span><%- d.submissions %> Documents</span>
+                  <span><%- d.progress.current %> Documents</span>
                 </div>
               </div>
             </div>
@@ -81,7 +81,7 @@ block post-footer
           .html(function(d, i) {
             return template({
               'd': d,
-              'progress': (d.submissions/d.completions)*100,
+              'progress': (d.progress.current/d.progress.required)*100,
               'completions_scale': completion_scale(d.completions),
             });
           });

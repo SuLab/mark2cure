@@ -66,7 +66,7 @@ block post-footer
           //-- Add the other community memebers annotations
           $.ajax({
             type: 'GET',
-            url: '/document/'+ document_id +'/section/'+ section_id +'/user/'+ user_id +'/annotations/?format=json',
+            url: '/document/'+ task_id +'/'+ document_id +'/section/'+ section_id +'/user/'+ user_id +'/annotations/?format=json',
             cache: false,
             success: function(data) {
 
@@ -143,7 +143,8 @@ block post-footer
         $.each($sections, function(idx, i) {
           var section = $(this);
           var $words = section.find('span');
-          var document_id = #{ doc.pk }
+          var document_id = #{ doc.pk };
+          var task_id = #{ task.pk };
           var section_id = +section.parent().attr('id');
 
           //-- Add the current users recently submitted annotations
@@ -167,14 +168,14 @@ block post-footer
           //-- Add the other community memebers annotations
           $.ajax({
             type: 'GET',
-            url: '/document/'+ document_id +'/section/'+ section_id +'/results/top/?format=json',
+            url: '/document/'+ task_id +'/'+ document_id +'/section/'+ section_id +'/results/top/?format=json',
             cache: false,
             async: false,
             success: function(data) {
               if(idx == 0) { generate_legend(data); }
 
               _.each(data, function(item, i) {
-                handle_annotations(document_id, section_id, item.id, i);
+                handle_annotations(task_id, document_id, section_id, item.id, i);
               });
             },
           });

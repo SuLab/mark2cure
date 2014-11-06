@@ -58,12 +58,6 @@ block content
             h2.text-center
               | {% widthratio results.score.2 1 100 %}
 
-        p.text-center
-          a(data-toggle="modal", data-target="#comment", href="#")
-            | Comment
-        - with modalMsg="Was there a problem with our answers?"
-            include includes/comment
-
 
     - for section in sections
         .row
