@@ -13,8 +13,14 @@ from django.contrib.auth import authenticate, login
 from mark2cure.account.models import UserProfile
 from mark2cure.account.forms import UserForm, UserProfileForm
 
+from rest_framework import viewsets, generics
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+
 from mark2cure.common.models import Task, UserQuestRelationship
 from brabeion import badges
+from brabeion.models import BadgeAward
 
 import datetime
 import os
@@ -44,6 +50,19 @@ def settings(request):
              'user_profile': user.profile,
              'user_profile_form': profileForm},
               context_instance=RequestContext(request))
+
+
+@api_view(['GET'])
+@login_required
+def user_points(request):
+    points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
+    skill_badge =  BadgeAward.objects.filter(user=request.user, slug='skill').last()
+
+    return Response({
+        'points': request.user.userprofile.rating_score,
+        'points_level': points_badge.name,
+        'skill_level': skill_badge.name
+    })
 
 
 def create(request):

@@ -28,6 +28,9 @@ urlpatterns += patterns(
     url(r'^$', r'settings'),
     url(r'^settings/$', r'settings'),
 
+    # REST Framework
+    url(r'^points/$', r'user_points'),
+
     url(r'^create/$', r'create'),
 
     url(r'^newsletter/subscribe/$', r'newsletter_subscribe'),

@@ -227,12 +227,15 @@ def quest_read(request, quest_num):
     task = get_object_or_404(Task, pk=quest_num)
     user_quest_rel, user_quest_rel_created = UserQuestRelationship.objects.get_or_create(task=task, user=request.user, completed=False)
 
-    # Documents for this quest the user hasn't
-    # already done, randomized
-    documents = list(task.documents.all())
+    if user_quest_rel_created:
+        documents = list(task.documents.all())
+        for document in documents:
+            task.create_views(document, request.user)
+    else:
+        task_doc_ids_completed = list(set(user_quest_rel.views.filter(completed=True).values_list('section__document', flat=True)))
+        documents = list(task.documents.exclude(pk__in=task_doc_ids_completed).all())
 
-    for document in documents:
-        task.create_views(document, request.user)
+    random.shuffle(documents)
 
     if request.method == 'POST' and user_quest_rel_created is False:
         # (TODO) Add validation check here at some point

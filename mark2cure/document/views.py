@@ -16,6 +16,8 @@ from mark2cure.document.serializers import TopUserFromViewsSerializer, Annotatio
 
 from rest_framework import viewsets, generics
 
+from brabeion import badges
+import os
 
 '''
   Views for completing the Concept Recognition task
@@ -181,9 +183,17 @@ def submit(request, task_id, doc_id):
 
     if task_type == 'concept-recognition':
         task.complete_views(doc, request.user)
+        doc_quest_rel = task.documentquestrelationship_set.get(document=doc)
+        request.user.profile.rating.add(score=doc_quest_rel.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+
         return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
     else:
         task.complete_views(doc, request.user)
+        doc_quest_rel = task.documentquestrelationship_set.get(document=doc)
+        request.user.profile.rating.add(score=doc_quest_rel.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+
         return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
 
 
