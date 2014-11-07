@@ -8,6 +8,26 @@ var activate_tabs = function(doc_id) {
   $('#doc_'+doc_id).fadeIn();
 };
 
+var $el = document.querySelector('#score');
+od = new Odometer({
+  el: $el,
+  value: $el.innerHTML,
+  format: '(,ddd)',
+  theme: 'minimal'
+});
+
+var update_score = function() {
+    var ajax_settings = {
+      url: '/account/points/',
+      type: 'GET',
+      dataType: 'json',
+      success: function(data) {
+        od.update(data.points);
+      }
+    };
+    $.ajax(ajax_settings);
+};
+
 $('#quest-submit').on('click', function(evt) {
   /* Options:
    * 1. Submit Doc
@@ -92,6 +112,7 @@ $('#quest-submit').on('click', function(evt) {
           $pag_tab = $('.pagination li[data-doc='+document_id+']');
           $pag_tab.addClass('disabled');
           $pag_tab.next().addClass('active').trigger('click');
+          update_score();
         }
       });
 
