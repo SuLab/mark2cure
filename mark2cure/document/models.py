@@ -29,21 +29,6 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
 
-    def has_golden(self):
-        # (TODO) Change so that documents can be golden or normal cases, don't tie to the exisitance of a user's annotations
-        return Annotation.objects.filter(view__user__username='goldenmaster', view__section__document = self).exists()
-
-    def latest_views(self, user, task_type='cr', completed=True):
-        return View.objects.filter(user=user, task_type=task_type, completed=completed, section__document=self)[:2]
-
-    def latest_annotations(self, user=None):
-        if user is None:
-            user = User.objects.get(username='goldenmaster')
-            return Annotation.objects.filter(view__section__document=self, view__task_type='cr', kind='e', view__user=user).order_by('start')
-        else:
-            user_views = self.latest_views(user)
-            return Annotation.objects.filter(view__pk__in=[view.pk for view in user_views]).order_by('start')
-
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
@@ -66,22 +51,7 @@ class Section(models.Model):
 
     document = models.ForeignKey(Document)
 
-
-    def latest_view(self, user, task_type='cr', completed=True):
-        return View.objects.filter(user=user, task_type=task_type, completed=completed, section=self).first()
-
-
-    def latest_annotations(self, user = None):
-        if user is None:
-            user = User.objects.get(username = 'goldenmaster')
-            return Annotation.objects.filter(view__section=self, view__task_type='cr', kind='e', view__user=user).order_by('start')
-        else:
-            # (TODO) Scope to section only
-            user_view = self.latest_view(user)
-            return Annotation.objects.filter(view__pk = user_view.pk).order_by('start')
-
-
-    def resultwords(self, user):
+    def resultwords(self, user_view, gm_view):
         # Gather words and positions from the text
         words_index = WhitespaceTokenizer().span_tokenize(self.text)
         words_text = WhitespaceTokenizer().tokenize(self.text)
@@ -92,7 +62,8 @@ class Section(models.Model):
         words = [w + (0, None, None, False,) for w in words]
 
         # Gather other annotations from GM and users for this section
-        gm_anns = self.latest_annotations().values_list('pk', 'start', 'text')
+        gm_anns = Annotation.objects.filter(view=gm_view).values_list('pk', 'start', 'text')
+
         # Build the running counter of times a word was annotated
         for gm_pk, start, text in gm_anns:
           length = len(text)
@@ -104,8 +75,8 @@ class Section(models.Model):
               counter += 1
               words[idx] = (word[0], word[1], counter, gm_pk, word[3], word[4])
 
+        user_anns = Annotation.objects.filter(view=user_view).values_list('pk', 'start', 'text')
 
-        user_anns = self.latest_annotations(user).values_list('pk', 'start', 'text')
         # Build the running counter of times a word was annotated
         for user_pk, start, text in user_anns:
           length = len(text)

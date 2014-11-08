@@ -93,57 +93,34 @@ def identify_annotations_results(request, task_id, doc_id):
     if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
         return redirect('mark2cure.document.views.identify_annotations', task.pk, doc.pk)
 
-    for section in sections:
-        setattr(section, 'words', section.resultwords(user))
-        setattr(section, 'user_annotations', section.latest_annotations(user))
+    # views_pks = task.userquestrelationship_set.get(user=user,completed=True).views.filter(section__pk__in=[s.pk for s in sections],completed=True).values_list('pk', flat=True)
+    # Annotation.objects.filter(view__pk__in=views_pks).all()
+    # for section in sections:
+    #     view = task.userquestrelationship_set.get(user=user,completed=True).views.get(section=section,completed=True)
+    #     setattr(section, 'user_annotations', Annotation.objects.filter(view=view).all())
 
     '''
       1) It's a GM doc with GM annotations used to score
-      2) It has community contributions (from this experiment) for context
+      2) It has community contributions (from this experiment) for context,
+         only 1 is presented
       3) It's a novel document annotated by the worker
     '''
-    #activity = Activity(user=user, document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None)
-    #previous_activities_available = Activity.objects.filter(document=doc, task_type='cr', experiment=settings.EXPERIMENT if user_profile.mturk else None).exclude(user=user, user__userprofile__ignore=True).exists()
-    previous_activities_available = False
 
-    # Can't use a Document as a Golden Master if no GM annotations exist
-    # (TODO) resolve the gm stuff
-    #if doc.has_golden() and user_profile.current_gm:
-    if doc.has_golden():
-        results = {}
-        score, true_positives, false_positives, false_negatives = generate_results(doc, user)
-        results['score'] = score
-        results['true_positives'] = true_positives
-        results['false_positives'] = false_positives
-        results['false_negatives'] = false_negatives
+    quest_relationships = task.userquestrelationship_set.exclude(user=user)
+    if quest_relationships.exists():
+        gm_user = User.objects.get(username='goldenmaster')
+        if quest_relationships.filter(user=gm_user).exists():
+            # Show the GM Annotations
+            other_view = user_quest_rel_views.get(section=section, completed=True)
 
-        activity.submission_type = 'gm'
-        activity.precsion = score[0]
-        activity.recall = score[1]
-        activity.f_score = score[2]
-        activity.save()
+        else:
+            # Pick a random User's Annotations
+            other_view = user_quest_rel_views.get(section=section, completed=True)
 
-        user_profile.current_gm = False
-        user_profile.save()
+        for section in sections:
+            setattr(section, 'words', section.resultwords(user_view, other_view))
 
-        return render_to_response('document/concept-recognition-results-gold.jade',
-            { 'task': task,
-              'doc': doc,
-              'user_profile': user_profile,
-              'sections': sections,
-              'results': results,
-              'task_type': 'concept-recognition' },
-            context_instance=RequestContext(request))
-
-
-    elif previous_activities_available:
-        activity.submission_type = 'cc'
-        activity.save()
-
-        #user_profile.current_gm = False
-        #user_profile.save()
-
-        return render_to_response('document/concept-recognition-results-community.jade',
+        return render_to_response('document/concept-recognition-results-partner.jade',
             { 'task': task,
               'doc': doc,
               'user_profile': user_profile,
@@ -151,16 +128,14 @@ def identify_annotations_results(request, task_id, doc_id):
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
 
-
-    elif not previous_activities_available:
-        #activity.submission_type = 'na'
-        #activity.save()
-
-        #user_profile.current_gm = False
-        #user_profile.save()
+    else:
+        for section in sections:
+            user_view = user_quest_rel_views.get(section=section, completed=True)
+            setattr(section, 'words', section.resultwords(user_view, False))
 
         return render_to_response('document/concept-recognition-results-not-available.jade',
-            { 'doc': doc,
+            { 'task': task,
+              'doc': doc,
               'user_profile': user_profile,
               'sections': sections,
               'task_type': 'concept-recognition' },

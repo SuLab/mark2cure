@@ -4,61 +4,6 @@ extends base
 
 block content
 
-    .row
-      .col-sm-8.col-sm-offset-2
-        .alert.alert-success
-          h3.text-center
-            | You've hit an evaluation case.
-
-    - if results.score.2 < .51
-      .row
-        .col-sm-10.col-sm-offset-1
-          .alert.alert-warning
-            p.lead.text-center
-              | Please note, if you repeatedly score poorly you'll be 
-              strong
-                | soft
-              | blocked :(
-
-    .row
-      .col-sm-4.col-sm-offset-1
-        .panel.panel-default
-          .panel-heading.text-center
-            | You missed
-
-          ul.list-group
-              - if results.false_negatives.count == 0
-                li.list-group-item.text-muted.no-annotations.text-center
-                  | None
-              - for ann in results.false_negatives
-                li(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").list-group-item.annotation-finder
-                  | #{ ann.text }
-
-
-      .col-sm-4
-        .panel.panel-default
-          .panel-heading.text-center
-            | You wrongly marked
-
-          ul.list-group
-              - if results.false_positives.count == 0
-                li.list-group-item.text-muted.no-annotations.text-center
-                  | None
-
-              - for ann in results.false_positives
-                li(data-section="{{ ann.view.section.pk }}", data-text="{{ ann.text }}", data-start="{{ ann.start }}").list-group-item.annotation-finder
-                  | #{ ann.text }
-
-
-      .col-sm-2
-        .panel.panel-default
-          .panel-heading.text-center
-            | Score
-          .panel-body.f-score
-            h2.text-center
-              | {% widthratio results.score.2 1 100 %}
-
-
     - for section in sections
         .row
           .col-sm-10.col-sm-offset-1
@@ -92,66 +37,6 @@ block content
                 div(style="height: 16px; width: 16px; background-color: #0cf")
               td
                 | Your annotations
-
-            // tr
-              td
-                div(style="height: 16px; width: 16px; background-color: #80E680")
-              td
-                | Correct annotations
-
-      - if False
-        .col-sm-4
-          .panel.panel-default
-            .panel-heading.text-center
-              | Your Submissions
-
-            table.table.table-striped
-              thead
-                tr
-                  th
-                    | Section
-                  th
-                    | Text
-                  th
-                    | Position
-
-              tbody
-                - for section in sections
-                  - for ann in section.user_annotations
-                    tr
-                      td
-                        | #{ section.get_kind_display }
-                      td
-                        | #{ ann.text }
-                      td
-                        | #{ ann.start }
-
-        .col-sm-4
-          .panel.panel-default
-            .panel-heading.text-center
-              | Answer Key
-
-            table.table.table-striped
-              thead
-                tr
-                  th
-                    | Section
-                  th
-                    | Text
-                  th
-                    | Position
-
-              tbody
-                - for section in sections
-                  - for ann in section.latest_annotations
-                    tr
-                      td
-                        | #{ section.get_kind_display }
-                      td
-                        | #{ ann.text }
-                      td
-                        | #{ ann.start }
-
 
     include document/controls-results
 
