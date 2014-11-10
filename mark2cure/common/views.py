@@ -237,7 +237,7 @@ def quest_read(request, quest_num):
 
     random.shuffle(documents)
 
-    if request.method == 'POST' and user_quest_rel_created is False:
+    if (request.method == 'POST' and user_quest_rel_created is False) or len(documents) == 0:
         # (TODO) Add validation check here at some point
         user_quest_rel.completed = True
         user_quest_rel.save()

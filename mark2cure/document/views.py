@@ -18,6 +18,7 @@ from rest_framework import viewsets, generics
 
 from brabeion import badges
 import os
+import random
 
 '''
   Views for completing the Concept Recognition task
@@ -106,19 +107,28 @@ def identify_annotations_results(request, task_id, doc_id):
       3) It's a novel document annotated by the worker
     '''
 
-    quest_relationships = task.userquestrelationship_set.exclude(user=user)
-    if quest_relationships.exists():
+    others_quest_relationships = task.userquestrelationship_set.exclude(user=user)
+    if others_quest_relationships.exists():
+
         gm_user = User.objects.get(username='goldenmaster')
-        if quest_relationships.filter(user=gm_user).exists():
+        if others_quest_relationships.filter(user=gm_user).exists():
             # Show the GM Annotations
-            other_view = user_quest_rel_views.get(section=section, completed=True)
+            for section in sections:
+                user_view = user_quest_rel_views.get(section=section, completed=True)
+                gm_view = others_quest_relationships.get(user=gm_user).views.get(section=section, completed=True)
+                setattr(section, 'words', section.resultwords(user_view, gm_view))
 
         else:
-            # Pick a random User's Annotations
-            other_view = user_quest_rel_views.get(section=section, completed=True)
+            previous_users = others_quest_relationships.exclude(user=gm_user).values_list('user', flat=True)
+            random.shuffle(previous_users)
+            selected_user = previous_users[0]
 
-        for section in sections:
-            setattr(section, 'words', section.resultwords(user_view, other_view))
+            # Pick a random User's Annotations
+            for section in sections:
+                user_view = user_quest_rel_views.get(section=section, completed=True)
+                gm_view = others_quest_relationships.get(user=selected_user).views.get(section=section, completed=True)
+                setattr(section, 'words', section.resultwords(user_view, gm_view))
+
 
         return render_to_response('document/concept-recognition-results-partner.jade',
             { 'task': task,

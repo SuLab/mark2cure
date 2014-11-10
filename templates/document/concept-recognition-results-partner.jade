@@ -1,118 +1,38 @@
-extends base
-
 - load humanize
 
 block content
 
-    - for section in sections
-        .row
-          .col-sm-10.col-sm-offset-1
-            h4
-              | #{ section.get_kind_display }
+  - for section in sections
+      .row
 
-          .col-sm-10.col-sm-offset-1.head-space.game
-            div(id="{{ section.pk }}").paragraph.results
-              p
-                - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
-                  span( data-counter="{{ counter }}",
-                        data-starti="{{ indexes.0 }}",
-                        data-stopi="{{ indexes.1 }}",
-                        data-gmannid="{{ gm_pk }}",
-                        data-uannid="{{ user_pk }}")
-                    | #{ text } 
+        .col-sm-10.col-sm-offset-1.head-space.game
+          div(id="{{ section.pk }}").paragraph.results
+            p.paragraph
+              - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
+                span( data-counter="{{ counter }}",
+                      data-starti="{{ indexes.0 }}",
+                      data-stopi="{{ indexes.1 }}",
+                      data-gmannid="{{ gm_pk }}",
+                      data-uannid="{{ user_pk }}")
+                  | #{ text } 
 
+  .row
+    .col-sm-3.col-sm-offset-1
+      table.table
+        tbody
+          tr
+            td
+              div(style="height: 16px; width: 16px; background-color: #00CC00")
+            td
+              | Correct annotations
 
-    .row
-      .col-sm-3.col-sm-offset-1
-        table.table
-          tbody
-            tr
-              td
-                div(style="height: 16px; width: 16px; background-color: #00CC00")
-              td
-                | Correct annotations
+          tr
+            td
+              div(style="height: 16px; width: 16px; background-color: #0cf")
+            td
+              | Your annotations
 
-            tr
-              td
-                div(style="height: 16px; width: 16px; background-color: #0cf")
-              td
-                | Your annotations
-
-    include document/controls-results
 
 block post-footer
-    - if user_profile.mturk
-      script.
-        $("#document_submit").submit(function(evt) {
-          evt.preventDefault();
-          evt.stopPropagation();
-
-          // If the document was completed forget the rest and submit the mturk ajax request to move the turker
-          $('#worker_submit').submit();
-        });
-
-
     script.
-        var $sections = $('div.paragraph p')
-
-        var score_color = d3.scale.linear()
-                            .domain([0, 1])
-                            .range(["red", "#80E680"]);
-        $('.f-score').css({ 'backgroundColor': score_color( #{results.score.2} ) });
-
-        $.each($sections, function() {
-          var section = $(this);
-          var $words = section.find('span')
-
-          var values = _.map($words, function(w) { return $(w).data('counter'); }),
-              max = _.max(values);
-
-          var color = d3.scale.linear()
-              .domain([0, max])
-              .range(["white", "yellow"]);
-
-          $.each($words, function(w) {
-            var word = $(this),
-                next_word = word.next(),
-                value = word.data('counter'),
-                next_word_value = next_word.data('counter'),
-
-                gm_ann = word.data('gmannid'),
-                next_word_gm_ann = next_word.data('gmannid'),
-
-                u_ann = word.data('uannid'),
-                next_word_u_ann = next_word.data('uannid');
-
-
-            if(gm_ann != "None") { word.addClass('golden'); }
-            if(u_ann != "None") { word.addClass('user_annotated'); }
-
-            if( gm_ann != "None" && gm_ann != next_word_gm_ann ) {
-              word.html( word.html().trim() );
-              word.addClass('neighbor_gm');
-
-              // Check if it messes up user anns
-              if( u_ann != "None" && u_ann == next_word_u_ann) {
-                var $putty = $("<p class='putty-rect user_annotated'> </p>").appendTo(section),
-                    position = word.position();
-                $putty.css({'top' : position.top, 'left' : position.left + word.width(), 'height': word.height() });
-              }
-
-            }
-
-            if( u_ann != "None" && u_ann != next_word_u_ann ) {
-              word.html( word.html().trim() );
-              word.addClass('neighbor_u');
-
-              // Check if it messes up GM anns
-              if( gm_ann != "None" && gm_ann == next_word_gm_ann) {
-                var $putty = $("<p class='putty-rect golden'> </p>").appendTo(section),
-                    position = word.position();
-                $putty.css({'top' : position.top + word.height(), 'left' : position.left + word.width(), 'height': '6px' });
-              }
-
-            }
-          });
-        });
-
-
+      drawUserWithGolden();

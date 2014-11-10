@@ -61,60 +61,6 @@ block content
 
 block post-footer
   script.
-    var drawGoldenUnderlines = function() {
-      var $sections = $('p.paragraph');
-
-      $.each($sections, function() {
-        var section = $(this);
-        var $words = section.find('span');
-
-        $.each($words, function(w) {
-          var word = $(this),
-              next_word = word.next(),
-
-              gm_ann = word.data('gmannid') || "None",
-              next_word_gm_ann = next_word.data('gmannid') || "None",
-
-              u_ann = word.data('uannid') || "None",
-              next_word_u_ann = next_word.data('uannid') || "None";
-
-          if(gm_ann != "None") { word.addClass('golden'); }
-          if(u_ann != "None") { word.addClass('user_annotated'); }
-
-          if( gm_ann != "None" && gm_ann != next_word_gm_ann ) {
-            word.html( word.html().trim() );
-            word.addClass('neighbor_gm');
-            word.css({'margin-right': '5px'});
-
-            /* Check if it messes up user anns */
-            if( u_ann != "None" && u_ann == next_word_u_ann) {
-              var $putty = $("<span class='putty-rect user_annotated'></span>").appendTo(section),
-                  section_offset = section.offset(),
-                  word_offset = word.offset(),
-                  word_pos = word.position();
-              $putty.css({'top' : word_pos.top, 'left' : word_pos.left + word.width() - 1, 'height': word.height() });
-            }
-
-          }
-
-          if( u_ann != "None" && u_ann != next_word_u_ann ) {
-            word.html( word.html().trim() );
-            word.addClass('neighbor_u');
-            word.css({'margin-right': '5px'});
-
-            /* Check if it messes up GM anns */
-            if( gm_ann != "None" && gm_ann == next_word_gm_ann) {
-              var $putty = $("<span class='putty-rect golden'></span>").appendTo(section),
-                  position = word.position();
-              $putty.css({'top' : position.top + word.height(), 'left' : position.left + word.width() - 1, 'height': '6px' });
-            }
-
-          }
-        });
-
-      });
-    };
-
     YPet.addInitializer(function(options) {
       YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
 
@@ -183,7 +129,7 @@ block post-footer
       $('#quest-2 p.paragraph span:nth(106)').data('gmannid', '5');
       $('#quest-2 p.paragraph span:nth(216)').data('gmannid', '6');
 
-      drawGoldenUnderlines();
+      drawUserWithGolden();
 
       /* Prep walk through */
       var intro = introJs();
