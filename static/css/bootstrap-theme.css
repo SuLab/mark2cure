@@ -436,7 +436,7 @@
 
 /* Custom */
 
-h1, h2, h3, h4, h5, h6, .navbar-brand {
+h1, h2, h3, h4, h5, h6, .navbar-brand, .navbar {
  font-family: 'Px Grotesk Light';
 }
 
@@ -452,8 +452,12 @@ h1 a:hover {
   background-color: #7F3CFF;
 }
 
-p a {
- color:
+.navbar-brand, .navbar p {
+ font-size: 14px;
+ text-transform: uppercase;
+}
+.navbar-brand, .navbar p a:hover {
+  cursor: pointer;
 }
 
 /*

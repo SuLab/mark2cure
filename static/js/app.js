@@ -52,6 +52,9 @@ var drawUserWithGolden = function() {
 };
 
 $(document).ready(function() {
+  $('#simple-instructions-open').click(function() {
+    $('#accordion').slideDown();
+  });
 
   $('.annotation-finder').mouseenter(function() {
     var $ann = $(this),

@@ -12,78 +12,62 @@ block header
 
 
 block content
-  #carousel-features(data-ride='carousel').carousel.slide
-    ol.carousel-indicators
-      li(data-target='#carousel-features', data-slide-to='0').active
-      li(data-target='#carousel-features', data-slide-to='1')
+  div(style="background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;").container-fluid
+    .row.head-space
+      .col-xs-10.col-xs-offset-1
+        .row
+          .col-md-6
+            .row.head-space
+              .col-md-6.col-md-offset-3
+                a(href='/training/basics/').btn.btn-default.btn-block.btn-lg Start Now
 
-    .carousel-inner
-      .item.active
-        img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
-        .container
-          .carousel-caption
-            h2 Scientific communication is broken.
-            p {% lorem 1 p %}
-            p {% lorem 20 w %}
+            .row.head-space
+              .col-md-8.col-md-offset-2
+                h3.text-center Already a contributer?
+              div(style="display:none;").col-md-8.col-md-offset-2
+                ul.list-inline.text-center
+                  li
+                    a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}")
+                      i.fa.fa-twitter.fa-2x
 
-      .item
-        img(src='http://www.puff.me.uk/ss/ZxPPz1xyOt9f9.png')
-        .container
-          .carousel-caption
-            h2 Scientific communication is broken. 2
-            p {% lorem 1 p %}
-            p {% lorem 20 w %}
+              .col-md-6.col-md-offset-3
+                - if form.errors
+                  p Your username and password didn't match. Please try again.
+                  #{form.errors}
 
-    a(href='#carousel-features', role='button', data-slide='prev').left.carousel-control
-      span.glyphicon.glyphicon-chevron-left
+                form(role='form', action='/account/login/', method='post').form-horizontal
+                  - csrf_token
+                  .form-group
+                    label(for='exampleInputEmail1') Username
+                    #{form.username|add_class:"form-control"|attr:"placeholder:Username"}
 
-    a(href='#carousel-features', role='button', data-slide='next').right.carousel-control
-      span.glyphicon.glyphicon-chevron-right
+                  .form-group
+                    label(for='exampleInputPassword1') Password
+                    #{form.password|add_class:"form-control"|attr:"placeholder:Password"}
 
-  .container.head-space
+                  .form-group
+                    p.pull-right
+                      a(href="/account/reset/") Forgot password?
+                    button(type='submit').btn.btn-default Login
+
+
+          .col-md-6
+            .row
+              .col-md-10.col-md-offset-1.well
+                h3.text-center What is Mark2Cure ?
+                p.lead The search for cures for all diseases is limited by the ability of scientists to consume and understand the rapidly expanding ocean of biomedical literature. The ability to read remains a uniquely human skill, so we need your help. Are you ready to start?
+
+  .container-fluid(style="height: 120px; background-color: #f1f1f1; display: none;")
+    .col-xs-12.text-center
+      h2 Scientific communication is broken.
+
+  .container-fluid.head-space
     .row
-      .col-md-6
+      .col-xs-8.col-xs-offset-2
         .row
-          .col-md-12
-            h3.text-center Get Started
-
-        .row
-          .col-md-8.col-md-offset-2
-            p.text-center The process only takes five minutes! Join an international community of citizen Scientists dedicated to making a difference.
-          .col-md-6.col-md-offset-3
-            a(href='/training/basics/').btn.btn-default.btn-block Start Now
-
-        .row.head-space
-          .col-md-8.col-md-offset-2
-            h3.text-center Already a contributer?
-          .col-md-8.col-md-offset-2
-            ul.list-inline.text-center
-              li
-                a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}")
-                  i.fa.fa-twitter.fa-2x
-
-          .col-md-8.col-md-offset-2
-            - if form.errors
-              p Your username and password didn't match. Please try again.
-              #{form.errors}
-
-            form(role='form', action='/account/login/', method='post').form-horizontal
-              - csrf_token
-              .form-group
-                label(for='exampleInputEmail1') Username
-                #{form.username|add_class:"form-control"|attr:"placeholder:Username"}
-
-              .form-group
-                label(for='exampleInputPassword1') Password
-                #{form.password|add_class:"form-control"|attr:"placeholder:Password"}
-
-              .form-group
-                p.pull-right
-                  a(href="/account/reset/") Forgot password?
-                button(type='submit').btn.btn-default Login
+          .col-md-6
+            h2 The ability to READ remains a uniquely human skill
+          .col-md-6
+            p.lead Scientists need your help. You can make it easier for scientists to find the information they need to discover cures faster.
 
 
-      .col-md-6
-        .row
-          .col-md-10.col-md-offset-1.well
-            p Mark2Cure empowers anyone who can read to make biomedical research literature more useful for researchers. Mark2Cure citizen scientists improve their ability to read and understand biomedical research abstracts while enabling researchers to more efficiently utilize biomedical research literature. Ultimately, Mark2Cure aims to annotate all biomedical research literature since certain diseases may be related to other diseases in unexpected ways. However, every ambitious project needs an attainable starting goal. For Mark2Cure, this goal is annotating rare genetic disease research literature. Historically, rare genetic disease researchers have relied heavily on patient communities and foundations to fund their work. Many of the discoveries on rare genetic diseases would not be possible without the highly active and extremely dedicated community of patients/parents of patients. Mark2Cure invites members of these communities to help researchers spend less time studying research literature, and more time finding a cure.

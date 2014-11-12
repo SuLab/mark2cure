@@ -36,11 +36,10 @@ def settings(request):
 
 
     if request.method == 'POST':
-        print ">>>", 'Settings POST', request.POST
         profileForm = UserProfileForm(request.POST, instance=user.profile)
-        print profileForm.is_valid(), profileForm.errors
         if profileForm.is_valid():
             profileForm.save()
+            return redirect('mark2cure.account.views.settings')
 
     profileForm = UserProfileForm(instance=user.profile)
     passwordChangeForm = PasswordChangeForm(user)

@@ -3,7 +3,7 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
     .row
       .col-sm-3
         h1
-          a(href='/') Mark2Cure
+          a(href='/index/') Mark2Cure
 
       .col-sm-6
         h2.text-center #{headerMessage}
@@ -15,6 +15,10 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
               .row
                 .col-xs-12
                   p {{user}}
+                .col-xs-12
+                  p
+                    a(data-toggle="modal", data-target="#instructionsModalSimple") Instructions
+
             .col-xs-6
               .row
                 .col-xs-12
@@ -31,3 +35,5 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
         span.icon-bar
         span.icon-bar
         span.icon-bar
+
+include document/includes/instructions-modal-simple

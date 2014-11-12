@@ -40,6 +40,7 @@
 /* =========================
         Utilities
 ========================= */
+.head-space-sm { margin-top: 10px; }
 .head-space { margin-top: 20px; }
 .head-space-xl { margin-top: 60px; }
 .head-space-xl-xl { margin-top: 100px; }
