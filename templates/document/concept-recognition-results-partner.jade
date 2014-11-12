@@ -2,9 +2,26 @@
 
 block content
 
+    .row.head-space
+      .col-sm-2.col-sm-offset-5
+        .panel.panel-default
+          .panel-heading.text-center Score
+          .panel-body.f-score
+            h2.text-center
+              | {% widthratio results.0.2 1.0 100 %}
+            p.text-center
+              small (How much you agreed with your partner)
+
+      #partner-info.col-sm-4
+        h3 Doc_G-man
+        h4 Level: Gold Master Marker
+        h5 "Be the change you wish to see in the world."
+
+
+
+
   - for section in sections
       .row
-
         .col-sm-10.col-sm-offset-1.head-space.game
           div(id="{{ section.pk }}").paragraph.results
             p.paragraph
@@ -24,7 +41,7 @@ block content
             td
               div(style="height: 16px; width: 16px; background-color: #00CC00")
             td
-              | Correct annotations
+              | Your partner's annotations
 
           tr
             td

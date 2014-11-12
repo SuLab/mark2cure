@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from mark2cure.document.models import Document, Section
+from mark2cure.document.models import Document, Section, Annotation
 
 from datetime import datetime
 from Bio import Entrez, Medline
@@ -31,7 +31,7 @@ def match_exact(gm_ann, user_anns):
     return False
 
 
-def generate_results(document, user):
+def generate_results(user_views, gm_views):
     '''
       This calculates the comparsion overlap between two arrays of dictionary terms
 
@@ -44,8 +44,8 @@ def generate_results(document, user):
      fn  *tn
 
     '''
-    gm_annotations = document.latest_annotations()
-    user_annotations = document.latest_annotations(user)
+    gm_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in gm_views])
+    user_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in user_views])
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 

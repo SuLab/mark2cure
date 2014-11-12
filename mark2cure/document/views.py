@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.db.models import Count
 
 from mark2cure.document.models import Document, View, Section
 from mark2cure.common.models import Task
@@ -108,33 +109,47 @@ def identify_annotations_results(request, task_id, doc_id):
     '''
 
     others_quest_relationships = task.userquestrelationship_set.exclude(user=user)
-    if others_quest_relationships.exists():
+    gm_user = User.objects.get(username='goldenmaster')
 
-        gm_user = User.objects.get(username='goldenmaster')
+    # Pick a random User's Annotations
+    previous_users = []
+    query = others_quest_relationships.exclude(user=gm_user)
+    for quest_relationship in query:
+        if quest_relationship.views.filter(section__document=doc, completed=True).exists():
+            previous_users.append(quest_relationship.user)
+
+    if others_quest_relationships.exists() and len(previous_users):
+        user_views = []
+        gm_views = []
         if others_quest_relationships.filter(user=gm_user).exists():
             # Show the GM Annotations
             for section in sections:
                 user_view = user_quest_rel_views.get(section=section, completed=True)
                 gm_view = others_quest_relationships.get(user=gm_user).views.get(section=section, completed=True)
+                user_views.append(user_view)
+                gm_views.append(gm_view)
                 setattr(section, 'words', section.resultwords(user_view, gm_view))
 
         else:
-            previous_users = others_quest_relationships.exclude(user=gm_user).values_list('user', flat=True)
             random.shuffle(previous_users)
             selected_user = previous_users[0]
+            print 'Selected User: ', selected_user
 
-            # Pick a random User's Annotations
             for section in sections:
                 user_view = user_quest_rel_views.get(section=section, completed=True)
                 gm_view = others_quest_relationships.get(user=selected_user).views.get(section=section, completed=True)
+                user_views.append(user_view)
+                gm_views.append(gm_view)
                 setattr(section, 'words', section.resultwords(user_view, gm_view))
 
 
+        results = generate_results(user_views, gm_views);
         return render_to_response('document/concept-recognition-results-partner.jade',
             { 'task': task,
               'doc': doc,
               'user_profile': user_profile,
               'sections': sections,
+              'results': results,
               'task_type': 'concept-recognition' },
             context_instance=RequestContext(request))
 
