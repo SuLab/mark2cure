@@ -16,8 +16,8 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
                 .col-xs-12
                   p {{user}}
                 .col-xs-12
-                  p
-                    a(data-toggle="modal", data-target="#instructionsModalSimple") Instructions
+                  p Score: <span id='score'>#{user.userprofile.rating_score}</span>
+
 
             .col-xs-6
               .row
@@ -35,5 +35,3 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
         span.icon-bar
         span.icon-bar
         span.icon-bar
-
-include document/includes/instructions-modal-simple

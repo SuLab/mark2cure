@@ -2,28 +2,26 @@
 
 block content
 
-    .row.head-space
-      .col-sm-2.col-sm-offset-5
-        .panel.panel-default
-          .panel-heading.text-center Score
-          .panel-body.f-score
-            h2.text-center
-              | {% widthratio results.0.2 1.0 100 %}
-            p.text-center
-              small (How much you agreed with your partner)
+  .row
+    .col-xs-8.col-xs-offset-2
+      .row.alert.alert-info.alert-sticky
+        #partner-info.col-sm-4
+          p(style='margin-bottom: 0px;')
+            small You were paired with:
+          h3(style='margin-top: 0px;') #{partner}
+          h4 Level: #{partner.userprofile.highest_level.name}
+          h5 #{partner.userprofile.quote}
 
-      #partner-info.col-sm-4
-        h3 Doc_G-man
-        h4 Level: Gold Master Marker
-        h5 "Be the change you wish to see in the world."
-
-
-
+        .col-xs-8
+          h2.text-center
+            | Earned
+            | <span id='doc-f'>{% widthratio results.0.2 1.0 1000 %}</span>
+            | points!
 
   - for section in sections
       .row
         .col-sm-10.col-sm-offset-1.head-space.game
-          div(id="{{ section.pk }}").paragraph.results
+          div(id="{{ section.pk }}").paragraph-box.results
             p.paragraph
               - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
                 span( data-counter="{{ counter }}",

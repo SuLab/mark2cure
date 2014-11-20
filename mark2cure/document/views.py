@@ -1,29 +1,29 @@
-from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.db.models import Count
 
-from mark2cure.document.models import Document, View, Section
+from mark2cure.document.models import Document, Section
 from mark2cure.common.models import Task
 
-from mark2cure.document.forms import DocumentForm, AnnotationForm
-from mark2cure.document.utils import generate_results, create_from_pubmed_id
-from mark2cure.document.serializers import TopUserFromViewsSerializer, AnnotationSerializer
+from mark2cure.document.forms import AnnotationForm
+from mark2cure.document.utils import generate_results
+from mark2cure.document.serializers import AnnotationSerializer
 
-from rest_framework import viewsets, generics
+from rest_framework import generics
 
 from brabeion import badges
 import os
 import random
 
+
 '''
   Views for completing the Concept Recognition task
 '''
+
+
 @login_required
 def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
     # If they're attempting to view or work on the document
@@ -48,7 +48,7 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
                                 'doc': doc,
                                 'sections': sections,
                                 'user_profile': user_profile,
-                                'task_type': 'concept-recognition' },
+                                'task_type': 'concept-recognition'},
                               context_instance=RequestContext(request))
 
 
@@ -60,7 +60,6 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
     task = get_object_or_404(Task, pk=task_id)
-    document = get_object_or_404(Document, pk=doc_id)
     section = get_object_or_404(Section, pk=section_id)
 
     user_quest_rel_views = task.userquestrelationship_set.get(user=request.user).views
@@ -110,6 +109,7 @@ def identify_annotations_results(request, task_id, doc_id):
 
     others_quest_relationships = task.userquestrelationship_set.exclude(user=user)
     gm_user = User.objects.get(username='goldenmaster')
+    selected_user = gm_user
 
     # Pick a random User's Annotations
     previous_users = []
@@ -137,20 +137,29 @@ def identify_annotations_results(request, task_id, doc_id):
 
             for section in sections:
                 user_view = user_quest_rel_views.get(section=section, completed=True)
-                gm_view = others_quest_relationships.get(user=selected_user).views.get(section=section, completed=True)
+
+                user_quest_rel = others_quest_relationships.filter(user=selected_user).first()
+                gm_view = user_quest_rel.views.get(section=section, completed=True)
+
                 user_views.append(user_view)
                 gm_views.append(gm_view)
                 setattr(section, 'words', section.resultwords(user_view, gm_view))
 
+        results = generate_results(user_views, gm_views)
 
-        results = generate_results(user_views, gm_views);
+        score = results[0][2] * 1000
+        if score > 0:
+            request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge('points_awarded', user=request.user)
+
         return render_to_response('document/concept-recognition-results-partner.jade',
             { 'task': task,
               'doc': doc,
               'user_profile': user_profile,
+              'partner': selected_user,
               'sections': sections,
               'results': results,
-              'task_type': 'concept-recognition' },
+              'task_type': 'concept-recognition'},
             context_instance=RequestContext(request))
 
     else:
@@ -158,18 +167,23 @@ def identify_annotations_results(request, task_id, doc_id):
             user_view = user_quest_rel_views.get(section=section, completed=True)
             setattr(section, 'words', section.resultwords(user_view, False))
 
+        request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge('points_awarded', user=request.user)
+
         return render_to_response('document/concept-recognition-results-not-available.jade',
             { 'task': task,
               'doc': doc,
               'user_profile': user_profile,
               'sections': sections,
-              'task_type': 'concept-recognition' },
+              'task_type': 'concept-recognition'},
             context_instance=RequestContext(request))
 
 
 '''
   Utility views for general document controls
 '''
+
+
 @login_required
 @require_http_methods(['POST'])
 def submit(request, task_id, doc_id):
@@ -183,28 +197,10 @@ def submit(request, task_id, doc_id):
 
     if task_type == 'concept-recognition':
         task.complete_views(doc, request.user)
-        doc_quest_rel = task.documentquestrelationship_set.get(document=doc)
-        request.user.profile.rating.add(score=doc_quest_rel.points, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge("points_awarded", user=request.user)
-
         return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
     else:
         task.complete_views(doc, request.user)
-        doc_quest_rel = task.documentquestrelationship_set.get(document=doc)
-        request.user.profile.rating.add(score=doc_quest_rel.points, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge("points_awarded", user=request.user)
-
         return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
-
-
-class TopUserViewSet(generics.ListAPIView):
-    serializer_class = TopUserFromViewsSerializer
-
-    def get_queryset(self):
-        doc_id = self.kwargs['doc_id']
-        top_users = View.objects.filter(task_type='cr', completed=True, section__document__id=doc_id, experiment=settings.EXPERIMENT if self.request.user.userprofile.mturk else None).exclude(user=self.request.user, user__userprofile__ignore=True).values('user')
-        top_users = [dict(y) for y in set(tuple(x.items()) for x in top_users)]
-        return top_users[:4]
 
 
 class AnnotationViewSet(generics.ListAPIView):

@@ -2,10 +2,12 @@
 <div class="alert alert-warning" role="alert">
 <div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
 <div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= help_message %></div></div>
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= instructions_link %></div></div>
 </div>
 </script>
 
 script.
+  var incorrect_counter = 0;
   var validate = function(needle, gold) {
     var all_match = true;
     _.each(gold, function(gold_item) {
@@ -57,6 +59,9 @@ script.
      */
     if( !_.filter(answers, function(obj) { return model_json.start == obj.start && model_json.text == obj.text; }).length ) {
       model_json['help_message'] = '';
+      model_json['instructions_link'] = '';
+      incorrect_counter++;
+
       /*
       * Overlaps (start or before) check
       */
@@ -83,16 +88,18 @@ script.
         model_json.help_message = "(Please check that your selection contains <strong>all</strong> required words)";
       }
 
+      if(incorrect_counter >= 3) { model_json.instructions_link = '<p class="lead">Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set.</a></p>'; }
+
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
         $(this).html(temp(model_json));
         $(this).fadeIn('fast');
       });
-
       model.destroy()
     } else {
-     $('#quest-alerts').fadeOut('fast');
-     validation_check(collection);
+      incorrect_counter = 0;
+      $('#quest-alerts').fadeOut('fast');
+      validation_check(collection);
     };
   });
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });

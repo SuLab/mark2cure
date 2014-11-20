@@ -1,6 +1,4 @@
 from django.db import models
-from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 from mark2cure.document.models import Document, View
 from django.contrib.auth.models import User
@@ -13,8 +11,8 @@ class SkillBadge(Badge):
     slug = "skill"
     levels = [
         "Basic",
-        "Disease Marking"
-        "Disease Advanced"
+        "Disease Marking",
+        "Disease Advanced",
         "Intermediate",
         "Proficient",
         "Advanced",
@@ -24,11 +22,12 @@ class SkillBadge(Badge):
         "skill_awarded",
     ]
     multiple = False
+
     def award(self, **state):
         user = state["user"]
         level = state.pop("level", None)
         current_highest = user.profile.highest_level(self.slug).level
-        if level and level == current_highest+2:
+        if level and level == current_highest + 2:
             return BadgeAwarded(level=level)
 
 
@@ -90,7 +89,7 @@ class Task(models.Model):
     completions = models.IntegerField(default=10)
     documents = models.ManyToManyField(Document, through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
-    points = models.IntegerField(max_length=6, blank=True, default=50)
+    points = models.IntegerField(max_length=6, blank=True, default=0)
 
     requires_qualification = models.IntegerField(max_length=6, blank=True, null=True)
     provides_qualification = models.IntegerField(max_length=6, blank=True, null=True)
@@ -104,8 +103,6 @@ class Task(models.Model):
 
     def create_views(self, document, user):
         user_quest_rel_views = self.userquestrelationship_set.get(user=user).views
-
-        #if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
         if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
 
             for sec in document.available_sections():
@@ -123,6 +120,7 @@ class Task(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class UserQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
     user = models.ForeignKey(User)
@@ -138,11 +136,12 @@ class UserQuestRelationship(models.Model):
     def __unicode__(self):
         return u'User Quest Relationship'
 
+
 class DocumentQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
     document = models.ForeignKey(Document)
 
-    points = models.IntegerField(max_length=7, blank=True, default=5)
+    points = models.IntegerField(max_length=7, blank=True, default=0)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

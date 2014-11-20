@@ -24,6 +24,5 @@ urlpatterns = patterns(
     url(r'^quest/api/read/$', r'quest_list'),
 
     url(r'^message/$', r'message'),
-    url(r'^profile-survey/$', r'profile_survey'),
     url(r'^survey/$', r'survey')
 )

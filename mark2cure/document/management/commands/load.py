@@ -32,7 +32,7 @@ class Command(BaseCommand):
             quest_id = 3
 
             while len(documents) > smallest_bin:
-                quest_size = int(random.uniform(smallest_bin,largest_bin))
+                quest_size = int(random.uniform(smallest_bin, largest_bin))
                 sel = documents[0:quest_size]
 
                 for i in sel: documents.remove(i)
@@ -54,7 +54,6 @@ class Command(BaseCommand):
                     for i in sel:
                         document = Document.objects.get(pk=i)
                         DocumentQuestRelationship.objects.create(task=task, document=document)
-
 
         else:
             with open('assets/datasets/{dataset}.txt'.format(dataset=dataset), 'r') as f:

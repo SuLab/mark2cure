@@ -1,14 +1,11 @@
 - if task.enabled
-  .list-group-item
-    h4.list-group-item-heading
+  div(data-requirement='#{task.requires_qualification}').list-group-item
+    h4.list-group-item-heading.text-center
       a(href="{{task.meta_url}}")
         #{task.name|safe}
 
-      | +#{task.points} Points
 - else
   .list-group-item.disabled
-    h4.list-group-item-heading
+    h4.list-group-item-heading.text-center
       #{task.name|safe}
-
-      | +#{task.points} Points
 

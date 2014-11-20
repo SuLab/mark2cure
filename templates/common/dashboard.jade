@@ -39,16 +39,16 @@ block post-footer
         <div class='row'>
           <div class='col-xs-12 text-center'>
             <% if(d.progress.completed) { %>
-              <span>&#8226;</span>
+              <span title='The community has completed this Quest.'>&#8226;</span>
 
             <% } else if (d.user.completed) { %>
-              <span class='glyphicon glyphicon-ok'></span>
+              <span class='glyphicon glyphicon-ok' title='You have completed this Quest.'></span>
 
             <% } else if (!d.user.enabled) { %>
-              <span class='glyphicon glyphicon-ban-circle muted'></span>
+              <span class='glyphicon glyphicon-ban-circle muted' title='This quest is not enabled.'></span>
 
             <% } else { %>
-              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/'><%- d.id %></a></strong></p>
+              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/' title='The Quest Name'><%- d.name %></a></strong></p>
 
             <% } %>
           </div>
@@ -56,7 +56,7 @@ block post-footer
 
         <% if(d.user.enabled) { %>
           <div class='row'>
-            <div class='col-xs-12'>
+            <div class='col-xs-12' title='This quest is <%- progress %>% complete.'>
               <div class='progress'>
                 <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
                   <span><%- d.progress.current %> Documents</span>
@@ -95,5 +95,5 @@ block post-footer
         'success': function(data) { draw_dashbaord(data); }
       };
 
-      /* setInterval(function () { $.ajax(ajax_settings); }, 3000); */
+      /* setInterval(function () { $.ajax(ajax_settings); }, ); */
       $.ajax(ajax_settings);

@@ -94,7 +94,7 @@ class UserProfile(models.Model):
             self.country.name == '': return False
         return True
 
-    def highest_level(self, slug):
+    def highest_level(self, slug='skill'):
         res =  BadgeAward.objects.filter(user=self.user, slug=slug).order_by('-level').first()
         if res:
             return res

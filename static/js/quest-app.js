@@ -46,6 +46,7 @@ $('#quest-submit').on('click', function(evt) {
   /* We prevent this or else Django gives broken pipe b/c we need to
   wait for the ajax submissions to close before reloading the page */
   evt.preventDefault();
+  window.scrollTo(0,0);
 
   if($document.find('.results').length) {
     var doc_ids = [];
@@ -53,7 +54,28 @@ $('#quest-submit').on('click', function(evt) {
 
     if( doc_ids.indexOf(document_id) == doc_ids.length-1) {
       /* Submit the Quest */
-      $('#quest-complete').submit();
+      var form = $('#quest-complete');
+      var data = {},
+        input;
+      $.each( form.find('input, textarea, select'), function() {
+        input = $(this);
+        data[ input.attr('name') ] = input.val();
+        input.val('')
+      });
+      var csrf = form.find('input[name="csrfmiddlewaretoken"]').val();
+      $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        dataType: 'html',
+        data: $.extend({'csrfmiddlewaretoken': csrf}, data),
+        cache: false,
+        async: false,
+        success: function(data) {
+          $document.html(data);
+          $('#quest-submit').hide();
+        }
+      });
+
     } else {
       /* Show the next Document */
       var next_id = doc_ids[ doc_ids.indexOf(document_id)+1 ];

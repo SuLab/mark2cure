@@ -1,16 +1,17 @@
 - load humanize
 
 block content
+
   .row
-    .col-sm-10.col-sm-offset-1.head-space
-      .alert.alert-success.alert-paragraph-box
+    .col-xs-8.col-xs-offset-2
+      .row.alert.alert-info.alert-sticky
         h2.text-center New Annotations!
         p.text-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
 
   - for section in sections
       .row
         .col-sm-10.col-sm-offset-1.head-space.game
-          div(id="{{ section.pk }}").results
+          div(id="{{ section.pk }}").results.paragraph-box
             p.paragraph
               - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
                 span( data-counter="{{ counter }}",
