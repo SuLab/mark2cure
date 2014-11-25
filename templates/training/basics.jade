@@ -59,17 +59,18 @@ block post-footer
 
       intro.start();
       var target = $('p.paragraph span:nth(0)').position();
-      $('.introjs-tooltip').animate({left: target.left+20});
+      var $tooltip = $('.introjs-tooltip');
+      var $arrow = $('.introjs-arrow');
+      $tooltip.animate({left: target.left+20});
+      $tooltip.css({'backgroundColor': '#E8DB47'});
+      $arrow.css({'borderTopColor': '#E8DB47'});
 
       intro.onchange(function() {
         switch (intro._currentStep)
         {
-          case 0:
-            break;
-
           case 1:
             var target = $('p.paragraph span:nth(19)').position();
-            $('.introjs-tooltip').animate({left: target.left+20});
+            $tooltip.animate({left: target.left+20});
 
             var collection = YPet['basics'].currentView.collection;
             collection.parentDocument.get('annotations').create({words: collection.where({'text': 'information'})});
@@ -77,14 +78,19 @@ block post-footer
 
           case 2:
             var target = $('p.paragraph span:nth(56)').position();
-            $('.introjs-tooltip').animate({left: target.left+20});
+            $tooltip.animate({left: target.left+20});
+            $arrow.css({'borderTopColor': 'transparent'});
+            $arrow.css({'borderBottomColor': '#E8DB47'});
             break;
 
           case 3:
             $('#next').attr('disabled', false);
+            $arrow.css({'borderBottomColor': 'transparent'});
+            $arrow.css({'borderLeftColor': '#E8DB47'});
             break;
         }
       });
+
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
         var model_json = model.toJSON();

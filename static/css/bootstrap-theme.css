@@ -256,6 +256,14 @@
 .alert {
 }
 
+.alert a:hover {
+  cursor: pointer;
+}
+
+.alert-training {
+
+}
+
 .alert-success {
 }
 
