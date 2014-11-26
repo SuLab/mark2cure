@@ -1,8 +1,11 @@
 <script id="alert-template" type="text/template">
-<div class="alert alert-warning" role="alert">
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class="lead">Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= help_message %></div></div>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><%= instructions_link %></div></div>
+<div class="alert alert-warning alert-training" role="alert">
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
+<% if (help_message) { %>
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= help_message %></p></div></div>
+<% }; if (instructions_link) { %>
+<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= instructions_link %></p></div></div>
+<% } %>
 </div>
 </script>
 
@@ -151,22 +154,22 @@ script.
     if( !_.filter(answers1, function(obj) { return model_json.start == obj.start && model_json.text == obj.text; }).length ) {
       model_json['help_message'] = '';
       model_json['instructions_link'] = '';
-
       incorrect_counter++;
+
       /*
       * Overlaps (start or before) check
       */
       if( _.filter(answers1, function(answer) {
         return  model_json.start < answer.start &&
                 _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
+        model_json.help_message = '(Please check that your selection <strong>only</strong> includes required terms)';
       }
 
       if( _.filter(answers1, function(answer) {
         return  model_json.start >= answer.start &&
                 model_json.start+model_json.text.length > answer.start+answer.text.length &&
                 _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "<p>(Please check that your selection <strong>only</strong> includes required terms)</p>";
+        model_json.help_message = '(Please check that your selection <strong>only</strong> includes required terms)';
       }
 
       /*
@@ -176,7 +179,7 @@ script.
         return  model_json.start >= answer.start &&
                 model_json.start+model_json.text.length <= answer.start+answer.text.length &&
                 _.str.include(answer.text, model_json.text); }).length ) {
-        model_json.help_message = "<p>(Please check that your selection contains <strong>all</strong> required words)</p>";
+        model_json.help_message = '(Please check that your selection contains <strong>all</strong> required words)';
       }
 
       var specific_message = check_common_mistakes(model_json.text);
@@ -184,7 +187,7 @@ script.
         model_json.help_message = specific_message;
       }
 
-      if(incorrect_counter >= 3) { model_json.instructions_link = '<p class="lead"><a data-toggle="modal" data-target="#instructionsModal">Instructions</a></p>'; }
+      if(incorrect_counter >= 3) { model_json.instructions_link = 'Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set</a>.'; }
 
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
@@ -222,14 +225,14 @@ script.
       if( _.filter(answers2, function(answer) {
         return  model_json.start < answer.start &&
                 _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "(Please check that your selection only includes required terms)";
+        model_json.help_message = '(Please check that your selection only includes required terms)';
       }
 
       if( _.filter(answers2, function(answer) {
         return  model_json.start >= answer.start &&
                 model_json.start+model_json.text.length > answer.start+answer.text.length &&
                 _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "(Please check that your selection only includes required terms)";
+        model_json.help_message = '(Please check that your selection only includes required terms)';
       }
 
       /*
@@ -239,14 +242,14 @@ script.
         return  model_json.start >= answer.start &&
                 model_json.start+model_json.text.length <= answer.start+answer.text.length &&
                 _.str.include(answer.text, model_json.text); }).length ) {
-        model_json.help_message = "(Please check that your selection contains all required words)";
+        model_json.help_message = '(Please check that your selection contains all required words)';
       }
 
       var specific_message = check_common_mistakes(model_json.text);
       if(specific_message.length) {
         model_json.help_message = specific_message;
       }
-      if(incorrect_counter >= 3) { model_json.instructions_link = '<p class="lead">Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set.</a></p>'; }
+      if(incorrect_counter >= 3) { model_json.instructions_link = 'Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set</a>.'; }
 
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {

@@ -17,6 +17,8 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
                   p {{user}}
                 .col-xs-12
                   p Score: <span id='score'>#{user.userprofile.rating_score}</span>
+                .col-xs-12
+                  p Level: #{user.userprofile.highest_level.name}
 
 
             .col-xs-6

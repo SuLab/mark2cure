@@ -28,6 +28,6 @@ block post-footer
   - if user.is_authenticated
       script.
         var level = #{user.userprofile.highest_level.level};
-        var $el = $('[data-requirement="'+ level +'"]');
+        var $el = $('[data-requirement="'+ level +'"] h4 a');
         $el.html('<span class="glyphicon glyphicon-play" aria-hidden="true" style="position: absolute; font-size: 26px; left: 10px; top: 10px; color: green;"></span>' + $el.html());
 

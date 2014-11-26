@@ -38,7 +38,9 @@ class Command(BaseCommand):
                 for i in sel: documents.remove(i)
                 print "Adding", len(sel), "to Quest:", quest_id
                 task = Task.objects.get(pk=quest_id)
-                for doc in task.documents.all(): task.documents.remove(doc)
+                for doc in task.documents.all():
+                    dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
+                    dqr.delete()
 
                 for i in sel:
                     document = Document.objects.get(pk=i)

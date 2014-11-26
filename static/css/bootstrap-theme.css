@@ -260,8 +260,13 @@
   cursor: pointer;
 }
 
-.alert-training {
+.alert-training p.lead {
+  margin-bottom: 0px;
+  color: black;
+}
 
+.alert-training a {
+  color: #7F3CFF;
 }
 
 .alert-success {

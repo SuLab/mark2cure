@@ -149,7 +149,7 @@ def training_one(request, step_num):
 
 @login_required
 def training_two(request, step_num):
-    if step_num == 'complete':
+    if step_num == 'feedback':
         if request.user.is_authenticated():
             task = Task.objects.get(pk=2)
             UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
@@ -157,7 +157,15 @@ def training_two(request, step_num):
             badges.possibly_award_badge("points_awarded", user=request.user)
 
         badges.possibly_award_badge("skill_awarded", user=request.user, level=3)
+        return render_to_response(
+            'training/intro-2/feedback.jade',
+            {'next_path': '/training/intro/2/step/complete/'},
+            context_instance=RequestContext(request))
+
+
+    if step_num == 'complete':
         return redirect('mark2cure.common.views.training_read')
+
 
     return render_to_response(
         'training/intro-2/step-{step_num}.jade'.format(step_num=step_num),
@@ -241,7 +249,7 @@ def quest_read(request, quest_num):
         badges.possibly_award_badge("points_awarded", user=request.user)
         badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
         return render_to_response('common/quest-feedback.jade',
-            {},
+            {'task': task},
             context_instance=RequestContext(request))
 
     user_quest_rel.save()

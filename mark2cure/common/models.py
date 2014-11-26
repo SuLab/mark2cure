@@ -86,7 +86,8 @@ class Task(models.Model):
     )
     kind = models.CharField(max_length=1, choices=KIND_CHOICES, default=QUEST)
 
-    completions = models.IntegerField(default=10)
+    # If no completions defined, allow infinity K value
+    completions = models.IntegerField(default=10, blank=True, null=True)
     documents = models.ManyToManyField(Document, through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
     points = models.IntegerField(max_length=6, blank=True, default=0)

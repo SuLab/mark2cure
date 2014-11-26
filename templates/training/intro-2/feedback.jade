@@ -1,7 +1,7 @@
 extends base
 
 block header
-  - with headerMessage='Training #1 Feedback'
+  - with headerMessage='Training #2 Feedback'
     include includes/header-anon
 
 
@@ -14,9 +14,9 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-center New skill acquired: Disease Marking
+        h2.text-center New skill acquired: Disease Advanced
       .col-xs-10.col-xs-offset-1
-        h2.text-center Points gained: <span id='score'>0</span>
+        h2.text-center Points gained: <span id='score'>1000</span>
 
     .row.head-space-xl
       .col-xs-4.col-xs-offset-4
@@ -26,7 +26,7 @@ block content
 block post-footer
   script(src='#{STATIC_URL}js/quest-app.js')
   script.
-    od.update(1000);
+    od.update(2000);
 
 
 
