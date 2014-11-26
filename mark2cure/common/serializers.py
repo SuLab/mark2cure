@@ -26,7 +26,7 @@ class QuestSerializer(serializers.ModelSerializer):
 
     def get_progress_status(self, task):
         current_submissions_count = UserQuestRelationship.objects.filter(task=task, completed=True).count()
-        return {'required': task.completions,
+        return {'required': task.completions if task.completions else 10000,
                 'current': current_submissions_count,
                 'completed': task.completions == current_submissions_count}
 
