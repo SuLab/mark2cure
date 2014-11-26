@@ -94,12 +94,6 @@ def identify_annotations_results(request, task_id, doc_id):
     if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
         return redirect('mark2cure.document.views.identify_annotations', task.pk, doc.pk)
 
-    # views_pks = task.userquestrelationship_set.get(user=user,completed=True).views.filter(section__pk__in=[s.pk for s in sections],completed=True).values_list('pk', flat=True)
-    # Annotation.objects.filter(view__pk__in=views_pks).all()
-    # for section in sections:
-    #     view = task.userquestrelationship_set.get(user=user,completed=True).views.get(section=section,completed=True)
-    #     setattr(section, 'user_annotations', Annotation.objects.filter(view=view).all())
-
     '''
       1) It's a GM doc with GM annotations used to score
       2) It has community contributions (from this experiment) for context,
@@ -107,22 +101,29 @@ def identify_annotations_results(request, task_id, doc_id):
       3) It's a novel document annotated by the worker
     '''
 
+    # Select all (**including uncompleted**) other user started quests
+    # that have been completed
     others_quest_relationships = task.userquestrelationship_set.exclude(user=user)
-    gm_user = User.objects.get(username='goldenmaster')
+    gm_user = User.objects.get(username='Doc_G-man')
     selected_user = gm_user
 
-    # Pick a random User's Annotations
+    # Gather users from completed documents
+    # that may come from uncompleted quests
     previous_users = []
     query = others_quest_relationships.exclude(user=gm_user)
     for quest_relationship in query:
         if quest_relationship.views.filter(section__document=doc, completed=True).exists():
             previous_users.append(quest_relationship.user)
 
-    if others_quest_relationships.exists() and len(previous_users):
+    # Other results exist if other people have at least viewed
+    # the quest and we know other users have at least submitted
+    # results for this particular document
+    if others_quest_relationships.exists() and len(previous_users) or others_quest_relationships.filter(user=gm_user).exists():
         user_views = []
         gm_views = []
         if others_quest_relationships.filter(user=gm_user).exists():
-            # Show the GM Annotations
+            # There is an "expert's" annotations (GM) so
+            # show those as the partner's
             for section in sections:
                 user_view = user_quest_rel_views.get(section=section, completed=True)
                 gm_view = others_quest_relationships.get(user=gm_user).views.get(section=section, completed=True)
@@ -131,22 +132,22 @@ def identify_annotations_results(request, task_id, doc_id):
                 setattr(section, 'words', section.resultwords(user_view, gm_view))
 
         else:
+            # No expert around so select a previous user at random
             random.shuffle(previous_users)
             selected_user = previous_users[0]
-            print 'Selected User: ', selected_user
 
             for section in sections:
                 user_view = user_quest_rel_views.get(section=section, completed=True)
-
                 user_quest_rel = others_quest_relationships.filter(user=selected_user).first()
                 gm_view = user_quest_rel.views.get(section=section, completed=True)
-
                 user_views.append(user_view)
                 gm_views.append(gm_view)
                 setattr(section, 'words', section.resultwords(user_view, gm_view))
 
+        # Take views from whoever the partner was
+        # and use those to calculate the score (and assign
+        # / reward as appropriate
         results = generate_results(user_views, gm_views)
-
         score = results[0][2] * 1000
         if score > 0:
             request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
@@ -163,6 +164,9 @@ def identify_annotations_results(request, task_id, doc_id):
             context_instance=RequestContext(request))
 
     else:
+        # No other work has ever been done on this apparently
+        # so we reward the user and let them know they were
+        # first via a different template / bonus points
         for section in sections:
             user_view = user_quest_rel_views.get(section=section, completed=True)
             setattr(section, 'words', section.resultwords(user_view, False))
