@@ -38,6 +38,102 @@
 }
 
 /* =========================
+        Landing
+========================= */
+
+.landing-container.img-focus {
+  border-top: 4px solid #f0f0ed;
+  border-bottom: 4px solid #f0f0ed;
+  background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed;
+  min-height: 300px;
+}
+
+.btn-start {
+  margin-bottom: 12px;
+
+  font-family: 'Px Grotesk Light Italic';
+  font-weight: bold;
+
+  text-align: center;
+  font-size: 2em;
+  border-radius: 0px;
+
+  background-color: transparent;
+  border: 4px solid #7F3CFF;
+  color: #7F3CFF;
+}
+@media (min-width: 768px) {
+  .btn-start {
+    margin-top: 90px;
+  }
+}
+
+.btn-start small {
+  font-family: 'Px Grotesk Light';
+  font-weight: normal;
+  font-size: .75em;
+}
+
+.btn-start:hover,
+.btn-start:focus,
+.btn-start:active {
+  border: 4px solid #fff;
+  color: #fff;
+  background-color: #7F3CFF;
+}
+
+.landing-container h3 {
+  font-family: 'Px Grotesk Light Italic';
+  font-weight: bold;
+  font-size: 2.5em;
+  color: #E85997;
+}
+
+.landing-container p {
+  font-size: 1.3em;
+  color: #666;
+  padding: 20px;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+.landing-container p.lead {
+  font-size: 1.9em;
+  color: #444;
+  text-shadow: 1px 1px 1px #fff;
+}
+
+/* =========================
+  About / Contact / Flatpages
+========================= */
+
+.about-container h2,
+.contact-container h2 {
+  font-family: 'Px Grotesk Light Italic';
+  font-weight: bold;
+  font-size: 2em;
+  letter-spacing: 2px;
+  color: #7F3CFF;
+}
+
+.about-container p,
+.contact-container p {
+  font-size: 1.3em;
+  color: #666;
+  padding: 12px;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+.contact-container h3 {
+  font-family: 'Px Grotesk Light Italic';
+  font-weight: bold;
+  font-size: 2em;
+  letter-spacing: 2px;
+  color: #7F3CFF;
+}
+
+/* =========================
         Utilities
 ========================= */
 .head-space-sm { margin-top: 10px; }
@@ -107,6 +203,19 @@ a.close-btn {
 
 #dashboard .quest {
   height: 90px;
+  border-bottom: 1px solid #f0f0ed;
+  border-right: 1px solid #f0f0ed;
+}
+
+#dashboard .quest .progress {
+  border-radius: 0px;
+  box-shadow: none;
+}
+
+#dashboard .quest .progress p strong a {
+  font-family: 'Px Grotesk Light';
+  color: #7F3CFF;
+  text-decoration: none;
 }
 
 .quest-guide .doc-item-col {
@@ -132,5 +241,12 @@ a.close-btn {
 }
 #dashboard .muted,
 #dashboard span.glyphicon-ban-circle {
-  color: #777777;
+  color: #f0f0ed;
+  margin-top: 26px;
+}
+
+#dashboard span.glyphicon.glyphicon-ok {
+  margin-top: 16px;
+  color: #4AFF5A;
+
 }

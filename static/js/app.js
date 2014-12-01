@@ -78,6 +78,22 @@ $(document).ready(function() {
     });
   });
 
+  $('.enter-form-submit input[type=password]').keypress(function(evt) {
+    if(evt.which == 13) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      $form = $(this).closest('.modal-content').find('form');
+      $form.submit();
+    }
+  });
+
+  $('.modal-form-submit').on('click', function(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    $form = $(this).closest('.modal-content').find('form');
+    $form.submit();
+  });
+
   $('.form-via-ajax').on('submit', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();

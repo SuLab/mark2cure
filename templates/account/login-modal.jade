@@ -1,0 +1,29 @@
+- load widget_tweaks
+
+#loginModal(tabindex="-1", role="dialog", aria-labelledby="loginModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h2.modal-title Login
+
+      .modal-body
+        .row
+          .col-md-8.col-md-offset-2
+            - if form.errors
+              p Your username and password didn't match. Please try again.
+              #{login_form.errors}
+
+            form(method="post", role='form', action="{% url 'django.contrib.auth.views.login' %}").enter-form-submit
+              - csrf_token
+              .form-group
+                label(for='exampleInputEmail1') Username
+                #{login_form.username|add_class:"form-control"|attr:"placeholder:Username"}
+
+              .form-group
+                label(for='exampleInputPassword1') Password
+                #{login_form.password|add_class:"form-control"|attr:"placeholder:Password"}
+
+      .modal-footer
+        a(href="/account/reset/").btn.btn-default Forgot
+        button(type="button", data-dismiss="modal").btn.btn-default Cancel
+        button(type="button").btn.btn-default.modal-form-submit Login

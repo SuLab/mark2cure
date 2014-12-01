@@ -48,6 +48,16 @@ head
 
 body
     block header
+      .container-fluid
+        .row
+          .col-sm-6.col-sm-offset-3.col-xs-6.col-xs-offset-0
+            h1.text-center
+              a(href='/') Mark2Cure
+
+          - if not user.is_authenticated
+            .col-sm-2
+              a(data-toggle="modal", data-target="#loginModal").btn.btn-default.btn-inverse.pull-right.head-space Login
+
 
     block content
 
@@ -89,3 +99,6 @@ body
     block post-footer
 
     block modals
+    - if not user.is_authenticated
+      include account/login-modal
+

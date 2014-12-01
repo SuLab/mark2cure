@@ -1,5 +1,9 @@
 {% extends 'base.jade' %}
 
+{% block head-title %}
+  <title>{{ flatpage.title }}</title>
+{% endblock %}
+
 {% block content %}
   {{ flatpage.content }}
 {% endblock %}

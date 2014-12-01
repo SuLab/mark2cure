@@ -24,7 +24,7 @@ class Command(BaseCommand):
         action='store_true',
         dest='quest',
         default=False,
-        help='Bin the Documents into assocaited Quests'),
+        help='Bin the Documents into associated Quests'),
     )
 
     option_list = BaseCommand.option_list + (
@@ -35,13 +35,15 @@ class Command(BaseCommand):
         help='Load the Documents into Mark2Cure and require 0 associations'),
     )
 
-
     def handle(self, *args, **options):
         dataset = 'NCBI_corpus_testing_cleaned'
-        print args
-        print options
 
-        if optionsp['gm_anns']:
+        '''
+            Import all the annotations for our
+            perceived "Expert" users. These annotations
+            come from the GM Anns
+        '''
+        if options['gm_anns']:
             user, created = User.objects.get_or_create(username='Doc_G-man')
             if created:
                 gold_profile = user.userprofile
@@ -55,10 +57,7 @@ class Command(BaseCommand):
                     badges.possibly_award_badge("skill_awarded", user=user, level=index+1)
 
                 for task in Task.objects.all():
-                    UserQuestRelationship.objects.create(task=task, user=user, completed=True)
-
-
-
+                    UserQuestRelationship.objects.create(task=task, user=user)
 
 
             # Clean out all the old annotations just b/c we don't know what they were off on / need to be changed
@@ -88,8 +87,10 @@ class Command(BaseCommand):
 
 
 
-
-
+        '''
+            Randomly assign the loaded documents into our bins
+            ensure the 4 training always go into Quest 1
+        '''
         if options['assign']:
             documents = list(Document.objects.filter(source=dataset).values_list('id', flat=True))
             smallest_bin = 3
@@ -123,7 +124,12 @@ class Command(BaseCommand):
                         document = Document.objects.get(pk=i)
                         DocumentQuestRelationship.objects.create(task=task, document=document)
 
-        if options['']:
+
+        '''
+            Import the set of documents into Mark2Cure
+            without performing any quest binning
+        '''
+        if options['documents']:
             with open('assets/datasets/{dataset}.txt'.format(dataset=dataset), 'r') as f:
                 reader = csv.reader(f, delimiter='\t')
                 for num, title, text in reader:
