@@ -1,14 +1,21 @@
 nav(role='navigation').navbar.navbar-default.navbar-static-top
   .container-fluid
     .row
-      .col-sm-3
+      .col-sm-3.hidden-xs
         h1
           a(href='/index/') Mark2Cure
 
-      .col-sm-6
+      .col-sm-4.col-xs-9
         h2.text-center #{headerMessage}
 
-      .col-sm-3
+      .col-xs-3
+        button(type='button', data-toggle='collapse', data-target='#example-foo-collapse-1').navbar-toggle
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+
+      .col-sm-5.col-xs-12
         #example-foo-collapse-1.collapse.navbar-collapse
           .row
             .col-xs-6
@@ -30,10 +37,3 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
                   p
                     a(href='/account/logout/') Logout
 
-
-    .row
-      button(type='button', data-toggle='collapse', data-target='#example-foo-collapse-1').navbar-toggle
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
