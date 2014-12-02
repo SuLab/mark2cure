@@ -1,8 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
+from django.contrib.auth.models import User
 
-from mark2cure.document.models import Document, Section
-from mark2cure.common.models import Task, DocumentQuestRelationship, SkillBadge
+from mark2cure.account.models import UserProfile
+from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
+
+from brabeion import badges
 
 import random
 import csv
@@ -35,6 +39,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print args, options
         datasets = ['NCBI_corpus_testing', 'NCBI_corpus_training', 'NCBI_corpus_development']
+        gm_documents_ids = [3464560, 7759075, 8198128, 3591825];
 
         '''
             Import all the annotations for our
@@ -44,6 +49,8 @@ class Command(BaseCommand):
         if options['gm_anns']:
             user, created = User.objects.get_or_create(username='Doc_G-man')
             if created:
+                UserProfile.objects.create(user=user)
+
                 gold_profile = user.userprofile
                 gold_profile.quote = "Be the change you wish to see in the world."
                 gold_profile.save()
@@ -51,44 +58,49 @@ class Command(BaseCommand):
                 user.set_password('')
                 user.save()
 
+                # Get the hightest skill possible
                 for index, level in enumerate(SkillBadge.levels):
-                    badges.possibly_award_badge("skill_awarded", user=user, level=index+1)
+                    badges.possibly_award_badge("skill_awarded", user=user, level=index)
 
-                for task in Task.objects.all():
-                    UserQuestRelationship.objects.create(task=task, user=user)
-
+            # Be (though uncomplete) associted with each first quest to link Views
+            gm_quest_rel, gm_quest_rel_created = UserQuestRelationship.objects.get_or_create(
+                    task=Task.objects.get(pk=4),
+                    user=user)
 
             # Clean out all the old annotations just b/c we don't know what they were off on / need to be changed
-            documents = Document.objects.filter(source=document_set).all()
-            for doc in documents:
+            for doc in Document.objects.all():
                 views = View.objects.filter(section__document=doc, user=user)
                 for view in views:
                     Annotation.objects.filter(view=view).delete()
 
-            with open('assets/datasets/{0}_annos.txt'.format(document_set), 'rU') as f:
-                reader = csv.reader(f, delimiter='\t')
-                next(reader, None)  # skip the headers
-                for doc_id, doc_field, ann_type, text, start, stop in reader:
-                    try:
-                        doc = Document.objects.get(document_id=doc_id)
+            for dataset in datasets:
+                with open('assets/datasets/{dataset}_annos.txt'.format(dataset=dataset), 'r') as f:
+                    reader = csv.reader(f, delimiter='\t')
+                    next(reader, None)  # skip the headers
+                    for doc_id, doc_field, ann_type, text, start, stop in reader:
+                        if int(doc_id) in gm_documents_ids:
+                            doc = Document.objects.get(document_id=doc_id)
 
-                        for section in doc.section_set.all():
-                            if section.kind == doc_field[0]:
-                                view, created = View.objects.get_or_create(section=section, user=user)
-                                ann, created = Annotation.objects.get_or_create(view=view, text=text, start=start, type=ann_type)
-                                ann.kind = 'e'
-                                ann.user_agent = 'goldenmaster'
-                                ann.save()
-
-                    except DoesNotExist:
-                        doc = None
+                            for section in doc.section_set.all():
+                                # Make sure the annotion is for the title or abstract (our supported section types)
+                                if section.kind == doc_field[0]:
+                                    view, created = View.objects.get_or_create(
+                                            section=section,
+                                            user=user,
+                                            completed=True)
+                                    gm_quest_rel.views.add(view)
+                                    Annotation.objects.create(
+                                            view=view,
+                                            text=text,
+                                            start=start,
+                                            type=ann_type,
+                                            kind='e')
 
         '''
             Randomly assign the loaded documents into our bins
             ensure the 4 training always go into Quest 1
         '''
         if options['assign']:
-            gm_documents_ids = [3464560, 7759075, 8198128, 3591825];
             gm_documents = Document.objects.filter(source='NCBI_corpus_training', document_id__in=gm_documents_ids).all()
             task_counter = 1
 

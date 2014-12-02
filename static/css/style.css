@@ -212,7 +212,12 @@ a.close-btn {
   box-shadow: none;
 }
 
-#dashboard .quest .progress p strong a {
+#dashboard .quest p {
+  margin-top: 8px;
+  margin-bottom: -2px;
+}
+
+#dashboard .quest p strong a {
   font-family: 'Px Grotesk Light';
   color: #7F3CFF;
   text-decoration: none;
@@ -248,5 +253,4 @@ a.close-btn {
 #dashboard span.glyphicon.glyphicon-ok {
   margin-top: 16px;
   color: #4AFF5A;
-
 }

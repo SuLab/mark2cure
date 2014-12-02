@@ -17,8 +17,6 @@ def _createHash():
 
 def _content_file_name(instance, filename):
     name = _createHash() + os.path.splitext(filename)[1]
-
-    print ">> NAME: ", name
     return '/'.join(['avatars', name])
 
 

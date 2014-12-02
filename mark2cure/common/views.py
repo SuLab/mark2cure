@@ -45,7 +45,6 @@ def training_read(request):
     tasks = []
     if request.user.is_authenticated():
         profile = request.user.profile
-        print profile.highest_level().level
 
     tasks = Task.objects.filter(kind=Task.TRAINING).all()
     for task in tasks:
@@ -149,14 +148,14 @@ def training_one(request, step_num):
 
 @login_required
 def training_two(request, step_num):
-    if step_num == 'feedback':
-        if request.user.is_authenticated():
-            task = Task.objects.get(pk=2)
-            UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
-            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-            badges.possibly_award_badge("points_awarded", user=request.user)
+    if step_num == 'feedback' and request.user.is_authenticated():
+        task = Task.objects.get(pk=2)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
 
-        badges.possibly_award_badge("skill_awarded", user=request.user, level=3)
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
         return render_to_response(
             'training/intro-2/feedback.jade',
             {'next_path': '/training/intro/2/step/complete/'},
@@ -178,11 +177,12 @@ def training_three(request):
     if request.method == 'POST':
         task = Task.objects.get(pk=3)
         UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+
         request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge("points_awarded", user=request.user)
-        badges.possibly_award_badge("skill_awarded", user=request.user, level=4)
-        messages.success(request, 'dashboard-unlock-success')
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
 
+        messages.success(request, 'dashboard-unlock-success')
         return redirect('mark2cure.common.views.dashboard')
 
     else:
@@ -276,7 +276,6 @@ def message(request):
 @login_required
 def survey(request):
     for k, v in request.POST.iteritems():
-        # print k, v
         if(k != "csrfmiddlewaretoken"):
             sf = SurveyFeedback(question=k, response=v, user=request.user)
             sf.save()

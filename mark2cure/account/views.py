@@ -88,8 +88,8 @@ def create(request):
 
                 # In order to create an account they've already done the
                 # first 2 training Tasks
-                badges.possibly_award_badge("skill_awarded", user=user, level=2)
                 task = Task.objects.first()
+                badges.possibly_award_badge("skill_awarded", user=user, level=task.provides_qualification)
                 user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
                 UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
