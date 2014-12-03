@@ -24,7 +24,7 @@ block post-footer
         $('#dashboardWelcomeModal').modal('show');
 
     script.
-      var draw_dashbaord = function(data) {
+      var draw_dashboard = function(data) {
         $('#dashboard').html('');
         var canvas = d3.select('#dashboard');
 
@@ -92,7 +92,7 @@ block post-footer
       var ajax_settings = {
         'type': 'GET',
         'url': '/quest/api/read/',
-        'success': function(data) { draw_dashbaord(data); }
+        'success': function(data) { draw_dashboard(data); }
       };
 
       /* setInterval(function () { $.ajax(ajax_settings); }, ); */
