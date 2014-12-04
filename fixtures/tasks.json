@@ -23,7 +23,7 @@
         "created": "2014-10-01T18:41:16Z",
         "meta_url": "/training/intro/2/step/1/",
         "provides_qualification": 2,
-        "points": 1000,
+        "points": 4000,
         "requires_qualification": 1
     },
     "model": "common.task",
