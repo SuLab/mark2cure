@@ -229,6 +229,7 @@ def quest_list(request):
 def quest_read(request, quest_num):
     task = get_object_or_404(Task, pk=quest_num)
     user_quest_rel, user_quest_rel_created = UserQuestRelationship.objects.get_or_create(task=task, user=request.user, completed=False)
+    task_doc_ids_completed = []
 
     if user_quest_rel_created:
         documents = list(task.documents.all())
@@ -255,6 +256,7 @@ def quest_read(request, quest_num):
     user_quest_rel.save()
     return render_to_response('common/quest.jade',
                               {'task': task,
+                               'completed_docs': task_doc_ids_completed,
                                'documents': documents},
                               context_instance=RequestContext(request))
 
