@@ -52,7 +52,8 @@ p.paragraph .neighbor_u {
   margin-right: 5px !important;
 }
 
-p.paragraph span.user_annotated {
+p.paragraph span.user_annotated,
+span.user_annotated {
   /* Word span when simply showing user selection */
   background-color: #0cf;
 }
