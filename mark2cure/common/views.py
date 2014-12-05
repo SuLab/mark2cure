@@ -75,25 +75,25 @@ def training_one(request, step_num):
     next_ = step_num + 1
     if step_num == 1:
         header1 = "Let's start by marking diseases"
-        header2 = "Mark all the disease terms in the sentence below."
+        header2 = "Mark all the diseases in the sentence below."
         paragraph = "Does choice of insulin regimen really matter in the management of diabetes ?"
         answers = [{'text': 'diabetes', 'start': 66}]
 
     if step_num == 2:
         header1 = "Sometimes you will see multiple instances of the same disease - Be sure to mark them all!"
-        header2 = "Mark all the disease terms in the sentence below."
+        header2 = "Mark all the diseases in the sentence below."
         paragraph = "To assess the management of diabetes , we reviewed records of 20 diabetes patients ."
         answers = [{'text': 'diabetes', 'start': 28}, {'text': 'diabetes', 'start': 65}]
 
     if step_num == 3:
         header1 = "Sometimes the disease is described by a conjuction of several words. Mark these disease conjunctions as a single span of text."
-        header2 = "Mark all the disease terms in the sentence below."
-        paragraph = "Of the 20 diabetes patients , 17 had type 2 diabetes mellitus ."
-        answers = [{'text': 'diabetes', 'start': 10}, {'text': 'type 2 diabetes mellitus', 'start': 37}]
+        header2 = "Mark all the diseases in the sentence below."
+        paragraph = "Of the 20 patients , 17 had type 2 diabetes mellitus ."
+        answers = [{'text': 'type 2 diabetes mellitus', 'start': 28}]
 
     if step_num == 4:
         header1 = "Sometimes the disease conjunctions are separated by words like 'and/or'. Decide if there are two distinct diseases to highlight, or if it is a single disease conjunction."
-        header2 = "Mark all the disease terms in the sentence below."
+        header2 = "Mark all the diseases in the sentence below."
         paragraph = "The remaining 3 had inherited and/or type I diabetes mellitus ."
         answers = [{'text': 'inherited and/or type I diabetes mellitus', 'start': 20}]
 
@@ -104,8 +104,8 @@ def training_one(request, step_num):
         answers = [{'text': 'heart disease', 'start': 58}, {'text': 'rheumatoid arthritis', 'start': 75}]
 
     if step_num == 6:
-        header1 = "Sometimes the disease terms are abbreviated. Mark all instances of disease abbreviations."
-        header2 = "Mark all disease terms in the sentence below."
+        header1 = "Sometimes the diseases are abbreviated. Mark all instances of disease abbreviations."
+        header2 = "Mark all diseases in the sentence below."
         paragraph = "We will discuss the effect of different insulin regimen on type 2 diabetes mellitus patients (ie- T2DM patients) ..."
         answers = [{'text': 'type 2 diabetes mellitus', 'start': 59}, {'text': 'T2DM', 'start': 98}]
 
