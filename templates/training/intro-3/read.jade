@@ -117,7 +117,7 @@ block post-footer
         return _.contains(results, true);
       });
       var score_full = determine_f(matches.length, combine_anns.length - matches.length, combine_answers.length - matches.length);
-      var f_score = Math.round(score_full.f*100);
+      var f_score = Math.round(score_full.f*1000);
 
       /* Ugly but works for this one-off */
       $('#quest-1 p.paragraph span:nth(10)').data('gmannid', '1');
@@ -166,7 +166,7 @@ block post-footer
       $('.f-score h2').html(f_score);
       $(this).hide();
       $('#partner').slideDown(function() {
-        if(f_score >= 75) {
+        if(f_score >= 750) {
           $('#complete').show();
         } else {
           $('#warning').show();
