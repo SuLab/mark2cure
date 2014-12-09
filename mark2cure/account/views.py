@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
 from django.contrib.auth import authenticate, login
 

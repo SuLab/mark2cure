@@ -3,28 +3,33 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns(
     '',
-    (r'^logout/$', 'django.contrib.auth.views.logout',
+    (r'^logout/$',
+        'django.contrib.auth.views.logout',
         {'next_page': '/'}),
 
-    (r'^login/$', 'django.contrib.auth.views.login',
+    (r'^login/$',
+        'django.contrib.auth.views.login',
         {'template_name': 'account/login.jade'}),
 
-    (r'^reset/$', 'django.contrib.auth.views.password_reset',
-        {'template_name': 'account/reset.jade',
-         'post_reset_redirect': '/account/reset-thanks/'}),
+    url(r'^password-reset/$',
+        'django.contrib.auth.views.password_reset',
+        kwargs={'template_name': 'account/reset.jade'}, name='password-reset'),
 
-    (r'^confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
+    url(r'^password_reset/done/$',
+        'django.contrib.auth.views.password_reset_done',
+        kwargs={'template_name': 'account/reset-thanks.jade'}, name='password_reset_done'),
+
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         'django.contrib.auth.views.password_reset_confirm',
-        {'template_name': 'account/confirm.jade',
-         'post_reset_redirect': '/account/login/'}),
+        kwargs={'template_name': 'account/reset-confirm.jade'}, name='password_reset_confirm'),
 
-    (r'^change/$', 'django.contrib.auth.views.password_change',
-        {'template_name': 'account/change.jade',
-         'post_change_redirect': '/account/settings/'}),
+    url(r'^reset/done/$',
+        'django.contrib.auth.views.password_reset_complete',
+        kwargs={'template_name': 'account/reset-done.jade'}, name='password_reset_complete'),
+
 )
 
-urlpatterns += patterns(
-    'mark2cure.account.views',
+urlpatterns += patterns('mark2cure.account.views',
     url(r'^$', r'settings'),
     url(r'^settings/$', r'settings'),
 

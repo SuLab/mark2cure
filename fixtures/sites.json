@@ -1,0 +1,10 @@
+[
+{
+    "fields": {
+        "domain": "mark2cure.org",
+        "name": "mark2cure.org"
+    },
+    "model": "sites.site",
+    "pk": 1
+}
+]

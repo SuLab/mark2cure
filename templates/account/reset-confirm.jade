@@ -1,0 +1,24 @@
+extends base
+
+{% load widget_tweaks %}
+
+block header
+
+block content
+  .row
+      .col-md-6.col-md-offset-3.head-space-xl
+          h1.text-center Reset Password
+          form(method="post")
+              {% csrf_token %}
+              .form-group.head-space
+                .row
+                  .col-xs-6.col-xs-offset-3
+                    #{form.new_password1|add_class:'form-control'|attr:'placeholder:New Password'}
+              .form-group
+                .row
+                  .col-xs-6.col-xs-offset-3
+                    #{form.new_password2|add_class:'form-control'|attr:"placeholder:Confirm New Password"}
+              .form-group.head-space
+                .row
+                  .col-xs-4.col-xs-offset-4
+                    input(type='submit', value='Reset Password').btn.btn-default.btn-block
