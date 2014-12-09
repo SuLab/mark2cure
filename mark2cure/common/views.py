@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 def signup_home(request):
+    if request.user.is_authenticated():
+        return redirect('mark2cure.common.views.home')
+
     return render_to_response('common/landing.jade', {}, context_instance=RequestContext(request))
 
 
