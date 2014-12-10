@@ -33,6 +33,8 @@ block post-footer
   include training/includes/intro-2-js
   include document/includes/instructions-modal
   script.
+    window.intercomSettings['quest'] = 2;
+  script.
       textControl('out', 31);
       var answers1 = [{'text': 'familial breast cancer', 'start': 73}];
       var answers2 = [{'text': 'breast cancer', 'start': 45},

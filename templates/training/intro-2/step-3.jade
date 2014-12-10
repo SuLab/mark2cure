@@ -34,6 +34,8 @@ block post-footer
   include training/includes/intro-2-js
   include document/includes/instructions-modal
   script.
+    window.intercomSettings['quest'] = 2;
+  script.
       textControl('out', 107);
       var answers1 = [{'text': 'Friedreich ataxia', 'start': 65}];
       var answers2 = [{'text': 'Friedreich ataxia', 'start': 14},

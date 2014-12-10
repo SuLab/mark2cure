@@ -40,6 +40,9 @@ block content
 block post-footer
   script(src='#{STATIC_URL}js/quest-app.js')
   script.
+    window.intercomSettings['quest'] = #{ task.id };
+
+  script.
     var task_id = #{ task.id };
 
     $('.doc-item-col').map(function() { return $(this).data('doc'); }).each(function(i, v) {
