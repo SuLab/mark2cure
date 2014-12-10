@@ -83,17 +83,24 @@ body
 
         script(src='#{STATIC_URL}js/ypet.js')
         script(src='#{STATIC_URL}js/app.js')
-        - if not debug
-          - if request.user.is_authenticated
-            script.
-              window.intercomSettings = {
-                name: "{{ request.user.username }}",
-                email: "{{ request.user.email }}",
-                created_at: {{ request.user.date_joined|date:"U" }},
-                app_id: "geb4sut8"
-              };
-            <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/geb4sut8';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 
+        - if request.user.is_authenticated
+          script.
+            window.intercomSettings = {
+              name: "{{ request.user.username }}",
+              email: "{{ request.user.email }}",
+              created_at: {{ request.user.date_joined|date:"U" }},
+              app_id: 'ru006jn3',
+            };
+
+          - if not debug
+            script.
+              window.intercomSettings['app_id'] = 'geb4sut8';
+
+          <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/geb4sut8';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+
+
+        - if not debug
           script.
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-43341013-1']);
