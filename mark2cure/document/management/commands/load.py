@@ -138,13 +138,14 @@ class Command(BaseCommand):
 
             smallest_bin = 5
             largest_bin = 5
+            completions = 3
             random.shuffle(document_set)
 
             while len(document_set) > smallest_bin:
                 task_counter += 1
                 task, task_created = Task.objects.get_or_create(
                         name=str(task_counter),
-                        completions=10,
+                        completions=completions,
                         requires_qualification=4,
                         provides_qualification=4,
                         points=5000)
@@ -153,10 +154,10 @@ class Command(BaseCommand):
                 sel = document_set[0:quest_size]
 
                 for i in sel: document_set.remove(i)
-                print "Adding", len(sel), "to Quest:", task_counter
+                print "Adding", len(sel), "to Quest:", task_counter, 'remaining:', len(document_set)
 
                 for doc in task.documents.all():
-                    dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
+                    dqr = DocumentQuestRelationship.objects.get(task=task, document=doc),
                     dqr.delete()
 
                 for doc_idx in sel:
@@ -168,18 +169,18 @@ class Command(BaseCommand):
                     task_counter += 1
                     task, task_created = Task.objects.get_or_create(
                             name=str(task_counter),
-                            completions=10,
+                            completions=completions,
                             requires_qualification=4,
                             provides_qualification=4,
                             points=5000)
 
-                    print "Adding", len(document_set), "to Quest:", task_counter
+                    print "Adding", len(document_set), "to Quest:", task_counter, 'remaining', len(document_set)
 
                     for doc in task.documents.all():
                         dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
                         dqr.delete()
 
-                    for doc_idx in sel:
+                    for doc_idx in document_set:
                         document = Document.objects.get(pk=doc_idx)
                         DocumentQuestRelationship.objects.create(task=task, document=document)
 
