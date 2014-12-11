@@ -125,8 +125,9 @@ def identify_annotations_results(request, task_id, doc_id):
             'user_profile': user_profile,
             'task_type': 'concept-recognition' };
 
-    if others_quest_relationships.exists() and others_quest_relationships.filter(user=gm_user).exists():
-        print 'GM User Found'
+    if others_quest_relationships.exists() and \
+            others_quest_relationships.filter(user=gm_user).exists() and \
+            others_quest_relationships.get(user=gm_user).views.filter(section__document=doc, completed=True).exists():
 
         # There is an "expert's" annotations (GM) so
         # show those as the partner's
@@ -134,10 +135,7 @@ def identify_annotations_results(request, task_id, doc_id):
             user_view = user_quest_rel_views.get(section=section, completed=True)
             gm_quest_rel = others_quest_relationships.get(user=gm_user)
 
-            print 'USER VIEW:', user_view
-            print 'GM QR:', gm_quest_rel.pk,  gm_quest_rel
             gm_view = gm_quest_rel.views.get(section=section, completed=True)
-            print 'GM_View:', gm_view
 
             user_views.append(user_view)
             gm_views.append(gm_view)
@@ -149,7 +147,6 @@ def identify_annotations_results(request, task_id, doc_id):
 
 
     elif others_quest_relationships.exists() and len(previous_users):
-        print 'PRV URS:', previous_users, others_quest_relationships
 
         # No expert around so select a previous user at random
         random.shuffle(previous_users)
