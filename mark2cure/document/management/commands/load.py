@@ -41,6 +41,9 @@ class Command(BaseCommand):
         datasets = ['NCBI_corpus_testing', 'NCBI_corpus_training', 'NCBI_corpus_development']
         gm_documents_ids = [3464560, 7759075, 8198128, 3591825];
 
+        doc_set = ['8589723', '8621452', '8644702', '8651278', '8661102', '8673131', '8675707', '8700509', '8751855', '8758207', '8786135', '8808605', '8824873', '8828602', '8843193', '8871666', '8929413', '8931709', '8944024', '8968716', '9012409', '9028321', '9056547', '9069115', '9090524', '9144439', '9174057', '8636252', '8689689', '8898652']
+        mixed_gm = [8636252, 8689689, 8898652]
+
         '''
             Import all the annotations for our
             perceived "Expert" users. These annotations
@@ -58,14 +61,9 @@ class Command(BaseCommand):
                 user.set_password('')
                 user.save()
 
-                # Get the hightest skill possible
+                # Assign the GM User the hightest skill possible
                 for index, level in enumerate(SkillBadge.levels):
                     badges.possibly_award_badge("skill_awarded", user=user, level=index)
-
-            # Be (though uncomplete) associted with each first quest to link Views
-            gm_quest_rel, gm_quest_rel_created = UserQuestRelationship.objects.get_or_create(
-                    task=Task.objects.get(pk=4),
-                    user=user)
 
             # Clean out all the old annotations just b/c we don't know what they were off on / need to be changed
             for doc in Document.objects.all():
@@ -73,28 +71,43 @@ class Command(BaseCommand):
                 for view in views:
                     Annotation.objects.filter(view=view).delete()
 
+            gm_documents_ids.extend(mixed_gm)
             for dataset in datasets:
                 with open('assets/datasets/{dataset}_annos.txt'.format(dataset=dataset), 'r') as f:
                     reader = csv.reader(f, delimiter='\t')
                     next(reader, None)  # skip the headers
                     for doc_id, doc_field, ann_type, text, start, stop in reader:
                         if int(doc_id) in gm_documents_ids:
-                            doc = Document.objects.get(document_id=doc_id)
 
-                            for section in doc.section_set.all():
-                                # Make sure the annotion is for the title or abstract (our supported section types)
-                                if section.kind == doc_field[0]:
-                                    view, created = View.objects.get_or_create(
-                                            section=section,
-                                            user=user,
-                                            completed=True)
-                                    gm_quest_rel.views.add(view)
-                                    Annotation.objects.create(
-                                            view=view,
-                                            text=text,
-                                            start=start,
-                                            type=ann_type,
-                                            kind='e')
+                            doc = Document.objects.get(document_id=doc_id)
+                            print doc
+                            dqr = DocumentQuestRelationship.objects.filter(document=doc).first()
+                            print dqr.pk, dqr
+
+                            # If the GM Anns are for a document that isn't included in any quests,
+                            # don't bother
+                            if dqr:
+                                # Be (though uncomplete) associted with each first quest to link Views
+                                gm_quest_rel, gm_quest_rel_created = UserQuestRelationship.objects.get_or_create(
+                                        task=dqr.task,
+                                        user=user)
+
+                                for section in doc.section_set.all():
+                                    # Make sure the annotion is for the title or abstract (our supported section types)
+                                    if section.kind == doc_field[0]:
+                                        view, created = View.objects.get_or_create(
+                                                section=section,
+                                                user=user,
+                                                completed=True)
+
+                                        gm_quest_rel.views.add(view)
+                                        print gm_quest_rel.views.count()
+                                        Annotation.objects.create(
+                                                view=view,
+                                                text=text,
+                                                start=start,
+                                                type=ann_type,
+                                                kind='e')
 
         '''
             Randomly assign the loaded documents into our bins
@@ -120,10 +133,11 @@ class Command(BaseCommand):
                 DocumentQuestRelationship.objects.create(task=task, document=gold_document)
 
             # Insert the other Documents
-            document_set = list(Document.objects.filter(source='NCBI_corpus_training').exclude(document_id__in=gm_documents_ids).values_list('id', flat=True))
+            #document_set = list(Document.objects.filter(source='NCBI_corpus_training').exclude(document_id__in=gm_documents_ids).values_list('id', flat=True))
+            document_set = list(Document.objects.filter(document_id__in=doc_set).exclude(document_id__in=gm_documents_ids).values_list('id', flat=True))
 
-            smallest_bin = 16
-            largest_bin = 24
+            smallest_bin = 5
+            largest_bin = 5
             random.shuffle(document_set)
 
             while len(document_set) > smallest_bin:

@@ -118,50 +118,55 @@ def identify_annotations_results(request, task_id, doc_id):
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
     # results for this particular document
-    if others_quest_relationships.exists() and len(previous_users) or others_quest_relationships.filter(user=gm_user).exists():
-        user_views = []
-        gm_views = []
-        if others_quest_relationships.filter(user=gm_user).exists():
-            # There is an "expert's" annotations (GM) so
-            # show those as the partner's
-            for section in sections:
-                user_view = user_quest_rel_views.get(section=section, completed=True)
-                gm_view = others_quest_relationships.get(user=gm_user).views.get(section=section, completed=True)
-                user_views.append(user_view)
-                gm_views.append(gm_view)
-                setattr(section, 'words', section.resultwords(user_view, gm_view))
+    user_views = []
+    gm_views = []
+    ctx = { 'task': task,
+            'doc': doc,
+            'user_profile': user_profile,
+            'task_type': 'concept-recognition' };
 
-        else:
-            # No expert around so select a previous user at random
-            random.shuffle(previous_users)
-            selected_user = previous_users[0]
+    if others_quest_relationships.exists() and others_quest_relationships.filter(user=gm_user).exists():
+        print 'GM User Found'
 
-            for section in sections:
-                user_view = user_quest_rel_views.get(section=section, completed=True)
-                user_quest_rel = others_quest_relationships.filter(user=selected_user).first()
-                gm_view = user_quest_rel.views.get(section=section, completed=True)
-                user_views.append(user_view)
-                gm_views.append(gm_view)
-                setattr(section, 'words', section.resultwords(user_view, gm_view))
+        # There is an "expert's" annotations (GM) so
+        # show those as the partner's
+        for section in sections:
+            user_view = user_quest_rel_views.get(section=section, completed=True)
+            gm_quest_rel = others_quest_relationships.get(user=gm_user)
 
-        # Take views from whoever the partner was
-        # and use those to calculate the score (and assign
-        # / reward as appropriate
-        results = generate_results(user_views, gm_views)
-        score = results[0][2] * 1000
-        if score > 0:
-            request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
-            badges.possibly_award_badge('points_awarded', user=request.user)
+            print 'USER VIEW:', user_view
+            print 'GM QR:', gm_quest_rel.pk,  gm_quest_rel
+            gm_view = gm_quest_rel.views.get(section=section, completed=True)
+            print 'GM_View:', gm_view
 
-        return render_to_response('document/concept-recognition-results-partner.jade',
-            { 'task': task,
-              'doc': doc,
-              'user_profile': user_profile,
-              'partner': selected_user,
-              'sections': sections,
-              'results': results,
-              'task_type': 'concept-recognition'},
-            context_instance=RequestContext(request))
+            user_views.append(user_view)
+            gm_views.append(gm_view)
+            setattr(section, 'words', section.resultwords(user_view, gm_view))
+
+        ctx['sections'] = sections
+        ctx['partner'] = selected_user
+        return show_comparison_results(request, user_views, gm_views, ctx)
+
+
+    elif others_quest_relationships.exists() and len(previous_users):
+        print 'PRV URS:', previous_users, others_quest_relationships
+
+        # No expert around so select a previous user at random
+        random.shuffle(previous_users)
+        selected_user = previous_users[0]
+
+        for section in sections:
+            user_view = user_quest_rel_views.get(section=section, completed=True)
+            user_quest_rel = others_quest_relationships.filter(user=selected_user).first()
+            gm_view = user_quest_rel.views.get(section=section, completed=True)
+
+            user_views.append(user_view)
+            gm_views.append(gm_view)
+            setattr(section, 'words', section.resultwords(user_view, gm_view))
+
+        ctx['sections'] = sections
+        ctx['partner'] = selected_user
+        return show_comparison_results(request, user_views, gm_views, ctx)
 
     else:
         # No other work has ever been done on this apparently
@@ -174,13 +179,29 @@ def identify_annotations_results(request, task_id, doc_id):
         request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge('points_awarded', user=request.user)
 
+        ctx['sections'] = sections
         return render_to_response('document/concept-recognition-results-not-available.jade',
-            { 'task': task,
-              'doc': doc,
-              'user_profile': user_profile,
-              'sections': sections,
-              'task_type': 'concept-recognition'},
-            context_instance=RequestContext(request))
+               ctx,
+               context_instance=RequestContext(request))
+
+
+
+def show_comparison_results(request, user_views, gm_views, ctx):
+    # Take views from whoever the partner was
+    # and use those to calculate the score (and assign
+    # / reward as appropriate
+    results = generate_results(user_views, gm_views)
+    score = results[0][2] * 1000
+    if score > 0:
+        request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge('points_awarded', user=request.user)
+
+    ctx['results'] = results
+    return render_to_response('document/concept-recognition-results-partner.jade',
+           ctx,
+           context_instance=RequestContext(request))
+
+
 
 
 '''
