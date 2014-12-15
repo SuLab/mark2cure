@@ -24,6 +24,26 @@ block post-footer
         $('#dashboardWelcomeModal').modal('show');
 
     script.
+      var message_status = function(data) {
+        user_has_available = _.reject(data, function(i) { return i.user.completed; });
+        community_has_available = _.reject(data, function(i) { return i.progress.completed; });
+        msg = '';
+
+        if (user_has_available.length > 0 && community_has_available.length == 1) {
+          msg = 'Be sure to check your email and follow us on twitter (@Mark2Cure) to be notified when we launch our next one.'
+        };
+
+        if(user_has_available.length == 0) {
+          msg = 'Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.';
+        }
+
+        if(community_has_available.length == 1) {
+          msg = 'Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.'
+        }
+
+        console.log(msg);
+      };
+
       var draw_dashboard = function(data) {
         $('#dashboard').html('');
         var canvas = d3.select('#dashboard');
@@ -92,7 +112,10 @@ block post-footer
       var ajax_settings = {
         'type': 'GET',
         'url': '/quest/api/read/',
-        'success': function(data) { draw_dashboard(data); }
+        'success': function(data) {
+          message_status(data);
+          draw_dashboard(data);
+        }
       };
 
       /* setInterval(function () { $.ajax(ajax_settings); }, ); */

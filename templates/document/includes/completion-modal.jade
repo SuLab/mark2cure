@@ -1,0 +1,16 @@
+#messageModal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button(type="button", data-dismiss="modal").close
+          span(aria-hidden="true") &times;
+          span.sr-only Close
+        h4#myModalLabel.modal-title.text-center Congratulations!
+
+      .modal-body
+        h3.text-center You have completed all quests available to you.
+        p.text-center Thank you for your participation in this experiment. Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.
+
+      .modal-footer
+        button(type="button", data-dismiss="modal").btn.btn-default Close
+

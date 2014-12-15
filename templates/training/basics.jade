@@ -78,7 +78,8 @@ block post-footer
 
           case 2:
             var target = $('p.paragraph span:nth(56)').position();
-            $tooltip.animate({left: target.left+20});
+            console.log(target);
+            $tooltip.animate({left: target.left+20, top: target.top+20});
             $arrow.css({'borderTopColor': 'transparent'});
             $arrow.css({'borderBottomColor': '#E8DB47'});
             break;
