@@ -250,6 +250,12 @@ a.close-btn {
   margin-top: 26px;
 }
 
+#dashboard .muted,
+#dashboard span.glyphicon-certificate {
+  color: #f0f0ed;
+  margin-top: 16px;
+}
+
 #dashboard span.glyphicon.glyphicon-ok {
   margin-top: 16px;
   color: #4AFF5A;

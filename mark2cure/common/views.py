@@ -212,6 +212,31 @@ def dashboard(request):
     for message in storage:
         if message.message == 'dashboard-unlock-success':
             welcome = True
+    if welcome:
+        storage.used = True
+
+    # Figure out state of the view for the user
+    queryset = Task.objects.filter(kind=Task.QUEST).all()
+    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
+
+    user_completed = filter(lambda task: task['user']['completed'] == True, serializer.data)
+    user_completed_count = len(user_completed)
+    community_completed = filter(lambda task: task['progress']['completed'] == True, serializer.data)
+    community_completed_count = len(community_completed)
+    query_set_count = len(queryset)
+    msg_footer = '<p class="text-center">Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.</p>'
+
+    if user_completed_count == len(serializer.data):
+        msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>';
+        messages.info(request, msg + msg_footer, extra_tags='safe alert-success')
+
+    elif user_completed_count >= 1 and community_completed_count <= query_set_count:
+        msg = '<p class="lead text-center">Thank you very much for your participation in the first experiment. The Mark2Cure community has completed all the quests available.</p>'
+        messages.info(request, msg + msg_footer, extra_tags='safe alert-info')
+
+    elif community_completed_count <= query_set_count:
+        msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
+        messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
     return render_to_response('common/dashboard.jade',
                               {'posts': posts,
