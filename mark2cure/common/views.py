@@ -212,8 +212,6 @@ def dashboard(request):
     for message in storage:
         if message.message == 'dashboard-unlock-success':
             welcome = True
-    if welcome:
-        storage.used = True
 
     # Figure out state of the view for the user
     queryset = Task.objects.filter(kind=Task.QUEST).all()
