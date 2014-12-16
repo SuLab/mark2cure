@@ -6,12 +6,14 @@ from mark2cure.account.models import UserProfile
 
 
 class UserForm(forms.ModelForm):
-
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'password',
                   'email', 'username']
 
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['email'].required = True
 
     def save(self): # create new user
         new_user = User.objects.create_user(

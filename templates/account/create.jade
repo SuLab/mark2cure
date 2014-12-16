@@ -24,7 +24,8 @@ block content
           .row
             form(role='form', method='post').form-horizontal
               - csrf_token
-              #{user_form.errors}
+
+
               .form-group
                 label.col-sm-4.control-label Login
                 - if user.is_authenticated
@@ -60,14 +61,6 @@ block content
                     input(type='submit', value='Submit', disabled).btn.btn-default.btn-block
                   - else
                     input(type='submit', value='Submit').btn.btn-default.btn-block
-
-        div(style='display:none;').col-md-5.col-md-offset-1
-          .row
-            h3 Use an OpenID account
-          .row
-            ul.list-unstyled
-              li
-                a(href="{% url 'social:begin' 'twitter' %}?next={{ request.path }}") Login with Twitter
 
     - if user.is_authenticated
       .row.foot-space-xl
