@@ -1,52 +1,48 @@
 !!! 5
-html.no-js(lang='en')
-<!--[if IE 8]><html class='no-js lt-ie9' lang='en' > <![endif]-->
-<!--[if gt IE 8]><!--> <html class='no-js' lang='en' > <!--<![endif]-->
 head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     block social-tags
-        meta(name='description', content='Mark2Cure – Scientific communication is broken')
-        meta(name='keywords', content='mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology')
+      meta(name='description', content='Mark2Cure – Scientific communication is broken')
+      meta(name='keywords', content='mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology')
 
-        meta(name='author', content='Mark2Cure')
-        meta(name='copyright', content='Mark2Cure')
-        meta(name='application-name', content='Mark2Cure')
+      meta(name='author', content='Mark2Cure')
+      meta(name='copyright', content='Mark2Cure')
+      meta(name='application-name', content='Mark2Cure')
 
-        meta(property='og:title', content='Mark2Cure')
-        meta(property='og:type', content='article')
-        meta(property='og:image', content='#{STATIC_URL}static/img/mark2ure.png')
-        meta(property='og:url', content='http://mark2cure.org')
-        meta(property='og:description', content='')
+      meta(property='og:title', content='Mark2Cure')
+      meta(property='og:type', content='article')
+      meta(property='og:image', content='#{STATIC_URL}static/img/mark2ure.png')
+      meta(property='og:url', content='http://mark2cure.org')
+      meta(property='og:description', content='')
 
-        meta(name='twitter:card', content='summary')
-        meta(name='twitter:title', content='Mark2Cure')
-        meta(name='twitter:description', content='')
-        meta(name='twitter:image', content='#{STATIC_URL}static/img/profile.jpg')
-
+      meta(name='twitter:card', content='summary')
+      meta(name='twitter:title', content='Mark2Cure')
+      meta(name='twitter:description', content='')
+      meta(name='twitter:image', content='#{STATIC_URL}static/img/profile.jpg')
 
     block head-title
       title Mark2Cure
 
-    // Libs
+    //- Libs
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/selectize.bootstrap3.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/introjs.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/introjs-nassim.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/odometer-theme-minimal.css')
 
-    // Fonts
+    //- Fonts
     link(rel='stylesheet', href='#{STATIC_URL}fonts/equity_text_b_regular/equity.css')
     link(rel='stylesheet', href='#{STATIC_URL}fonts/px-grotesk/PxGrotesk-font.css')
     link(rel='stylesheet', href='#{STATIC_URL}fonts/font-awesome/font-awesome.min.css')
 
-    // Site Styles
+    //- Site Styles
     link(rel='stylesheet', href='#{STATIC_URL}css/bootstrap-theme.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/document-style.css')
 
-body
+  body
     block header
       .container-fluid
         .row
@@ -64,57 +60,57 @@ body
     block pre-footer
 
     block footer
-        include includes/footer
+      include includes/footer
 
-        script(src="//code.jquery.com/jquery-1.11.1.min.js")
-        script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
-        script(src="#{STATIC_URL}js/libs/underscore-min.js")
-        script(src="#{STATIC_URL}js/libs/backbone-min.js")
-        script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
-        script(src='#{STATIC_URL}js/libs/backbone-relational.js')
-        script(src='#{STATIC_URL}js/libs/backbone.marionette.min.js')
+      script(src="//code.jquery.com/jquery-1.11.1.min.js")
+      script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
+      script(src="#{STATIC_URL}js/libs/underscore-min.js")
+      script(src="#{STATIC_URL}js/libs/backbone-min.js")
+      script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
+      script(src='#{STATIC_URL}js/libs/backbone-relational.js')
+      script(src='#{STATIC_URL}js/libs/backbone.marionette.min.js')
 
-        script(src='#{STATIC_URL}js/libs/d3.v3.js')
-        script(src='#{STATIC_URL}js/libs/md5.js')
-        script(src='#{STATIC_URL}js/libs/moment.js')
-        script(src='#{STATIC_URL}js/libs/selectize.js')
-        script(src='#{STATIC_URL}js/libs/intro.min.js')
-        script(src='#{STATIC_URL}js/libs/odometer.min.js')
+      script(src='#{STATIC_URL}js/libs/d3.v3.js')
+      script(src='#{STATIC_URL}js/libs/md5.js')
+      script(src='#{STATIC_URL}js/libs/moment.js')
+      script(src='#{STATIC_URL}js/libs/selectize.js')
+      script(src='#{STATIC_URL}js/libs/intro.min.js')
+      script(src='#{STATIC_URL}js/libs/odometer.min.js')
 
-        script(src='#{STATIC_URL}js/ypet.js')
-        script(src='#{STATIC_URL}js/app.js')
+      script(src='#{STATIC_URL}js/ypet.js')
+      script(src='#{STATIC_URL}js/app.js')
 
-        - if request.user.is_authenticated
-          script.
-            window.intercomSettings = {
-              name: "{{ request.user.username }}",
-              email: "{{ request.user.email }}",
-              created_at: {{ request.user.date_joined|date:"U" }},
-              app_id: 'ru006jn3',
-            };
-
-          - if not debug
-            script.
-              window.intercomSettings['app_id'] = 'geb4sut8';
-
-          <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/geb4sut8';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-
+      - if request.user.is_authenticated
+        script.
+          window.intercomSettings = {
+            name: "{{ request.user.username }}",
+            email: "{{ request.user.email }}",
+            created_at: {{ request.user.date_joined|date:"U" }},
+            app_id: 'ru006jn3',
+          };
 
         - if not debug
           script.
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-43341013-1']);
-            _gaq.push(['_setDomainName', 'mark2cure.org']);
-            _gaq.push(['_trackPageview']);
-            (function() {
-              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            })();
+            window.intercomSettings['app_id'] = 'geb4sut8';
+
+        <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/geb4sut8';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+
+
+      - if not debug
+        script.
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-43341013-1']);
+          _gaq.push(['_setDomainName', 'mark2cure.org']);
+          _gaq.push(['_trackPageview']);
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
 
     block post-footer
 
     block modals
-    - if not user.is_authenticated
-      include account/login-modal
+      - if not user.is_authenticated
+        include account/login-modal
 

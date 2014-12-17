@@ -13,7 +13,7 @@ block content
     .row.head-space-xl
       #basics.col-xs-10.col-xs-offset-1.paragraph.entity_tag
         p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
-    .row.bottom
+    #popover-1
 
     .row.head-space
       a(href='/training/intro/', id='next', disabled).btn.btn-default.pull-right Next
@@ -28,51 +28,91 @@ block post-footer
       });
       YPet.start();
 
-      var yellow = '#E8DB47';
-      var step_function = function(step_idx) {
-        var text = '';
+      var step_idx = 0;
+      var $container = $('#popover-1');
+
+      var step_function = function() {
+        var opts = {'container': 'body', 'html': true};
+        $container.popover('destroy');
+
         switch (step_idx) {
-          case 1:
-            text = 'Highlight words by clicking on them. Highlight the word \“<span class="user_annotated">Biomedical</span>\”.';
+          case 0:
+            opts['content'] = 'Highlight words by clicking on them. Highlight the word \“<span class="user_annotated">Biomedical</span>\”.';
             var $biomedical = $('p.paragraph span:nth(0)');
+
+            opts['pos'] = $biomedical.offset();
+            opts.pos.top = opts.pos.top - $('.popover').height() - 90;
+            opts.pos.left = opts.pos.left - $('.popover').width() - 90;
+            opts['placement'] = 'top';
             break;
 
-          case 2:
-            text = 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.';
+          case 1:
+            opts['content'] = 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.';
             var $information = $('p.paragraph span:nth(19)');
+
+            opts['pos'] = $information.offset();
+            opts.pos.top = opts.pos.top - $information.height() - 70;
+            opts.pos.left = opts.pos.left - ($information.width()/2) - 30;
+            opts['placement'] = 'top';
 
             /* Force make selection */
             var collection = YPet['basics'].currentView.collection;
             collection.parentDocument.get('annotations').create({words: collection.where({'text': 'information'})});
             break;
 
-          case 3:
-            text = 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class="user_annotated">I am ready to help</span>\”.';
-            var $readytohelp = $('p.paragraph span:nth(56)');
-            break;
+          case 2:
+            opts['content'] = 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class="user_annotated">because I am ready to help</span>\”.';
+            var $because = $('p.paragraph span:nth(56)');
+            var $help = $('p.paragraph span:nth(61)');
+            var same_line = $because.offset().top == $help.offset().top;
 
-          case 4:
-            text = 'Click Next to continue!';
-            $('#next').attr('disabled', false);
+            opts['pos'] = $because.offset();
+            if(same_line) {
+              opts.pos.top = opts.pos.top + $because.height();
+              opts.pos.left = opts.pos.left - ($('.popover').width()/2) + 30;
+              opts['placement'] = 'bottom';
+           } else {
+              opts.pos.top = opts.pos.top - $('.popover').height() - 70;
+              opts.pos.left = opts.pos.left - $because.width() - 30;
+              opts['placement'] = 'top';
+            }
+            break;
+          case 3:
+            opts['content'] = 'Click Next to continue!';
+            opts['placement'] = 'left';
+            $next = $('#next');
+            opts['pos'] = $next.offset();
+            opts.pos.top = opts.pos.top - 5;
+            opts.pos.left = opts.pos.left - 200;
+            $next.attr('disabled', false);
             break;
         };
+
+        $container.popover(opts);
+        $container.popover('show');
+        $container.on('shown.bs.popover', function (evt) {
+          var $el = $('.popover');
+          $el.animate({'top': opts.pos.top + 'px'});
+          $el.animate({'left': opts.pos.left + 'px'});
+        });
       };
 
+      $('body').ready(function() { step_function(); });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
         var model_json = model.toJSON();
 
         /* Unselect wrong answers */
-        if( !_.contains(['Biomedical', 'information', 'I am ready to help'], model_json.text) ) {
+        if( !_.contains(['Biomedical', 'information', 'because I am ready to help'], model_json.text) ) {
           model.destroy();
           collection.drawAnnotations(model);
         }
 
-        if(model_json.text == 'Biomedical' && collection.length == 1) { step_function(); }
-        if(model_json.text == 'I am ready to help' && collection.length == 2) { step_function(4); }
+        if(model_json.text == 'Biomedical' && collection.length == 1) { step_idx = 1; step_function(); }
+        if(model_json.text == 'because I am ready to help' && collection.length == 2) { step_idx = 3; step_function(); }
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
         var model_json = model.toJSON();
-        if(model_json.text == 'information' && collection.length == 1) { step_function(3); }
+        if(model_json.text == 'information' && collection.length == 1) { step_idx = 2; step_function(); }
       });

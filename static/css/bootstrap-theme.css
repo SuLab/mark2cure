@@ -497,8 +497,6 @@ h1 a:hover {
   border-radius: 0px;
 }
 
-
-
 .modal-content {
   border-radius: 0px;
   border: 6px solid #f0f0ed;
@@ -551,3 +549,24 @@ p {
   background: none;
 }
 */
+
+.popover {
+  border-radius: 0px;
+  border: 2px solid white;
+  box-shadow: none;
+  background-color: #7F3CFF;
+  color: #fff;
+  font-size: 16px;
+}
+
+.popover {
+  display: none;
+}
+
+.popover.top > .arrow:after { border-top-color: #7F3CFF; }
+.popover.bottom > .arrow:after { border-bottom-color: #7F3CFF; }
+.popover.left > .arrow:after { border-left-color: #7F3CFF; }
+
+
+
+
