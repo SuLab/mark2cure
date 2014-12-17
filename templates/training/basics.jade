@@ -28,73 +28,35 @@ block post-footer
       });
       YPet.start();
 
-      var intro = introJs();
-      intro.setOptions({
-        'skipLabel': 'Exit',
-        'showButtons': false,
-        'showBullets': false,
-        'keyboardNavigation': false,
-        'exitOnOverlayClick': false,
-        'exitOnEsc': false,
-        'showStepNumbers': false,
-        steps: [
-          {
-            element: '#basics',
-            intro: 'Highlight words by clicking on them. Highlight the word \“<span class="user_annotated">Biomedical</span>\”.',
-            position: 'top',
-          }, {
-            element: '#basics',
-            intro: 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.',
-            position: 'top',
-          }, {
-            element: '#basics',
-            intro: 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class="user_annotated">I am ready to help</span>\”.',
-            position: 'bottom',
-          }, {
-            element: '#next',
-            intro: 'Click Next to continue!',
-            position: 'left',
-          }
-        ]
-      });
-      intro.start();
-
-      var $tooltip = $('.introjs-tooltip');
-      var $arrow = $('.introjs-arrow');
-      var $biomedical = $('p.paragraph span:nth(0)');
       var yellow = '#E8DB47';
-
-      $tooltip.animate({left: $biomedical.position().left+20});
-
-      $tooltip.css({'backgroundColor': yellow});
-      $arrow.css({'borderTopColor': yellow});
-
-      intro.onchange(function() {
-        switch (intro._currentStep)
-        {
+      var step_function = function(step_idx) {
+        var text = '';
+        switch (step_idx) {
           case 1:
-            var target = $('p.paragraph span:nth(19)').position();
-            $tooltip.animate({left: target.left+20});
+            text = 'Highlight words by clicking on them. Highlight the word \“<span class="user_annotated">Biomedical</span>\”.';
+            var $biomedical = $('p.paragraph span:nth(0)');
+            break;
 
+          case 2:
+            text = 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.';
+            var $information = $('p.paragraph span:nth(19)');
+
+            /* Force make selection */
             var collection = YPet['basics'].currentView.collection;
             collection.parentDocument.get('annotations').create({words: collection.where({'text': 'information'})});
             break;
 
-          case 2:
-            var target = $('p.paragraph span:nth(56)').position();
-            console.log(target);
-            $tooltip.animate({left: target.left+20, top: $('.bottom').position().top});
-            $arrow.css({'borderTopColor': 'transparent'});
-            $arrow.css({'borderBottomColor': yellow});
+          case 3:
+            text = 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class="user_annotated">I am ready to help</span>\”.';
+            var $readytohelp = $('p.paragraph span:nth(56)');
             break;
 
-          case 3:
+          case 4:
+            text = 'Click Next to continue!';
             $('#next').attr('disabled', false);
-            $arrow.css({'borderBottomColor': 'transparent'});
-            $arrow.css({'borderLeftColor': yellow});
             break;
-        }
-      });
+        };
+      };
 
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
@@ -106,11 +68,11 @@ block post-footer
           collection.drawAnnotations(model);
         }
 
-        if(model_json.text == 'Biomedical' && collection.length == 1) { intro.nextStep(); }
-        if(model_json.text == 'I am ready to help' && collection.length == 2) { intro.nextStep(); }
+        if(model_json.text == 'Biomedical' && collection.length == 1) { step_function(); }
+        if(model_json.text == 'I am ready to help' && collection.length == 2) { step_function(4); }
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
         var model_json = model.toJSON();
-        if(model_json.text == 'information' && collection.length == 1) { intro.nextStep(); }
+        if(model_json.text == 'information' && collection.length == 1) { step_function(3); }
       });
