@@ -7,12 +7,13 @@ block header
 block content
   .container
     .row.foot-space-xl
-      .col-md-12
+      .col-xs-12
         h2.lead Welcome, new trainee, let's start with the basics...
 
     .row.head-space-xl
-      #basics.col-md-10.col-md-offset-1.paragraph.entity_tag
+      #basics.col-xs-10.col-xs-offset-1.paragraph.entity_tag
         p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
+    .row.bottom
 
     .row.head-space
       a(href='/training/intro/', id='next', disabled).btn.btn-default.pull-right Next
@@ -39,15 +40,15 @@ block post-footer
         steps: [
           {
             element: '#basics',
-            intro: "Highlight words by clicking on them. Highlight the word \“<span class='user_annotated'>Biomedical</span>\”.",
+            intro: 'Highlight words by clicking on them. Highlight the word \“<span class="user_annotated">Biomedical</span>\”.',
             position: 'top',
           }, {
             element: '#basics',
-            intro: "Remove the highlight by clicking again. Un-highlight the word \“<span class='user_annotated'>information</span>\”.",
+            intro: 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.',
             position: 'top',
           }, {
             element: '#basics',
-            intro: "Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class='user_annotated'>I am ready to help</span>\”.",
+            intro: 'Highlight blocks of text by holding down your mouse button until you reach the end of the text you wish to highlight. Highlight the phrase \“<span class="user_annotated">I am ready to help</span>\”.',
             position: 'bottom',
           }, {
             element: '#next',
@@ -56,14 +57,17 @@ block post-footer
           }
         ]
       });
-
       intro.start();
-      var target = $('p.paragraph span:nth(0)').position();
+
       var $tooltip = $('.introjs-tooltip');
       var $arrow = $('.introjs-arrow');
-      $tooltip.animate({left: target.left+20});
-      $tooltip.css({'backgroundColor': '#E8DB47'});
-      $arrow.css({'borderTopColor': '#E8DB47'});
+      var $biomedical = $('p.paragraph span:nth(0)');
+      var yellow = '#E8DB47';
+
+      $tooltip.animate({left: $biomedical.position().left+20});
+
+      $tooltip.css({'backgroundColor': yellow});
+      $arrow.css({'borderTopColor': yellow});
 
       intro.onchange(function() {
         switch (intro._currentStep)
@@ -79,15 +83,15 @@ block post-footer
           case 2:
             var target = $('p.paragraph span:nth(56)').position();
             console.log(target);
-            $tooltip.animate({left: target.left+20, top: target.top+20});
+            $tooltip.animate({left: target.left+20, top: $('.bottom').position().top});
             $arrow.css({'borderTopColor': 'transparent'});
-            $arrow.css({'borderBottomColor': '#E8DB47'});
+            $arrow.css({'borderBottomColor': yellow});
             break;
 
           case 3:
             $('#next').attr('disabled', false);
             $arrow.css({'borderBottomColor': 'transparent'});
-            $arrow.css({'borderLeftColor': '#E8DB47'});
+            $arrow.css({'borderLeftColor': yellow});
             break;
         }
       });
