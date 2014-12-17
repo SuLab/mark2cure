@@ -4,7 +4,7 @@ Date.now = Date.now || function() { return +new Date; };
  *  Models & Collections
  */
 Word = Backbone.RelationalModel.extend({
-  /* A Word model repersents each tokenized word present
+  /* A Word model represents each tokenized word present
    * in the paragraph YPet is attached to. */
   defaults: {
     text: '',
@@ -75,10 +75,17 @@ AnnotationList = Backbone.Collection.extend({
   model: Annotation,
   url: '/api/v1/annotations',
 
+  sanitizeAnnotation : function(full_str, start) {
+    /* Return the cleaned string and the (potentially) new start position */
+    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+    return {'text':str, 'start': start+full_str.indexOf(str)};
+  },
+
   initialize : function(options) {
     this.listenTo(this, 'add', function(annotation) {
-      annotation.set('text', annotation.get('words').pluck('text').join(' '));
-      annotation.set('start', annotation.get('words').first().get('start'));
+      var ann = this.sanitizeAnnotation(annotation.get('words').pluck('text').join(' '), annotation.get('words').first().get('start'));
+      annotation.set('text', ann.text);
+      annotation.set('start', ann.start);
       this.drawAnnotations(annotation);
     });
 
@@ -107,7 +114,6 @@ AnnotationList = Backbone.Collection.extend({
 
     annotation.get('words').each(function(word, word_index) {
       word.trigger('highlight', {'color': annotation_type.get('color')});
-      word.trigger('label', {'annotation': annotation});
       if(word_index == words_len-1) { word.set('neighbor', true); }
     });
   },
@@ -184,7 +190,7 @@ WordView = Backbone.Marionette.ItemView.extend({
     'mouseup'   : 'mouseup',
   },
 
-  /* Setup even listeners for word spans */
+  /* Setup event listeners for word spans */
   initialize : function(options) {
     this.listenTo(this.model, 'change:neighbor', this.render);
     this.listenTo(this.model, 'change:latest', function(model, value, options) {
@@ -197,9 +203,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     });
     this.listenTo(this.model, 'highlight', function(options) {
       this.$el.css({'backgroundColor': options.color});
-    });
-    this.listenTo(this.model, 'label', function(options) {
-      this.$el.data('uannid', options.annotation.collection.indexOf(options.annotation));
     });
  },
 
@@ -258,7 +261,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     evt.stopPropagation();
     var word = this.model,
         words = word.collection;
-    word.trigger('highlight', {'color': '#fff'});
 
     var selected = words.filter(function(word) { return word.get('latest') });
     if(selected.length == 1 && word.get('parentAnnotation') ) {
