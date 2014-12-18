@@ -28,7 +28,7 @@ class QuestSerializer(serializers.ModelSerializer):
         current_submissions_count = UserQuestRelationship.objects.filter(task=task, completed=True).count()
         return {'required': task.completions if task.completions else 10000,
                 'current': current_submissions_count,
-                'completed': task.completions if task.completions else 10000 <= current_submissions_count}
+                'completed': task.completions == current_submissions_count if task.completions else 10000 <= current_submissions_count}
 
     class Meta:
         model = Task

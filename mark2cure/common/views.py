@@ -228,11 +228,11 @@ def dashboard(request):
         msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>';
         messages.info(request, msg + msg_footer, extra_tags='safe alert-success')
 
-    elif user_completed_count >= 1 and community_completed_count <= query_set_count:
+    elif user_completed_count >= 1 and community_completed_count == query_set_count-1:
         msg = '<p class="lead text-center">Thank you very much for your participation in the first experiment. The Mark2Cure community has completed all the quests available.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-info')
 
-    elif community_completed_count <= query_set_count:
+    elif community_completed_count == query_set_count-1:
         msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
