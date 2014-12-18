@@ -1,6 +1,6 @@
 # Create your views here.
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.http import HttpResponse
@@ -8,17 +8,16 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
-from django.contrib.auth import authenticate, login
-
-from mark2cure.account.models import UserProfile
-from mark2cure.account.forms import UserForm, UserProfileForm
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-
+from mark2cure.account.models import UserProfile
 from mark2cure.common.models import Task, UserQuestRelationship
+from .forms import UserCreateForm, UserNameChangeForm, UserProfileForm
+
 from brabeion import badges
 from brabeion.models import BadgeAward
 
@@ -32,23 +31,21 @@ def settings(request):
         Use this endpoint for strict user setting modifications
         like password (auth.user)
     """
-    user = request.user
-
+    user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+    user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
+    user_password_form = PasswordChangeForm(request.user)
 
     if request.method == 'POST':
-        profileForm = UserProfileForm(request.POST, instance=user.profile)
-        if profileForm.is_valid():
-            profileForm.save()
-            return redirect('mark2cure.account.views.settings')
+        user_change_form.save()
+        user_profile_form.save()
+        user_password_form.save()
+        return redirect('mark2cure.account.views.settings')
 
-    profileForm = UserProfileForm(instance=user.profile)
-    passwordChangeForm = PasswordChangeForm(user)
-
-    return render_to_response('account/settings.jade',
-            {'passwordChangeForm': passwordChangeForm,
-             'user_profile': user.profile,
-             'user_profile_form': profileForm},
-              context_instance=RequestContext(request))
+    return TemplateResponse(request,
+            'account/settings.jade',
+            {'user_change_form': user_change_form,
+             'user_profile_form': user_profile_form,
+             'user_password_form': user_password_form})
 
 
 @api_view(['GET'])
@@ -64,50 +61,44 @@ def user_points(request):
     })
 
 
-def create(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated():
-            form = UserProfileForm(request.POST, instance=request.user.profile)
-            if form.is_valid():
-                form.save()
-                # They already have an account, let's get them
-                # started!
-                return redirect('mark2cure.common.views.dashboard')
+def user_creation(request):
+    user_create_form = UserCreateForm(data=request.POST or None)
+    if request.POST and user_create_form.is_valid():
+        user = user_create_form.save()
 
-        else:
-            form = UserForm(request.POST)
-            if form.is_valid():
-                user = form.save()
-                profile = user.profile
-                profile.save()
+        user = authenticate(
+            username=request.POST['username'],
+            password=request.POST['password1'])
+        auth_login(request, user)
 
-                user = authenticate(
-                    username=request.POST['username'],
-                    password=request.POST['password'])
-                login(request, user)
+        # In order to create an account they've already done the
+        # first 2 training Tasks
+        task = Task.objects.first()
+        badges.possibly_award_badge("skill_awarded", user=user, level=task.provides_qualification)
+        user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
-                # In order to create an account they've already done the
-                # first 2 training Tasks
-                task = Task.objects.first()
-                badges.possibly_award_badge("skill_awarded", user=user, level=task.provides_qualification)
-                user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-                UserQuestRelationship.objects.create(task=task, user=user, completed=True)
+        # Redirect them back b/c of the UserProfileForm
+        return redirect('/account/create/settings/')
 
-                # Redirect them back b/c of the UserProfileForm
-                return redirect('mark2cure.account.views.create')
+    return TemplateResponse(request, 'account/create.jade', {'form': user_create_form})
 
 
-    if request.user.is_authenticated():
-        user_form = UserForm(instance=request.user)
-        user_profile_form = UserProfileForm(instance=request.user.profile)
-    else:
-        user_form = UserForm()
-        user_profile_form = UserProfileForm()
+@login_required
+def user_creation_settings(request):
+    user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+    user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
 
-    return render_to_response('account/create.jade',
-                              {'user_form': user_form,
-                               'user_profile_form': user_profile_form},
-                              context_instance=RequestContext(request))
+    if request.POST and user_profile_form.is_valid():
+        user_change_form.save()
+        user_profile_form.save()
+        # They already have an account, let's get them
+        # started!
+        return redirect('mark2cure.common.views.dashboard')
+
+    return TemplateResponse(request, 'account/create-settings.jade',
+            {'user_change_form': user_change_form,
+             'user_profile_form': user_profile_form})
 
 
 @require_http_methods(["POST"])
@@ -129,18 +120,3 @@ def newsletter_subscribe(request):
       return redirect('/')
     return HttpResponse('Unauthorized', status=401)
 
-
-@login_required
-@require_http_methods(['POST'])
-def update_profile(request, profile_id):
-    """
-        User this endpoint for updating profile and game
-        specific traits about a profile (auth.user.userprofile)
-    """
-    profile = get_object_or_404(UserProfile, pk=profile_id)
-    form = UserProfileForm(request.POST, instance=profile)
-
-    if form.is_valid():
-        profile = form.save()
-
-    return redirect('/account/')

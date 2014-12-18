@@ -1,0 +1,65 @@
+extends base
+
+- load widget_tweaks
+
+block header
+  - with headerMessage='Account Registration'
+    include includes/header-anon
+
+block content
+  .container
+
+    .row.foot-space
+      .col-md-12
+        h2 You have now completed the tutorial and are ready to Mark2Cure!
+        - if not user.is_authenticated
+          h4 To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
+
+    .row.foot-space-xl
+      .col-md-10.col-md-offset-1
+        .row.foot-space
+          h3 Profile Information <small>(this is optional, you can always edit it later)</small>
+
+        .row
+          form(role='form', method='post')
+            - csrf_token
+
+            .row.foot-space
+              .col-sm-6
+                .row.foot-space
+                  .col-sm-6
+                    #{user_change_form.first_name|add_class:'form-control'|attr:'placeholder:First Name'}
+                  .col-sm-6
+                    #{user_change_form.last_name|add_class:'form-control'|attr:'placeholder:Last Name'}
+
+                .row
+                  .col-sm-12
+                    label.col-sm-4.control-label Country:
+                    .row
+                      .col-sm-10.col-sm-offset-1
+                        #{user_profile_form.country|add_class:'form-control'}
+
+              .col-sm-6
+                label.col-sm-4.control-label Motivation:
+                .row
+                  .col-sm-10.col-sm-offset-1
+                    #{user_profile_form.motivation|add_class:'form-control'|attr:'rows:3'}
+
+            .row.foot-space
+              .col-sm-12
+                label.col-sm-4.control-label Quote / Signature:
+                .row
+                  .col-sm-10.col-sm-offset-1
+                    #{user_profile_form.quote|add_class:'form-control'|attr:'rows:4'}
+
+
+            .row.head-space
+              .col-sm-8.col-sm-offset-2
+                p.text-center.text-muted By registering, I agree to abide by the Mark2Cure <a href='/tos/', target='_blank'>Terms of Service</a>
+
+            .row.head-space
+              .col-sm-4.col-sm-offset-4
+                button(type='submit').btn.btn-success.btn-block Start Now!
+              .col-sm-2
+                small
+                  a(href='/dashboard/') or skip

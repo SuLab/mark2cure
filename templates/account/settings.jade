@@ -14,19 +14,18 @@ block content
             - if passwordChangeForm.errors
                 p Your passwords didn't match. Please try again.
 
-            form(method='post', action='/account/change/').form-horizontal
+            form(method='post').form-horizontal
               - csrf_token
 
               .form-group
                 label(for='id_username').control-label.col-md-4 Username
                 .col-md-8
-                  input(name='username', type='text', id='id_username', value='{{user.username}}', disabled).form-control
+                  input(name='username', type='text', id='id_username', value='{{user_change_form.username}}', disabled).form-control
 
               .form-group
                 label(for='id_email').control-label.col-md-4 Email
                 .col-md-8
-                  input(name='email', type='text', id='id_email', value='{{user.email}}', disabled).form-control
-
+                  input(type='text', value='{{user.email}}', disabled).form-control
 
               .form-group
                 label(for='id_old_password').control-label.col-md-4 Old Password
@@ -43,24 +42,7 @@ block content
                 .col-md-8
                   input(name='new_password2', type='password', id='id_new_password2').form-control
 
-
               input(type='submit', value='Save New Password').btn.btn-default.full-width
-
-      div(style='display:none;').col-md-6
-        form(method='post', action='/account/settings/')
-          - csrf_token
-          .row
-            .col-sm-12
-              label.col-sm-4.control-label Avatar:
-
-            .col-sm-6
-              img(src='#{user_profile.avatar.url}').img-responsive
-            .col-sm-6
-              #{user_profile_form.avatar|add_class:'form-control'}
-
-          .row.head-space
-            .col-sm-6.col-sm-offset-3
-              button(type='submit').btn.btn-default.btn-block Update Avatar
 
     hr
 
@@ -68,7 +50,7 @@ block content
       .col-md-3
         h2 Profile Information
       .col-md-12
-        form(method='post', action='/account/settings/').form-horizontal
+        form(method='post').form-horizontal
           - csrf_token
 
           .row
@@ -76,23 +58,12 @@ block content
               .form-group
                 label(for='id_first_name').control-label.col-md-4 First Name
                 .col-md-8
-                  input(name='first_name', type='text', id='id_first_name', value='#{user.first_name}').form-control
+                  #{user_change_form.first_name|add_class:'form-control'|attr:'placeholder:First Name'}
 
               .form-group
                 label(for='id_last_name').control-label.col-md-4 Last Name
                 .col-md-8
-                  input(name='last_name', type='text', id='id_last_name', value='#{user.last_name}').form-control
-
-              div(style='display:none;').form-group
-                .col-md-6
-                  input(name='country', type='text', id='id_country').form-control
-                .col-md-6
-                  input(name='state', type='text', id='id_state').form-control
-
-              div(style='display:none;').form-group
-                label(for='id_birthday').control-label.col-md-4 Birthday
-                .col-md-8
-                  input(name='birthday', type='text', id='id_birthday').form-control
+                  #{user_change_form.last_name|add_class:'form-control'|attr:'placeholder:Last Name'}
 
             .col-md-6
               .row
@@ -117,15 +88,4 @@ block content
           .row.head-space
             .col-sm-3.col-sm-offset-8
               button(type='submit').btn.btn-default.btn-block.pull-right Update
-
-    .row(style='display:none;')
-      .col-md-12
-        h2 Privacy Controls
-          form(method='post', action='/account/{{user.profile.pk}}/profile/')
-            - csrf_token
-            .form-group
-              #{profileForm.timezone|add_class:'form-control'}
-
-              input(type='submit', value='Update Settings').btn.btn-primary.full-width.breathe-top-mid
-
 
