@@ -33,19 +33,16 @@ def settings(request):
     """
     user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
     user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
-    user_password_form = PasswordChangeForm(request.user)
 
     if request.method == 'POST':
         user_change_form.save()
         user_profile_form.save()
-        user_password_form.save()
-        return redirect('mark2cure.account.views.settings')
+        return redirect('account:user_settings')
 
     return TemplateResponse(request,
             'account/settings.jade',
             {'user_change_form': user_change_form,
-             'user_profile_form': user_profile_form,
-             'user_password_form': user_password_form})
+             'user_profile_form': user_profile_form})
 
 
 @api_view(['GET'])
@@ -79,7 +76,7 @@ def user_creation(request):
         UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
         # Redirect them back b/c of the UserProfileForm
-        return redirect('/account/create/settings/')
+        return redirect('account:user_creation_settings')
 
     return TemplateResponse(request, 'account/create.jade', {'form': user_create_form})
 
@@ -99,24 +96,4 @@ def user_creation_settings(request):
     return TemplateResponse(request, 'account/create-settings.jade',
             {'user_change_form': user_change_form,
              'user_profile_form': user_profile_form})
-
-
-@require_http_methods(["POST"])
-def newsletter_subscribe(request):
-    email = request.POST.get('email', None)
-    notify = request.POST.get('email_notify', False)
-    if notify is not False:
-      notify = True
-
-    if email:
-      u, created = User.objects.get_or_create(username=email, email=email)
-      if created:
-        u.set_password('')
-        profile = u.profile
-        profile.email_notify = notify
-        profile.save()
-      u.save()
-
-      return redirect('/')
-    return HttpResponse('Unauthorized', status=401)
 

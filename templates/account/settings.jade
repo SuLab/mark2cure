@@ -11,79 +11,58 @@ block content
   .container
     .row.head-space
       .col-md-6
-            - if passwordChangeForm.errors
-                p Your passwords didn't match. Please try again.
+        form.form-horizontal
+          fieldset
+            .form-group
+              label(for='id_username').control-label.col-md-4 Username
+              .col-md-8
+                input(type='text', value='{{user.username}}', disabled).form-control
 
-            form(method='post').form-horizontal
-              - csrf_token
-
-              .form-group
-                label(for='id_username').control-label.col-md-4 Username
-                .col-md-8
-                  input(name='username', type='text', id='id_username', value='{{user_change_form.username}}', disabled).form-control
-
-              .form-group
-                label(for='id_email').control-label.col-md-4 Email
-                .col-md-8
-                  input(type='text', value='{{user.email}}', disabled).form-control
-
-              .form-group
-                label(for='id_old_password').control-label.col-md-4 Old Password
-                .col-md-8
-                  input(name='old_password', type='password', id='id_old_password').form-control
-
-              .form-group
-                label(for='id_new_password1').control-label.col-md-4 New Password
-                .col-md-8
-                  input(name='old_password1', type='password', id='id_new_password1').form-control
-
-              .form-group
-                label(for='id_new_password2').control-label.col-md-4 Verify New Password
-                .col-md-8
-                  input(name='new_password2', type='password', id='id_new_password2').form-control
-
-              input(type='submit', value='Save New Password').btn.btn-default.full-width
+            .form-group
+              label(for='id_email').control-label.col-md-4 Email
+              .col-md-8
+                input(type='text', value='{{user.email}}', disabled).form-control
 
     hr
 
     .row
-      .col-md-3
+      .col-lg-3
         h2 Profile Information
       .col-md-12
         form(method='post').form-horizontal
           - csrf_token
-
           .row
             .col-md-6
-              .form-group
-                label(for='id_first_name').control-label.col-md-4 First Name
-                .col-md-8
-                  #{user_change_form.first_name|add_class:'form-control'|attr:'placeholder:First Name'}
+              fieldset
+                .form-group
+                  label(for='id_first_name').control-label.col-md-4 First Name
+                  .col-md-8
+                    #{user_change_form.first_name|add_class:'form-control'|attr:'placeholder:First Name'}
 
-              .form-group
-                label(for='id_last_name').control-label.col-md-4 Last Name
-                .col-md-8
-                  #{user_change_form.last_name|add_class:'form-control'|attr:'placeholder:Last Name'}
+                .form-group
+                  label(for='id_last_name').control-label.col-md-4 Last Name
+                  .col-md-8
+                    #{user_change_form.last_name|add_class:'form-control'|attr:'placeholder:Last Name'}
 
             .col-md-6
               .row
                 .col-sm-12
                   label(for='id_motivation') I contribute to Mark2Cure because:
                 .col-sm-10.col-sm-offset-1
-                  #{user_profile_form.motivation|add_class:'form-control'}
+                  #{user_profile_form.motivation|add_class:'form-control'|attr:'rows:2'}
 
               .row.head-space
                 .col-sm-12
                   label(for='id_referal') I heard about Mark2Cure from:
                 .col-sm-10.col-sm-offset-1
-                  #{user_profile_form.referral|add_class:'form-control'}
+                  #{user_profile_form.referral|add_class:'form-control'|attr:'rows:2'}
 
           .row
             .col-sm-12
               label(for='id_signature') Quote / Signature:
 
             .col-sm-10.col-sm-offset-1
-                #{user_profile_form.quote|add_class:'form-control'}
+                #{user_profile_form.quote|add_class:'form-control'|attr:'rows:4'}
 
           .row.head-space
             .col-sm-3.col-sm-offset-8

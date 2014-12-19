@@ -1,8 +1,7 @@
 from django.conf.urls import patterns, include, url
 from . import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = patterns('',
     url(r'^logout/$',
         'django.contrib.auth.views.logout',
         {'next_page': '/'},
@@ -20,7 +19,7 @@ urlpatterns = patterns(
 
     url(r'^password_reset/done/$',
         'django.contrib.auth.views.password_reset_done',
-        kwargs={'template_name': 'account/reset-thanks.jade'}, name='password_reset_done'),
+        kwargs={'template_name': 'account/reset-thanks.jade'}, ),
 
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         'django.contrib.auth.views.password_reset_confirm',
@@ -30,16 +29,9 @@ urlpatterns = patterns(
         'django.contrib.auth.views.password_reset_complete',
         kwargs={'template_name': 'account/reset-done.jade'}, name='password_reset_complete'),
 
-)
 
-urlpatterns += patterns('mark2cure.account.views',
-    url(r'^$', r'settings'),
     url(r'^settings/$', views.settings, name='user_settings'),
-
-    # REST Framework
-    url(r'^points/$', r'user_points'),
+    url(r'^points/$', views.user_points),
     url(r'^create/settings/$', views.user_creation_settings, name='user_creation_settings'),
     url(r'^create/$', views.user_creation, name='user_creation'),
-
-    url(r'^newsletter/subscribe/$', r'newsletter_subscribe'),
 )
