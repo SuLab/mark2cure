@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from . import views
 
 urlpatterns = patterns('',
@@ -31,7 +31,6 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_complete',
         kwargs={'template_name': 'account/reset-done.jade'},
         name='password_reset_complete'),
-
 
     url(r'^settings/$', views.settings, name='user_settings'),
     url(r'^points/$', views.user_points),

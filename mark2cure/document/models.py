@@ -1,11 +1,8 @@
 from django.db import models
-from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 
 from mark2cure.document.managers import DocumentManager
 
-from decimal import Decimal as D
 from nltk.tokenize import WhitespaceTokenizer
 
 
@@ -36,11 +33,11 @@ class Document(models.Model):
 
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
-      ('o', 'Overview'),
-      ('t', 'Title'),
-      ('a', 'Abstract'),
-      ('p', 'Paragraph'),
-      ('f', 'Figure'),
+        ('o', 'Overview'),
+        ('t', 'Title'),
+        ('a', 'Abstract'),
+        ('p', 'Paragraph'),
+        ('f', 'Figure'),
     )
     kind = models.CharField(max_length=1, choices=SECTION_KIND_CHOICE)
     text = models.TextField(blank=True)
@@ -66,24 +63,24 @@ class Section(models.Model):
 
         # Build the running counter of times a word was annotated
         for gm_pk, start, text in gm_anns:
-          length = len(text)
+            length = len(text)
 
-          for idx, word in enumerate(words):
-            word_start = word[0][0]
-            counter = word[2]
-            if word_start >= start and word_start <= start + length:
-              counter += 1
-              words[idx] = (word[0], word[1], counter, gm_pk, word[3], word[4])
+            for idx, word in enumerate(words):
+                word_start = word[0][0]
+                counter = word[2]
+                if word_start >= start and word_start <= start + length:
+                    counter += 1
+                    words[idx] = (word[0], word[1], counter, gm_pk, word[3], word[4])
 
         user_anns = Annotation.objects.filter(view=user_view).values_list('pk', 'start', 'text')
 
         # Build the running counter of times a word was annotated
         for user_pk, start, text in user_anns:
-          length = len(text)
-          for idx, word in enumerate(words):
-            word_start = word[0][0]
-            if word_start >= start and word_start <= start + length:
-              words[idx] = (word[0], word[1], word[2], word[3], user_pk, True)
+            length = len(text)
+            for idx, word in enumerate(words):
+                word_start = word[0][0]
+                if word_start >= start and word_start <= start + length:
+                    words[idx] = (word[0], word[1], word[2], word[3], user_pk, True)
 
         return words
 
@@ -95,17 +92,18 @@ class Section(models.Model):
 
     def __unicode__(self):
         if self.kind == 'o':
-          return u'[Overview] {0}'.format(self.document.title)
+            return u'[Overview] {0}'.format(self.document.title)
         else:
-          return self.text
+            return self.text
 
 TASK_TYPE_CHOICE = (
-  ('cr', 'Concept Recognition'),
-  ('cn', 'Concept Normalization'),
-  ('rv', 'Relationship Verification'),
-  ('ri', 'Relationship Identification'),
-  ('rc', 'Relationship Correction'),
+    ('cr', 'Concept Recognition'),
+    ('cn', 'Concept Normalization'),
+    ('rv', 'Relationship Verification'),
+    ('ri', 'Relationship Identification'),
+    ('rc', 'Relationship Correction'),
 )
+
 
 class View(models.Model):
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
@@ -115,15 +113,19 @@ class View(models.Model):
     user = models.ForeignKey(User)
 
     def __unicode__(self):
-        return u'Doc:'+ str(self.section.document.pk) +', Sec:'+ str(self.section.pk) +' by '+ self.user.username
+        return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
+            doc_id=self.section.document.pk,
+            sec_id=self.section.pk,
+            username=self.user.username)
+
 
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
-      ('e', 'Entities'),
-      ('a', 'Attributes'),
-      ('r', 'Relations'),
-      ('t', 'Triggers'),
-      ('e', 'Events'),
+        ('e', 'Entities'),
+        ('a', 'Attributes'),
+        ('r', 'Relations'),
+        ('t', 'Triggers'),
+        ('e', 'Events'),
     )
     kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
 
@@ -152,5 +154,4 @@ class Annotation(models.Model):
         get_latest_by = 'updated'
         # (TODO) This is not supported by MySQL but would help prevent dups in this table
         # unique_together = ['kind', 'type', 'text', 'start', 'view']
-
 

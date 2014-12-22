@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from optparse import make_option
 from django.contrib.auth.models import User
 
@@ -36,11 +36,15 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        print args, options
         datasets = ['NCBI_corpus_testing', 'NCBI_corpus_training', 'NCBI_corpus_development']
-        gm_documents_ids = [3464560, 7759075, 8198128, 3591825];
+        gm_documents_ids = [3464560, 7759075, 8198128, 3591825]
 
-        doc_set = ['8589723', '8621452', '8644702', '8651278', '8661102', '8673131', '8675707', '8700509', '8751855', '8758207', '8786135', '8808605', '8824873', '8828602', '8843193', '8871666', '8929413', '8931709', '8944024', '8968716', '9012409', '9028321', '9056547', '9069115', '9090524', '9144439', '9174057', '8636252', '8689689', '8898652']
+        doc_set = ['8589723', '8621452', '8644702', '8651278', '8661102',
+                '8673131', '8675707', '8700509', '8751855', '8758207',
+                '8786135', '8808605', '8824873', '8828602', '8843193',
+                '8871666', '8929413', '8931709', '8944024', '8968716',
+                '9012409', '9028321', '9056547', '9069115', '9090524',
+                '9144439', '9174057', '8636252', '8689689', '8898652']
         mixed_gm = [8636252, 8689689, 8898652]
 
         '''
@@ -88,25 +92,25 @@ class Command(BaseCommand):
                             if dqr:
                                 # Be (though uncomplete) associted with each first quest to link Views
                                 gm_quest_rel, gm_quest_rel_created = UserQuestRelationship.objects.get_or_create(
-                                        task=dqr.task,
-                                        user=user)
+                                    task=dqr.task,
+                                    user=user)
 
                                 for section in doc.section_set.all():
                                     # Make sure the annotion is for the title or abstract (our supported section types)
                                     if section.kind == doc_field[0]:
                                         view, created = View.objects.get_or_create(
-                                                section=section,
-                                                user=user,
-                                                completed=True)
+                                            section=section,
+                                            user=user,
+                                            completed=True)
 
                                         gm_quest_rel.views.add(view)
                                         print gm_quest_rel.views.count()
                                         Annotation.objects.create(
-                                                view=view,
-                                                text=text,
-                                                start=start,
-                                                type=ann_type,
-                                                kind='e')
+                                            view=view,
+                                            text=text,
+                                            start=start,
+                                            type=ann_type,
+                                            kind='e')
 
         '''
             Randomly assign the loaded documents into our bins
@@ -118,11 +122,11 @@ class Command(BaseCommand):
 
             # GM hidden
             task, task_created = Task.objects.get_or_create(
-                    name=str(task_counter),
-                    completions=None,
-                    requires_qualification=3,
-                    provides_qualification=4,
-                    points=5000)
+                name=str(task_counter),
+                completions=None,
+                requires_qualification=3,
+                provides_qualification=4,
+                points=5000)
 
             for doc in task.documents.all():
                 dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
@@ -132,8 +136,11 @@ class Command(BaseCommand):
                 DocumentQuestRelationship.objects.create(task=task, document=gold_document)
 
             # Insert the other Documents
-            #document_set = list(Document.objects.filter(source='NCBI_corpus_training').exclude(document_id__in=gm_documents_ids).values_list('id', flat=True))
-            document_set = list(Document.objects.filter(document_id__in=doc_set).exclude(document_id__in=gm_documents_ids).values_list('id', flat=True))
+            document_set = list(
+                Document.objects.filter(document_id__in=doc_set)
+                                .exclude(document_id__in=gm_documents_ids)
+                                .values_list('id', flat=True)
+            )
 
             smallest_bin = 5
             largest_bin = 5
@@ -143,11 +150,11 @@ class Command(BaseCommand):
             while len(document_set) > smallest_bin:
                 task_counter += 1
                 task, task_created = Task.objects.get_or_create(
-                        name=str(task_counter),
-                        completions=completions,
-                        requires_qualification=4,
-                        provides_qualification=4,
-                        points=5000)
+                    name=str(task_counter),
+                    completions=completions,
+                    requires_qualification=4,
+                    provides_qualification=4,
+                    points=5000)
 
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
                 sel = document_set[0:quest_size]
@@ -167,11 +174,11 @@ class Command(BaseCommand):
                 if len(document_set) > 0:
                     task_counter += 1
                     task, task_created = Task.objects.get_or_create(
-                            name=str(task_counter),
-                            completions=completions,
-                            requires_qualification=4,
-                            provides_qualification=4,
-                            points=5000)
+                        name=str(task_counter),
+                        completions=completions,
+                        requires_qualification=4,
+                        provides_qualification=4,
+                        points=5000)
 
                     print "Adding", len(document_set), "to Quest:", task_counter, 'remaining', len(document_set)
 

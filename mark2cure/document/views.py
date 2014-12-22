@@ -44,11 +44,11 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
     user_profile.save()
 
     return render_to_response('document/concept-recognition.jade',
-                              { 'task': task,
-                                'doc': doc,
-                                'sections': sections,
-                                'user_profile': user_profile,
-                                'task_type': 'concept-recognition'},
+                              {'task': task,
+                               'doc': doc,
+                               'sections': sections,
+                               'user_profile': user_profile,
+                               'task_type': 'concept-recognition'},
                               context_instance=RequestContext(request))
 
 
@@ -120,10 +120,10 @@ def identify_annotations_results(request, task_id, doc_id):
     # results for this particular document
     user_views = []
     gm_views = []
-    ctx = { 'task': task,
-            'doc': doc,
-            'user_profile': user_profile,
-            'task_type': 'concept-recognition' };
+    ctx = {'task': task,
+           'doc': doc,
+           'user_profile': user_profile,
+           'task_type': 'concept-recognition'}
 
     if others_quest_relationships.exists() and \
             others_quest_relationships.filter(user=gm_user).exists() and \
@@ -144,7 +144,6 @@ def identify_annotations_results(request, task_id, doc_id):
         ctx['sections'] = sections
         ctx['partner'] = selected_user
         return show_comparison_results(request, user_views, gm_views, ctx)
-
 
     elif others_quest_relationships.exists() and len(previous_users):
 
@@ -182,7 +181,6 @@ def identify_annotations_results(request, task_id, doc_id):
                context_instance=RequestContext(request))
 
 
-
 def show_comparison_results(request, user_views, gm_views, ctx):
     # Take views from whoever the partner was
     # and use those to calculate the score (and assign
@@ -197,8 +195,6 @@ def show_comparison_results(request, user_views, gm_views, ctx):
     return render_to_response('document/concept-recognition-results-partner.jade',
            ctx,
            context_instance=RequestContext(request))
-
-
 
 
 '''

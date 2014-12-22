@@ -1,8 +1,6 @@
-from django.contrib.auth.models import User
 from mark2cure.common.models import Task, UserQuestRelationship
-
 from rest_framework import serializers
-from random import randrange
+
 
 class QuestSerializer(serializers.ModelSerializer):
 
@@ -15,7 +13,6 @@ class QuestSerializer(serializers.ModelSerializer):
 
         # Instantiate the superclass normally
         super(QuestSerializer, self).__init__(*args, **kwargs)
-
 
     user = serializers.SerializerMethodField('get_user_status')
     progress = serializers.SerializerMethodField('get_progress_status')

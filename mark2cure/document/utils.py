@@ -18,7 +18,7 @@ def determine_f(true_positive, false_positive, false_negative):
     recall = true_positive / float(true_positive + false_negative)
 
     if float(precision + recall) > 0.0:
-        f = ( 2 * precision * recall ) / ( precision + recall )
+        f = (2 * precision * recall) / (precision + recall)
         return (precision, recall, f)
     else:
         return (0.0, 0.0, 0.0)
@@ -68,7 +68,7 @@ def generate_results(user_views, gm_views):
 def create_from_pubmed_id(pubmed_id=None):
     pubmed_id = str(pubmed_id)
 
-    ## Check if the account already exists
+    # Check if the account already exists
     try:
         return Document.objects.get(document_id=pubmed_id)
 

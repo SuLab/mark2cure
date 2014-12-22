@@ -15,14 +15,12 @@ class SimpleTest(TestCase):
         user.is_staff = True
         user.save()
 
-
     def test_landing(self):
         '''
           Test that the landing page is online / rendering correctly
         '''
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'landing/index.jade')
-
 
     def test_login(self):
         '''
@@ -31,12 +29,11 @@ class SimpleTest(TestCase):
         response = self.client.get('/library/')
         self.assertRedirects(response, '/account/login/?next=/library/')
 
-
     def test_library_documents(self):
         '''
           Make sure documents are being served to the library view to iterate over
         '''
-        logged_in = self.client.login(username = 'test-admin', password  ='test-admin-password')
+        logged_in = self.client.login(username='test-admin', password='test-admin-password')
 
         print logged_in
 
@@ -75,18 +72,18 @@ class MySeleniumTests(LiveServerTestCase):
         demo_user_email = "demo@gmail.com"
 
         # Assert: No previous signup users
-        signup_users = User.objects.filter(email = demo_user_email).all()
+        signup_users = User.objects.filter(email=demo_user_email).all()
         self.assertEquals(len(signup_users), 0)
 
         # Submit the form
-        self.selenium.get( self.live_server_url )
+        self.selenium.get(self.live_server_url)
         email_input = self.selenium.find_element_by_name("email")
         email_input.send_keys(demo_user_email)
         self.selenium.find_element_by_name("email_notify").click()
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
 
         # Assert: User added
-        signup_users = User.objects.filter(email = demo_user_email).all()
+        signup_users = User.objects.filter(email=demo_user_email).all()
         self.assertEquals(len(signup_users), 1)
 
         # Assert: email notify flag saved correctly

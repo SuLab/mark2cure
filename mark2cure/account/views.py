@@ -1,27 +1,18 @@
-# Create your views here.
-from django.shortcuts import render_to_response, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from django.http import HttpResponse
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login
 
-from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from mark2cure.account.models import UserProfile
 from mark2cure.common.models import Task, UserQuestRelationship
 from .forms import UserCreateForm, UserNameChangeForm, UserProfileForm
 
 from brabeion import badges
 from brabeion.models import BadgeAward
 
-import datetime
 import os
 
 
@@ -49,7 +40,7 @@ def settings(request):
 @login_required
 def user_points(request):
     points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
-    skill_badge =  BadgeAward.objects.filter(user=request.user, slug='skill').last()
+    skill_badge = BadgeAward.objects.filter(user=request.user, slug='skill').last()
 
     return Response({
         'points': request.user.userprofile.rating_score,

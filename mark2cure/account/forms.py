@@ -1,9 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.forms.models import model_to_dict, fields_for_model
 
 from mark2cure.account.models import UserProfile
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm
 
 
 class UserCreateForm(UserCreationForm):
@@ -20,6 +19,7 @@ class UserCreateForm(UserCreationForm):
             user.save()
             return user
 
+
 class UserNameChangeForm(forms.ModelForm):
     class Meta:
         model = User
@@ -33,5 +33,5 @@ class UserProfileForm(forms.ModelForm):
                   'gender', 'age', 'occupation', 'education',
                   'science_education', 'country', 'referral',
                   'motivation', 'quote']
-        exclude = ['user',]
+        exclude = ['user', ]
 

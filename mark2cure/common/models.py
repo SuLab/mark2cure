@@ -11,10 +11,10 @@ class SkillBadge(Badge):
     slug = "skill"
     levels = [
         "Basic",
-        "Disease Marking", # T1 complete
-        "Disease Advanced", # T2 complete
-        "Disease Matching", # T3 complete
-        "Intermediate", # 1st GM Quest Complete
+        "Disease Marking",  # T1 complete
+        "Disease Advanced",  # T2 complete
+        "Disease Matching",  # T3 complete
+        "Intermediate",  # 1st GM Quest Complete
         "Proficient",
         "Advanced",
         "Expert",
@@ -29,7 +29,7 @@ class SkillBadge(Badge):
         level = state.pop("level", None)
         current_highest = user.profile.highest_level(self.slug).level
         if level and level == current_highest + 1:
-            return BadgeAwarded(level=level+1)
+            return BadgeAwarded(level=level + 1)
 
 
 badges.register(SkillBadge)
