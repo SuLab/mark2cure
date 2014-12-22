@@ -231,6 +231,10 @@ def dashboard(request):
         msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
+    else:
+        msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
+        messages.info(request, msg, extra_tags='safe alert-success')
+
     return render_to_response('common/dashboard.jade',
                               {'posts': posts,
                                'tasks': tasks,
