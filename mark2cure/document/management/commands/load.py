@@ -35,7 +35,6 @@ class Command(BaseCommand):
             help='Load the Documents into Mark2Cure and require 0 associations'),
     )
 
-
     def handle(self, *args, **options):
         print args, options
         datasets = ['NCBI_corpus_testing', 'NCBI_corpus_training', 'NCBI_corpus_development']
@@ -153,8 +152,8 @@ class Command(BaseCommand):
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
                 sel = document_set[0:quest_size]
 
-                for i in sel: document_set.remove(i)
-                print "Adding", len(sel), "to Quest:", task_counter, 'remaining:', len(document_set)
+                for i in sel:
+                    document_set.remove(i)
 
                 for doc in task.documents.all():
                     dqr = DocumentQuestRelationship.objects.get(task=task, document=doc),
@@ -183,7 +182,6 @@ class Command(BaseCommand):
                     for doc_idx in document_set:
                         document = Document.objects.get(pk=doc_idx)
                         DocumentQuestRelationship.objects.create(task=task, document=document)
-
 
         '''
             Import the set of documents into Mark2Cure

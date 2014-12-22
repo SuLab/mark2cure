@@ -1,13 +1,10 @@
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.views.decorators.http import require_http_methods
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import get_messages
 from django.contrib import messages
-
-from django.http import HttpResponse
 
 from mark2cure.common.models import Task, UserQuestRelationship
 from mark2cure.common.serializers import QuestSerializer
@@ -164,10 +161,8 @@ def training_two(request, step_num):
             {'next_path': '/training/intro/2/step/complete/'},
             context_instance=RequestContext(request))
 
-
     if step_num == 'complete':
         return redirect('mark2cure.common.views.training_read')
-
 
     return render_to_response(
         'training/intro-2/step-{step_num}.jade'.format(step_num=step_num),
@@ -217,22 +212,22 @@ def dashboard(request):
     queryset = Task.objects.filter(kind=Task.QUEST).all()
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
 
-    user_completed = filter(lambda task: task['user']['completed'] == True, serializer.data)
+    user_completed = filter(lambda task: task['user']['completed'] is True, serializer.data)
     user_completed_count = len(user_completed)
-    community_completed = filter(lambda task: task['progress']['completed'] == True, serializer.data)
+    community_completed = filter(lambda task: task['progress']['completed'] is True, serializer.data)
     community_completed_count = len(community_completed)
     query_set_count = len(queryset)
     msg_footer = '<p class="text-center">Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.</p>'
 
     if user_completed_count == len(serializer.data):
-        msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>';
+        msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-success')
 
-    elif user_completed_count >= 1 and community_completed_count == query_set_count-1:
+    elif user_completed_count >= 1 and community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you very much for your participation in the first experiment. The Mark2Cure community has completed all the quests available.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-info')
 
-    elif community_completed_count == query_set_count-1:
+    elif community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
         messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
@@ -285,28 +280,4 @@ def quest_read(request, quest_num):
                                'completed_docs': task_doc_ids_completed,
                                'documents': documents},
                               context_instance=RequestContext(request))
-
-
-@require_http_methods(["POST"])
-@login_required
-def message(request):
-    form = MessageForm(request.POST)
-    if form.is_valid():
-        message = form.save(commit=False)
-        message.user = request.user
-        message.save()
-        return HttpResponse("Success")
-
-    return HttpResponse('Unauthorized', status=401)
-
-
-@require_http_methods(["POST"])
-@login_required
-def survey(request):
-    for k, v in request.POST.iteritems():
-        if(k != "csrfmiddlewaretoken"):
-            sf = SurveyFeedback(question=k, response=v, user=request.user)
-            sf.save()
-
-    return HttpResponse("Success")
 

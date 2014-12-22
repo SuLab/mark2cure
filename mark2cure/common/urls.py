@@ -22,7 +22,4 @@ urlpatterns = patterns(
     url(r'^quest/(?P<quest_num>\w+)/$', r'quest_read'),
     # REST Framework
     url(r'^quest/api/read/$', r'quest_list'),
-
-    url(r'^message/$', r'message'),
-    url(r'^survey/$', r'survey')
 )
