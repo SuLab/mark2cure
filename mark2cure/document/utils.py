@@ -6,6 +6,47 @@ from mark2cure.document.models import Document, Section, Annotation
 from datetime import datetime
 from Bio import Entrez, Medline
 
+def select_best_opponate(task, document, player):
+    '''
+        Select the best opponate for a certain task meaning a
+        certain document scoped to a quest for a certain task type.
+
+        1) First weight by GM, if one is available always prefer it over
+            other users
+        2) Select users with non-empty or completely sporatic responses
+            2.1) Sort by score*, select top 10% at random
+            * If score is not present, calcuate it for each user to
+            be cached for next time
+    '''
+    # Select all (**including uncompleted**) other user started quests
+    # that have been completed
+    others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
+    gm_user = User.objects.get(username='Doc_G-man')
+
+    if others_quest_relationships.exists() and \
+            others_quest_relationships.filter(user=gm_user).exists() and \
+            others_quest_relationships.get(user=gm_user).views.filter(document=document, completed=True).exists():
+        # There is an "expert's" annotations (GM) so
+        # show those as the partner's
+        return gm_user
+
+    # Gather users from completed documents
+    # that may come from uncompleted quests
+    previous_users = []
+    for quest_relationship in others_quest_relationships.exclude(user=gm_user):
+        if quest_relationship.views.filter(document=document, completed=True).exists():
+            # (TODO) Don't add option of them unless they've submitted 1+ Annotations
+            previous_users.append(quest_relationship.user)
+
+    if others_quest_relationships.exists() and len(previous_users):
+        # No expert around so select a previous user at random
+        random.shuffle(previous_users)
+        selected_user = previous_users[0]
+        return selected_user
+
+
+    return None
+
 
 def determine_f(true_positive, false_positive, false_negative):
     if float(true_positive + false_positive) == 0.0:
