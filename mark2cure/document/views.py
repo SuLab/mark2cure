@@ -94,27 +94,6 @@ def identify_annotations_results(request, task_id, doc_id):
     if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
         return redirect('mark2cure.document.views.identify_annotations', task.pk, doc.pk)
 
-    '''
-      1) It's a GM doc with GM annotations used to score
-      2) It has community contributions (from this experiment) for context,
-         only 1 is presented
-      3) It's a novel document annotated by the worker
-    '''
-
-    # Select all (**including uncompleted**) other user started quests
-    # that have been completed
-    others_quest_relationships = task.userquestrelationship_set.exclude(user=user)
-    gm_user = User.objects.get(username='Doc_G-man')
-    selected_user = gm_user
-
-    # Gather users from completed documents
-    # that may come from uncompleted quests
-    previous_users = []
-    query = others_quest_relationships.exclude(user=gm_user)
-    for quest_relationship in query:
-        if quest_relationship.views.filter(section__document=doc, completed=True).exists():
-            previous_users.append(quest_relationship.user)
-
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
     # results for this particular document
@@ -125,43 +104,28 @@ def identify_annotations_results(request, task_id, doc_id):
            'user_profile': user_profile,
            'task_type': 'concept-recognition'}
 
-    if others_quest_relationships.exists() and \
-            others_quest_relationships.filter(user=gm_user).exists() and \
-            others_quest_relationships.get(user=gm_user).views.filter(section__document=doc, completed=True).exists():
-
-        # There is an "expert's" annotations (GM) so
-        # show those as the partner's
-        for section in sections:
-            user_view = user_quest_rel_views.get(section=section, completed=True)
-            gm_quest_rel = others_quest_relationships.get(user=gm_user)
-
-            gm_view = gm_quest_rel.views.get(section=section, completed=True)
-
-            user_views.append(user_view)
-            gm_views.append(gm_view)
-            setattr(section, 'words', section.resultwords(user_view, gm_view))
-
-        ctx['sections'] = sections
-        ctx['partner'] = selected_user
-        return show_comparison_results(request, user_views, gm_views, ctx)
-
-    elif others_quest_relationships.exists() and len(previous_users):
-
-        # No expert around so select a previous user at random
-        random.shuffle(previous_users)
-        selected_user = previous_users[0]
+    '''
+        Try to find an optimal opponate to pair the player
+        against. If one isn't available or none meet the minimum
+        requirements then just tell the player they've
+        annotated a new document
+    '''
+    opponent = select_best_opponent(task, doc, user)
+    if opponent:
 
         for section in sections:
-            user_view = user_quest_rel_views.get(section=section, completed=True)
-            user_quest_rel = others_quest_relationships.filter(user=selected_user).first()
-            gm_view = user_quest_rel.views.get(section=section, completed=True)
+            player_view = user_quest_rel_views.get(section=section, completed=True)
 
-            user_views.append(user_view)
-            gm_views.append(gm_view)
-            setattr(section, 'words', section.resultwords(user_view, gm_view))
+            quest_rel = others_quest_relationships.get(user=opponent)  # (.first() if users and dont need it if GM)
+            competitor_view = quest_rel.views.get(section=section, completed=True)
+
+            player_views.append(player_view)
+            competitor_views.append(competitor_view)
+            setattr(section, 'words', section.resultwords(user_view, competitor_view))
+
 
         ctx['sections'] = sections
-        ctx['partner'] = selected_user
+        ctx['partner'] = opponent
         return show_comparison_results(request, user_views, gm_views, ctx)
 
     else:
