@@ -1,0 +1,19 @@
+extends ./layouts/static_layout.jade
+
+block title
+  title eCleanit
+
+block content
+  .container.static-container
+    .row
+      .col-xs-12.col-sm-8.col-sm-offset-2
+        .panel.panel-default.panel-login
+          .panel-body.text-center
+            h2 Thanks!
+            .row
+              .col-xs-12.col-sm-8.col-sm-offset-2
+                p
+                  | We'll be sending you a message with instructions
+                  | on how to access your account.
+            .row.text-center
+              a.btn.btn-primary.btn-lg(href='#') Log in

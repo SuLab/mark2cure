@@ -1,0 +1,75 @@
+extends common/layouts/register_layout.jade
+
+block title
+  title eCleanit
+
+block content
+  .container-fluid
+    .row
+      .col-sm-4.col-md-4.register-sidebar
+        .logo-section
+          img(src='#{STATIC_URL}img/ecleanit_logo_141_43.png')
+        .progress-section
+          h1.text-center Welcome!
+          h2.text-center We just need a little more info to get you started.
+          ul.ec-progress-list
+            li
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 1
+              p Tell us about yourself.
+            li
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 2
+              p Tell us about your property.
+            li.active
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 3
+              p Tell us about your cleaners.
+            li.pending
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 4
+              p Tell us about your cleaning job.
+      .col-sm-8.col-sm-offset-4.col-md-8.col-md-offset-4.register-main
+        form(action='{% url "registration:setup-cleaners" %}', method='post').register-form
+          - csrf_token
+          input(type='hidden', name='boss', value='{{user.pk}}')
+          input(type='hidden', name='language', value='en')
+
+          .panel.panel-default.register-panel
+            .panel-body
+              .container-fluid
+                .row
+                  .col-sm-10.col-sm-offset-1
+                      .form-group
+                        label(for='register_cleaner_name') Cleaner name*
+                        input#register_cleaner_name.form-control(type='text', name='name')
+
+                      .form-group
+                        label(for='register_cleaner_number_1') Cleaner phone number*
+                        .row.phone-number-row
+                          .col-xs-3
+                            input#register_cleaner_number_1.form-control(type='text', maxlength='3', name='num_1')
+                          .col-xs-3
+                            input#register_cleaner_number_2.form-control(type='text', maxlength='3', name='num_2')
+                          .col-xs-6
+                            input#register_cleaner_number_3.form-control(type='text', maxlength='4', name='num_3')
+
+                      .form-group
+                        .row
+                          .col-xs-4
+                            label.label-style(for='dashboard-cleaner-rate-hr') Rate/HR
+                            input#dashboard-cleaner-rate-hr.form-control(type='number', name='rate')
+
+
+                      .form-group(style='display:none;')
+                        a.btn.btn-default.register-btn-add-cleaner
+                          span.glyphicon.glyphicon-plus &nbsp;
+                          | Add another cleaner
+
+          span.text-muted *Required field
+          br
+          button.btn.btn-primary.btn-next.pull-right(type='submit') Next

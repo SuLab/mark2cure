@@ -1,0 +1,26 @@
+- load widget_tweaks
+
+#loginModal(tabindex='-1', role='dialog', aria-labelledby='loginModalLabel', aria-hidden='true').modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h4.modal-title Login
+        h5 Welcome Back
+
+      .modal-body
+        .row
+          .col-md-4.col-md-offset-4
+            - if login_form.errors
+                p Your username and password didn't match. Please try again.
+                #{login_form.errors}
+
+            form(method='post', action='{% url "registration:login" %}')
+              - csrf_token
+              p #{login_form.username|add_class:'form-control'|attr:'placeholder:username'}
+              p #{login_form.password|add_class:'form-control'|attr:'placeholder:password'}
+              input(type='hidden', name='next', value='{% url "profile:settings" %}')
+
+      .modal-footer
+        a(href='{% url "registration:password-reset" %}').btn.btn-default Forgot
+        button(type='button', data-dismiss='modal').btn.btn-default Cancel
+        button(type='button').btn.btn-default.modal-form-submit Login

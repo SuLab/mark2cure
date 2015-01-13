@@ -1,0 +1,36 @@
+extends common/layouts/static_layout.jade
+
+- load widget_tweaks
+
+block title
+  title eCleanit
+
+block content
+  .container.static-container
+    .row
+      .col-xs-12.col-sm-8.col-sm-offset-2
+        .panel.panel-default.panel-login
+          .panel-body.text-center
+            h2 Log in to your account
+            p Don't have an account?&nbsp;
+              a(href='{% url "registration:user_create" %}') Sign up here.
+
+
+            form(method='post', action='{% url "registration:login" %}')
+              - csrf_token
+              .row
+                .col-xs-12.col-sm-8.col-sm-offset-2
+                  .form-group
+                    label.sr-only(for='username') Username
+                    #{form.username|add_class:'form-control'|attr:'placeholder:Username'}
+              .row
+                .col-xs-12.col-sm-8.col-sm-offset-2
+                  .form-group
+                    label.sr-only(for='password') Password
+                    #{form.password|add_class:'form-control'|attr:'placeholder:Password'}
+
+              .row.text-center
+                button(type='submit').btn.btn-primary.btn-lg Log in
+              .row.text-center
+                a.btn.btn-link.btn-sm(href='{% url "registration:password-reset" %}') I forgot my password
+

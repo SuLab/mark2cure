@@ -6,29 +6,43 @@ block content
   .jumbotron.head-space-xl-xl
     .container
       h1 Scientific communication is broken.
-      p Progress in biomedical science is all about incrementally building off of the work of others. Currently, it takes far too long for one scientist's work to reach all the other scientists that would benefit. Mark2Cure will make scientific communication more efficient for everyone, leading to <strong>faster discoveries</strong> and <strong>cures for disease</strong>.
-      p To be successful, we need your help. Mark2Cure works by directly involving crowds of people <strong>just like you</strong>.
+      p
+        | Progress in biomedical science is all about incrementally building
+        | off the work of others. Currently, it takes far too long for one
+        | scientist's work to reach all the other scientists that would
+        | benefit. Mark2Cure will make scientific communication more
+        | efficient for everyone, leading to <strong>faster discoveries</strong>
+        | and <strong>cures for disease</strong>.
+      p
+        | To be successful, we need your help. Mark2Cure works by directly
+        | involving crowds of people <strong>just like you</strong>.
 
+  .container
+    .row.well
+      .col-md-6.col-md-offset-3
+        div(style="display: none;").alert.alert-info
+          p
+            | <strong>Thank you!</strong> We recieved your information and
+            | are currently busy finishing Mark2Cure!
 
-  .row.well
-    .col-md-6.col-md-offset-3
-      div(style="display: none;").alert.alert-info
-        p <strong>Thank you!</strong> We recieved your information and are currently busy finishing Mark2Cure!
+        div(style="display: none;").alert.alert-danger
+          p
+            | <strong>Oops!</strong> We recieved your information but an
+            | error occured. We may have already had that email address added...
 
-      div(style="display: none;").alert.alert-danger
-        p <strong>Oops!</strong> We recieved your information but an error occured. We may have already had that email address added...
+        form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal
+          p.lead.text-center
+            | If you'd like to be notified when we launch Mark2Cure,
+            | please provide your email address below.
 
-      form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal
-        p.lead.text-center If you'd like to be notified when we launch Mark2Cure, please provide your email address below.
+          .form-group
+            .col-lg-8.col-lg-offset-2
+              label(for="email_input Email address").sr-only
+              input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
 
-        .form-group
-          .col-lg-8.col-lg-offset-2
-            label(for="email_input Email address").sr-only
-            input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
-
-        .form-group
-          .col-lg-4.col-lg-offset-4
-            button(type="submit").btn.btn-primary.btn-lg.btn-block Submit
+          .form-group
+            .col-lg-4.col-lg-offset-4
+              button(type="submit").btn.btn-primary.btn-lg.btn-block Submit
 
 
 block footer
@@ -54,4 +68,4 @@ block footer
 
 
 block post-footer
-    <style>body { background: url('/static/images/background_blur.jpg') no-repeat #f0f0ed; }</style>
+  <style>body { background: url('#{STATIC_URL}images/background_blur.jpg') no-repeat #f0f0ed; }</style>

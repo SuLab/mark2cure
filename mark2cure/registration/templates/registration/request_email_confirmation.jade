@@ -1,0 +1,29 @@
+extends common/layouts/home_layout
+
+- load as_vertical_form from bootstrap
+- load i18n
+
+block title
+  title Register or reset your password — {{ block.super }}
+
+block breadcrumb
+  {{ block.super }}
+  li
+    a(href="#") Register or reset your password
+
+block content
+  .container
+    .row
+      .col-xs-6.col-xs-offset-3
+        .panel.panel-default
+          .panel-body
+            form(method="post")
+              - csrf_token
+              fieldset
+                legend Register or reset your password
+                  {{ form|as_vertical_form }}
+                  input(type="hidden", name="next", value="{{ next }}")
+              .form-group
+                button.btn.btn-primary
+                  | Continue
+

@@ -18,7 +18,8 @@ block content
 
       .col-xs-6.col-xs-offset-3
         form(method='post')
-          {% csrf_token %}
+          - csrf_token
+
           .form-group
             .row
               .col-xs-6.col-xs-offset-3
@@ -28,7 +29,6 @@ block content
             .row
               .col-xs-6.col-xs-offset-3
                 #{form.password|add_class:'form-control'|attr:'placeholder:Password'}
-
 
           .form-group.head-space
             .row

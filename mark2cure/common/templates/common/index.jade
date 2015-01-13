@@ -1,19 +1,16 @@
 extends base
 
-- load widget_tweaks
-- load webdesign
-
 block header
   .container-fluid
     .row
       .col-sm-6.col-sm-offset-3.col-xs-6.col-xs-offset-0
         h1.text-center
-          a(href='/') Mark2Cure
+          a(href='{% url "common:home" %}') Mark2Cure
 
       - if not user.is_authenticated
         .col-sm-2
-          a(data-toggle="modal", data-target="#loginModal").btn.btn-default.btn-inverse.pull-right.head-space Login
-
+          a(data-toggle="modal", data-target="#login-modal").btn.btn-default.btn-inverse.pull-right.head-space Login
+        include account/login-modal
 
 
 block content
@@ -22,7 +19,12 @@ block content
       .col-xs-10.col-xs-offset-1
         .row
           .col-sm-6.col-sm-offset-1
-            p.lead The search for cures for all diseases is limited by the ability of scientists to consume and understand the rapidly expanding ocean of biomedical literature. The ability to read remains a uniquely human skill, so we need your help. Are you ready to start?
+            p.lead
+              | The search for cures for all diseases is limited
+              | by the ability of scientists to consume and understand
+              | the rapidly expanding ocean of biomedical literature.
+              | The ability to read remains a uniquely human skill,
+              | so we need your help. Are you ready to start?
           .col-sm-4.col-sm-offset-1
             p.p-start
               small.text-center
@@ -37,12 +39,19 @@ block content
           .col-xs-6
             h3 The ability to READ remains a uniquely human skill
           .col-xs-6
-            p Scientists need your help. You can make it easier for scientists to find the information they need to discover cures faster.
-
+            p
+              | Scientists need your help. You can make it
+              | easier for scientists to find the information
+              | they need to discover cures faster.
 
         .row
           .col-xs-6
-            p You can fix it. The ability to READ remains a uniquely human skill. You can help biomedical researchers can find the information they need to discover cures faster.
+            p
+              | You can fix it. The ability to READ remains
+              | a uniquely human skill. You can help biomedical
+              | researchers can find the information they need
+              | to discover cures faster.
+
           .col-xs-6
             h3 Scientific Communication is Broken
 
@@ -50,5 +59,9 @@ block content
           .col-xs-6
             h3 If you can READ, you can HELP.
           .col-xs-6
-            p The search for cures for all diseases is limited by the ability of scientists to consume and understand the rapidly expanding ocean of biomedical literature.
+            p
+              | The search for cures for all diseases is
+              | limited by the ability of scientists to
+              | consume and understand the rapidly expanding
+              | ocean of biomedical literature.
 

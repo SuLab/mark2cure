@@ -1,24 +1,17 @@
 from django.conf.urls import patterns, url
+from . import views
 
-urlpatterns = patterns(
-    'mark2cure.common.views',
-    url(r'^$', r'signup_home'),
-    url(r'^beta/$', r'home'),
+urlpatterns = patterns('',
 
-    # Initial training for fresh signups
-    url(r'^training/basics/$', r'introduction'),
-    url(r'^training/intro/1/step/(?P<step_num>\w+)/$',
-        r'training_one'),
-    url(r'^training/intro/2/step/(?P<step_num>\w+)/$',
-        r'training_two'),
-    url(r'^training/intro/3/$', r'training_three'),
+    url(r'^$', views.landing, name='landing'),
+    url(r'^beta/$', views.home, name='home'),
 
-    url(r'^training/intro/$', r'training_read'),
-
-    url(r'^dashboard/$', r'dashboard'),
+    url(r'^dashboard/$',
+        views.dashboard, name='dashboard'),
 
     # Initial training for fresh signups
-    url(r'^quest/(?P<quest_num>\w+)/$', r'quest_read'),
+    url(r'^quest/(?P<quest_num>\w+)/$',
+        views.quest_read, name='quest'),
     # REST Framework
     url(r'^quest/api/read/$', r'quest_list'),
 )

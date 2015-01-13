@@ -18,22 +18,21 @@ import os
 
 @login_required
 def settings(request):
-    """"
+    '''
         Use this endpoint for strict user setting modifications
         like password (auth.user)
-    """
+    '''
     user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
     user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
 
     if request.method == 'POST':
         user_change_form.save()
         user_profile_form.save()
-        return redirect('account:user_settings')
+        return redirect('account:settings')
 
-    return TemplateResponse(request,
-            'account/settings.jade',
-            {'user_change_form': user_change_form,
-             'user_profile_form': user_profile_form})
+    ctx = { 'user_change_form': user_change_form,
+            'user_profile_form': user_profile_form}
+    return TemplateResponse(request, 'account/settings.jade', ctx)
 
 
 @api_view(['GET'])

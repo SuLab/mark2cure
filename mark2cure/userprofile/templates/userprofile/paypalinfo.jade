@@ -1,0 +1,23 @@
+extends common/layouts/dashboard_layout.jade
+
+block title
+  title eCleanIt
+
+block content
+  .container-fluid
+    .row.dashboard-row
+      include cleanit/includes/nav.jade
+      include cleanit/includes/account-menu.jade
+
+      .col-sm-6.col-md-6.ec-right-col
+        .row.ec-btn-row
+        .row
+          .col-xs-12
+              h1.black.text-center Did you know...
+              p.big-text.text-center That you can connect with Paypal to pay your cleaners automatically via eCleanIt?
+              p.big-text.text-center 
+                |Just add your account and you'll be taken to Paypal's 
+                |site where you will confirm that you'd like for us 
+                |to help out with your cleaner payments!
+              p.text-center
+                button.btn.btn-primary Add my Paypal account

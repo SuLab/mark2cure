@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 
+from django.template.response import TemplateResponse
+
 from mark2cure.document.models import Document, Section
 from mark2cure.common.models import Task
 
@@ -15,8 +17,8 @@ from mark2cure.document.serializers import AnnotationSerializer
 from rest_framework import generics
 
 from brabeion import badges
-import os
 import random
+import os
 
 
 '''
@@ -43,13 +45,12 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
     user_profile.player_ip = request.META['REMOTE_ADDR']
     user_profile.save()
 
-    return render_to_response('document/concept-recognition.jade',
-                              {'task': task,
-                               'doc': doc,
-                               'sections': sections,
-                               'user_profile': user_profile,
-                               'task_type': 'concept-recognition'},
-                              context_instance=RequestContext(request))
+    ctx = { 'task': task,
+            'doc': doc,
+            'sections': sections,
+            'user_profile': user_profile,
+            'task_type': 'concept-recognition'}
+    return TemplateResponse(request, 'document/concept-recognition.jade', ctx)
 
 
 @login_required
@@ -140,10 +141,9 @@ def identify_annotations_results(request, task_id, doc_id):
         badges.possibly_award_badge('points_awarded', user=request.user)
 
         ctx['sections'] = sections
-        return render_to_response('document/concept-recognition-results-not-available.jade',
-               ctx,
-               context_instance=RequestContext(request))
-
+        return TemplateResponse(request,
+                'document/concept-recognition-results-not-available.jade',
+                ctx)
 
 def show_comparison_results(request, user_views, gm_views, ctx):
     # Take views from whoever the partner was
@@ -156,10 +156,9 @@ def show_comparison_results(request, user_views, gm_views, ctx):
         badges.possibly_award_badge('points_awarded', user=request.user)
 
     ctx['results'] = results
-    return render_to_response('document/concept-recognition-results-partner.jade',
-           ctx,
-           context_instance=RequestContext(request))
-
+    return TemplateResponse(request,
+            'document/concept-recognition-results-partner.jade',
+            ctx)
 
 '''
   Utility views for general document controls

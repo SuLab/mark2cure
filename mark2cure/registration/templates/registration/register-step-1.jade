@@ -1,0 +1,74 @@
+extends common/layouts/register_layout.jade
+
+- load widget_tweaks
+
+
+block title
+  title eCleanit
+
+block content
+  .container-fluid
+    .row
+      .col-sm-4.col-md-4.register-sidebar
+        .logo-section
+          img(src='#{STATIC_URL}img/ecleanit_logo_141_43.png')
+        .progress-section
+          h1.text-center Welcome!
+          h2.text-center We just need a little more info to get you started.
+          ul.ec-progress-list
+            li.active
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 1
+              p Tell us about yourself.
+            li.pending
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 2
+              p Tell us about your property.
+            li.pending
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 3
+              p Tell us about your cleaners.
+            li.pending
+              div.ec-check
+                span.glyphicon.glyphicon-ok
+              h4 Step 4
+              p Tell us about your cleaning job.
+      .col-sm-8.col-sm-offset-4.col-md-8.col-md-offset-4.register-main
+        form(method='POST').register-form
+          - csrf_token
+          .panel.panel-default.register-panel
+            .panel-body
+              .container-fluid
+                .row
+                  .col-sm-10.col-sm-offset-1
+                      //- Add .has-error to .form-group for error state
+                      .form-group
+                        label(for='register_first_name') First name*
+                        #{form.first_name|add_class:"form-control"|attr:"id:register_first_name"|attr:"type:text"}
+                        //- span.help-block This field is required.
+
+                      .form-group
+                        label(for='register_last_name') Last name*
+                        #{form.last_name|add_class:"form-control"|attr:"id:register_last_name"|attr:"type:text"}
+
+                      .form-group
+                        label(for='register_username') Username*
+                        #{form.username|add_class:"form-control"|attr:"id:register_username"|attr:"type:text"}
+
+                      .form-group
+                        label(for='register_email') Email address
+                        #{form.email|add_class:"form-control"|attr:"id:register_email"|attr:"type:text"}
+
+                      .form-group
+                        label(for='register_password') Password*
+                        #{form.password1|add_class:"form-control"|attr:"id:register_password"|attr:"type:password"}
+
+                      .form-group
+                        label(for='register_password_confirm') Password confirmation*
+                        #{form.password2|add_class:"form-control"|attr:"id:register_password_confirm"|attr:"type:password"}
+
+          span.text-muted *Required field
+          button.btn.btn-primary.btn-next.pull-right(type='submit') Next
