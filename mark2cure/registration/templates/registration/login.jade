@@ -1,36 +1,40 @@
-extends common/layouts/static_layout.jade
+extends base
 
 - load widget_tweaks
 
-block title
-  title eCleanit
+block header
 
 block content
-  .container.static-container
-    .row
-      .col-xs-12.col-sm-8.col-sm-offset-2
-        .panel.panel-default.panel-login
-          .panel-body.text-center
-            h2 Log in to your account
-            p Don't have an account?&nbsp;
-              a(href='{% url "registration:user_create" %}') Sign up here.
 
+    .row.head-space-xl
+      .col-xs-12
+        h1.text-center Sign In
 
-            form(method='post', action='{% url "registration:login" %}')
-              - csrf_token
-              .row
-                .col-xs-12.col-sm-8.col-sm-offset-2
-                  .form-group
-                    label.sr-only(for='username') Username
-                    #{form.username|add_class:'form-control'|attr:'placeholder:Username'}
-              .row
-                .col-xs-12.col-sm-8.col-sm-offset-2
-                  .form-group
-                    label.sr-only(for='password') Password
-                    #{form.password|add_class:'form-control'|attr:'placeholder:Password'}
+    .row.head-space
+      .col-xs-4.col-xs-offset-4
+        - if form.errors
+          p Your username and password didn't match. Please try again.
+          #{form.errors}
 
-              .row.text-center
-                button(type='submit').btn.btn-primary.btn-lg Log in
-              .row.text-center
-                a.btn.btn-link.btn-sm(href='{% url "registration:password-reset" %}') I forgot my password
+      .col-xs-6.col-xs-offset-3
+        form(method='post')
+          - csrf_token
+
+          .form-group
+            .row
+              .col-xs-6.col-xs-offset-3
+                #{form.username|add_class:'form-control'|attr:'placeholder:Username'}
+
+          .form-group
+            .row
+              .col-xs-6.col-xs-offset-3
+                #{form.password|add_class:'form-control'|attr:'placeholder:Password'}
+
+          .form-group.head-space
+            .row
+              .col-xs-4.col-xs-offset-4
+                input(type='submit', value='Sign In').btn.btn-default.btn-block
+              .col-xs-4.col-xs-offset-4
+                p.text-right
+                  a(href='/account/password-reset/') Forgot password?
 

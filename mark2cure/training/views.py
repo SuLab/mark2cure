@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.template.response import TemplateResponse
+
 
 def introduction(request):
     return TemplateResponse(request, 'training/basics.jade')
 
 
-def training_read(request):
+def read(request):
     tasks = []
     if request.user.is_authenticated():
         profile = request.user.profile
@@ -21,7 +23,7 @@ def training_read(request):
     return TemplateResponse(request, 'training/training_read.jade', ctx)
 
 
-def training_one(request, step_num):
+def one(request, step_num):
     if step_num == 'complete':
         return TemplateResponse(request, 'training/intro-1/complete.jade')
 
@@ -102,7 +104,7 @@ def training_one(request, step_num):
 
 
 @login_required
-def training_two(request, step_num):
+def two(request, step_num):
     if step_num == 'feedback' and request.user.is_authenticated():
         task = Task.objects.get(pk=2)
         UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
@@ -122,7 +124,7 @@ def training_two(request, step_num):
 
 
 @login_required
-def training_three(request):
+def three(request):
     if request.method == 'POST':
         task = Task.objects.get(pk=3)
         UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)

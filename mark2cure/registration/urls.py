@@ -11,10 +11,8 @@ urlpatterns = patterns('',
         {'next_page': '/'},
         name='logout'),
 
-    url(r'^setup/property/$', views.setup_property, name='setup-property'),
-    url(r'^setup/cleaners/$', views.setup_cleaners, name='setup-cleaners'),
-    url(r'^setup/jobs/$', views.setup_jobs, name='setup-jobs'),
-    url(r'^create/$', views.user_creation, name='user_create'),
+    url(r'^create/settings/$', views.user_creation_settings, name='user_creation_settings'),
+    url(r'^create/$', views.user_creation, name='user_creation'),
 
     url(r'^change_password/$', views.change_password,
         name='change_password'),

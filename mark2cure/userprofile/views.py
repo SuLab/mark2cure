@@ -10,36 +10,38 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 from django.utils.translation import ugettext as _
 
-from .forms import UserNameChangeForm
-
+from .forms import UserProfileForm
+from mark2cure.registration.forms import UserNameChangeForm
 
 @login_required
 def settings(request):
-    ctx = {'menu': 4}
-    return TemplateResponse(request, 'userprofile/myinfo.jade', ctx)
+    '''
+        Use this endpoint for strict user setting modifications
+        like password (auth.user)
+    '''
+    user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+    user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
+
+    if request.method == 'POST':
+        user_change_form.save()
+        user_profile_form.save()
+        return redirect('account:settings')
+
+    ctx = { 'user_change_form': user_change_form,
+            'user_profile_form': user_profile_form}
+    return TemplateResponse(request, 'account/settings.jade', ctx)
 
 
+@api_view(['GET'])
 @login_required
-def settings_edit(request):
-    user_name_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+def user_points(request):
+    points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
+    skill_badge = BadgeAward.objects.filter(user=request.user, slug='skill').last()
 
-    if request.POST and user_name_form.is_valid():
-        user_name_form.save()
-        return redirect('userprofile:settings')
+    return Response({
+        'points': request.user.userprofile.rating_score,
+        'points_level': points_badge.name,
+        'skill_level': skill_badge.name
+    })
 
-    ctx = { 'user_name_form': user_name_form,
-            'menu': 4}
-    return TemplateResponse(request, 'userprofile/myinfo-edit.jade', ctx)
-
-
-@login_required
-def paypal(request):
-    ctx = {'menu': 4}
-    return TemplateResponse(request, 'userprofile/paypalinfo.jade', ctx)
-
-
-@login_required
-def receipts(request):
-    ctx = {'menu': 4}
-    return TemplateResponse(request, 'userprofile/myinfo.jade', ctx)
 

@@ -7,15 +7,11 @@ from .models import UserProfile
 
 
 class UserProfileForm(forms.ModelForm):
-
     class Meta:
         model = UserProfile
-        exclude = ['user']
-
-
-class UserNameChangeForm(forms.ModelForm):
-
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name')
+        fields = ['timezone', 'avatar', 'email_notify',
+                  'gender', 'age', 'occupation', 'education',
+                  'science_education', 'country', 'referral',
+                  'motivation', 'quote']
+        exclude = ['user', ]
 
