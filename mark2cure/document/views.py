@@ -118,6 +118,9 @@ def identify_annotations_results(request, task_id, doc_id):
             opponent_views.append(opponent_view)
             setattr(section, 'words', section.resultwords(player_view, opponent_view))
 
+            # Save who the player was paired against
+            player_view.opponent = opponent_view
+            player_view.save()
 
         ctx['sections'] = sections
         ctx['partner'] = opponent
@@ -139,15 +142,12 @@ def identify_annotations_results(request, task_id, doc_id):
                 'document/concept-recognition-results-not-available.jade',
                 ctx)
 
+
 def show_comparison_results(request, user_views, gm_views, ctx, log_score=False):
     # Take views from whoever the partner was
     # and use those to calculate the score (and assign
     # / reward as appropriate
     results = generate_results(user_views, gm_views)
-
-    if log_score:
-        pass
-
     score = results[0][2] * 1000
     if score > 0:
         request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
@@ -158,10 +158,10 @@ def show_comparison_results(request, user_views, gm_views, ctx, log_score=False)
             'document/concept-recognition-results-partner.jade',
             ctx)
 
+
 '''
   Utility views for general document controls
 '''
-
 
 @login_required
 @require_http_methods(['POST'])

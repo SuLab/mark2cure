@@ -18,7 +18,7 @@ od = new Odometer({
 
 var update_score = function() {
     var ajax_settings = {
-      url: '/account/points/',
+      url: '/u/points/',
       type: 'GET',
       dataType: 'json',
       success: function(data) {

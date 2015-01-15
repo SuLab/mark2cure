@@ -13,7 +13,9 @@ from django.utils.translation import ugettext as _
 from .forms import UserProfileForm
 from mark2cure.registration.forms import UserNameChangeForm
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
+from brabeion.models import BadgeAward
 
 @login_required
 def settings(request):
@@ -27,11 +29,11 @@ def settings(request):
     if request.method == 'POST':
         user_change_form.save()
         user_profile_form.save()
-        return redirect('account:settings')
+        return redirect('userprofile:settings')
 
     ctx = { 'user_change_form': user_change_form,
             'user_profile_form': user_profile_form}
-    return TemplateResponse(request, 'account/settings.jade', ctx)
+    return TemplateResponse(request, 'userprofile/settings.jade', ctx)
 
 
 @api_view(['GET'])
