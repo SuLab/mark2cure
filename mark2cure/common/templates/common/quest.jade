@@ -32,7 +32,7 @@ block content
 
   div(style="display: none;").container
     form(id="quest-complete", method="post", action="/quest/{{task.pk}}/")
-      {% csrf_token %}
+      - csrf_token
       input(type="hidden", name="task_type", value="concept-recognition")
 
 

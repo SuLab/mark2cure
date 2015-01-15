@@ -10,14 +10,13 @@ from django.template.response import TemplateResponse
 from mark2cure.document.models import Document, Section
 from mark2cure.common.models import Task
 
-from mark2cure.document.forms import AnnotationForm
-from mark2cure.document.utils import generate_results
-from mark2cure.document.serializers import AnnotationSerializer
+from .forms import AnnotationForm
+from .utils import generate_results, select_best_opponent
+from .serializers import AnnotationSerializer
 
 from rest_framework import generics
 
 from brabeion import badges
-import random
 import os
 
 
@@ -33,22 +32,17 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
     doc = get_object_or_404(Document, pk=doc_id)
 
     sections = doc.available_sections()
-    user = request.user
-    user_profile = user.userprofile
 
     '''
       Technically we may want a user to do the same document multiple times,
       just means that during the community consensus we don't include their own reults
       to compare against
     '''
-    user_profile.user_agent = request.META['HTTP_USER_AGENT']
-    user_profile.player_ip = request.META['REMOTE_ADDR']
-    user_profile.save()
 
     ctx = { 'task': task,
             'doc': doc,
             'sections': sections,
-            'user_profile': user_profile,
+            'user_profile': request.user.profile,
             'task_type': 'concept-recognition'}
     return TemplateResponse(request, 'document/concept-recognition.jade', ctx)
 
@@ -93,20 +87,20 @@ def identify_annotations_results(request, task_id, doc_id):
 
     # (TODO) Validate the number of required views for this document, etc...
     if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
-        return redirect('mark2cure.document.views.identify_annotations', task.pk, doc.pk)
+        return redirect('document:read', task.pk, doc.pk)
 
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
     # results for this particular document
-    user_views = []
-    gm_views = []
+    player_views = []
+    opponent_views = []
     ctx = {'task': task,
            'doc': doc,
            'user_profile': user_profile,
            'task_type': 'concept-recognition'}
 
     '''
-        Try to find an optimal opponate to pair the player
+        Try to find an optimal opponete to pair the player
         against. If one isn't available or none meet the minimum
         requirements then just tell the player they've
         annotated a new document
@@ -117,17 +111,17 @@ def identify_annotations_results(request, task_id, doc_id):
         for section in sections:
             player_view = user_quest_rel_views.get(section=section, completed=True)
 
-            quest_rel = others_quest_relationships.get(user=opponent)  # (.first() if users and dont need it if GM)
-            competitor_view = quest_rel.views.get(section=section, completed=True)
+            quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
+            opponent_view = quest_rel.views.get(section=section, completed=True)
 
             player_views.append(player_view)
-            competitor_views.append(competitor_view)
-            setattr(section, 'words', section.resultwords(user_view, competitor_view))
+            opponent_views.append(opponent_view)
+            setattr(section, 'words', section.resultwords(player_view, opponent_view))
 
 
         ctx['sections'] = sections
         ctx['partner'] = opponent
-        return show_comparison_results(request, user_views, gm_views, ctx)
+        return show_comparison_results(request, player_views, opponent_views, ctx)
 
     else:
         # No other work has ever been done on this apparently
@@ -145,11 +139,15 @@ def identify_annotations_results(request, task_id, doc_id):
                 'document/concept-recognition-results-not-available.jade',
                 ctx)
 
-def show_comparison_results(request, user_views, gm_views, ctx):
+def show_comparison_results(request, user_views, gm_views, ctx, log_score=False):
     # Take views from whoever the partner was
     # and use those to calculate the score (and assign
     # / reward as appropriate
     results = generate_results(user_views, gm_views)
+
+    if log_score:
+        pass
+
     score = results[0][2] * 1000
     if score > 0:
         request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
@@ -178,10 +176,10 @@ def submit(request, task_id, doc_id):
 
     if task_type == 'concept-recognition':
         task.complete_views(doc, request.user)
-        return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
+        return redirect('document:results', task.pk, doc.pk)
     else:
         task.complete_views(doc, request.user)
-        return redirect('mark2cure.document.views.identify_annotations_results', task.pk, doc.pk)
+        return redirect('document:results', task.pk, doc.pk)
 
 
 class AnnotationViewSet(generics.ListAPIView):

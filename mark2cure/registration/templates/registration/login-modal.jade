@@ -13,7 +13,7 @@
               p Your username and password didn't match. Please try again.
               #{login_form.errors}
 
-            form(method="post", role='form', action="{% url 'account:login' %}").enter-form-submit
+            form(method="post", role='form', action="{% url 'registration:login' %}").enter-form-submit
               - csrf_token
               .form-group
                 label(for='exampleInputEmail1') Username

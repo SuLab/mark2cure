@@ -22,7 +22,7 @@ block content
               h3.text-center Register for an account
           .row
 
-            form(role='form', method='post', action="{% url 'account:user_creation' %}").form-horizontal
+            form(role='form', method='post', action="{% url 'registration:user_creation' %}").form-horizontal
               - csrf_token
               #{form.errors}
 

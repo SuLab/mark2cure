@@ -1,6 +1,16 @@
 from django.shortcuts import render
 from django.template.response import TemplateResponse
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
+from django.contrib import messages
 
+from mark2cure.common.models import Task, UserQuestRelationship
+
+from brabeion import badges
+from brabeion.models import BadgeAward
+
+import os
 
 def introduction(request):
     return TemplateResponse(request, 'training/basics.jade')
@@ -28,7 +38,7 @@ def one(request, step_num):
         return TemplateResponse(request, 'training/intro-1/complete.jade')
 
     if step_num == 'feedback':
-        return TemplateResponse(request,'training/intro-1/feedback.jade', {'next_path': '/account/create/'})
+        return TemplateResponse(request,'training/intro-1/feedback.jade', {'next_path': reverse('registration:user_creation')})
 
     step_num = int(step_num)
     next_ = step_num + 1
@@ -99,7 +109,7 @@ def one(request, step_num):
             'header2': header2,
             'paragraph': paragraph,
             'answers': answers,
-            'next': next_},
+            'next': next_}
     return TemplateResponse(request, 'training/intro-1/read.jade', ctx)
 
 
@@ -113,11 +123,11 @@ def two(request, step_num):
         badges.possibly_award_badge("points_awarded", user=request.user)
         badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
 
-        ctx = {'next_path': '/training/intro/2/step/complete/'}
+        ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
         return TemplateResponse(request, 'training/intro-2/feedback.jade', ctx)
 
     if step_num == 'complete':
-        return redirect('common:training-index')
+        return redirect('training:index')
 
     ctx = {'step_num': step_num}
     return TemplateResponse(request, 'training/intro-2/step-{step_num}.jade'.format(step_num=step_num), ctx)

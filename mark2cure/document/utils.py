@@ -1,31 +1,57 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from mark2cure.document.models import Document, Section, Annotation
+from .models import Document, Section, Annotation
+
+from django.contrib.auth.models import User
 
 from datetime import datetime
 from Bio import Entrez, Medline
 
-def select_best_opponate(task, document, player):
+from mark2cure.document.models import Annotation
+
+import random
+
+
+def select_best_opponent(task, document, player):
     '''
         Select the best opponate for a certain task meaning a
         certain document scoped to a quest for a certain task type.
 
         1) First weight by GM, if one is available always prefer it over
             other users
-        2) Select users with non-empty or completely sporatic responses
-            2.1) Sort by score*, select top 10% at random
-            * If score is not present, calcuate it for each user to
-            be cached for next time
+
+        2) Select users with non-empty response for this View (Document scoped to Quest)
+            * Empty checks for len() > 0
+
+            //-- Stop here no need to go into this complexity for Experiment 2
+            2.1) Sort by internal F score average, select top 3 (over threshold), pick 1 at random
+                * If score is not present, calcuate it for each user to be cached for next time
+                * Score is average F score on last 10 computable documents
+                  * This creates a rolling window, could do # or time based.
+                    * Bad if documents completed long time ago for # based
+
+            2.2) Save new score for current comparision
+                * Save score if compared to a Golden Master document (current pool size is limited)
+                * Save score if compared to a top ranked (1 of the 3) that was randomly selected
+                * Do not have novel annotations or comparisions to high skill badged people
+
+        Downfalls:
+            * Good user could annotate all over the place, generate
+              random noise but would pass validation as they're top ranked and len() > 0
+            * Does not account for total game play (this might be good), uses rolling window
+              of history
     '''
     # Select all (**including uncompleted**) other user started quests
     # that have been completed
     others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
+
+    # (TODO) Search by Skill badges, if many return 1 at random
     gm_user = User.objects.get(username='Doc_G-man')
 
     if others_quest_relationships.exists() and \
             others_quest_relationships.filter(user=gm_user).exists() and \
-            others_quest_relationships.get(user=gm_user).views.filter(document=document, completed=True).exists():
+            others_quest_relationships.get(user=gm_user).views.filter(section__document=document, completed=True).exists():
         # There is an "expert's" annotations (GM) so
         # show those as the partner's
         return gm_user
@@ -34,9 +60,11 @@ def select_best_opponate(task, document, player):
     # that may come from uncompleted quests
     previous_users = []
     for quest_relationship in others_quest_relationships.exclude(user=gm_user):
-        if quest_relationship.views.filter(document=document, completed=True).exists():
+        if quest_relationship.views.filter(section__document=document, completed=True).exists():
             # (TODO) Don't add option of them unless they've submitted 1+ Annotations
-            previous_users.append(quest_relationship.user)
+            view_ids = quest_relationship.views.filter(section__document=document, completed=True).values_list('pk', flat=True)
+            if Annotation.objects.filter(view__pk__in=view_ids).exists():
+                previous_users.append(quest_relationship.user)
 
     if others_quest_relationships.exists() and len(previous_users):
         # No expert around so select a previous user at random

@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from optparse import make_option
 from django.contrib.auth.models import User
 
-from mark2cure.account.models import UserProfile
+from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
 

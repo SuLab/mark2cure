@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
 
 from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
+
+from mark2cure.document.models import View
 
 import os
 
@@ -18,17 +21,9 @@ def _content_file_name(instance, filename):
     name = _createHash() + os.path.splitext(filename)[1]
     return '/'.join(['avatars', name])
 
-class Score(models.Model):
-    precsion = models.DecimalField(max_digits = 11, decimal_places = 5, validators = [MaxValueValidator(1), MinValueValidator(0)], null = True, blank = True)
-    recall = models.DecimalField(max_digits = 11, decimal_places = 5, validators = [MaxValueValidator(1), MinValueValidator(0)], null = True, blank = True)
-    f_score = models.DecimalField(max_digits = 11, decimal_places = 5, validators = [MaxValueValidator(1), MinValueValidator(0)], null = True, blank = True)
-
-    created = models.DateTimeField(auto_now_add = True)
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
-    scores = models.ForeignKey(Score)
 
     timezone = TimeZoneField(default='America/Los_Angeles',
                              blank=True, null=True)
@@ -38,8 +33,6 @@ class UserProfile(models.Model):
     rating = RatingField(range=100000, allow_anonymous=True)
 
     email_notify = models.BooleanField(default=False)
-    user_agent = models.CharField(max_length=150, blank=True, null=True)
-    player_ip = models.GenericIPAddressField(blank=True, null=True)
 
     '''
         Profiling our users

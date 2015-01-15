@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^quest/(?P<quest_num>\w+)/$',
         views.quest_read, name='quest'),
     # REST Framework
-    url(r'^quest/api/read/$', r'quest_list'),
+    url(r'^quest/api/read/$',
+        views.quest_list, name='quest-api'),
 )

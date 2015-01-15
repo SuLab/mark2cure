@@ -2,23 +2,26 @@ from django.conf.urls import patterns, include, url
 
 from rest_framework import routers
 
-from mark2cure.document.views import *
-
+from . import views
 
 router = routers.DefaultRouter()
 
-urlpatterns = patterns(
-    'mark2cure.document.views',
+urlpatterns = patterns('',
 
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/$', r'identify_annotations'),
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$', r'identify_annotations_results'),
+    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/$',
+        views.identify_annotations, name='read'),
+
+    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',
+        views.identify_annotations_results, name='results'),
+
     url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$',
-        r'identify_annotations_submit'),
+        views.identify_annotations_submit, name='create'),
 
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/submit/$', r'submit'),
+    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/submit/$',
+        views.submit, name='submit'),
 
     # REST Framework
     url('^(?P<doc_id>\d+)/section/(?P<section_id>\d+)/user/(?P<user_id>\d+)/annotations/$',
-        AnnotationViewSet.as_view()),
+        views.AnnotationViewSet.as_view()),
     url(r'^', include(router.urls)),
 )

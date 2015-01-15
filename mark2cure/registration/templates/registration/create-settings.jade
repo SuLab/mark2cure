@@ -21,7 +21,7 @@ block content
           h3 Profile Information <small>(this is optional, you can always edit it later)</small>
 
         .row
-          form(role='form', method='post')
+          form(action='{% url "registration:user_creation_settings" %}', role='form', method='post')
             - csrf_token
 
             .row.foot-space
@@ -62,4 +62,4 @@ block content
                 button(type='submit').btn.btn-success.btn-block Start Now!
               .col-sm-2
                 small
-                  a(href='/dashboard/') or skip
+                  a(href='{% url "common:dashboard" %}') or skip

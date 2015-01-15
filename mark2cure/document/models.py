@@ -108,6 +108,7 @@ TASK_TYPE_CHOICE = (
 class View(models.Model):
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default=False, blank=True)
+    #opponate = models.ForeignKey('self')
 
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)

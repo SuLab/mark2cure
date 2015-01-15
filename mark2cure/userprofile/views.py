@@ -12,6 +12,8 @@ from django.utils.translation import ugettext as _
 
 from .forms import UserProfileForm
 from mark2cure.registration.forms import UserNameChangeForm
+from rest_framework.decorators import api_view
+
 
 @login_required
 def settings(request):
