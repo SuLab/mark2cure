@@ -40,13 +40,19 @@ class Command(BaseCommand):
         datasets = ['NCBI_corpus_testing', 'NCBI_corpus_training', 'NCBI_corpus_development']
         gm_documents_ids = [3464560, 7759075, 8198128, 3591825]
 
-        doc_set = ['8589723', '8621452', '8644702', '8651278', '8661102',
-                '8673131', '8675707', '8700509', '8751855', '8758207',
-                '8786135', '8808605', '8824873', '8828602', '8843193',
-                '8871666', '8929413', '8931709', '8944024', '8968716',
-                '9012409', '9028321', '9056547', '9069115', '9090524',
-                '9144439', '9174057', '8636252', '8689689', '8898652']
-        mixed_gm = [8636252, 8689689, 8898652]
+        #doc_set = ['8589723', '8621452', '8644702', '8651278', '8661102',
+        #        '8673131', '8675707', '8700509', '8751855', '8758207',
+        #        '8786135', '8808605', '8824873', '8828602', '8843193',
+        #        '8871666', '8929413', '8931709', '8944024', '8968716',
+        #        '9012409', '9028321', '9056547', '9069115', '9090524',
+        #        '9144439', '9174057', '8636252', '8689689', '8898652']
+        #mixed_gm = [8636252, 8689689, 8898652]
+
+        doc_set = Document.objects.filter(source='NCBI_corpus_training').values_list('document_id', flat=True)
+        # 589 * .1 = 58.9
+        mixed_gm = list(doc_set)
+        random.shuffle(mixed_gm)
+        mixed_gm = mixed_gm[:59]
 
         '''
             Import all the annotations for our
@@ -84,9 +90,8 @@ class Command(BaseCommand):
                         if int(doc_id) in gm_documents_ids:
 
                             doc = Document.objects.get(document_id=doc_id)
-                            print doc
-                            dqr = DocumentQuestRelationship.objects.filter(document=doc).first()
-                            print dqr.pk, dqr
+                            dqr = DocumentQuestRelationship.objects.filter(document=doc, task__experiment=settings.EXPERIMENT).first()
+                            print "Document ID:", doc.pk, "Quest Relationship:", dqr.pk
 
                             # If the GM Anns are for a document that isn't included in any quests,
                             # don't bother
@@ -105,7 +110,6 @@ class Command(BaseCommand):
                                             completed=True)
 
                                         gm_quest_rel.views.add(view)
-                                        print gm_quest_rel.views.count()
                                         Annotation.objects.create(
                                             view=view,
                                             text=text,
@@ -144,9 +148,11 @@ class Command(BaseCommand):
                                 .values_list('id', flat=True)
             )
 
+            print "Length of appended experimental document set:", len(document_set)
+
             smallest_bin = 5
             largest_bin = 5
-            completions = 3
+            completions = 15
             random.shuffle(document_set)
 
             while len(document_set) > smallest_bin:
