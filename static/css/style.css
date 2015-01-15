@@ -281,3 +281,17 @@ a.close-btn {
   margin-top: 16px;
   color: #4AFF5A;
 }
+
+#support-icon {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+#support-icon:hover {
+  cursor: pointer;
+}
+
+#support-icon img {
+  height: 60px;
+}

@@ -92,6 +92,7 @@ class Task(models.Model):
     documents = models.ManyToManyField(Document, through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
     points = models.IntegerField(max_length=6, blank=True, default=0)
+    experiment = models.IntegerField(blank=True, null=True)
 
     requires_qualification = models.IntegerField(max_length=6, blank=True, null=True)
     provides_qualification = models.IntegerField(max_length=6, blank=True, null=True)
@@ -151,3 +152,13 @@ class DocumentQuestRelationship(models.Model):
     def __unicode__(self):
         return u'Document Quest Relationship'
 
+
+class SupportMessage(models.Model):
+    user = models.ForeignKey(User)
+    text = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return u'{text} (via {user})'.format(
+                text=self.text,
+                user=self.user)

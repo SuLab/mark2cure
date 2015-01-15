@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document, Section, View, Annotation
@@ -126,7 +127,8 @@ class Command(BaseCommand):
                 completions=None,
                 requires_qualification=3,
                 provides_qualification=4,
-                points=5000)
+                points=5000,
+                experiment=settings.EXPERIMENT)
 
             for doc in task.documents.all():
                 dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
@@ -154,7 +156,8 @@ class Command(BaseCommand):
                     completions=completions,
                     requires_qualification=4,
                     provides_qualification=4,
-                    points=5000)
+                    points=5000,
+                    experiment=settings.EXPERIMENT)
 
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
                 sel = document_set[0:quest_size]
@@ -178,7 +181,8 @@ class Command(BaseCommand):
                         completions=completions,
                         requires_qualification=4,
                         provides_qualification=4,
-                        points=5000)
+                        points=5000,
+                        experiment=settings.EXPERIMENT)
 
                     print "Adding", len(document_set), "to Quest:", task_counter, 'remaining', len(document_set)
 

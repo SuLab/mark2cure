@@ -30,7 +30,7 @@ def read(request):
             setattr(task, 'enabled', True)
 
     ctx = {'tasks': tasks}
-    return TemplateResponse(request, 'training/training_read.jade', ctx)
+    return TemplateResponse(request, 'training/read.jade', ctx)
 
 
 def one(request, step_num):

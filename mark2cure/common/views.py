@@ -1,14 +1,19 @@
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.conf import settings
+from django.views.decorators.http import require_http_methods
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import get_messages
 from django.contrib import messages
+from django.http import HttpResponse
 
 from .models import Task, UserQuestRelationship
 from .serializers import QuestSerializer
+from .forms import SupportMessageForm
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -18,6 +23,15 @@ import random
 import os
 import logging
 logger = logging.getLogger(__name__)
+
+
+@login_required
+@require_http_methods(['POST'])
+def support(request):
+    form = SupportMessageForm(data=request.POST)
+    if form.is_valid():
+        form.save()
+        return HttpResponse(200)
 
 
 def landing(request):
@@ -86,7 +100,7 @@ def dashboard(request):
 
 @api_view(['GET'])
 def quest_list(request):
-    queryset = Task.objects.filter(kind=Task.QUEST).all()
+    queryset = Task.objects.filter(kind=Task.QUEST, experiment=settings.EXPERIMENT).all()
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 

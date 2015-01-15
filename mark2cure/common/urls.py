@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),
 
+    url(r'^support/$',
+        views.support, name='support'),
+
     # Initial training for fresh signups
     url(r'^quest/(?P<quest_num>\w+)/$',
         views.quest_read, name='quest'),
