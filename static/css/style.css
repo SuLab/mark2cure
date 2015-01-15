@@ -295,3 +295,7 @@ a.close-btn {
 #support-icon img {
   height: 60px;
 }
+
+.modal-dialog {
+  z-index: 1041;
+}

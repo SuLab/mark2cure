@@ -9,7 +9,7 @@
       .modal-body
         .row
           .col-md-8.col-md-offset-2
-            - if form.errors
+            - if login_form.errors
               p Your username and password didn't match. Please try again.
               #{login_form.errors}
 
