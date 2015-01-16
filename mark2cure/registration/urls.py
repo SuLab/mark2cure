@@ -28,18 +28,23 @@ urlpatterns = patterns('',
         name='change_email'),
 
     # Password reset process
-    url(r'^password-reset/$',
-        'django.contrib.auth.views.password_reset',
-        kwargs={'template_name': 'password-reset/home.jade'},
-        name='password-reset'),
+
     url(r'^password_reset/done/$',
         'django.contrib.auth.views.password_reset_done',
         kwargs={'template_name': 'password-reset/thanks.jade'},
         name='password_reset_done'),
+
+    url(r'^password_reset/$',
+        'django.contrib.auth.views.password_reset',
+        {'template_name': 'password-reset/home.jade',
+         'post_reset_redirect' : '/registration/password_reset/done/'},
+        name='password_reset'),
+
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         'django.contrib.auth.views.password_reset_confirm',
         kwargs={'template_name': 'password-reset/confirm.jade'},
         name='password_reset_confirm'),
+
     url(r'^reset/done/$',
         'django.contrib.auth.views.password_reset_complete',
         kwargs={'template_name': 'password-reset/success.jade'},
