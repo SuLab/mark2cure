@@ -228,6 +228,10 @@ a.close-btn {
   border-right: 1px solid #f0f0ed;
 }
 
+#dashboard .quest:hover {
+  background-color: rgba(127,60,255, .8);
+}
+
 #dashboard .quest .progress {
   border-radius: 0px;
   box-shadow: none;
@@ -242,6 +246,10 @@ a.close-btn {
   font-family: 'Px Grotesk Light';
   color: #7F3CFF;
   text-decoration: none;
+}
+
+#dashboard .quest:hover p strong a {
+  color: #fff;
 }
 
 .quest-guide .doc-item-col {

@@ -24,7 +24,7 @@ block content
       .col-md-10.col-md-offset-1
         #dashboard.row.head-space.paragraph-box
           .col-xs-12.text-center
-            h2.quest Loading...
+            h2.quest-loading Loading...
 
   include document/includes/welcome-modal
 
@@ -59,7 +59,7 @@ block post-footer
               <span class='glyphicon glyphicon-ban-circle muted' title='This quest is not enabled.'></span>
 
             <% } else { %>
-              <p style='font-size: 32px;'><strong><a href='/quest/<%- d.id %>/' title='Click to start this quest!'><%- d.name %></a></strong></p>
+              <p style='font-size: 1.75em; line-height: 1.8em;'><strong><a href='/quest/<%- d.id %>/' title='Click to start this quest!'><%- d.name %></a></strong></p>
 
             <% } %>
           </div>
