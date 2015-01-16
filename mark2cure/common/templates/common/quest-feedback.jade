@@ -32,7 +32,7 @@ block content
         'url': '/quest/api/read/',
         'success': function(data) {
           var set = _.filter(data, function(q) {
-            return q.user.completed == false && q.user.enabled ==  true;
+            return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
           });
           if(set.length) {
             window.location = '/quest/' + set[0].id;
