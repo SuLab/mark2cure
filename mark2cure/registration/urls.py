@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
 from . import views
-
+from django.contrib.auth import views as reset_views
 
 urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login',
@@ -14,9 +14,6 @@ urlpatterns = patterns('',
     url(r'^create/settings/$', views.user_creation_settings, name='user_creation_settings'),
     url(r'^create/$', views.user_creation, name='user_creation'),
 
-    url(r'^change_password/$', views.change_password,
-        name='change_password'),
-
     url(r'^request_email_confirmation/$', views.request_email_confirmation,
         name='request_email_confirmation'),
     url(r'^confirm_email/(?P<token>\w+)/$', views.confirm_email,
@@ -27,27 +24,14 @@ urlpatterns = patterns('',
     url(r'^change_email/(?P<token>\w+)/$', views.change_email,
         name='change_email'),
 
-    # Password reset process
-
+    # Reset Email
     url(r'^password_reset/done/$',
-        'django.contrib.auth.views.password_reset_done',
-        kwargs={'template_name': 'password-reset/thanks.jade'},
+        reset_views.password_reset_done,
+        {'template_name': 'password-reset/password_reset_done.jade'},
         name='password_reset_done'),
-
     url(r'^password_reset/$',
-        'django.contrib.auth.views.password_reset',
-        {'template_name': 'password-reset/home.jade',
-         'post_reset_redirect' : '/registration/password_reset/done/'},
-        name='password_reset'),
-
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        'django.contrib.auth.views.password_reset_confirm',
-        kwargs={'template_name': 'password-reset/confirm.jade'},
-        name='password_reset_confirm'),
-
-    url(r'^reset/done/$',
-        'django.contrib.auth.views.password_reset_complete',
-        kwargs={'template_name': 'password-reset/success.jade'},
-        name='password_reset_complete'),
-
-    )
+        reset_views.password_reset,
+        {'template_name': 'password-reset/password_reset.jade',
+        'post_reset_redirect' : '/registration/password_reset/done/'},
+        name='password-reset'),
+)

@@ -11,6 +11,9 @@ from mark2cure.common.models import Task, UserQuestRelationship
 from .forms import UserCreateForm, UserNameChangeForm
 from mark2cure.userprofile.forms import UserProfileForm
 
+from django.core.urlresolvers import reverse
+from django.contrib.auth.views import password_reset, password_reset_confirm
+
 from brabeion import badges
 from brabeion.models import BadgeAward
 
@@ -142,7 +145,17 @@ def change_email(request, token):
     return redirect(settings.LOGIN_REDIRECT_URL)
 
 
-def change_password(request):
-    return password_change(
-        request, template_name='registration/change_password.jade',
-        post_change_redirect=reverse('userprofile:settings'))
+def reset_confirm(request, uidb36=None, token=None):
+    return password_reset_confirm(request,
+            template_name='password-reset/password_reset_confirm.jade',
+            uidb36=uidb36,
+            token=token,
+            post_reset_redirect=reverse('common:dashboard'))
+
+
+def reset(request):
+    return password_reset(request,
+            template_name='password-reset/password_reset_complete.jade',
+            email_template_name='app/reset_email.html',
+            subject_template_name='app/reset_subject.txt',
+            post_reset_redirect=reverse('app:login'))
