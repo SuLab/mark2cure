@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         reset_views.password_reset_confirm,
         {'template_name': 'password-reset/password_reset_confirm.jade',
-         'post_reset_redirect': '/registration/reset/done/'},
+         'post_reset_redirect': '/reset/done/'},
         name='password_reset_confirm'),
 
 
