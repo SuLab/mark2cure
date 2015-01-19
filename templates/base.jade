@@ -82,8 +82,15 @@ head
       script(src='#{STATIC_URL}js/ypet.js')
       script(src='#{STATIC_URL}js/app.js')
 
+      script(src='//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js')
+
       - if request.user.is_authenticated
         script.
+          Raven.setUser({
+            email: "{{ request.user.email }}",
+            id: "{{ request.user.pk }}"
+          });
+
           window.intercomSettings = {
             name: "{{ request.user.username }}",
             email: "{{ request.user.email }}",
@@ -118,6 +125,10 @@ head
 
       - if not debug
         script.
+          Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {
+            whitelistUrls: [/mark2cure\.org/]
+          }).install();
+
           var _gaq = _gaq || [];
           _gaq.push(['_setAccount', 'UA-43341013-1']);
           _gaq.push(['_setDomainName', 'mark2cure.org']);
