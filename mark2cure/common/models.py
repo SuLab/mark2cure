@@ -156,6 +156,7 @@ class DocumentQuestRelationship(models.Model):
 class SupportMessage(models.Model):
     user = models.ForeignKey(User)
     text = models.TextField()
+    referral = models.CharField(max_length=100, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

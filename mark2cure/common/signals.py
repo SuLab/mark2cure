@@ -14,6 +14,7 @@ def provider_post_save(sender, instance, **kwargs):
     msg.template_name = 'mark2cure-support'
     msg.global_merge_vars = {
         'NAME': message.user.username,
-        'TEXT': message.text
+        'TEXT': message.text,
+        'REFERRAL': message.referral
     }
     msg.send()

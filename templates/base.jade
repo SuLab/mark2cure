@@ -115,6 +115,7 @@ head
                 form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
                   - csrf_token
                   input(type='hidden', name='user', value='{{user.pk}}')
+                  input(type='hidden', name='referral', value='{{request.path}}')
                   .form-group
                     label Message
                     textarea(name='text').form-control
