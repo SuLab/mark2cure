@@ -31,6 +31,7 @@ django-markdown-deux==1.0.4
 django-mptt==0.6.1
 django-nose==1.2
 django-ratings==0.3.7
+django-robots==1.0
 django-storages==1.1.8
 django-tagging==0.3.2
 django-timezone-field==1.0

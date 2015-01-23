@@ -17,10 +17,8 @@ urlpatterns = patterns('',
          'post_reset_redirect': '/reset/done/'},
         name='password_reset_confirm'),
 
-
     url(r'', include('mark2cure.common.urls',
         namespace='common')),
-
 
     url(r'^analysis/', include('mark2cure.analysis.urls',
         namespace='analysis')),
@@ -43,5 +41,6 @@ urlpatterns = patterns('',
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
+    (r'^robots\.txt$', include('robots.urls')),
     url(r'^(?P<url>.*/)$', views.flatpage),
 )
