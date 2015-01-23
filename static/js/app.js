@@ -15,8 +15,6 @@ var drawUserWithGolden = function() {
           u_ann = word.data('uannid') || 'None',
           next_word_u_ann = next_word.data('uannid') || 'None';
 
-      console.log(gm_ann, next_word_gm_ann, u_ann, next_word_u_ann);
-
       if(gm_ann != 'None') { word.addClass('golden'); }
       if(u_ann != 'None') { word.addClass('user_annotated'); }
 
