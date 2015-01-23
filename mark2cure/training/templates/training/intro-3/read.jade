@@ -122,6 +122,18 @@ block post-footer
       var f_score = Math.round(score_full.f*1000);
 
       /* Ugly but works for this one-off */
+      anns_1.each(function(ann) {
+        ann.get('words').each(function(w) {
+          $('#quest-1 p.paragraph span:nth('+w.collection.indexOf(w)+')').data('uannid', ann.cid);
+        });
+      });
+
+      anns_2.each(function(ann) {
+        ann.get('words').each(function(w) {
+          $('#quest-2 p.paragraph span:nth('+w.collection.indexOf(w)+')').data('uannid', ann.cid);
+        });
+      });
+
       $('#quest-1 p.paragraph span:nth(10)').data('gmannid', '1');
       $('#quest-1 p.paragraph span:nth(11)').data('gmannid', '1');
       $('#quest-2 p.paragraph span:nth(11)').data('gmannid', '2');
