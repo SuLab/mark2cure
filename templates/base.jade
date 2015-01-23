@@ -4,8 +4,14 @@
 head
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
+
     link(rel='shortcut icon', href='#{STATIC_URL}favicon.ico', type='image/x-icon')
     link(rel='icon', href='#{STATIC_URL}favicon.ico', type='image/x-icon')
+
+    link(rel='apple-touch-icon', href='#{STATIC_URL}touch-icon-iphone.png')
+    link(rel='apple-touch-icon', sizes='76x76', href='#{STATIC_URL}touch-icon-ipad.png')
+    link(rel='apple-touch-icon', sizes='120x120', href='#{STATIC_URL}touch-icon-iphone-retina.png')
+    link(rel='apple-touch-icon', sizes='152x152', href='#{STATIC_URL}touch-icon-ipad-retina.png')
 
     block social-tags
       meta(name='description', content='Mark2Cure – Scientific communication is broken')
