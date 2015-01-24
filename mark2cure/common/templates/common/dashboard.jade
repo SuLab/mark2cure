@@ -108,7 +108,7 @@ block post-footer
 
           $('#dashboard .quest').click(function(evt) {
             var link = $(this).find('a');
-            if(link) { location.href=link.attr('href'); }
+            if(link.length) { location.href=link.attr('href'); }
           });
 
         }
