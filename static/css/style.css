@@ -242,13 +242,13 @@ a.close-btn {
   margin-bottom: -2px;
 }
 
-#dashboard .quest p strong a {
+#dashboard .quest a strong p {
   font-family: 'Px Grotesk Light';
   color: #7F3CFF;
   text-decoration: none;
 }
 
-#dashboard .quest:hover p strong a {
+#dashboard .quest:hover a strong p {
   color: #fff;
 }
 
