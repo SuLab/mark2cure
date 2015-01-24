@@ -230,6 +230,7 @@ a.close-btn {
 
 #dashboard .quest:hover {
   background-color: rgba(127,60,255, .8);
+  cursor: pointer;
 }
 
 #dashboard .quest .progress {
@@ -237,18 +238,23 @@ a.close-btn {
   box-shadow: none;
 }
 
-#dashboard .quest p {
+#dashboard .quest a,
+#dashboard .quest a:hover {
+  text-decoration: none;
+}
+
+#dashboard .quest a p {
   margin-top: 8px;
   margin-bottom: -2px;
 }
 
-#dashboard .quest a strong p {
+#dashboard .quest a p {
   font-family: 'Px Grotesk Light';
   color: #7F3CFF;
   text-decoration: none;
 }
 
-#dashboard .quest:hover a strong p {
+#dashboard .quest:hover a p {
   color: #fff;
 }
 

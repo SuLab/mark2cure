@@ -59,7 +59,7 @@ block post-footer
               <span class='glyphicon glyphicon-ban-circle muted' title='This quest is not enabled.'></span>
 
             <% } else { %>
-              <a href='/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><strong><%- d.name %></p></strong></a>
+              <a href='/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
 
             <% } %>
           </div>
@@ -105,7 +105,14 @@ block post-footer
         'url': '/quest/api/read/',
         'success': function(data) {
           draw_dashboard(data);
+
+          $('#dashboard .quest').click(function(evt) {
+            var link = $(this).find('a');
+            if(link) { location.href=link.attr('href'); }
+          });
+
         }
       };
 
       $.ajax(ajax_settings);
+
