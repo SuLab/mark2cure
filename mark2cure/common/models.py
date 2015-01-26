@@ -105,7 +105,7 @@ class Task(models.Model):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
 
     def create_views(self, document, user):
-        user_quest_rel_views = self.userquestrelationship_set.get(user=user).views
+        user_quest_rel_views = self.userquestrelationship_set.get(user=user, completed=False).views
         if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
 
             for sec in document.available_sections():
