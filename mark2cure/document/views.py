@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 
 from django.template.response import TemplateResponse
 
-from mark2cure.document.models import Document, Section
 from mark2cure.common.models import Task
 
+
+from .models import Document, Section, Annotation
 from .forms import AnnotationForm
 from .utils import generate_results, select_best_opponent
 from .serializers import AnnotationSerializer
@@ -130,14 +131,19 @@ def identify_annotations_results(request, task_id, doc_id):
         # No other work has ever been done on this apparently
         # so we reward the user and let them know they were
         # first via a different template / bonus points
+        total_anns = 0
         for section in sections:
             user_view = user_quest_rel_views.get(section=section, completed=True)
             setattr(section, 'words', section.resultwords(user_view, False))
+            total_anns += Annotation.objects.filter(view=user_view).count()
 
-        request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge('points_awarded', user=request.user)
+        contributed = total_anns > 0
+        if contributed:
+            request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge('points_awarded', user=request.user)
 
         ctx['sections'] = sections
+        ctx['contributed'] = contributed
         return TemplateResponse(request,
                 'document/concept-recognition-results-not-available.jade',
                 ctx)

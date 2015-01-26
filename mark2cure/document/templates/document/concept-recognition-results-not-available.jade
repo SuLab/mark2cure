@@ -5,9 +5,13 @@ block content
   .row
     .col-xs-8.col-xs-offset-2
       .row.alert.alert-info.alert-sticky
-        h2.text-center New Annotations!
-        h3.text-center You earned 1,000 points for marking this new document
-        p.text-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
+        - if contributed
+          h2.text-center New Annotations!
+          h3.text-center You earned 1,000 points for marking this new document
+          p.text-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
+        - else
+          h2.text-center New Document!
+          h3.text-center Unfortunately you didn't earn any points because no annotations were provided ;(
 
   - for section in sections
       .row
