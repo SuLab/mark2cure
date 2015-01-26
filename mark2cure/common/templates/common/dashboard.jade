@@ -67,7 +67,7 @@ block post-footer
 
         <% if(d.user.enabled) { %>
           <div class='row'>
-            <div class='col-xs-12' title='This quest is <%- progress %>% complete.'>
+            <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
               <div class='progress'>
                 <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
                   <span><%- d.progress.current %> Documents</span>
