@@ -1,5 +1,4 @@
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -7,9 +6,9 @@ from django.contrib.auth.models import User
 
 from django.template.response import TemplateResponse
 
-from mark2cure.document.models import Document, Section
 from mark2cure.common.models import Task
 
+from .models import Document, Section
 from .forms import AnnotationForm
 from .utils import generate_results, select_best_opponent
 from .serializers import AnnotationSerializer
@@ -39,11 +38,11 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
       to compare against
     '''
 
-    ctx = { 'task': task,
-            'doc': doc,
-            'sections': sections,
-            'user_profile': request.user.profile,
-            'task_type': 'concept-recognition'}
+    ctx = {'task': task,
+           'doc': doc,
+           'sections': sections,
+           'user_profile': request.user.profile,
+           'task_type': 'concept-recognition'}
     return TemplateResponse(request, 'document/concept-recognition.jade', ctx)
 
 
@@ -162,6 +161,7 @@ def show_comparison_results(request, user_views, gm_views, ctx, log_score=False)
 '''
   Utility views for general document controls
 '''
+
 
 @login_required
 @require_http_methods(['POST'])

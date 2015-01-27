@@ -1,14 +1,7 @@
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
 
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
-from django.views.decorators.http import require_POST
-from django.utils.translation import ugettext as _
 
 from .forms import UserProfileForm
 from mark2cure.registration.forms import UserNameChangeForm
@@ -16,6 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from brabeion.models import BadgeAward
+
 
 @login_required
 def settings(request):
@@ -31,8 +25,8 @@ def settings(request):
         user_profile_form.save()
         return redirect('userprofile:settings')
 
-    ctx = { 'user_change_form': user_change_form,
-            'user_profile_form': user_profile_form}
+    ctx = {'user_change_form': user_change_form,
+           'user_profile_form': user_profile_form}
     return TemplateResponse(request, 'userprofile/settings.jade', ctx)
 
 

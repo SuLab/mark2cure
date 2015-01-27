@@ -1,10 +1,7 @@
 try:
-    from urllib.parse import parse_qs, urlencode, urljoin, urlunparse
+    from urllib.parse import urlunparse
 except ImportError:
-    from urllib import urlencode
-    from urlparse import parse_qs, urljoin, urlunparse
-
-from django.conf import settings
+    from urlparse import urlunparse
 
 
 def get_local_host(request):

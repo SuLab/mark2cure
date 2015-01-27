@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 
 from django.contrib.auth.models import User
@@ -8,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 
 import csv
 
+
 @login_required
 def users_training(request):
     response = HttpResponse(content_type='text/html')
-    #response['Content-Disposition'] = 'attachment; filename="users_training_completion.csv"'
     writer = csv.writer(response)
 
     training = Task.objects.filter(kind=Task.TRAINING).all()

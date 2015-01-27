@@ -1,27 +1,30 @@
+from django.conf import settings
 from django.template.response import TemplateResponse
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login
-
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from django.contrib import messages
 
 from mark2cure.common.models import Task, UserQuestRelationship
-from .forms import UserCreateForm, UserNameChangeForm
 from mark2cure.userprofile.forms import UserProfileForm
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.views import password_reset, password_reset_confirm
+from django.utils.translation import ugettext as _
 
 from brabeion import badges
-from brabeion.models import BadgeAward
+from .models import EmailConfirmationRequest, EmailChangeRequest
+from urllib import urlencode
+
+import forms
+import utils
 
 import os
 
 
 def user_creation(request):
-    user_create_form = UserCreateForm(data=request.POST or None)
+    user_create_form = forms.UserCreateForm(data=request.POST or None)
     if request.POST and user_create_form.is_valid():
         user = user_create_form.save()
 
@@ -45,7 +48,7 @@ def user_creation(request):
 
 @login_required
 def user_creation_settings(request):
-    user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+    user_change_form = forms.UserNameChangeForm(instance=request.user, data=request.POST or None)
     user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
 
     if request.POST and user_profile_form.is_valid():
@@ -121,7 +124,7 @@ def change_email(request, token):
     try:
         email_change_request = EmailChangeRequest.objects.get(
             token=token, valid_until__gte=now())
-            # TODO: cronjob (celery task) to delete stale tokens
+        # TODO: cronjob (celery task) to delete stale tokens
     except EmailChangeRequest.DoesNotExist:
         return TemplateResponse(request, 'registration/invalid_token.jade')
 

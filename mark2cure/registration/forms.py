@@ -2,15 +2,13 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
+from django.core.mail import send_mail
 
-from .models import (
-    EmailConfirmationRequest,
-    EmailChangeRequest)
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 
-from django.utils.translation import ugettext, ugettext_lazy as _
-from django.utils.translation import pgettext_lazy, ugettext
+from .models import EmailConfirmationRequest, EmailChangeRequest
 
 
 class UserCreateForm(UserCreationForm):
@@ -38,7 +36,7 @@ class SetOrRemovePasswordForm(SetPasswordForm):
 
     def __init__(self, *args, **kwargs):
         super(SetOrRemovePasswordForm, self).__init__(*args, **kwargs)
-        if not 'new_password1' in self.data.keys():
+        if 'new_password1' not in self.data.keys():
             self.fields['new_password1'].required = False
             self.fields['new_password2'].required = False
 
@@ -65,7 +63,7 @@ class RequestEmailConfirmationForm(forms.Form):
         request = self.create_request_instance()
         confirmation_url = self.local_host + request.get_confirmation_url()
         context = {'confirmation_url': confirmation_url}
-        #send_email(email, self.template, context)
+        send_mail(email, self.template, context)
 
     def create_request_instance(self):
         email = self.cleaned_data['email']

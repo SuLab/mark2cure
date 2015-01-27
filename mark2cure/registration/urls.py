@@ -5,7 +5,7 @@ from django.contrib.auth import views as reset_views
 
 urlpatterns = patterns('',
     url(r'^login/$', 'django.contrib.auth.views.login',
-        {'template_name': 'registration/login.jade',},
+        {'template_name': 'registration/login.jade'},
         name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout',
         {'next_page': '/'},
@@ -32,6 +32,6 @@ urlpatterns = patterns('',
     url(r'^password_reset/$',
         reset_views.password_reset,
         {'template_name': 'password-reset/password_reset.jade',
-        'post_reset_redirect' : '/registration/password_reset/done/'},
+        'post_reset_redirect': '/registration/password_reset/done/'},
         name='password-reset'),
 )

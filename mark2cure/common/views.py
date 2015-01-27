@@ -1,6 +1,5 @@
-from django.template import RequestContext
 from django.template.response import TemplateResponse
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.conf import settings
 from django.views.decorators.http import require_http_methods
 
@@ -92,9 +91,9 @@ def dashboard(request):
         msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
         messages.info(request, msg, extra_tags='safe alert-success')
 
-    ctx = { 'tasks': tasks,
-            'welcome': welcome,
-            'profile': profile}
+    ctx = {'tasks': tasks,
+           'welcome': welcome,
+           'profile': profile}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 
@@ -134,8 +133,8 @@ def quest_read(request, quest_num):
         return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
 
     user_quest_rel.save()
-    ctx = { 'task': task,
-            'completed_docs': task_doc_ids_completed,
-            'documents': documents}
+    ctx = {'task': task,
+           'completed_docs': task_doc_ids_completed,
+           'documents': documents}
     return TemplateResponse(request, 'common/quest.jade', ctx)
 

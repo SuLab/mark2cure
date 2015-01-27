@@ -8,8 +8,6 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from Bio import Entrez, Medline
 
-from mark2cure.document.models import Annotation
-
 import random
 
 
@@ -71,7 +69,6 @@ def select_best_opponent(task, document, player):
         random.shuffle(previous_users)
         selected_user = previous_users[0]
         return selected_user
-
 
     return None
 

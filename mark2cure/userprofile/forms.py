@@ -1,8 +1,4 @@
 from django import forms
-from django.utils.translation import ugettext as _
-
-from django.contrib.auth.models import User
-#from .models import Address, AddressBook,
 from .models import UserProfile
 
 

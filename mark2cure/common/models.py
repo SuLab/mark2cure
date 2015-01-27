@@ -160,6 +160,4 @@ class SupportMessage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return u'{text} (via {user})'.format(
-                text=self.text,
-                user=self.user)
+        return u'{text} (via {user})'.format(text=self.text, user=self.user)

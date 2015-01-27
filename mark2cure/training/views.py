@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -8,9 +7,9 @@ from django.contrib import messages
 from mark2cure.common.models import Task, UserQuestRelationship
 
 from brabeion import badges
-from brabeion.models import BadgeAward
 
 import os
+
 
 def introduction(request):
     return TemplateResponse(request, 'training/basics.jade')
@@ -38,7 +37,7 @@ def one(request, step_num):
         return TemplateResponse(request, 'training/intro-1/complete.jade')
 
     if step_num == 'feedback':
-        return TemplateResponse(request,'training/intro-1/feedback.jade', {'next_path': reverse('registration:user_creation')})
+        return TemplateResponse(request, 'training/intro-1/feedback.jade', {'next_path': reverse('registration:user_creation')})
 
     step_num = int(step_num)
     next_ = step_num + 1
@@ -103,13 +102,13 @@ def one(request, step_num):
         answers = [{'text': 'tingling and/or numbness in the hands or feet', 'start': 58}]
         next_ = 'complete'
 
-    ctx = { 'training_num': 1,
-            'step_num': step_num,
-            'header1': header1,
-            'header2': header2,
-            'paragraph': paragraph,
-            'answers': answers,
-            'next': next_}
+    ctx = {'training_num': 1,
+           'step_num': step_num,
+           'header1': header1,
+           'header2': header2,
+           'paragraph': paragraph,
+           'answers': answers,
+           'next': next_}
     return TemplateResponse(request, 'training/intro-1/read.jade', ctx)
 
 

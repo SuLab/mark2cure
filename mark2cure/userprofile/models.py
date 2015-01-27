@@ -1,14 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
 
 from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
-
-from mark2cure.document.models import View
 
 import os
 
