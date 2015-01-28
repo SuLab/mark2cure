@@ -11,6 +11,15 @@ block content
       .col-xs-10.col-xs-offset-1
         h2.text-center Bonus Points: #{task.points}
 
+    .row.head-space
+      .col-xs-6.col-xs-offset-3
+        p.lead.text-center You've made a valuable and important contribution! Tell your friends about it now and help find cures faster.
+
+    .row.foot-space
+      .col-xs-4.col-md-offset-4.text-center
+        a(href="https://twitter.com/intent/tweet?button_hashtag=mark2cure&text=I completed Quest {{task.name}} on Mark2Cure. Contribute to help find cures faster! http://mark2cure.org").btn.btn-default
+          | Tweet your accomplishment!
+
     .row
       .col-xs-3.col-xs-offset-2
         a(href='/dashboard/').btn.btn-default.btn-block Go to dashboard
