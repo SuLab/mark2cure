@@ -114,11 +114,15 @@ head
         a#support-icon(data-toggle="modal", data-target="#support-modal")
           img(src='#{STATIC_URL}images/support-icon.png')
 
+        include document/includes/instructions-modal
+
         .modal.fade#support-modal
           .modal-dialog
             .modal-content
               .modal-header
                 h2.modal-title Contact Support
+                h4 Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task or write us a message and we will get back to as soon as possible.
+
               .modal-body
                 form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
                   - csrf_token
