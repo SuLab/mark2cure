@@ -299,6 +299,12 @@
   border: none;
 }
 
+.alert-info-minimal {
+  border: 16px solid #d9edf7;
+  background: none;
+  border-top: none;
+}
+
 .alert-warning {
   background-color: #E8DB47;
   border-color: #f5e79e;

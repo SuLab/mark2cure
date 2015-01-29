@@ -313,3 +313,10 @@ a.close-btn {
 .modal-dialog {
   z-index: 1041;
 }
+
+#partner-info h3 {
+  border-bottom: 4px solid #00CC00;
+  color: #333;
+  display: inline-block;
+}
+
