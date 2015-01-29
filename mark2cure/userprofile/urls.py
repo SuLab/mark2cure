@@ -4,7 +4,11 @@ from . import views
 
 
 urlpatterns = patterns('',
-    url(r'^$', views.settings, name='settings-root'),
-    url(r'^settings/$', views.settings, name='settings'),
+    url(r'^$', views.settings, name='settings'),
+
+    # Public routes
+    url(r'^(?P<username>\w+)/edit/', views.settings, name='settings'),
+    url(r'^(?P<username>\w+)/', views.public_profile, name='public-profile'),
+
     url(r'^points/$', views.user_points, name='points'),
 )

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
 from .forms import UserProfileForm
@@ -10,6 +11,22 @@ from rest_framework.response import Response
 
 from brabeion.models import BadgeAward
 
+from mark2cure.document.models import Annotation
+from mark2cure.common.models import UserQuestRelationship
+
+
+def public_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    anns = Annotation.objects.filter(view__user=user)
+    quests = UserQuestRelationship.objects.filter(user=user, completed=True)
+    # (TODO) Latest Qoutes
+
+    ctx = {'player': user,
+           'owner': True if request.user == user else False,
+           'quests_count': quests.count(),
+           'annotations_count': anns.count()}
+
+    return TemplateResponse(request, 'userprofile/public-profile.jade', ctx)
 
 @login_required
 def settings(request):

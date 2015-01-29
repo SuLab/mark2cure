@@ -25,7 +25,7 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
               .row
                 .col-xs-12
                   p
-                    a(href='{% url "profile:settings" %}') Settings
+                    a(href='{% url "profile:public-profile" username=user.username %}') Profile
                 .col-xs-12
                   p
                     a(href='{% url "registration:logout" %}') Logout

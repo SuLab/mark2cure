@@ -407,13 +407,25 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffd0e9c6', GradientType=0);
 }
 
+.panel-info {
+  background-color: none;
+  border-radius: 0px;
+  border: 4px solid #f8f8f8;
+
+  font-family: 'Px Grotesk Light';
+  color: #777777;
+}
+
 .panel-info > .panel-heading {
-  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#d9edf7), to(#c4e3f3));
-  background-image: -webkit-linear-gradient(top, #d9edf7 0%, #c4e3f3 100%);
-  background-image: -moz-linear-gradient(top, #d9edf7 0%, #c4e3f3 100%);
-  background-image: linear-gradient(to bottom, #d9edf7 0%, #c4e3f3 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9edf7', endColorstr='#ffc4e3f3', GradientType=0);
+  background-color: #f8f8f8;
+  border: none;
+  padding: 4px;
+
+  font-size: 1.6em;
+}
+
+.panel-info > .panel-body {
+
 }
 
 .panel-warning > .panel-heading {
