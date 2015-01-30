@@ -89,7 +89,7 @@ script.
       case "Familial Mediterranean fever ( FMF":
       case "Duchenne muscular dystrophy ( DMD":
       case "Friedreich ataxia ( FRDA":
-        msg = "<p>Treat disease abbreviations like the words they represent. Don't mark them as a single span with the disease terms they represent. Eg- <span class='selected'>Bipolar Disorder</span> ( <span class='selected'>BD</span> ) = Bipolar Disorder (Bipolar Disorder) and should not be marked as 2 distinct instances of the disease</p>";
+        msg = "<p class='lead'>Treat disease abbreviations like the words they represent. Don't mark them as a single span with the disease terms they represent. Eg- <span class='selected'>Bipolar Disorder</span> ( <span class='selected'>BD</span> ) = Bipolar Disorder (Bipolar Disorder) and should not be marked as 2 distinct instances of the disease</p>";
         break;
 
       case "unfavorable renal prognosis":
@@ -101,32 +101,32 @@ script.
       case "mutation rates":
       case "dystrophy":
       case "Friedreich":
-        msg = "<p>Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.</p>";
+        msg = "<p class='lead'>Do not mark generic terms such as 'disorder', 'neurodegenerative', 'prognosis', 'mutation', 'disease' unless they are part of the disease name such as in 'Bipolar disorder' or 'Alzheimer disease'.</p>";
         break;
 
       case "breast cancer":
       case "amyloidosis":
-        msg = "<p>If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease.</p>";
+        msg = "<p class='lead'>If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease.</p>";
         break;
 
       case "Dutch breast cancer":
       case "breast cancer families":
       case "Friedreich ataxia locus 65":
       case "FRDA locus":
-        msg = "<p>If a descriptive term does not specify a particular form of the disease, do not mark that term. Do not mark non-disease terms that are modified by disease terms such as 'family', 'gene', 'locus', 'patients'.</p>";
+        msg = "<p class='lead'>If a descriptive term does not specify a particular form of the disease, do not mark that term. Do not mark non-disease terms that are modified by disease terms such as 'family', 'gene', 'locus', 'patients'.</p>";
         break;
 
       case "renal amyloidosis and arthritis":
-        msg = "<p>When marking disease symptoms, if the symptoms can stand alone, mark them as individual symptoms.</p>";
+        msg = "<p class='lead'>When marking disease symptoms, if the symptoms can stand alone, mark them as individual symptoms.</p>";
         break;
 
       case "MEFV":
       case "BRCA1":
-        msg = "<p>Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.</p>";
+        msg = "<p class='lead'>Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.</p>";
         break;
 
       case "colchicine":
-        msg = "<p>Do not mark drug names.</p>";
+        msg = "<p class='lead'>Do not mark drug names.</p>";
         break;
 
       case "Duchenne":
@@ -138,7 +138,7 @@ script.
       case "ovarian":
       case "breast":
       case "breast / ovarian":
-        msg = "<p>Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.</p>";
+        msg = "<p class='lead'>Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.</p>";
         break;
     };
 
