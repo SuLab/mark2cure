@@ -58,7 +58,7 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
     task = get_object_or_404(Task, pk=task_id)
     section = get_object_or_404(Section, pk=section_id)
 
-    user_quest_rel_views = task.userquestrelationship_set.get(user=request.user).views
+    user_quest_rel_views = task.userquestrelationship_set.get(user=request.user, completed=False).views
     view = user_quest_rel_views.filter(section=section, completed=False).first()
 
     if view:
