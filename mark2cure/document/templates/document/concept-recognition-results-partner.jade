@@ -8,9 +8,10 @@ block content
         #partner-info.col-sm-4
           p(style='margin-bottom: 0px;')
             small You were paired with:
-          h3(style='margin-top: 0px;') #{partner}
+          h3(style='margin-top: 0px;')
+            a(href='{% url "profile:public-profile" username=partner.username %}', target='_blank')
+              #{partner}
           h4 Level: #{partner.userprofile.highest_level.name}
-          h5 #{partner.userprofile.quote}
 
         .col-xs-8
           h2.text-center

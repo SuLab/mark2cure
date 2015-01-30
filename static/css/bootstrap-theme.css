@@ -585,6 +585,9 @@ p {
 .popover.bottom > .arrow:after { border-bottom-color: #7F3CFF; }
 .popover.left > .arrow:after { border-left-color: #7F3CFF; }
 
-
-
+a,
+a:hover {
+  text-decoration: none;
+  color: #333;
+}
 
