@@ -138,6 +138,11 @@ class UserQuestRelationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+
+    class Meta:
+        get_latest_by = 'updated'
+
+
     def __unicode__(self):
         return u'User Quest Relationship'
 

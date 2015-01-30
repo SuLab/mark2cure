@@ -113,6 +113,11 @@ class View(models.Model):
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
 
+
+    class Meta:
+        get_latest_by = 'pk'
+
+
     def __unicode__(self):
         return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
             doc_id=self.section.document.pk,

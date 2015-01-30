@@ -112,7 +112,10 @@ def identify_annotations_results(request, task_id, doc_id):
     if opponent:
 
         for section in sections:
-            player_view = user_quest_rel_views.get(section=section, completed=True)
+            # If paired against a player who has completed the task multiple times
+            # compare the to the first instance of the person completing that Document <==> Quest
+            # while taking the latest version of the player's
+            player_view = user_quest_rel_views.filter(section=section, completed=True).latest()
 
             quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
             opponent_view = quest_rel.views.get(section=section, completed=True)
