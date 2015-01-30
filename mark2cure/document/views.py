@@ -84,7 +84,8 @@ def identify_annotations_results(request, task_id, doc_id):
     user = request.user
     user_profile = user.userprofile
 
-    user_quest_rel_views = task.userquestrelationship_set.get(user=user).views
+    user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).first()
+    user_quest_rel_views = user_quest_rel.views
 
     # (TODO) Validate the number of required views for this document, etc...
     if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():

@@ -114,7 +114,8 @@ class Task(models.Model):
                 user_quest_rel_views.add(view)
 
     def complete_views(self, document, user):
-        user_quest_rel_views = self.userquestrelationship_set.get(user=user).views
+        user_quest_rel = self.userquestrelationship_set.filter(user=user, completed=False).first()
+        user_quest_rel_views = user_quest_rel.views
 
         for view in user_quest_rel_views.filter(section__document=document).all():
             # (TODO) Validate (require 1+ ann for example?) before allowing completion
