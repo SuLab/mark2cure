@@ -17,9 +17,16 @@ block content
 
     .row.foot-space-xl
       .col-xs-10.col-xs-offset-1.text-center
-        a(href="https://twitter.com/intent/tweet?text=I just completed Quest {{task.name}} in %23Mark2Cure. Join me %26 help researchers find cures FASTER. If you can read, you can help http://mark2cure.org/").btn.btn-default
-          i.fa.fa-twitter-square.fa-2x.pull-left
-          | Tweet accomplishment!
+        ul.list-inline
+          li
+            a(href="https://twitter.com/intent/tweet?text=I just completed Quest {{task.name}} in %23Mark2Cure. Join me %26 help researchers find cures FASTER. If you can read, you can help http://mark2cure.org/").btn.btn-default
+              i.fa.fa-twitter-square.fa-2x.pull-left
+              | Tweet accomplishment!
+
+          li
+            a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just completed Quest {{task.name}} in %23Mark2Cure. Join me %26 help researchers find cures FASTER. If you can read, you can help&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank").btn.btn-default
+              i.fa.fa-facebook-square.fa-2x.pull-left
+              | Share accomplishment!
 
     .row
       .col-xs-3.col-xs-offset-2
