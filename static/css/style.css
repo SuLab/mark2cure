@@ -320,3 +320,7 @@ a.close-btn {
   display: inline-block;
 }
 
+#partner-info h3 a {
+  color: #333;
+}
+

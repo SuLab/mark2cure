@@ -588,6 +588,7 @@ p {
 a,
 a:hover {
   text-decoration: none;
-  color: #333;
+  color: #7F3CFF;
+  cursor: pointer;
 }
 
