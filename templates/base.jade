@@ -92,6 +92,29 @@ head
 
       script(src='//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js')
 
+      a#support-icon(data-toggle="modal", data-target="#support-modal")
+        img(src='#{STATIC_URL}images/support-icon.png')
+      include document/includes/instructions-modal
+      .modal.fade#support-modal
+        .modal-dialog
+          .modal-content
+            .modal-header
+              h2.modal-title Contact Support
+              h4 Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task or write us a message and we will get back to as soon as possible.
+
+            .modal-body
+              form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
+                - csrf_token
+                - if request.user.is_authenticated
+                  input(type='hidden', name='user', value='{{user.pk}}')
+                input(type='hidden', name='referral', value='{{request.path}}')
+                .form-group
+                  label Message
+                  textarea(name='text').form-control
+            .modal-footer
+              button(type="button", data-dismiss="modal").btn.btn-default Cancel
+              button(type="button").btn.btn-default.modal-form-submit Submit
+
       - if request.user.is_authenticated
         script.
           Raven.setUser({
@@ -109,32 +132,6 @@ head
         - if not debug
           script.
             window.intercomSettings['app_id'] = 'geb4sut8';
-
-        //<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/geb4sut8';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
-        a#support-icon(data-toggle="modal", data-target="#support-modal")
-          img(src='#{STATIC_URL}images/support-icon.png')
-
-        include document/includes/instructions-modal
-
-        .modal.fade#support-modal
-          .modal-dialog
-            .modal-content
-              .modal-header
-                h2.modal-title Contact Support
-                h4 Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task or write us a message and we will get back to as soon as possible.
-
-              .modal-body
-                form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
-                  - csrf_token
-                  input(type='hidden', name='user', value='{{user.pk}}')
-                  input(type='hidden', name='referral', value='{{request.path}}')
-                  .form-group
-                    label Message
-                    textarea(name='text').form-control
-              .modal-footer
-                button(type="button", data-dismiss="modal").btn.btn-default Cancel
-                button(type="button").btn.btn-default.modal-form-submit Submit
-
 
       - if not debug
         script.
