@@ -190,6 +190,17 @@ block post-footer
         window.scrollTo(0,0);
         intro._options.steps.push({element: '#next-container', intro: "Click to continue!", position: "top"});
         intro.start();
+
+        var step_idx = 0;
+        intro.onchange(function(targetElement, a, b, c) {
+          if(step_idx==2) {
+            setTimeout(function() {
+              window.scrollTo(0,0);
+            }, 50);
+          }
+          step_idx++;
+        });
+
       });
     });
 
