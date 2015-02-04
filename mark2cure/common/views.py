@@ -9,6 +9,7 @@ from django.contrib.messages import get_messages
 from django.contrib import messages
 from django.http import HttpResponse
 
+from mark2cure.userprofile.models import UserProfile
 from .models import Task, UserQuestRelationship
 from .serializers import QuestSerializer
 from .forms import SupportMessageForm
@@ -46,6 +47,10 @@ def home(request):
     form = AuthenticationForm()
     return TemplateResponse(request, 'common/index.jade', {'form': form})
 
+
+def why_mark2cure(request):
+    query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
+    return TemplateResponse(request, 'common/why-mark2cure.jade', {'profiles': query})
 
 @login_required
 def dashboard(request):

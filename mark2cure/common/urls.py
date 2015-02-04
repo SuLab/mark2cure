@@ -5,6 +5,7 @@ urlpatterns = patterns('',
 
     url(r'^$', views.landing, name='landing'),
     url(r'^beta/$', views.home, name='home'),
+    url(r'^why-i-mark2cure/$', views.why_mark2cure, name='why-mark2cure'),
 
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),

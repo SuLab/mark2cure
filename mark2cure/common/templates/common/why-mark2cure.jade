@@ -1,0 +1,22 @@
+extends base
+
+block header
+    - if user.is_authenticated
+      include includes/header
+    - else
+      include includes/header-anon
+
+block content
+  .container.head-space-xl
+    .row
+      .col-xs-offset-2.col-xs-8
+        .row
+          .col-xs-12
+            .panel.panel-info
+              .panel-heading.text-center
+                h2.text-center Why do you Mark2Cure?
+              .panel-body
+                - for profile in profiles
+                  p.text-center #{profile.motivation}
+                  hr
+
