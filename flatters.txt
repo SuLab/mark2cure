@@ -8,13 +8,12 @@ Superb
 Brilliant
 Fantastic
 Fabulous
-Champion
+You're a Champion
 Well done
 You rock
 Great job
 Tip top
 Good thinking
-You can do it
 Keep it up
 Way to go
 Right on
@@ -65,22 +64,15 @@ Speedy
 Superb
 Sweeet
 Thanks
-Timely
 Zowie!
 
 Amazing
 Awesome
-Pleased
 Quality
 Service
 Sweeeet
 
-Ecstatic
-Flawless
-Friendly
 Glorious
-Good Buy
-Gorgeous
 Stunning
 Superior
 The Best
@@ -88,7 +80,6 @@ The Bomb
 Thrilled
 Way Cool
 
-Authentic
 Brilliant
 Competent
 Delighted
@@ -100,14 +91,11 @@ Satisfied
 Thank You
 Top Notch
 Unrivaled
-Very Best
 Wonderful
 
 A Home Run
-A Pleasure
 Astounding
 Delightful
-I'm Elated
 Impressive
 Incredible
 Super Cool
@@ -131,23 +119,17 @@ Overwhelming!
 Unbelievable!
 
 Awe Inspiring
-Communication
 Lickety Split
 Splendiferous
 Thanks A Ton!
 
 Extremely Cool
-Lightning Fast
-Mint Condition
 Satisfied 100%
 
-Breakneck Speed
-Expertly Graded
 Extremely Happy
 Great Condition
 
 Above And Beyond
-Highly Recommend
 State Of The Art
 
 Thanks A Million!
@@ -162,3 +144,15 @@ Greatly Appreciated
 Beyond My Wildest Dreams
 Supercalifragilisticexpialidocious
 Thank You! Thank You! Thank You!
+
+
+
+
+---If less than 50%---
+You can do it
+Nice Try
+Don't give up
+Every bit counts
+Thank you
+Keep going
+You can do better than that
