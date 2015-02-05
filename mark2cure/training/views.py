@@ -98,8 +98,8 @@ def one(request, step_num):
     if step_num == 10:
         header1 = "Sometimes a single symptom is described with a long block of text and may have joining terms such as 'and' or 'or'."
         header2 = "In that case, highlight the entire symptom as a single span of text. Finish Training #1 by marking the symptom in the text below."
-        paragraph = "Another crucial symptom that we will investigate includes tingling and/or numbness in the hands or feet ."
-        answers = [{'text': 'tingling and/or numbness in the hands or feet', 'start': 58}]
+        paragraph = "Another crucial symptom is tingling and/or numbness in the hands or feet ."
+        answers = [{'text': 'tingling and/or numbness in the hands or feet', 'start': 27}]
         next_ = 'complete'
 
     ctx = {'training_num': 1,
