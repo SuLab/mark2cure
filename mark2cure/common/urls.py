@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = patterns('',
 
-    url(r'^$', views.landing, name='landing'),
-    url(r'^beta/$', views.home, name='home'),
+    url(r'^$', views.home, name='home'),
+    url(r'^beta/$', views.beta, name='beta'),
     url(r'^why-i-mark2cure/$', views.why_mark2cure, name='why-mark2cure'),
 
     url(r'^dashboard/$',

@@ -33,10 +33,8 @@ def support(request):
         return HttpResponse(200)
 
 
-def landing(request):
-    if request.user.is_authenticated():
-        return redirect('common:home')
-    return TemplateResponse(request, 'common/landing.jade')
+def beta(request):
+    return redirect('common:home')
 
 
 def home(request):
@@ -50,6 +48,7 @@ def home(request):
 def why_mark2cure(request):
     query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
     return TemplateResponse(request, 'common/why-mark2cure.jade', {'profiles': query})
+
 
 @login_required
 def dashboard(request):
