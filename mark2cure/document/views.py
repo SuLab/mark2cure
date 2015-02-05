@@ -124,7 +124,7 @@ def identify_annotations_results(request, task_id, doc_id):
             #if Annotation.objects.filter(view=player_view).count() == 0:
 
             quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
-            opponent_view = quest_rel.views.get(section=section, completed=True)
+            opponent_view = quest_rel.views.filter(section=section, completed=True).first()
 
             player_views.append(player_view)
             opponent_views.append(opponent_view)
