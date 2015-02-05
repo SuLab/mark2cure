@@ -85,7 +85,8 @@ def identify_annotations_results(request, task_id, doc_id):
     user = request.user
     user_profile = user.userprofile
 
-    user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).first()
+    # only take the one that has views
+    user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).latest()
     user_quest_rel_views = user_quest_rel.views
 
     # (TODO) Validate the number of required views for this document, etc...
@@ -115,7 +116,12 @@ def identify_annotations_results(request, task_id, doc_id):
             # If paired against a player who has completed the task multiple times
             # compare the to the first instance of the person completing that Document <==> Quest
             # while taking the latest version of the player's
-            player_view = user_quest_rel_views.filter(section=section, completed=True).latest()
+
+            player_view = user_quest_rel_views.filter(section=section, completed=True).first()
+
+            # if this is 0 try the other
+            # originates from Views not having timestamps for created / updated
+            #if Annotation.objects.filter(view=player_view).count() == 0:
 
             quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
             opponent_view = quest_rel.views.get(section=section, completed=True)
