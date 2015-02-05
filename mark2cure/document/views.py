@@ -144,7 +144,7 @@ def identify_annotations_results(request, task_id, doc_id):
         # first via a different template / bonus points
         total_anns = 0
         for section in sections:
-            user_view = user_quest_rel_views.get(section=section, completed=True)
+            user_view = user_quest_rel_views.filter(section=section, completed=True).first()
             setattr(section, 'words', section.resultwords(user_view, False))
             total_anns += Annotation.objects.filter(view=user_view).count()
 
