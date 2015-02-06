@@ -30,9 +30,8 @@ block post-footer
 
       var step_idx = 0;
       var $container = $('#popover-1');
-
+      var opts = {'container': 'body', 'html': true};
       var step_function = function() {
-        var opts = {'container': 'body', 'html': true};
         $container.popover('destroy');
 
         switch (step_idx) {
@@ -41,23 +40,15 @@ block post-footer
             var $biomedical = $('p.paragraph span:nth(0)');
 
             opts['pos'] = $biomedical.offset();
+            console.log(opts.pos);
             opts.pos.top = opts.pos.top - $('.popover').height() - 90;
             opts.pos.left = opts.pos.left - $('.popover').width() - 90;
             opts['placement'] = 'top';
+            console.log(opts.pos);
             break;
 
           case 1:
-            opts['content'] = 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">information</span>\”.';
-            var $information = $('p.paragraph span:nth(19)');
-
-            opts['pos'] = $information.offset();
-            opts.pos.top = opts.pos.top - $information.height() - 70;
-            opts.pos.left = opts.pos.left - ($information.width()/2) - 30;
-            opts['placement'] = 'top';
-
-            /* Force make selection */
-            var collection = YPet['basics'].currentView.collection;
-            collection.parentDocument.get('annotations').create({words: collection.where({'text': 'information'})});
+            opts['content'] = 'Remove the highlight by clicking again. Un-highlight the word \“<span class="user_annotated">Biomedical</span>\”.';
             break;
 
           case 2:
@@ -109,10 +100,10 @@ block post-footer
         }
 
         if(model_json.text == 'Biomedical' && collection.length == 1) { step_idx = 1; step_function(); }
-        if(model_json.text == 'because I am ready to help' && collection.length == 2) { step_idx = 3; step_function(); }
+        if(model_json.text == 'because I am ready to help' && collection.length == 1) { step_idx = 3; step_function(); }
       });
 
       YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
         var model_json = model.toJSON();
-        if(model_json.text == 'information' && collection.length == 1) { step_idx = 2; step_function(); }
+        if(model_json.text == 'Biomedical' && collection.length == 0) { step_idx = 2; step_function(); }
       });
