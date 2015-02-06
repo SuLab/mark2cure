@@ -581,6 +581,10 @@ p {
   display: none;
 }
 
+.popover-title {
+  border-radius: 0px;
+}
+
 .popover.top > .arrow:after { border-top-color: #7F3CFF; }
 .popover.bottom > .arrow:after { border-bottom-color: #7F3CFF; }
 .popover.left > .arrow:after { border-left-color: #7F3CFF; }
