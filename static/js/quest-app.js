@@ -141,7 +141,7 @@ $('#quest-submit').on('click', function(evt) {
       $(this).text('Next');
       $(this).attr('disabled', false);
     } else {
-      alert('There was a problem submissing this document. Please try another.');
+      alert('There was a problem submitting this document. Please try another.');
     }
   };
 
