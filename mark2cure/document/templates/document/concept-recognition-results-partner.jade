@@ -15,9 +15,12 @@ block content
 
         .col-xs-8
           h2.text-center
+            #{flatter}
+          h3.text-center
             | Earned
             | <span id='doc-f'>{% widthratio results.0.2 1.0 1000 %}</span>
             | points!
+
 
   - for section in sections
       .row

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
@@ -19,6 +20,7 @@ from rest_framework import generics
 
 from brabeion import badges
 import os
+import random
 
 
 '''
@@ -170,6 +172,7 @@ def show_comparison_results(request, user_views, gm_views, ctx, log_score=False)
         request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
         badges.possibly_award_badge('points_awarded', user=request.user)
 
+    ctx['flatter'] = random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER)
     ctx['results'] = results
     return TemplateResponse(request,
             'document/concept-recognition-results-partner.jade',
