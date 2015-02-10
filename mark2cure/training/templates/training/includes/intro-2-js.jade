@@ -122,6 +122,7 @@ script.
 
       case "MEFV":
       case "BRCA1":
+      case "COG7":
         msg = "<p class='lead'>Do not mark abbreviations unless you're sure it represents a disease. It could just be a gene name.</p>";
         break;
 
@@ -140,6 +141,57 @@ script.
       case "breast / ovarian":
         msg = "<p class='lead'>Mark disease conjunctions as spans. For example, mark 'heart disease' not 'heart'. The term 'heart' alone is not a disease.</p>";
         break;
+
+      case "wrinkled":
+      case "redundant":
+      case "inelastic":
+      case "sagging skin":
+      case "inelastic and sagging skin":
+      case "inelastic skin":
+      case "wrinkled skin":
+        msg = "<p class='lead'>Highlight the shortest span needed to cover a complete disease mention or symptom. If a term on its own is not a symptom or disease, highlight the entire span needed. Eg- For ‘restless, sweat-drenched, and tremorous sleep’, highlight the entire span, not just ‘restless’ or ‘sweat-drenched’, or ‘tremorous sleep’</p>";
+        break;
+
+      case "Familial Mediterranean fever ( FMF":
+      case "Congenital Disorders of Glycosylation ( CDG":
+        msg = "<p class='lead'>Do not mark abbreviations of diseases in the same span as the disease unless the abbreviation is enclosed by the disease mention Eg- In the case of ‘Bipolar Disorder (BD)’, mark ‘Bipolar Disorder’ separately from ‘BD’. In contrast, for ‘von Hippel-Lindau (VHL) disease’, the entire span must be highlighted together</p>";
+        break;
+
+      case "defective synthesis of elastic fibers":
+      case "defective synthesis":
+      case "inborn errors of metabolism":
+      case "metabolism":
+        msg = "<p class='lead'>Do not mark generic biological or cellular processes such as ‘mitosis’, ‘tumorigenesis’, ‘biosynthesis’</p>";
+        break;
+
+      case "disorders":
+      case "disease":
+      case "syndromes":
+      case "genetic defects":
+      case "disorder":
+      case "unfavorable renal prognosis":
+      case "inherited disorder":
+      case "mutation":
+      case "mutation rates":
+      case "mutations":
+        msg = "<p class='lead'>Do not mark generic terms such as 'disorder', 'prognosis', 'mutation', 'disease' UNLESS they are part of the disease name such as in 'Alzheimer disease' or a disease class such as in ‘neurodegenerative disease’</p>";
+        break;
+
+      case "Cutis Laxa":
+      case "Congenital disorders":
+      case "disorders of glycosylation":
+      case "mediterranean fever":
+        msg = "<p class='lead'>If a descriptive term specifies a particular form of the disease, mark it as part of the disease conjunction eg- congenital heart disease</p>";
+        break;
+
+      case "Human disorder":
+      case "CDG patients":
+      case "Armenian FMF":
+      case "FMF patients":
+      case "FMF alleles":
+        msg = "<p class='lead'>If a descriptive term does not specify a particular form of the disease, do not mark that term.  Do not mark non-disease terms that modify or are modified by disease terms such as 'family', 'gene', 'locus', 'patients'</p>";
+        break;
+
     };
 
     return msg
@@ -210,6 +262,7 @@ script.
 
   YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
+    console.log(model_json);
     /*
     * Check if the array doesn't contain the selected word.
     * 1) Alert if (contains/overlap/miss)error 2) Unselect

@@ -15,9 +15,9 @@ block content
     .row
       #quest-alerts.col-md-10.col-md-offset-1
       #quest-1.col-md-10.col-md-offset-1.paragraph-box
-        p.paragraph Estimation of the male to female ratio of mutation rates from the segregation of X-chromosomal DNA haplotypes in Duchenne muscular dystrophy families.
+        p.paragraph Metabolic cutis laxa syndromes -- a review.
       #quest-2(style='display:none;').col-md-10.col-md-offset-1.paragraph-box
-        p.paragraph A novel procedure is presented to estimate the ratio of male to female mutation rates for Duchenne muscular dystrophy ( DMD ) . X-specific restriction fragment length polymorphisms are used to establish DNA haplotypes in three-generation DMD families . From the proportion of DMD patients who have inherited their maternal grandfathers X chromosome , the ratio of mutation rates can be calculated . In contrast to classical methods , the proposed procedure is not restricted to sporadic or familiar cases nor is any information on the carrier status of female relatives required .
+        p.paragraph Cutis laxa is a human disorder characterized by wrinkled, redundant, inelastic and sagging skin due to defective synthesis of elastic fibers and other proteins of the extracellular matrix. Wrinkled, inelastic skin occurs in many cases as an acquired condition. Syndromic forms of cutis laxa, however, are caused by diverse genetic defects, mostly coding for structural extracellular matrix proteins. Surprisingly a number of metabolic disorders have been also found to be associated with cutis laxa. Menkes disease was the first metabolic disease reported with old-looking, wrinkled skin. The discovery of the COG7 mutation in patients with wrinkled, inelastic skin was the first genetic link with the Congenital Disorders of Glycosylation ( CDG ) . Since then several CDG patients have presented with cutis laxa with variable severity.
 
 
     .row.head-space-xl
@@ -35,17 +35,32 @@ block post-footer
   script.
     window.intercomSettings['quest'] = 2;
   script.
-      textControl('out', 23);
-      var answers1 = [{'text': 'Duchenne muscular dystrophy', 'start': 113}];
-      var answers2 = [{'text': 'Duchenne muscular dystrophy', 'start': 90},
-        {'text': 'DMD', 'start': 120},
-        {'text': 'DMD', 'start': 238},
-        {'text': 'DMD', 'start': 276}];
+      textControl('out', 28);
+      var answers1 = [{'text': 'Metabolic cutis laxa syndromes', 'start': 0}];
+      var answers2 = [{'text': 'Cutis laxa', 'start': 0},
+        {'text': 'wrinkled, redundant, inelastic and sagging skin', 'start': 48},
+        {'text': 'Wrinkled, inelastic skin', 'start': 189},
+        {'text': 'cutis laxa', 'start': 280},
+        {'text': 'metabolic disorders', 'start': 425},
+        {'text': 'cutis laxa', 'start': 488},
+        {'text': 'Menkes disease', 'start': 500},
+        {'text': 'metabolic disease', 'start': 529},
+        {'text': 'old-looking, wrinkled skin', 'start': 561},
+        {'text': 'wrinkled, inelastic skin', 'start': 641},
+        {'text': 'Congenital Disorders of Glycosylation', 'start': 702},
+        {'text': 'CDG', 'start': 742},
+        {'text': 'CDG', 'start': 769},
+        {'text': 'cutis laxa', 'start': 802},
+        ];
       var validation_check1 = function(collection) {
         if(validate(collection, answers1)) { correct1(); }
       };
       var validation_check2 = function(collection) {
         if(validate(collection, answers2)) { correct2(); }
         if(validate(collection, answers2, 2)) { textControl('in', 0, 38); }
-        if(validate(collection, answers2, 3)) { textControl('in', 0); }
+        if(validate(collection, answers2, 3)) { textControl('in', 0, 57); }
+        if(validate(collection, answers2, 4)) { textControl('in', 0, 73); }
+        if(validate(collection, answers2, 6)) { textControl('in', 0, 85); }
+        if(validate(collection, answers2, 9)) { textControl('in', 0, 112); }
+        if(validate(collection, answers2, 12)) { textControl('in', 0, 136); }
       };
