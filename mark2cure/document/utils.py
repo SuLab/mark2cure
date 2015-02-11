@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Document, Section, Annotation
+from .models import Document, Section, View, Annotation
 
 from django.contrib.auth.models import User
 
@@ -110,8 +110,8 @@ def generate_results(user_views, gm_views):
      fn  *tn
 
     '''
-    gm_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in gm_views])
-    user_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in user_views])
+    gm_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in gm_views if type(v) is View])
+    user_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in user_views if type(v) is View])
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 
