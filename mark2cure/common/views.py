@@ -100,6 +100,7 @@ def dashboard(request):
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 
+@login_required
 @api_view(['GET'])
 def quest_list(request):
     queryset = Task.objects.filter(kind=Task.QUEST, experiment=settings.EXPERIMENT).all()
