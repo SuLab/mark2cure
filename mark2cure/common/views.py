@@ -19,9 +19,9 @@ from rest_framework.decorators import api_view
 
 from brabeion import badges
 
+import logging
 import random
 import os
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +31,7 @@ def support(request):
     if form.is_valid():
         form.save()
         return HttpResponse(200)
+    return HttpResponse(500)
 
 
 def beta(request):

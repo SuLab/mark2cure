@@ -102,6 +102,14 @@ $(document).ready(function() {
         data = {},
         input;
 
+    var $textfield = form.find("textarea[name='text']");
+    if($textfield.length) {
+      if( $textfield.val().length == 0 ){
+        $textfield.parent().addClass('has-error');
+        return;
+      };
+    }
+
     $.each( form.find('input, textarea, select'), function() {
       input = $(this);
       data[ input.attr('name') ] = input.val();

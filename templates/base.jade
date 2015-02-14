@@ -102,7 +102,7 @@ head
               h2.modal-title Contact Support
               h4 Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.
               - if not request.user.is_authenticated
-                h5.text-center Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>). 
+                h5.text-center Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).
 
             .modal-body
               form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
