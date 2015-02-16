@@ -61,6 +61,10 @@
   background-color: transparent;
   border: 4px solid #7F3CFF;
   color: #7F3CFF;
+
+  border: 4px solid #fff;
+  color: #fff;
+  background-color: #7F3CFF;
 }
 @media (min-width: 768px) {
   .btn-start {
@@ -78,9 +82,10 @@
   font-size: 2em;
   border-radius: 0px;
 
-  background-color: rgba(255,255,255,.5);
-  border: 4px solid #7F3CFF;
-  color: #7F3CFF;
+  background-color: #7F3CFF;
+  border: 4px solid #fff;
+  font-size: 2em !important;
+  color: #fff !important;
 }
 @media (min-width: 768px) {
   .p-start {
@@ -114,7 +119,7 @@
   font-size: 1.3em;
   color: #666;
   padding: 20px;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 
@@ -122,6 +127,11 @@
   font-size: 1.9em;
   color: #444;
   text-shadow: 1px 1px 1px #fff;
+}
+
+ul.news li p {
+  font-size: 1em;
+  padding: 0px;
 }
 
 /* =========================
@@ -142,7 +152,7 @@
   font-size: 1.3em;
   color: #666;
   padding: 12px;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 

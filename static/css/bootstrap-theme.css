@@ -64,6 +64,7 @@
   color: #7F3CFF;
   background-color: #fff;
   border-color: #7F3CFF;
+  border-width: 2px;
 }
 
 .btn-default.btn-inverse:hover,

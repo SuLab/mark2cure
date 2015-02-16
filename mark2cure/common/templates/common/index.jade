@@ -19,52 +19,73 @@ block content
       .col-xs-10.col-xs-offset-1
         .row
           .col-sm-6.col-sm-offset-1
+            h2
+              | Push research <em>forward</em> and discover cures <em>faster</em>.
             p.lead
-              | The search for cures for all diseases is limited
-              | by the ability of scientists to consume and understand
-              | the rapidly expanding ocean of biomedical literature.
-              | The ability to read remains a uniquely human skill,
-              | so we need your help. Are you ready to start?
+              | Let's help scientists organize biomedical knowledge and uncover hidden links.
+            h2
+              | If you can <strong>READ</strong>, you can <strong>HELP</strong>
           .col-sm-4.col-sm-offset-1
-            - if True
+            - if False
               a(href='{% url "training:introduction" %}').btn.btn-default.btn-start.btn-block Start Now
                 br
                 small (beta-experiment)
             - else
               p.p-start
                 small.text-center
-                  | The first pilot project
-                  | is now complete. We'll let
-                  | you know when we launch again!
+                  | Beta-experiment is complete!
 
-  div(style='display:none;').container
-    .row.well
-      .col-md-6.col-md-offset-3
-        div(style="display: none;").alert.alert-info
-          p
-            | <strong>Thank you!</strong> We received your information and
-            | are currently busy finishing Mark2Cure!
+  .container-fluid.landing-container.head-space
+    .row
+      .col-xs-8.col-xs-offset-2
+        .row
+          .col-xs-6
+            h3 Learn More
 
-        div(style="display: none;").alert.alert-danger
-          p
-            | <strong>Oops!</strong> We received your information but an
-            | error occured. We may have already had that email address added...
+            .row
+              .col-xs-10.col-xs-offset-1
+                .embed-responsive.embed-responsive-16by9
+                  iframe(class="embed-responsive-item", src="https://www.youtube-nocookie.com/embed/hT_pj1cB0Q8?rel=0&amp;showinfo=0", frameborder="0", allowfullscreen)
 
-        form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal
-          p.lead.text-center
-            | If you'd like to be notified when we launch Mark2Cure,
-            | please provide your email address below.
+          .col-xs-6
+            h3 Experiment Progress
+            p.lead.text-center 100% Thank you!
+            p We'll release our results on our <a href="http://sulab.org/category/mark2cure/", target="_blank">blog</a> so stay in touch!
 
-          .form-group
-            .col-lg-8.col-lg-offset-2
-              label(for="email_input Email address").sr-only
-              input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
+        .row
+          .col-xs-6
+            h3 News
+            ul.list-unstyled.news
+              li
+                p Feb 13, 2015 – <a href="http://sulab.org/2015/02/were-almost-there-mark2cure-now-at-80-completion-of-the-beta-experiment/">We’re almost there! Mark2Cure now at 80%</a>
+              li
+                p Feb 10, 2015 – <a href="http://sulab.org/2015/02/why-do-people-mark2cure/">Why do people Mark2Cure?</a>
+              li
+                p Feb 6, 2015 – <a href="http://sulab.org/2015/02/the-mark2cure-beta-experiment-is-28-complete/">The Mark2Cure beta experiment is 28% complete!</a>
 
-          .form-group
-            .col-lg-4.col-lg-offset-4
-              button(type="submit").btn.btn-primary.btn-lg.btn-block Submit
+          .col-xs-6
+            h3 Join our mailing list
 
+            div(style="display: none;").alert.alert-info
+              p
+                | <strong>Thank you!</strong> We received your information and
+                | are currently busy finishing Mark2Cure!
 
+            div(style="display: none;").alert.alert-danger
+              p
+                | <strong>Oops!</strong> We received your information but an
+                | error occured. We may have already had that email address added...
+
+            form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal
+              .form-group
+                .col-lg-8.col-lg-offset-2
+                  .input-group
+                    label(for="email_input Email address").sr-only
+                    input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
+                    .input-group-btn
+                      button(type="submit").btn.btn-default Submit
+
+  hr
   .container-fluid.landing-container.head-space
     .row
       .col-xs-8.col-xs-offset-2
