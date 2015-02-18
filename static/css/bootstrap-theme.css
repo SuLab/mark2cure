@@ -575,6 +575,7 @@ p {
 }
 */
 
+
 .popover {
   border-radius: 0px;
   border: 2px solid white;
@@ -595,6 +596,19 @@ p {
 .popover.top > .arrow:after { border-top-color: #7F3CFF; }
 .popover.bottom > .arrow:after { border-bottom-color: #7F3CFF; }
 .popover.left > .arrow:after { border-left-color: #7F3CFF; }
+
+
+.popover-user .popover-title,
+.popover-user .popover-title a {
+  background-color: #7F3CFF;
+  color: #fff !important;
+}
+
+.popover-user .popover-content {
+  background-color: #fff;
+  color: #000;
+}
+
 
 a,
 a:hover {

@@ -66,6 +66,7 @@
   color: #fff;
   background-color: #7F3CFF;
 }
+
 @media (min-width: 768px) {
   .btn-start {
     margin-top: 90px;
@@ -102,7 +103,6 @@ form.p-start {
   border: 4px solid #7F3CFF;
   color: #000 !important;
 }
-@media (min-width: 768px) {
 
 .btn-start small {
   font-family: 'Px Grotesk Light';
@@ -293,11 +293,11 @@ a.close-btn {
 .quest-guide .doc-item-col.muted h4 {
   color: #000;
 }
-#dashboard p {
-}
+
 #dashboard span.glyphicon {
   font-size: 32px;
 }
+
 #dashboard .muted,
 #dashboard span.glyphicon-ban-circle {
   color: #f0f0ed;
@@ -333,13 +333,13 @@ a.close-btn {
   z-index: 1041;
 }
 
-#partner-info h3 {
+#partner-info > h3 {
   border-bottom: 4px solid #E85997;
   color: #333;
   display: inline-block;
 }
 
-#partner-info h3 a {
+#partner-info > h3 a {
   color: #333;
 }
 

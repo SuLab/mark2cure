@@ -8,9 +8,36 @@ block content
         #partner-info.col-sm-4
           p(style='margin-bottom: 0px;')
             small You were paired with:
+
           h3(style='margin-top: 0px;')
-            a(href='{% url "profile:public-profile" username=partner.username %}', target='_blank')
-              #{partner}
+            a(id="{{partner}}-{{doc.pk}}-popover")
+              | #{ partner }
+
+            script.
+              $("#quest-submit").on('click', function() {
+                $("#"+"{{partner}}-{{doc.pk}}-popover").popover('hide');
+              });
+
+              $(function () {
+                $("#"+"{{partner}}-{{doc.pk}}-popover").popover({
+                  'template': '<div class="popover popover-user" role="tooltip">\
+                  <div class="arrow"></div>\
+                  <h3 class="popover-title"></h3>\
+                  <div class="popover-content"></div></div>',
+                  'html': 'true',
+                  'title': '<a href="/u/{{partner.username}}/" target="_blank">{{partner.username}}</a>',
+                  'content': '<div class="form-group">\
+                  <div class="col-xs-10.col-xs-offset-2">
+                  <ol class="list-unstyled">\
+                  <li><p>Last Seen: {{partner.date_joined|naturaltime}}</p></li>\
+                  <li><p>Score: {{partner.userprofile.rating_score|intcomma}}</p></li>\
+                  <li><p>Level: {{partner.userprofile.highest_level.name}}</p></li>\
+                  </ol></div></div>',
+                  'trigger': 'click',
+                  'placement': 'bottom'
+                });
+              });
+
           h4 Level: #{partner.userprofile.highest_level.name}
 
         .col-xs-8
