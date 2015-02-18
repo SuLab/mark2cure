@@ -43,7 +43,8 @@ def home(request):
         return redirect('common:dashboard')
 
     form = AuthenticationForm()
-    return TemplateResponse(request, 'common/index.jade', {'form': form})
+    quotes = ["To help others.", "In memory of my daughter who had Cystic Fibrosis.", "Rare disease dad!", "curiosity.", "This is needed.", "Goofing off productively.", "Community.", "Science!"]
+    return TemplateResponse(request, 'common/index.jade', {'form': form, 'quotes': quotes})
 
 
 def why_mark2cure(request):

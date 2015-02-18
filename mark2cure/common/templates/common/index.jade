@@ -3,7 +3,11 @@ extends base
 block header
   .container-fluid
     .row
-      .col-sm-6.col-sm-offset-3.col-xs-6.col-xs-offset-0
+      .col-sm-2.col-sm-offset-1.col-xs-5.col-xs-offset-1
+        a(href='{% url "common:home" %}')
+          img(src="#{STATIC_URL}images/mark2cure-highligher-icon.png", style="height: 50px; margin-top: 10px;").img-responsive.img-block
+
+      .col-sm-6.col-xs-6
         h1.text-center
           a(href='{% url "common:home" %}') Mark2Cure
 
@@ -35,55 +39,90 @@ block content
                 small.text-center
                   | Beta-experiment is complete!
 
+              form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal.p-start
+                .form-group
+                  .col-lg-8.col-lg-offset-2
+                    .input-group
+                      label Join our mailing list to be notified of our next experiment
+
+                    .input-group
+                      label(for="email_input Email address").sr-only
+                      input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
+                      .input-group-btn
+                        button(type="submit").btn.btn-default Submit
+
   .container-fluid.landing-container.head-space
     .row
       .col-xs-8.col-xs-offset-2
         .row
           .col-xs-6
-            h3 Learn More
+            .row.foot-space-xl
+              .col-xs-12
+                h3 Learn More
+                .row
+                  .col-xs-10.col-xs-offset-1
+                    .embed-responsive.embed-responsive-16by9
+                      iframe(class="embed-responsive-item", src="https://www.youtube-nocookie.com/embed/hT_pj1cB0Q8?rel=0&amp;showinfo=0", frameborder="0", allowfullscreen)
 
             .row
+              .col-xs-12
+                h3 News
+                ul.list-unstyled.news
+                  li
+                    p Feb 18, 2015 – <a href="http://sulab.org/2015/02/mark2cure-first-beta-experiment-is-complete-thank-you/">Mark2Cure First Beta Experiment is Complete!</a>
+                  li
+                    p Feb 13, 2015 – <a href="http://sulab.org/2015/02/were-almost-there-mark2cure-now-at-80-completion-of-the-beta-experiment/">We’re almost there! Mark2Cure now at 80%</a>
+                  li
+                    p Feb 10, 2015 – <a href="http://sulab.org/2015/02/why-do-people-mark2cure/">Why do people Mark2Cure?</a>
+                  li
+                    p Feb 6, 2015 – <a href="http://sulab.org/2015/02/the-mark2cure-beta-experiment-is-28-complete/">The Mark2Cure beta experiment is 28% complete!</a>
+
+          .col-xs-6
+            h3 Stay in touch with Mark2Cure
+            .row
+              .col-xs-12
+                p We'll release our results on our <a href="http://sulab.org/category/mark2cure/", target="_blank">blog</a> so stay in touch!
+
+            .row
+              div(style="display:none;").col-xs-10.col-xs-offset-1.col-sm-8
+                a(href="https://twitter.com/Mark2Cure", data-widget-id="568119691210547200", data-border-color="#7F3CFF", data-tweet-limit="3").twitter-timeline Tweets by @Mark2Cure
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
               .col-xs-10.col-xs-offset-1
-                .embed-responsive.embed-responsive-16by9
-                  iframe(class="embed-responsive-item", src="https://www.youtube-nocookie.com/embed/hT_pj1cB0Q8?rel=0&amp;showinfo=0", frameborder="0", allowfullscreen)
+                .row
+                  .col-xs-10.col-xs-offset-1
+                    ul.list-inline.text-center
+                      li(style="margin-bottom: 6px;")
+                        a(href="https://twitter.com/Mark2Cure", target="_blank").btn.btn-default
+                          i.fa.fa-twitter-square.fa-2x.pull-left
+                          | Follow us on Twitter
 
-          .col-xs-6
-            h3 Experiment Progress
-            p.lead.text-center 100% Thank you!
-            p We'll release our results on our <a href="http://sulab.org/category/mark2cure/", target="_blank">blog</a> so stay in touch!
+                      li(style="margin-bottom: 6px;")
+                        a(title="Share on Facebook", href="https://www.facebook.com/pages/Mark2Cure/586806781439862", target="_blank").btn.btn-default
+                          i.fa.fa-facebook-square.fa-2x.pull-left
+                          | Like us on Facebook
 
-        .row
-          .col-xs-6
-            h3 News
-            ul.list-unstyled.news
-              li
-                p Feb 13, 2015 – <a href="http://sulab.org/2015/02/were-almost-there-mark2cure-now-at-80-completion-of-the-beta-experiment/">We’re almost there! Mark2Cure now at 80%</a>
-              li
-                p Feb 10, 2015 – <a href="http://sulab.org/2015/02/why-do-people-mark2cure/">Why do people Mark2Cure?</a>
-              li
-                p Feb 6, 2015 – <a href="http://sulab.org/2015/02/the-mark2cure-beta-experiment-is-28-complete/">The Mark2Cure beta experiment is 28% complete!</a>
+                      li
+                        a(title="Subscribe to our blog", href="http://sulab.org/category/mark2cure/", target="_blank").btn.btn-default
+                          i.fa.fa-rss-square.fa-2x.pull-left
+                          | Subscribe to our blog
 
-          .col-xs-6
-            h3 Join our mailing list
+                .row
+                  h3 I contribute:
+                  .col-xs-10.col-xs-offset-1
+                    #carousel-testimonials(data-ride="carousel").carousel.slide
+                      ol.carousel-indicators
+                        - for item in quotes
+                          li(data-target="#carousel-example-generic", data-slide-to="{{ forloop.counter0 }}", class="{% if forloop.counter0 = 0 %}active{% endif %}")
 
-            div(style="display: none;").alert.alert-info
-              p
-                | <strong>Thank you!</strong> We received your information and
-                | are currently busy finishing Mark2Cure!
+                      div(role="listbox").carousel-inner
+                        - for item in quotes
+                          div(class="{% if forloop.counter0 = 0 %}active{% endif %}").item
+                            blockquote
+                              .row
+                                .col-sm-12
+                                  p #{item}
 
-            div(style="display: none;").alert.alert-danger
-              p
-                | <strong>Oops!</strong> We received your information but an
-                | error occured. We may have already had that email address added...
-
-            form(role="form", action="//sulab.us9.list-manage.com/subscribe/post?u=2db27f11f5080823831b926cb&amp;id=72c51afcdb", method="post", id="mc-embedded-subscribe-form", name="mc-embedded-subscribe-form").form-horizontal
-              .form-group
-                .col-lg-8.col-lg-offset-2
-                  .input-group
-                    label(for="email_input Email address").sr-only
-                    input(type="email", id="mce-EMAIL", name="EMAIL", placeholder="Email Address").form-control
-                    .input-group-btn
-                      button(type="submit").btn.btn-default Submit
 
   hr
   .container-fluid.landing-container.head-space
