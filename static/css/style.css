@@ -74,6 +74,7 @@
 
 .p-start {
   margin-bottom: 12px;
+  padding: 20px;
 
   font-family: 'Px Grotesk Light Italic';
   font-weight: bold;
@@ -86,11 +87,6 @@
   border: 4px solid #fff;
   font-size: 2em !important;
   color: #fff !important;
-}
-@media (min-width: 768px) {
-  .p-start {
-    margin-top: 20px;
-  }
 }
 
 form.p-start {
@@ -132,7 +128,6 @@ form.p-start {
 .landing-container p {
   font-size: 1.3em;
   color: #666;
-  padding: 20px;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
@@ -346,5 +341,10 @@ a.close-btn {
 
 #partner-info h3 a {
   color: #333;
+}
+
+blockquote p {
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 

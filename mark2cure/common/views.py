@@ -44,6 +44,7 @@ def home(request):
 
     form = AuthenticationForm()
     quotes = ["To help others.", "In memory of my daughter who had Cystic Fibrosis.", "Rare disease dad!", "curiosity.", "This is needed.", "Goofing off productively.", "Community.", "Science!"]
+    random.shuffle(quotes)
     return TemplateResponse(request, 'common/index.jade', {'form': form, 'quotes': quotes})
 
 
