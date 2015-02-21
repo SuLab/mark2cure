@@ -310,6 +310,10 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
     return (_.first(spaces).left > x || x > _.max(_.pluck(spaces, 'right'))) || (_.first(spaces).top > y || y > _.last(spaces).bottom);
   },
 
+  leftBox: function(evt) {
+    return evt.pageX <= this.children.first().$el.offset().left;
+  },
+
   startSideCapture: function(evt) {
     if(this.outsideBox(evt)) {
       var closest_view = this.getClosestWord(evt);
@@ -342,7 +346,8 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
         word_offset,
         dx, dy,
         distance, minDistance,
-        left, top, right, bottom;
+        left, top, right, bottom,
+        leftBox = this.leftBox(evt);
 
     this.children.each(function(view, idx) {
       word_offset = view.$el.offset();
@@ -351,21 +356,17 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       right = left + view.$el.width();
       bottom = top + view.$el.height();
 
-      var offsets = [
-        [left, top],
-        [right, top],
-        [left, bottom],
-        [right, bottom]
-      ];
+      if(leftBox) {
+        dx = Math.abs(left - x);
+      } else {
+        dx = Math.abs((left+right)/2 - x);
+      }
+      dy = Math.abs((top+bottom)/2 - y);
+      distance = Math.sqrt((dx*dx) + (dy*dy));
 
-      for(off in offsets) {
-        dx = offsets[off][0] - x;
-        dy = offsets[off][1] - y;
-        distance = Math.sqrt((dx*dx) + (dy*dy));
-        if (minDistance === undefined || distance < minDistance) {
-          minDistance = distance;
-          closest_view = view;
-        }
+      if (minDistance === undefined || distance < minDistance) {
+        minDistance = distance;
+        closest_view = view;
       }
 
     });
