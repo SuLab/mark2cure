@@ -90,6 +90,13 @@
   color: #fff !important;
 }
 
+.p-start .text-sub {
+  font-size: .5em;
+  font-family: 'Px Grotesk Light';
+}
+.p-start .text-sub a:hover { text-decoration: underline; }
+.p-start .text-sub a { color: #fff; }
+
 form.p-start {
   font-family: 'Px Grotesk Light Italic';
   font-weight: bold;
