@@ -587,6 +587,7 @@ p {
 
 .popover {
   display: none;
+  z-index: 1030;
 }
 
 .popover-title {
