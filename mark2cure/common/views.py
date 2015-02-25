@@ -117,7 +117,11 @@ def quest_list(request):
 @login_required
 def quest_read(request, quest_num):
     task = get_object_or_404(Task, pk=quest_num)
-    #user_quest_rel, user_quest_rel_created = UserQuestRelationship.objects.get_or_create(task=task, user=request.user, completed=False)
+
+    # Prevent a user from completing the same Quest multiple times
+    if UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists():
+        messages.warning(request, '<p class="lead text-center">We\'re sorry, but you can only do Quest {quest_pk} once.</p>'.format(quest_pk=task.name), extra_tags='safe alert-warning')
+        return redirect('common:dashboard')
 
     user_quest_rels = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False)
     user_quest_rel_created = False

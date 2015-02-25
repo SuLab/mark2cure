@@ -36,12 +36,6 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
 
     sections = doc.available_sections()
 
-    '''
-      Technically we may want a user to do the same document multiple times,
-      just means that during the community consensus we don't include their own reults
-      to compare against
-    '''
-
     ctx = { 'task': task,
             'doc': doc,
             'sections': sections,
