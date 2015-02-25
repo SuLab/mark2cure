@@ -17,7 +17,6 @@ block post-footer
       var sections = {};
       var section_selectors = {};
       YPet.addInitializer(function(options) {
-        YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
 
         $("#doc_{{doc.pk}} .game div").each(function( index ) {
           var section_id = $(this).attr('id'),
@@ -37,4 +36,3 @@ block post-footer
       });
 
       YPet.start();
-

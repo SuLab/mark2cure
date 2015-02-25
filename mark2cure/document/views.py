@@ -59,7 +59,7 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
     view = user_quest_rel_views.filter(section=section, completed=False).first()
 
     if view:
-        form = AnnotationForm(request.POST)
+        form = AnnotationForm(data=request.POST or None)
         if form.is_valid():
             ann = form.save(commit=False)
             ann.view = view

@@ -610,7 +610,6 @@ p {
   color: #000;
 }
 
-
 a,
 a:hover {
   text-decoration: none;
@@ -618,3 +617,13 @@ a:hover {
   cursor: pointer;
 }
 
+.list-group-item {
+  border: none;
+}
+.list-group-item:first-child,
+.list-group-item:last-child {
+  border-radius: 0px;
+}
+.list-group-item p {
+  margin: 0px;
+}

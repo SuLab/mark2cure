@@ -12,5 +12,10 @@ class DocumentForm(forms.ModelForm):
 class AnnotationForm(forms.ModelForm):
     class Meta:
         model = Annotation
-        fields = ['text', 'start']
+        fields = ['text', 'start', 'type']
 
+    def clean_type(self):
+        data = self.cleaned_data['type']
+        if data.isdigit():
+            data = Annotation.ANNOTATION_TYPE_CHOICE[int(data)]
+        return data
