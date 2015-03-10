@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.template.response import TemplateResponse
 
 from mark2cure.common.models import Task
-
+from mark2cure.common.formatter import bioc_writer
 
 from .models import Document, Section, Annotation
 from .forms import AnnotationForm
@@ -21,6 +21,23 @@ from rest_framework import generics
 from brabeion import badges
 import os
 import random
+
+
+def read_pubmed_bioc(request, pubmed_id):
+    # When fetching via pubmed, include no annotaitons
+    writer = bioc_writer(request)
+    doc = get_object_or_404(Document, document_id=pubmed_id)
+
+    document = doc.as_bioc()
+
+    passage_offset = 0
+    for section in doc.available_sections():
+        passage = section.as_bioc(passage_offset)
+        passage_offset += len(passage.text)
+        document.add_passage(passage)
+
+    writer.collection.add_document(document)
+    return HttpResponse(writer, content_type='text/xml')
 
 
 '''

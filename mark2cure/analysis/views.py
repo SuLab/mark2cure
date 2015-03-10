@@ -7,8 +7,14 @@ from mark2cure.common.models import Task, UserQuestRelationship
 from django.contrib.auth.decorators import login_required
 from mark2cure.common.bioc import *
 from mark2cure.document.models import Document, Annotation
+from mark2cure.analysis.utils import apply_bioc_documents
+from mark2cure.document.utils import select_best_opponent
+
+from mark2cure.common.models import Task
 
 import csv
+import xmltodict
+import json
 
 
 @login_required
@@ -32,44 +38,51 @@ def users_training(request):
 
 @login_required
 def document_bioc(request, doc_id):
-    doc = get_object_or_404(Document, pk=doc_id)
+    query_set = Document.objects.filter(pk=doc_id)
 
     writer = BioCWriter()
     writer.collection = BioCCollection()
     collection = writer.collection
-    collection.date = doc.updated.strftime("%Y%m%d")
-    collection.source = doc.source
+    collection.date = query_set.first().updated.strftime("%Y%m%d")
+    collection.source = query_set.first().source
 
-    d = BioCDocument()
-    d.id = str(doc.document_id)
+    apply_bioc_documents(query_set.all(), collection)
 
-    passage_offset = 0
-    for section in doc.available_sections():
-        passage = BioCPassage()
-        passage.put_infon('type', 'paragraph')
-        passage.put_infon('section', section.get_kind_display())
-
-        passage.offset = str(passage_offset)
-        passage_offset += len(section.text)
-        passage.text = section.text
-        d.add_passage(passage)
-
-        for ann in Annotation.objects.filter(view__section=section).all():
-            annotation = BioCAnnotation()
-            annotation.id = str(ann.pk)
-            annotation.put_infon('type', str(ann.type))
-            annotation.put_infon('user', str(ann.view.user.pk))
-
-            location = BioCLocation()
-            location.offset = str(passage_offset+ann.start)
-            location.length = str(len(ann.text))
-            annotation.add_location(location)
-
-            annotation.text = ann.text
-
-            passage.add_annotation(annotation)
+    return HttpResponse(writer, content_type='text/xml')
 
 
-    collection.add_document(d)
+@login_required
+def document_bioc_json(request, doc_id):
+    query_set = Document.objects.filter(pk=doc_id)
 
-    return HttpResponse(writer, content_type='text/html')
+    writer = BioCWriter()
+    writer.collection = BioCCollection()
+    collection = writer.collection
+    collection.date = query_set.first().updated.strftime("%Y%m%d")
+    collection.source = query_set.first().source
+
+    apply_bioc_documents(query_set.all(), collection)
+
+    o = xmltodict.parse(writer.__str__())
+    print json.dumps(o)
+    #json.dumps(o) # '{"e": {"a": ["text", "text"]}}''}'
+    return HttpResponse(json.dumps(o), content_type='application/json')
+
+
+@login_required
+def document_bioc_opponent(request, task_id, doc_id):
+    task = get_object_or_404(Task, pk=task_id)
+    # (TODO) follow common_document_quest_relationship
+    query_set = Document.objects.filter(pk=doc_id)
+
+    opponent = select_best_opponent(task, query_set.first(), request.user)
+
+    writer = BioCWriter()
+    writer.collection = BioCCollection()
+    collection = writer.collection
+    collection.date = query_set.first().updated.strftime("%Y%m%d")
+    collection.source = query_set.first().source
+
+    apply_bioc_documents(query_set.all(), collection, opponent)
+
+    return HttpResponse(writer, content_type='text/xml')

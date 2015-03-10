@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from mark2cure.document.managers import DocumentManager
 
 from nltk.tokenize import WhitespaceTokenizer
+from mark2cure.common.bioc import BioCDocument, BioCPassage
 
 
 class Document(models.Model):
@@ -26,6 +27,13 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
 
+    def as_bioc(self):
+        document = BioCDocument()
+        document.id = str(self.document_id)
+        document.put_infon('id', str(self.pk))
+        document.put_infon('source', str(self.source))
+        return document
+
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
@@ -47,6 +55,14 @@ class Section(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     document = models.ForeignKey(Document)
+
+    def as_bioc(self, offset):
+        passage = BioCPassage()
+        passage.put_infon('type', 'paragraph')
+        passage.put_infon('section', self.get_kind_display().lower())
+        passage.text = self.text
+        passage.offset = str(offset)
+        return passage
 
     def resultwords(self, user_view, gm_view):
         # Gather words and positions from the text

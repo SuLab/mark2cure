@@ -8,6 +8,9 @@ router = routers.DefaultRouter()
 
 urlpatterns = patterns('',
 
+    url(r'^(?P<pubmed_id>\d+).(?P<format>\w+)$',
+        views.read_pubmed_bioc, name='read-pubmed-bioc'),
+
     url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/$',
         views.identify_annotations, name='read'),
 
