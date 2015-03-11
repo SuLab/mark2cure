@@ -13,18 +13,11 @@ block content
           h2.text-center New Document!
           h3.text-center Unfortunately you didn't earn any points because no annotations were provided ;(
 
-  - for section in sections
+  - for sec in sections
       .row
         .col-sm-10.col-sm-offset-1.head-space.game
-          div(id="{{ section.pk }}").results.paragraph-box
-            p.paragraph
-              - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
-                span( data-counter="{{ counter }}",
-                      data-starti="{{ indexes.0 }}",
-                      data-stopi="{{ indexes.1 }}",
-                      data-gmannid="{{ gm_pk }}",
-                      data-uannid="{{ user_pk }}")
-                  | #{ text } 
+          div(id="{{ sec.pk }}").results.paragraph-box
+            p.paragraph #{sec.text}
 
   .row
     .col-sm-3.col-sm-offset-1
@@ -35,27 +28,4 @@ block content
               div(style="height: 16px; width: 16px; background-color: #0cf")
             td
               | Your annotations
-
-
-
-block post-footer
-    script.
-        $.each($('#doc_{{doc.pk}} div.results p.paragraph'), function() {
-          /* Add the current users recently submitted annotations */
-          $.each($(this).find('span'), function(w) {
-            var word = $(this),
-                next_word = word.next(),
-                u_ann = word.data('uannid'),
-                next_word_u_ann = next_word.data('uannid');
-
-
-            if(u_ann != "None") { word.addClass('user_annotated'); }
-
-            if( u_ann != "None" && u_ann != next_word_u_ann ) {
-              word.html( word.html().trim() );
-              word.addClass('neighbor_u');
-            }
-          });
-
-        });
 

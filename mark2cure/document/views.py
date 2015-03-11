@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.template.response import TemplateResponse
 
 from mark2cure.common.models import Task
-from mark2cure.common.formatter import bioc_writer
+from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_documents
 
 from .models import Document, Section, Annotation
 from .forms import AnnotationForm
@@ -23,11 +23,10 @@ import os
 import random
 
 
-def read_pubmed_bioc(request, pubmed_id):
+def read_pubmed_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)
-
     document = doc.as_bioc()
 
     passage_offset = 0
@@ -35,9 +34,13 @@ def read_pubmed_bioc(request, pubmed_id):
         passage = section.as_bioc(passage_offset)
         passage_offset += len(passage.text)
         document.add_passage(passage)
-
     writer.collection.add_document(document)
-    return HttpResponse(writer, content_type='text/xml')
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
 
 
 '''
@@ -84,6 +87,27 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
             return HttpResponse(200)
 
     return HttpResponse(500)
+
+
+@login_required
+def identify_annotations_results_bioc(request, task_id, doc_id, format_type):
+    task = get_object_or_404(Task, pk=task_id)
+    # (TODO) follow common_document_quest_relationship
+    query_set = Document.objects.filter(pk=doc_id)
+    opponent = select_best_opponent(task, query_set.first(), request.user)
+
+    writer = bioc_writer(request)
+    apply_bioc_documents(query_set.all(), writer.collection, opponent)
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+def test_results(request):
+    return identify_annotations_results(request, 11, 492)
 
 
 @login_required
@@ -141,7 +165,7 @@ def identify_annotations_results(request, task_id, doc_id):
 
             player_views.append(player_view)
             opponent_views.append(opponent_view)
-            setattr(section, 'words', section.resultwords(player_view, opponent_view))
+            #setattr(section, 'words', section.resultwords(player_view, opponent_view))
 
             # Save who the player was paired against
             player_view.opponent = opponent_view

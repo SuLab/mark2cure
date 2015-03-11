@@ -48,19 +48,11 @@ block content
             | <span id='doc-f'>{% widthratio results.0.2 1.0 1000 %}</span>
             | points!
 
-
-  - for section in sections
+  - for sec in sections
       .row
         .col-sm-10.col-sm-offset-1.head-space.game
-          div(id="{{ section.pk }}").paragraph-box.results
-            p.paragraph
-              - for indexes, text, counter, gm_pk, user_pk, user_annotated in section.words
-                span( data-counter="{{ counter }}",
-                      data-starti="{{ indexes.0 }}",
-                      data-stopi="{{ indexes.1 }}",
-                      data-gmannid="{{ gm_pk }}",
-                      data-uannid="{{ user_pk }}")
-                  | #{ text } 
+          div(id="{{ sec.pk }}").results.paragraph-box
+            p.paragraph #{sec.text}
 
   .row
     .col-sm-3.col-sm-offset-1
@@ -78,7 +70,3 @@ block content
             td
               | Your annotations
 
-
-block post-footer
-    script.
-      drawUserWithGolden();
