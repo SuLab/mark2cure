@@ -1,0 +1,45 @@
+extends base
+
+block header
+  - with headerMessage='Training 1 – Learning a new concept: Diseases'
+    include includes/header-anon
+
+
+block content
+  .container
+    .row
+      .col-xs-8.col-xs-offset-2
+        .row.alert.alert-info.alert-sticky.text-center
+          h2 Congratulations!
+
+    .row
+      .col-xs-10.col-xs-offset-1
+        h2.text-center New skill acquired: Disease Marking
+      .col-xs-10.col-xs-offset-1
+        h2.text-center Points gained: <span id='score'>0</span>
+
+    .row
+      .col-xs-10.col-xs-offset-1
+        h2 Disease Marking Skill: the ability to identify and mark disease concepts such as:
+        ol.list-unstyled
+          li
+            p <strong>Disease</strong> – a particular abnormal, pathological condition that affects part or all of an organism
+          li
+            p <strong>Disease Class</strong> – a specific category of similar but different diseases
+          li
+            p <strong>Symptom</strong> – the physical manifestations of a disease
+          li
+            p <strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.
+
+    .row.head-space-xl
+      .col-xs-4.col-xs-offset-4
+        a(href='{% url "training:two" step_num=1 %}', id='next').btn.btn-default.btn-block Next
+
+
+block post-footer
+  script(src='#{STATIC_URL}js/quest-app.js')
+  script.
+    od.update(1000);
+
+
+

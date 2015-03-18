@@ -54,8 +54,17 @@ p.paragraph .neighbor_u {
 
 p.paragraph span.user_annotated,
 span.user_annotated {
-  /* Word span when simply showing user selection */
   background-color: #0cf;
+}
+
+p.paragraph span.user_annotated_green,
+span.user_annotated_green {
+  background-color: green;
+}
+
+p.paragraph span.user_annotated_pink,
+span.user_annotated_pink {
+  background-color: pink;
 }
 
 p.paragraph span.focused {

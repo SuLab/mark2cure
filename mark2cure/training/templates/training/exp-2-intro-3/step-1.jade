@@ -1,0 +1,23 @@
+extends training/exp-2-intro-3/step-base
+
+block step-instructions
+  h2 A <strong>drug</strong> is a substance that has biological effects on humans or other animals. Drugs are some of the most common treatments you may encounter.
+  p In the box below, use your understanding of the context to identify and mark the drug
+
+block paragraph
+  p.paragraph In 1975 , Eli Lilly and Company discovered that their compound , Lilly 110140 , had an analgesic effect and could mitigate pain .
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100', style='width: 0%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:three" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+      $('#Training3Modal').modal('show');
+      var help = [
+        {text: '110140', msg: 'Be sure to include the entire name of the experimental drug'},
+        {text: 'pain', msg: 'Mark only treatment concepts in this tutorial. Do NOT mark disease or gene concepts'},
+      ];
+      var answers = [{text: "Lilly 110140", start: 65}];

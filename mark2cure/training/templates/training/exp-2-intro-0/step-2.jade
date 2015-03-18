@@ -1,0 +1,25 @@
+extends training/exp-2-intro-0/step-base
+
+block step-instructions
+  h2 Rule #2 – Mark the minimum span needed to capture the entire concept
+  p In the box below, <u>mark every instance of the concept</u> using the shortest span needed to capture the entire concept
+  p In this case the concept is: <strong>a criterion for a good Mark2Curator</strong> (hint, there are 3)
+
+block paragraph
+  p.paragraph In Mark2Cure , you don’t need a biomedical background to be able to help .  The criteria for a good Mark2Curator is someone who: can read , is willing to learn , and wants to help .
+
+block progress
+  div(role='progressbar', aria-valuenow='66', aria-valuemin='0', aria-valuemax='100', style='width: 66%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:introduction" step_num=4 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+    var help = [
+      {text: 'help', msg: 'The concept has changed.  Mark the criteria needed to be a good Mark2Curator.'},
+      {text: 'criteria', msg: 'Don’t mark the word, ‘criteria’, mark the actual criteria stated in the text'},
+      {text: 'can read , is willing to learn , and wants to help', msg: 'Mark each criterion in a separate span. (ie- leave out the commas)'},
+      {text: 'read', msg: 'mark the whole phrase of each criterion, eg- "can read"'},
+      {text: 'learn', msg: 'mark the whole phrase of each criteria, eg- "willing to learn"'}];
+      var answers = [{text: 'can read', start: 129}, {text: 'is willing to learn', start: 140}, {text: 'wants to help', start: 166}];

@@ -1,0 +1,30 @@
+extends training/exp-2-intro-3/step-base
+
+block header
+  - with headerMessage='Training 3 – Learning a new concept: Treatments'
+    include includes/header-anon
+
+block step-instructions
+  h2 Sometimes different drugs or drug classes may be mentioned, be sure to mark them all. If a drug therapy is used, just mark the drug.
+  p In the box below, mark every instance of the drug and the drug class (rule #1), and abbreviations of the drug class (rule #3)
+
+block paragraph
+  p.paragraph Other SSRI regiments , such as Paxil therapy , have also been prescribed for the treatment of obsessive-compulsive disorder , panic disorder , and Bulimina Nervosa .
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='60', aria-valuemin='0', aria-valuemax='100', style='width: 60%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:three" step_num=5 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+      var help = [
+        {text: 'SSRI regiments', msg: 'When marking drug-based therapies, do not include general terms such as ‘therapy’ or ‘regiment’, unless it’s part of the drug name'},
+        {text: 'Paxil therapy', msg: 'When marking drug-based therapies, do not include general terms such as ‘therapy’ or ‘regiment’, unless it’s part of the drug name'},
+
+        {text: 'obsessive-compulsive disorder', msg: 'Remember, the concept in this tutorial is treatments, don’t mark disease concepts'},
+        {text: 'panic disorder', msg: 'Remember, the concept in this tutorial is treatments, don’t mark disease concepts'},
+        {text: 'Bulimina Nervosa', msg: 'Remember, the concept in this tutorial is treatments, don’t mark disease concepts'},
+      ];
+      var answers = [{text: "SSRI", start: 6}, {text: "Paxil", start: 31}];

@@ -1,0 +1,61 @@
+extends base
+
+block header
+  - with headerMessage='Training 3 – Learning a new concept: Treatments'
+    include includes/header-anon
+
+
+block content
+  #Training3Modal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-body
+          h2 A <strong>treatment</strong> is an attempt to cure or alleviate a disease or the symptoms of a disease. <strong>Do NOT mark Diseases or Genes Concept terms</strong> in this tutorial
+          .panel.panel-info
+            .panel-body
+              h3.text-center Acquire the Treatment Marking Skill by learning the Treatments Concept.
+              p.text-center The Treatments Concept includes:
+              ul.list-unstyled.list-inline.text-center
+                li
+                  ul.list-unstyled
+                    li Drugs
+                    li Drug Classes
+                    li Non-Drug Treatments
+        .modal-footer
+          button(type="button", data-dismiss="modal").btn.btn-default Close
+  .container
+    .row.foot-space
+      .col-md-12
+        block step-instructions
+
+    #partner(style='display: none;').row.head-space
+      .row
+        .col-md-4.col-md-offset-4
+          .alert.alert-success
+            h2.text-center Good job!
+
+    .row
+      #quest-alerts.col-md-10.col-md-offset-1
+      #quest.col-md-10.col-md-offset-1.paragraph-box
+        block paragraph
+
+    .row.head-space-xl
+      .col-md-8.col-md-offset-2
+        .progress
+          block progress-bar
+      .col-md-8.col-md-offset-2
+        #next-container.pull-right
+          block next-link
+
+
+block post-footer
+  include training/includes/intro-1-js
+  include instructions/multi-concept-instructions-modal
+
+  block answers
+
+  script.
+      var validation_check = function(collection) {
+        if(validate(collection, answers)) { correct(); }
+      };
+

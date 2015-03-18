@@ -1,0 +1,24 @@
+extends training/exp-2-intro-4/step-base
+
+block step-instructions
+  h2 Let’s start with the meaning of the color <span class='user_annotated'><strong>Blue</strong></span>.
+  h2 <span class='user_annotated'><strong>Blue</strong></span> will refer to the Diseases Concept
+  p In the box below, use your Disease Marking Skill to highlight disease concept terms in blue
+
+block paragraph
+  p.paragraph Ehlers–Danlos syndrome ( EDS ) is a connective tissue disorder caused by defects ...
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100', style='width: 0%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:three" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+      $('#Training4Modal').modal('show');
+      var help = [
+        {text: '110140', msg: 'Be sure to include the entire name of the experimental drug'},
+        {text: 'pain', msg: 'Mark only treatment concepts in this tutorial. Do NOT mark disease or gene concepts'},
+      ];
+      var answers = [{text: "Lilly 110140", start: 65}];

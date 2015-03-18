@@ -1,0 +1,31 @@
+extends training/exp-2-intro-3/step-base
+
+block step-instructions
+  h2 Rather than starting from scratch, docs in this campaign may be pre-populated with annotations done by a computer algorithm
+  p Do NOT assume the algorithm’s annotations are correct (Eg- Nitric Oxide is a drug, but was missed).
+  p The machine is just there to (hopefully) reduce the amount of clicking you must do.
+  p Please correct the annotations as you see fit.
+
+block paragraph
+  p.paragraph Truncating mutation in the nitric oxide synthase 1 gene is associated with infantile achalasia
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='80', aria-valuemin='0', aria-valuemax='100', style='width: 80%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:three" step_num="complete" %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+    var help = [
+      {text: 'Obsessive-compulsive disorders', msg: 'Remember, the concept in this tutorial is treatments, don’t mark disease concepts'},
+
+      {text: 'behavioral therapy ( BT', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+      {text: 'behavioral therapy ( BT )', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+      {text: 'cognitive-behavioral therapy ( CBT', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+      {text: 'cognitive-behavioral therapy ( CBT )', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+
+      {text: 'behavioral therapy ( BT ) or cognitive-behavioral therapy ( CBT', msg: 'Mark different treatments in different spans'},
+      {text: 'behavioral therapy ( BT ) or cognitive-behavioral therapy ( CBT )', msg: 'Mark different treatments in different spans'},
+    ];
+    var answers = [{text: "behavioral therapy", start: 70}, {text: "BT", start: 91}, {text: "cognitive-behavioral therapy", start: 99}, {text: "CBT", start: 130}];

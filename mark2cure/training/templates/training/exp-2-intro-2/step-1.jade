@@ -1,0 +1,28 @@
+extends training/exp-2-intro-2/step-base
+
+block step-instructions
+  h2 A <strong>gene</strong> is the molecular unit of heredity in an organism, and is usually referred to in biomedical literature by their <strong>gene name</strong>, <strong>gene symbol</strong>, or both.
+  p In the box below, mark every instance of the <stong>gene name</strong> (rule #1) using the minimum span needed to encompass the entire gene name (rule #2), and mark <strong>abbreviations</strong> of the gene name separately from the words they represent (rule #3)
+
+block paragraph
+  p.paragraph Cystic Fibrosis ( CF ) is an autosomal recessive disorder caused by mutations in both alleles of the cystic fibrosis transmembrane-conductance regulator ( CFTR ) gene
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100', style='width: 0%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:two" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+      $('#Training2Modal').modal('show');
+      var help = [
+        {text: 'Cystic Fibrosis', msg: 'Do NOT mark disease concepts in this module. This module is ONLY about genes and gene products'},
+        {text: 'CF', msg: 'Do NOT mark disease concepts in this module. This module is ONLY about genes and gene products'},
+        {text: 'autosomal recessive disorder', msg: 'Do NOT mark disease concepts in this module. This module is ONLY about genes and gene products'},
+        {text: 'gene', msg: 'Do not mark generic terms such as ‘gene’ or ‘protein’. Use them as hints to find the actual gene or protein and mark that instead.'},
+        {text: 'cystic fibrosis transmembrane-conductance', msg: 'Include all the terms of this gene name.'},
+        {text: 'cystic fibrosis transmembrane-conductance regulator ( CFTR', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+        {text: 'cystic fibrosis transmembrane-conductance regulator ( CFTR )', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
+      ];
+      var answers = [{text: "cystic fibrosis transmembrane-conductance regulator", start: 101}, {text: "CFTR", start: 155}];

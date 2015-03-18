@@ -23,6 +23,8 @@ urlpatterns = patterns('',
     url(r'^analysis/', include('mark2cure.analysis.urls',
         namespace='analysis')),
 
+    url(r'^instructions/', include('mark2cure.instructions.urls',
+        namespace='instructions')),
     url(r'^training/', include('mark2cure.training.urls',
         namespace='training')),
     url(r'^document/', include('mark2cure.document.urls',

@@ -54,6 +54,16 @@ script.
     window.scrollTo(0,document.body.scrollHeight);
   };
 
+  var check_common_mistakes = function(text) {
+    var universal_help = _.findWhere(help, {text: '*'});
+    if(universal_help) { return universal_help.msg; }
+
+    var specific_help = _.findWhere(help, {text: text});
+    if(specific_help) { console.log('found help', text, help); return specific_help.msg; }
+
+    return '';
+  };
+
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
     /*
@@ -93,12 +103,17 @@ script.
 
       if(incorrect_counter >= 3) { model_json.instructions_link = 'Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set</a>.'; }
 
+      var specific_message = check_common_mistakes(model_json.text);
+      if(specific_message.length) {
+        model_json.help_message = specific_message;
+      }
+
       var temp = _.template($('#alert-template').html());
       $('#quest-alerts').fadeOut('fast', function() {
         $(this).html(temp(model_json));
         $(this).fadeIn('fast');
       });
-      model.destroy()
+      model.destroy();
     } else {
       incorrect_counter = 0;
       $('#quest-alerts').fadeOut('fast');

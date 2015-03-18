@@ -1,0 +1,35 @@
+extends base
+
+- load widget_tweaks
+- load brabeion_tags
+
+block header
+  - with headerMessage='Gene Concept Marking Rules'
+    include includes/header-anon
+
+block content
+  .container
+    .row
+      .col-sm-10.col-sm-offset-1
+        ol
+          li
+            p Mark every instance of a Gene or Gene Product (like proteins or MicroRNAs)
+            p --This includes Gene or Gene Product names and symbols
+            p Eg- <span class='user_annotated_green'>Caveolin1</span class='user_annotated_green'> or <span class='user_annotated_green'>CAV1</span class='user_annotated_green'>
+
+          li
+            p Use the minimum span needed to encompass multiple terms of a Gene or Gene Product.
+            p Eg- <span class='user_annotated_green'>Cluster of Differentiation IV</span class='user_annotated_green'> or <span class='user_annotated_green'>CD4</span class='user_annotated_green'> , NOT just <span class='user_annotated_green'>Cluster</span class='user_annotated_green'> or <span class='user_annotated_green'>Differentiation IV</span class='user_annotated_green'>
+
+          li
+            p Mark each instance of a Gene or Gene Product separately or in a separate span (if an instance has multiple words
+            p Eg- <span class='user_annotated_green'>RasGAP</span class='user_annotated_green'> (<span class='user_annotated_green'>GTPase activating protein of Ras</span class='user_annotated_green'>) prevented indirect activation of <span class='user_annotated_green'>PDGFRβ</span class='user_annotated_green'>
+
+          li
+            p Mark each instance of an abbreviation of a Gene or Gene Product
+            p Eg- <span class='user_annotated_green'>AKT</span class='user_annotated_green'> levels may affect <span class='user_annotated_green'>PIM1</span class='user_annotated_green'> expression in
+
+          li
+            p If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>http://www.genenames.org/</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>http://www.ncbi.nlm.nih.gov/gene/</a>
+
+

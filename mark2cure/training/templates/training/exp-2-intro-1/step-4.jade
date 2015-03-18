@@ -1,0 +1,24 @@
+extends training/exp-2-intro-1/step-base
+
+block step-instructions
+  h2 Mark abbreviations of the disease separately from the terms they represent
+  p In the box below, mark the abbreviation (Rule #3) separately from the specific form of the disease, and use the minimum span needed to cover the specific form of the disease (rule #2)
+
+block paragraph
+  p.paragraph We will discuss the effect of different insulin regimen on type 2 diabetes mellitus patients ( ie- T2DM patients ) ...
+
+block progress-bar
+  div(role='progressbar', aria-valuenow='37.5', aria-valuemin='0', aria-valuemax='100', style='width: 37.5%;').progress-bar.progress-bar-striped.active
+
+block next-link
+  a(href='{% url "training:one" step_num=5 %}', id='next', disabled).btn.btn-default.pull-right Next
+
+block answers
+  script.
+      var help = [
+        {text: 'type 2 diabetes mellitus patients ( ie- T2DM patients', msg: 'Do not mark  generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'type 2 diabetes mellitus patients ( ie- T2DM', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'diabetes mellitus patients ( ie- T2DM patients', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'diabetes mellitus patients ( ie- T2DM', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+      ];
+      var answers = [{text: 'type 2 diabetes mellitus', start: 59}, {text: 'T2DM', start: 99}];

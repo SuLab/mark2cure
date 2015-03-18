@@ -11,9 +11,18 @@ from brabeion import badges
 import os
 
 
-def introduction(request):
-    return TemplateResponse(request, 'training/basics.jade')
+def introduction(request, step_num):
+    if step_num == '1' or step_num == None:
+        return TemplateResponse(request, 'training/exp-2-intro-0/basics.jade')
 
+    if step_num == '2':
+        return TemplateResponse(request, 'training/exp-2-intro-0/step-1.jade')
+
+    if step_num == '3':
+        return TemplateResponse(request, 'training/exp-2-intro-0/step-2.jade')
+
+    if step_num == '4':
+        return TemplateResponse(request, 'training/exp-2-intro-0/step-3.jade')
 
 def read(request):
     tasks = []
@@ -32,7 +41,7 @@ def read(request):
     return TemplateResponse(request, 'training/read.jade', ctx)
 
 
-def one(request, step_num):
+def old_one(request, step_num):
     if step_num == 'complete':
         return TemplateResponse(request, 'training/intro-1/complete.jade')
 
@@ -113,6 +122,26 @@ def one(request, step_num):
 
 
 @login_required
+def one(request, step_num):
+    if step_num == 'feedback' and request.user.is_authenticated():
+        task = Task.objects.get(pk=2)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
+        ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
+        return TemplateResponse(request, 'training/exp-2-intro-1/feedback-scores.jade', ctx)
+
+    if step_num == 'complete':
+        ctx = {'step_num': step_num}
+        return TemplateResponse(request, 'training/exp-2-intro-1/completed-review.jade', ctx)
+
+    ctx = {'step_num': step_num}
+    return TemplateResponse(request, 'training/exp-2-intro-1/step-{step_num}.jade'.format(step_num=step_num), ctx)
+
+@login_required
 def two(request, step_num):
     if step_num == 'feedback' and request.user.is_authenticated():
         task = Task.objects.get(pk=2)
@@ -123,17 +152,66 @@ def two(request, step_num):
         badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
 
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
-        return TemplateResponse(request, 'training/intro-2/feedback.jade', ctx)
+        return TemplateResponse(request, 'training/exp-2-intro-2/feedback-scores.jade', ctx)
 
     if step_num == 'complete':
-        return redirect('training:index')
+        ctx = {'step_num': step_num}
+        return TemplateResponse(request, 'training/exp-2-intro-2/completed-review.jade', ctx)
 
     ctx = {'step_num': step_num}
-    return TemplateResponse(request, 'training/intro-2/step-{step_num}.jade'.format(step_num=step_num), ctx)
+    return TemplateResponse(request, 'training/exp-2-intro-2/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 
 @login_required
-def three(request):
+def three(request, step_num):
+    if step_num == 'feedback' and request.user.is_authenticated():
+        '''
+        task = Task.objects.get(pk=3)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+        '''
+
+        #ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
+        ctx = {}
+        return TemplateResponse(request, 'training/exp-2-intro-3/feedback-scores.jade', ctx)
+
+    if step_num == 'complete':
+        ctx = {'step_num': step_num}
+        return TemplateResponse(request, 'training/exp-2-intro-3/completed-review.jade', ctx)
+
+    ctx = {'step_num': step_num}
+    return TemplateResponse(request, 'training/exp-2-intro-3/step-{step_num}.jade'.format(step_num=step_num), ctx)
+
+
+@login_required
+def four(request, step_num):
+    if step_num == 'feedback' and request.user.is_authenticated():
+        '''
+        task = Task.objects.get(pk=3)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
+
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+        '''
+
+        #ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
+        ctx = {}
+        return TemplateResponse(request, 'training/exp-2-intro-4/feedback-scores.jade', ctx)
+
+    if step_num == 'complete':
+        ctx = {'step_num': step_num}
+        return TemplateResponse(request, 'training/exp-2-intro-4/completed-review.jade', ctx)
+
+    ctx = {'step_num': step_num}
+    return TemplateResponse(request, 'training/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
+
+
+@login_required
+def asdfdsf(request):
     if request.method == 'POST':
         task = Task.objects.get(pk=3)
         UserQuestRelationship.objects.create(task=task, user=request.user, completed=True)
