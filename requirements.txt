@@ -49,6 +49,7 @@ ipython==2.3.1
 itsdangerous==0.24
 kombu==3.0.24
 librabbitmq==1.6.1
+lxml==3.4.2
 markdown2==2.3.0
 markup==0.2
 mccabe==0.3
@@ -81,3 +82,4 @@ twython==3.2.0
 uWSGI==2.0.9
 wsgiref==0.1.2
 wtf==0.1
+xmltodict==0.9.2
