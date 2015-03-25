@@ -1,7 +1,7 @@
 extends training/exp-2-intro-1/step-base
 
 block step-instructions
-  h2 A <strong>symptom</strong> is the physical manifestation of a disease p In the box below:
+  h2 A <strong>symptom</strong> is the physical manifestation of a disease. In the box below:
   p - Mark every instance of a symptom (rule #1)
   p - Use the minimum span needed to mark the entire specific symptom (rule #2)
 
@@ -21,5 +21,6 @@ block answers
       {text: 'diseases', msg: 'Do not mark generic terms such as "symptoms" or "disease" unless it is part of the name of the disease or disease class'},
       {text: 'common symptoms', msg: 'Do not mark generic terms such as "symptoms" or "disease" unless it is part of the name of the disease or disease class'},
       {text: 'urination', msg: 'The term "urination" alone is not a symptom of a disease. Everyone urinates. Mark all the terms needed for it to be symptom'},
+      {text: 'fatigue as well as frequent urination', msg: 'Almost, mark the different symptoms separately'},
       ];
       var answers = [{text: "fatigue", start: 140}, {text: "frequent urination", start: 159}];
