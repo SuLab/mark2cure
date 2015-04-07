@@ -8,6 +8,9 @@ router = routers.DefaultRouter()
 
 urlpatterns = patterns('',
 
+    url(r'^pubtator/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
+        views.read_pubtator_bioc, name='read-pubtator-bioc'),
+
     url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubmed_bioc, name='read-pubmed-bioc'),
 

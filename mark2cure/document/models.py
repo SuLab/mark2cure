@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from mark2cure.document.managers import DocumentManager
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCDocument, BioCPassage
+from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
 
 
 class Document(models.Model):
@@ -16,6 +16,8 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
 
+    pubtator = models.TextField(blank=True)
+
     objects = DocumentManager()
 
     def __unicode__(self):
@@ -26,6 +28,23 @@ class Document(models.Model):
 
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
+
+    def get_pubtator(self):
+        reader = BioCReader(source=self.pubtator)
+        reader.read()
+        for document in reader.collection.documents:
+            for idx, passage in enumerate(document.passages):
+                passage.put_infon('section', 'unknown')
+                passage.put_infon('id', str(idx))
+
+                for idx, annotation in enumerate(passage.annotations):
+                    annotation.put_infon('user', 'pubtator')
+                    annotation.put_infon('user_name', 'pubtator')
+                    # Our int type
+                    annotation.put_infon('type', '0')
+                    # annotation.postion.start =
+
+        return reader
 
     def as_bioc(self):
         document = BioCDocument()
@@ -60,6 +79,7 @@ class Section(models.Model):
         passage = BioCPassage()
         passage.put_infon('type', 'paragraph')
         passage.put_infon('section', self.get_kind_display().lower())
+        passage.put_infon('id', str(self.pk))
         passage.text = self.text
         passage.offset = str(offset)
         return passage

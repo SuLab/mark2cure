@@ -92,6 +92,7 @@ class Command(BaseCommand):
                             doc = Document.objects.get(document_id=doc_id)
                             dqr = DocumentQuestRelationship.objects.filter(document=doc, task__experiment=settings.EXPERIMENT).first()
                             print "Document ID:", doc.pk, "Quest Relationship:", dqr.pk
+                            return
 
                             # If the GM Anns are for a document that isn't included in any quests,
                             # don't bother

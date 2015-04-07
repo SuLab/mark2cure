@@ -13,6 +13,8 @@ from bioc_sentence import BioCSentence
 from bioc_node import BioCNode
 from bioc_relation import BioCRelation
 
+from StringIO import StringIO
+
 
 class BioCReader:
     """
@@ -29,7 +31,9 @@ class BioCReader:
 
         self.source = source
         self.collection = BioCCollection()
-        self.xml_tree = etree.parse(source)
+
+        parser = etree.XMLParser(recover=True, encoding='utf-8')
+        self.xml_tree = etree.parse(StringIO( str(source) ), parser)
 
         if dtd_valid_file is not None:
             dtd = etree.DTD(dtd_valid_file)

@@ -14,6 +14,7 @@ def bioc_writer(request):
         relative_url=request.META.get('PATH_INFO', ''))
     return writer
 
+
 def bioc_as_json(writer):
     o = xmltodict.parse(writer.__str__())
     return json.dumps(o)
@@ -46,6 +47,8 @@ def apply_bioc_annotations(section, bioc_passage, passage_offset, user=None):
         annotation.put_infon('type', str(ann.type))
         annotation.put_infon('user', str(ann.view.user.pk))
         annotation.put_infon('user_name', str(ann.view.user.username))
+
+        annotation.put_infon('type', str(0))
 
         location = BioCLocation()
         location.offset = str(passage_offset+ann.start)

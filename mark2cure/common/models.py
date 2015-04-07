@@ -1,6 +1,6 @@
 from django.db import models
 
-from mark2cure.document.models import Document, View
+from ..document.models import Document, View
 from django.contrib.auth.models import User
 
 from brabeion import badges
