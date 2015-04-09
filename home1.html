@@ -69,7 +69,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="cta text-center">
-					<h1>Push <span class="bg-purple">research</span> forward and <br> discover <u class="u-red"><span class="font-black">cures</span></u> faster.</h1>
+					<h1>Push <span class="bg-purple">research</span> forward and <br> discover <u class="u-red"><span class="font-black">cures</span></u> faster. <span id="cursor">|</span></h1>
 					<p>Let's help scientists organize biomedical knowledge and uncover hidden links.</p>
 					<p class="font-purple">If you can read, you can help. <span class="verticle-line"></span></p>
 					<div class="row push30">
@@ -210,6 +210,21 @@
       </div>
     </div>
   </div>
+
+  <script>
+	  	$(document).ready(function() {
+	    setInterval ('cursorAnimation()', 600);
+	    
+		});
+
+		function cursorAnimation() {
+		    $('#cursor').animate({
+		        opacity: 0
+		    }, 'fast', 'swing').animate({
+		        opacity: 1
+		    }, 'fast', 'swing');
+		}
+  </script>
 
 	<script>
       $(document).on("scroll",function(){
