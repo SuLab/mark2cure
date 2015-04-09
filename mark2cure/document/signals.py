@@ -3,33 +3,48 @@ from django.db.models.signals import post_save
 
 from .models import Document
 
+from mark2cure.common.formatter import bioc_writer
+from mark2cure.document.tasks import get_pubtator_response
+
 import requests
+from datetime import datetime, timedelta
 
 
-#@receiver(post_save, sender=Document)
-#def provider_post_save(sender, instance, created, **kwargs):
 
-def provider_post_save():
-    #document = instance
-    #if created:
-    #    payload = {
-    #        'pmid': document.document_id,
-    #        'format': 'BioC',
-    #        'Disease': 1,
-    #        'Gene': 1,
-    #        'Chemical': 1,
-    #        'Mutation': 0,
-    #        'Species': 0}
-    #    r = requests.get('http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/PubTator/abstract_ann.cgi', params=payload)
+@receiver(post_save, sender=Document)
+def provider_post_save(sender, instance, created, **kwargs):
+    doc = instance
 
-    # Use these in the API:  tmChem,    DNorm,      GNormPlus
-    #                       Chemical, Disease,  Gene and Species
+    if doc.available_sections().exists() \
+            and (doc.pubtator_chem == '' or doc.pubtator_gene == '' or doc.pubtator_disease == ''):
 
-    payload = {
-        text: 'This is a test',
-    }
-    requests.get('http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/Chemical/Submit/', params=payload)
+        writer = bioc_writer(None)
 
-    #document.pubtator = r.content
-    #document.save()
+        document = doc.as_bioc()
+        passage_offset = 0
+        for section in doc.available_sections():
+            passage = section.as_bioc(passage_offset)
+            passage_offset += len(passage.text)
+            document.add_passage(passage)
+        writer.collection.add_document(document)
+
+        # Use these in the API:  tmChem,    DNorm,      GNormPlus
+        #                       Chemical, Disease,  Gene and Species
+        payload = {'content-type': 'text/xml'}
+        data = str(writer)
+
+        for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
+            response = requests.post(
+                    'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=api_ann),
+                    data=data, params=payload)
+
+            get_pubtator_response.apply_async(
+                args=[
+                    doc.pk,
+                    api_ann,
+                    response.content,
+                    data,
+                    payload,
+                    0],
+            )
 

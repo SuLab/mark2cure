@@ -4,14 +4,37 @@ from mark2cure.document.models import Document, Annotation
 import datetime
 import xmltodict
 import json
+import nltk
+
+
+def pad_split(text):
+    text = text.replace("\\(", " ( ")
+    text = text.replace("\\)", " ) ")
+    text = text.replace("\\.", " . ")
+    text = text.replace("\\,", " , ")
+    text = text.replace("\\%", " % ")
+    text = text.replace("\\#", " # ")
+    text = text.replace("\\&", " & ")
+    text = text.replace("\\+", " + ")
+    text = text.replace("\\=", " = ")
+    text = text.replace("\\[", " [ ")
+    text = text.replace("\\]", " ] ")
+    text = text.replace("\\;", " ; ");
+    text = text.replace("\\\"", " \" ")
+    text = text.replace("  ", " ")
+    text = text.replace("  ", " ")
+    return nltk.word_tokenize( text.encode('utf-8') )
 
 
 def bioc_writer(request):
     writer = BioCWriter()
     writer.collection = BioCCollection()
     writer.collection.date = datetime.date.today().strftime("%Y%m%d")
-    writer.collection.source = 'Mark2Cure API: {relative_url}'.format(
-        relative_url=request.META.get('PATH_INFO', ''))
+    if request:
+        writer.collection.source = 'Mark2Cure API: {relative_url}'.format(
+            relative_url=request.META.get('PATH_INFO', ''))
+    else:
+        writer.collection.source = 'Mark2Cure Internal'
     return writer
 
 

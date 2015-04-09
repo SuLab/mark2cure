@@ -16,7 +16,9 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
 
-    pubtator = models.TextField(blank=True)
+    pubtator_chem = models.TextField(blank=True)
+    pubtator_disease = models.TextField(blank=True)
+    pubtator_gene = models.TextField(blank=True)
 
     objects = DocumentManager()
 
@@ -30,7 +32,13 @@ class Document(models.Model):
         return self.section_set.exclude(kind='o').count()
 
     def get_pubtator(self):
-        reader = BioCReader(source=self.pubtator)
+
+        # tmChem
+        #reader = BioCReader(source=self.pubtator_chem)
+        #reader.read()
+
+        # tmChem
+        reader = BioCReader(source=self.pubtator_gene)
         reader.read()
         for document in reader.collection.documents:
             for idx, passage in enumerate(document.passages):
