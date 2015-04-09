@@ -1,0 +1,269 @@
+html
+	head
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1.0")
+		
+		link(rel="shortcut icon", href="/static/favicon.ico", type="image/x-icon")
+		link(rel="icon", href="/static/favicon.ico", type="image/x-icon")
+		link(rel="apple-touch-icon", href="/static/touch-icon-iphone.png")
+		link(rel="apple-touch-icon", sizes="76x76", href="/static/touch-icon-ipad.png")
+		link(rel="apple-touch-icon", sizes="120x120", href="/static/touch-icon-iphone-retina.png")
+		link(rel="apple-touch-icon", sizes="152x152", href="/static/touch-icon-ipad-retina.png")
+		
+		meta(name="description", content="Mark2Cure – Scientific communication is broken")
+		meta(name="keywords", content="mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology")
+		meta(name="author", content="Mark2Cure")
+		meta(name="copyright", content="Mark2Cure")
+		meta(name="application-name", content="Mark2Cure")
+		meta(property="og:title", content="Mark2Cure")
+		meta(property="og:type", content="article")
+		meta(property="og:image", content="/static/static/img/mark2ure.png")
+		meta(property="og:url", content="http://mark2cure.org")
+		meta(property="og:description", content="")
+		meta(name="twitter:card", content="summary")
+		meta(name="twitter:title", content="Mark2Cure")
+		meta(name="twitter:description", content="")
+		meta(name="twitter:image", content="/static/static/img/profile.jpg")
+		
+		title Home1 - Mark2Cure
+		
+		link(rel="stylesheet", href="#{STATIC_URL}css/bootstrap.min.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/selectize.bootstrap3.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/introjs.min.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/introjs-nassim.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/odometer-theme-minimal.css")
+		link(rel="stylesheet", href="#{STATIC_URL}fonts/equity_text_b_regular/equity.css")
+		link(rel="stylesheet", href="#{STATIC_URL}fonts/px-grotesk/PxGrotesk-font.css")
+		link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/bootstrap-theme.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/style.css")
+		link(rel="stylesheet", href="#{STATIC_URL}css/document-style.css")
+		link(rel="stylesheet", href="#{STATIC_URL}/css/landing-style.css")
+
+	body
+		.case-study
+			nav.navbar.navbar-default
+				div.container
+					div.navbar-header
+						button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded="false", aria-controls="navbar")
+							span.sr-only > Toggle navigation
+							span.icon-bar
+							span.icon-bar
+							span.icon-bar
+						a.navbar-brand(href="/")
+							img(src="#{STATIC_URL}/images/landing/mark2cure-flatbox-logo-white.png", alt="Mark 2 Cure")
+
+					div(id="navbar").collapse.navbar-collapse
+						ul.nav.navbar-nav.pull-right-sm
+							li.active
+								a(href="/about/") About
+							li
+								a(href="/faq/") FAQ
+							li
+								a(href="http://sulab.org/category/mark2cure/") Blog
+							li
+								a(href="/contact/") Contact
+							li
+								a(data-toggle="modal", data-target="#login-modal") Login
+							li.social
+								a(href="http://sulab.org/category/mark2cure/feed")
+									<i class="fa fa-rss-square"></i></a></li>
+							li.social
+								<a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a></li>
+							li.social
+								<a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a></li>
+
+			#bg-case-study
+				.container
+					.row
+						.col-xs-12
+							.cta.text-center
+								<h1>Bertrand  was the first case of <br class="hidden-xs"> NGLY1, but he is not alone.</h1>
+								.row
+									.col-sm-8.col-sm-offset-2
+										<p>LGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.</p>
+
+								.row.push30
+									.col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-4
+										<a href="#"><button class="btn btn-block btn-white">I want to help</button></a>
+									.col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-0
+										<a href="#learnMore" class="hidden-xs hidden-sm"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
+										<a href="https://www.youtube.com/watch?v=hT_pj1cB0Q8" class="hidden-md hidden-lg"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
+									
+				
+				.cta-bar
+					.container-fluid.text-center.cta-bar
+						.row
+							.col-xs-12
+								<p><a href="http://sulab.org/2015/02/mark2cure-first-beta-experiment-is-complete-thank-you/">Beta-experiment is complete! 212 volunteers submitted 10,345 document annotations in just over 4 weeks. <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
+
+				<!-- /#bg-case-study -->
+
+			.clearfix
+
+			.container-fluid.sci-comm-cs
+				.row
+					.col-xs-5
+						img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="", class="aligncenter img-responsive")
+
+					.col-xs-2
+						img(src="#{STATIC_URL}images/landing/red-book.jpg", alt="", class="aligncenter img-responsive")
+
+					.col-xs-5
+						img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="", class="aligncenter img-responsive")
+
+			.container
+				.row
+					.col-sm-12.text-center
+						<h2>Scientific <span class="font-red text-uppercase">communication</span> is broken.</h2>
+						p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
+
+			.container.push30
+				.row
+					.col-xs-12
+						<img src="#{STATIC_URL}images/landing/words.jpg" alt="" class="aligncenter img-responsive">
+					
+
+			.container.push30
+				.row
+					.col-sm-12.text-center
+						<h2><span class="font-red text-uppercase">you</span> can fix it and help find cures.</h2>
+						<p class="medium">The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.</p>
+					
+
+				.row.push50
+					.col-sm-3.col-sm-offset-3
+						<img src="#{STATIC_URL}images/landing/ngly1-child.png" alt="" class="aligncenter img-responsive">
+
+					.col-sm-3
+						<p>It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <span class="font-purple" style="margin-top:35px;">Learn More <i class="fa fa-chevron-right"></i></span></p>
+					
+
+			.container.push100.hidden-xs.hidden-sm
+				.row
+					.col-sm-12.text-center
+						<h2 id="learnMore">Learn More</h2>
+						.center-block.push50
+							<iframe width="640" height="360" src="https://www.youtube.com/embed/hT_pj1cB0Q8" frameborder="0" allowfullscreen></iframe>
+
+				.row.push50
+					.col-sm-12.text-center
+						<p class="font-purple medium">If you can read you can help.</p>
+						<a href="#"><button class="push15 btn btn-large btn-primary">I want to help.</button></a>
+
+			.container.push100
+				<hr style="font-size:3px;">
+
+		footer#footer
+			.container
+				.row.text-center(style="padding-bottom:30px;")
+					.col-sm-12
+						#result
+			.container
+				
+				.row.push100
+					.col-sm-6
+						<p class="small text-muted">&copy; 2015 Mark2Cure.org &bull; <a href="/tos">Terms of Service &bull; Privacy Policy</a></p>
+					
+					.col-sm-6
+						<div class="small text-muted participate"><p class="inline"><span style="margin-bottom:5px;">Participate in the Community!</span></p> <p class=""><a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a> <a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a></p>
+					
+
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="/static/js/libs/underscore-min.js"></script>
+		<script src="/static/js/libs/backbone-min.js"></script>
+		<script src="/static/js/libs/underscore.string.min.js"></script>
+		<script src="/static/js/libs/backbone-relational.js"></script>
+		<script src="/static/js/libs/backbone.marionette.min.js"></script>
+		<script src="/static/js/libs/d3.v3.js"></script>
+		<script src="/static/js/libs/md5.js"></script>
+		<script src="/static/js/libs/moment.js"></script>
+		<script src="/static/js/libs/selectize.js"></script>
+		<script src="/static/js/libs/intro.min.js"></script>
+		<script src="/static/js/libs/odometer.min.js"></script>
+		<script src="/static/js/libs/modernizr.custom.js"></script>
+		<script src="/static/js/ypet.js"></script>
+		<script src="/static/js/app.js"></script>
+		<script src="//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js"></script>
+
+		a#support-icon(data-toggle="modal", data-target="#support-modal")
+			img(src='#{STATIC_URL}images/support-icon.png')
+
+		#support-modal.modal.fade
+			.modal-dialog
+				.modal-content
+					.modal-header
+						<h2 class="modal-title">Contact Support</h2>
+						<h4>Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.</h4>
+						<h5 class="text-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
+					
+					.modal-body
+						form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
+							- csrf_token
+							- if request.user.is_authenticated
+								input(type='hidden', name='user', value='{{user.pk}}')
+							input(type='hidden', name='referral', value='{{request.path}}')
+							.form-group
+								label Message
+								textarea(name='text').form-control
+					.modal-footer
+						button(type="button", data-dismiss="modal").btn.btn-default Cancel
+						button(type="button").btn.btn-default.modal-form-submit Submit
+
+		<script type="text/javascript" src="static/js/libs/jFeed-master/jquery/jquery.js"></script>
+		<script type="text/javascript" src="static/js/libs/jFeed-master/build/dist/jquery.jfeed.js"></script>
+		script.
+			jQuery(function() {
+				jQuery.getFeed({
+					url: 'http://pipes.yahoo.com/pipes/pipe.run?_id=435acae6559a1e8119eea1b80f7b59e9&_render=rss',
+					success: function(feed) {
+						jQuery('#result').append('<h3 class="text-muted text-uppercase">News</h3>');
+						var html = '';
+						for(var i = 0; i < feed.items.length && i < 5; i++) {
+							var item = feed.items[i];
+							html += '<p class="push15">'
+							+ '<a href="' + item.link + '">' + item.title + '</a>' + '<br>' +'<span class="text-muted text-uppercase">' + item.prettyUpdated + '</span></p>';
+						}
+						jQuery('#result').append(html);
+					}
+				});
+			});
+
+		script.
+			$(function() {
+				$('a[href*=#]:not([href=#])').click(function() {
+					if (location.pathname.replace(/^\\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+						var target = $(this.hash);
+						target = target.length ? target : $('[name=' + this.hash.slice(1)+']');
+						if (target.length) {
+							$('html,body').animate({scrollTop: target.offset().top}, 1000);
+						return false;
+						}
+					}
+				});
+			});
+
+		<script>Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {  whitelistUrls: [/mark2cure\.org/]}).install();var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-43341013-1']);_gaq.push(['_setDomainName', 'mark2cure.org']);_gaq.push(['_trackPageview']);(function() {  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
+		</script>
+
+		#touch-modal.modal.fade
+			.modal-dialog
+				.modal-content
+					.modal-header
+						h2.modal-title On a touch screen?
+
+					.modal-body
+						p.lead
+							| At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
+						p.lead.text-center
+							| Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
+
+					.modal-footer
+						button(type="button", data-dismiss="modal").btn.btn-default
+							| Okay
+
+		script.
+			if(Modernizr.touch) {
+				$('#touch-modal').modal('show');
+			}

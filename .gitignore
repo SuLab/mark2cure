@@ -16,6 +16,10 @@ mark2cure.db
 mark2cure/settings.py
 mark2cure/local_settings.py
 
+#codekit
+config.codekit
+.codekit-cache
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,0 +1,583 @@
+
+
+
+//
+// IMPORTING STYLES
+//
+
+// Core variables and mixins
+//@import "bootstrap/variables.less";
+@import "custom-variables.less"; // custom variables
+@import "bootstrap/mixins.less";
+
+// Reset
+@import "bootstrap/normalize.less";
+@import "bootstrap/print.less";
+
+// Core CSS
+@import "bootstrap/scaffolding.less";
+@import "bootstrap/type.less";
+@import "bootstrap/code.less";
+@import "bootstrap/grid.less";
+@import "bootstrap/tables.less";
+@import "bootstrap/forms.less";
+@import "bootstrap/buttons.less";
+
+// Components
+@import "bootstrap/component-animations.less";
+@import "bootstrap/glyphicons.less";
+@import "bootstrap/dropdowns.less";
+@import "bootstrap/button-groups.less";
+@import "bootstrap/input-groups.less";
+@import "bootstrap/navs.less";
+@import "bootstrap/navbar.less";
+@import "bootstrap/breadcrumbs.less";
+@import "bootstrap/pagination.less";
+@import "bootstrap/pager.less";
+@import "bootstrap/labels.less";
+@import "bootstrap/badges.less";
+@import "bootstrap/jumbotron.less";
+@import "bootstrap/thumbnails.less";
+@import "bootstrap/alerts.less";
+@import "bootstrap/progress-bars.less";
+@import "bootstrap/media.less";
+@import "bootstrap/list-group.less";
+@import "bootstrap/panels.less";
+@import "bootstrap/wells.less";
+@import "bootstrap/close.less";
+
+// Components w/ JavaScript
+@import "bootstrap/modals.less";
+@import "bootstrap/tooltip.less";
+@import "bootstrap/popovers.less";
+@import "bootstrap/carousel.less";
+
+// Utility classes
+@import "bootstrap/utilities.less";
+@import "bootstrap/responsive-utilities.less";
+
+// Font Awesome
+@import "font-awesome/less/font-awesome.less";
+
+
+
+/*
+RETINA (2x RESOLUTION DEVICES)
+This applies to the retina iPhone (4s) and iPad (2,3) along with
+other displays with a 2x resolution. You can also create a media
+query for retina AND a certain size if you want. Go Nuts.
+*/
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+       only screen and (min--moz-device-pixel-ratio: 1.5),
+       only screen and (min-device-pixel-ratio: 1.5) {
+
+	// styles in 2x.less
+	@import "other/_2x.less";
+
+} // end of media query
+
+/*
+iPHONE 5 MEDIA QUERY
+Want to get fancy for no good reason? Knock yourself out.
+*/
+@media (device-height: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+
+  // iPhone 5 or iPod Touch 5th generation styles (you can include your own file if you want)
+
+}
+
+
+
+// Fonts // ------------------------------------------------------
+@font-px: 'Px Grotesk Light', Helvetica, sans-serif;
+@font-sans: Helvetica, sans-serif;
+
+.glyphicon{
+	font-family: 'FontAwesome'
+}
+
+.font-blue{
+	color:@color-blue;
+}
+.font-purple{
+	color:@color-purple;
+}
+.font-black{
+	color:@color-black;
+}
+.font-red{
+	color:@color-red;
+}
+.u-red{
+	color:@color-red;
+	text-decoration: underline;
+	-moz-text-decoration-color: @color-red; /* Code for Firefox */
+    text-decoration-color: @color-red;
+}
+.u-redanimate{
+	position: relative;
+	text-decoration: none;
+	color: @color-black;
+
+	&:hover {
+	  color: @color-black;
+	}
+
+	&:before {
+	  content: "";
+	  position: absolute;
+	  width: 100%;
+	  height: 5px;
+	  bottom: 0;
+	  left: 0;
+	  background-color: @color-red;
+	  visibility: hidden;
+	  -webkit-transform: scaleX(0);
+	  transform: scaleX(0);
+	  -webkit-transition: all 0.3s ease-in-out 0s;
+	  transition: all 0.3s ease-in-out 0s;
+
+	  visibility: visible;
+	  -webkit-transform: scaleX(1);
+	  transform: scaleX(1);
+	}
+
+	&:hover:before {
+	  visibility: visible;
+	  -webkit-transform: scaleX(1);
+	  transform: scaleX(1);
+	}
+}
+
+.bg-redanimate{
+	color: @color-white;
+	background-color: @color-purple;
+	padding: 0 10px 10px;
+
+	// &:hover {
+	//   color: @color-white;
+	// }
+
+	// &:before {
+	//   content: "";
+	//   position: absolute;
+	//   z-index: 300;
+	//   width: 100%;
+	//   height: 55px;
+	//   bottom: 0;
+	//   left: 0;
+	//   background-color: @color-purple;
+	//   visibility: hidden;
+	//   -webkit-transform: scaleX(0);
+	//   transform: scaleX(0);
+	//   -webkit-transition: all 0.3s ease-in 0s;
+	//   transition: all 0.3s ease-in 0s;
+	// }
+
+	// .f{
+	// 	position: relative;
+	// 	z-index: 500;
+	// }
+}
+
+// Backgrounds // --------------------------------------------------
+.bg-purple{
+	background: @color-purple;
+	color:@color-white;
+}
+.bg-green{
+	background: @color-green;
+	color:@color-white;
+}
+.bg-purple-fade{
+	
+    background: @color-purple;
+	color:@color-white;
+
+	width: 1px;
+    //height: 100px;
+    background: red;
+    transition: width 2s;
+    -webkit-transition: width 2s; /* Safari 3.1 to 6.0 */
+	
+}
+
+
+// Main Styles // --------------------------------------------------
+body{
+	background: @color-white;
+	color:@color-black;
+	font-size: 16px;
+}
+
+//text
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  color: inherit;
+  font-family: @font-px;
+}
+h1{
+	@media (min-width:@screen-md) {
+		font-size: 52px;
+		line-height: 150%;
+	}
+}
+h2{
+	@media (min-width:@screen-md) {
+		font-size: 34px;
+		line-height: 150%;
+	}
+}
+a,
+#footer p a{
+	color:@color-purple;
+}
+
+// Buttons // ----------------------------------------------------------
+.btn,
+.button{
+	border-radius: 30px;
+	padding: 5px 15px;
+	margin-top: 10px;
+	// text-transform: uppercase;
+	// font-weight: 500;
+	// font-size: 18px;
+}
+.btn-flat{
+	border-radius: 0;
+}
+.btn-outline{
+	background: @color-white;
+}
+.btn-white{
+	color: @color-purple;
+	background-color: @color-white;
+	border: 2px solid @color-white;
+}
+
+.btn-outline.btn-primary{
+	color: @color-purple;
+
+	&:hover{
+		color:@color-white;
+	}
+}
+.btn-outline.btn-white{
+	background-color: @color-purple;
+	color: @color-white;
+	border: 2px solid @color-white;
+
+	&:hover{
+		color:@color-white;
+	}
+}
+
+.btn-large{
+	padding-right: 20px;
+	padding-left: 20px;
+}
+
+
+// Utilities // ----------------------------------------------------------
+.wrap{
+	position: relative;
+}
+
+
+//push
+.push15{
+	margin-top: 15px
+}
+.push30{
+	margin-top: 30px
+}
+.push50{
+	margin-top: 50px
+}
+.push75{
+	margin-top: 75px
+}
+.push100{
+	margin-top: 100px;
+}
+.push130{
+	margin-top: 130px;
+}
+.push550{
+	margin-top: 550px;
+}
+
+.aligncenter{
+	display: block;
+  	margin: 5px auto 5px auto;
+}
+p.medium{
+	font-size: 20px;
+	line-height: 140%;
+}
+.pull-right-sm{
+	@media (min-width: @screen-sm-min) {
+		float: right !important;
+	}
+}
+// Z-Index Scale (private vars)
+// --------------------------------------------------
+@zIndex-1:   100;
+@zIndex-2:   200;
+@zIndex-3:   300;
+@zIndex-4:   400;
+@zIndex-5:   500;
+@zIndex-6:   600;
+@zIndex-7:   700;
+@zIndex-8:   800;
+@zIndex-9:   900;
+@zIndex-10: 1000;
+// Nav // ----------------------------------------------------------
+.navbar{
+	min-height: 120px;
+	font-family: @font-sans;
+	font-size: 16px;
+	z-index: @zIndex-10;
+
+	@media (max-width: @screen-sm-max) {
+		min-height: 80px;
+	}
+}
+.navbar-nav{
+	margin-top: 35px;
+}
+.navbar-default,
+.navbar-default .navbar-nav > .active > a {
+  background-color: transparent;
+  border-color: transparent;
+}
+.navbar-default .navbar-nav > .active > a {
+  background-image: none;
+  background-image: none;
+  background-image: none;
+  background-image: none;
+  background-repeat: none;
+  filter: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.navbar-brand, .navbar-nav > li > a{
+	text-shadow: none;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+  border-color: transparent;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+	background-color:@color-white;
+}
+
+.navbar-default .navbar-nav>.active>a, 
+.navbar-default .navbar-nav>.active>a:hover, 
+.navbar-default .navbar-nav>.active>a:focus{
+	color:@color-purple;
+	background-color: transparent;
+}
+.nav>li.social>a{
+	padding-left: 10px;
+	padding-right: 0;
+}
+
+.case-study{
+	.navbar-default .navbar-nav>.active>a, 
+	.navbar-default .navbar-nav>.active>a:hover, 
+	.navbar-default .navbar-nav>.active>a:focus,
+	.navbar-default .navbar-nav>li>a{
+		color:@color-white;
+		background-color: transparent;
+	}
+}
+@media (max-width: @screen-sm) {
+	.navbar-brand img{
+		width: 50px;
+	}
+	.navbar-toggle{
+		margin-top: 20px;
+	}
+	.navbar-nav{
+		text-align: center;
+  		width: 100%;
+	}
+	.navbar-collapse{
+		background: @color-white;
+		min-height: 100vh;
+	}
+	.navbar-header{
+		padding-bottom: 15px;
+	}
+	.case-study .navbar-default .navbar-nav>li>a {
+  		color: @color-purple;
+  	}
+  	.light {
+  		.navbar-collapse{
+	  		background: @color-purple;
+		}
+		.navbar-default .navbar-toggle .icon-bar {
+			background-color: @color-purple;
+		}
+		.navbar-default .navbar-toggle {
+		  border-color: @color-purple;
+		}
+		.navbar-default .navbar-nav>li>a {
+	  		color: @color-white;
+	  	}
+  	}
+  	.container>.navbar-collapse, .container>.navbar-header {
+	  margin-right: -16px;
+	  margin-left: -16px;
+	}
+}
+
+// Modal // ----------------------------------------------------
+
+.modal-content{
+	border-radius: 0;
+}
+.modal-backdrop {
+  background-color: @color-purple;
+  opacity: 0.9 !important;
+}
+
+// Home // ----------------------------------------------------
+
+#bg-case-study .container,
+#bg-light .container{
+		margin-top: 130px;
+
+		@media (max-width: @screen-sm) {
+			margin-top: 100px;
+		}
+	}
+
+
+
+// Home 1 // --------------------------------------------------
+.cta{
+	#bg-light h1{
+		line-height: 150%;
+	}
+	
+	h1>span.bg-purple{
+		padding: 0 10px 10px 10px;
+	}
+	p{
+		font-size: 20px;
+		line-height: 150%;
+
+		@media (max-width: @screen-sm) {
+			font-size: 15px;
+		}
+	}
+}
+.cta-bar{
+	p{
+		padding-top: 15px;
+		padding-bottom: 5px;
+		
+		a{
+			color:@color-white;
+		}
+	}
+}
+.stick-bottom{
+	@media (min-width:@screen-md) {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+	}
+	
+}
+p .fa-chevron-right,
+p .fa-chevron-left{
+	font-size: 80%;
+}
+.light .sci-comm{
+	margin-top: 100px;
+
+	@media (max-width: @screen-sm) {
+		margin-top: 50px;
+	}
+}
+// Home 2 // -----------------------------------------------------
+#bg-case-study{
+	position: absolute;
+	z-index: @zIndex-5;
+	top: 0;
+	left: 0;
+	height: 600px;
+	width: 100%;
+	background-color: @color-purple;
+	background-image: url('/static/images/landing/bg-case-study.png');
+	background-image: url('/static/images/landing/bg-case-study-flip.jpg');
+	background-repeat: no-repeat;
+  	background-size: cover;
+  	background-position: center center;
+  	color: @color-white;
+
+	
+	.wrap{
+		height: 100%;
+	}
+
+	h1{
+
+	}
+
+	.cta-bar{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: fade(@color-blue, 50%);
+		color:@color-white;
+	}
+
+	
+
+}
+
+.sci-comm-cs{
+		margin-top: 550px;
+
+		@media (max-width: @screen-sm) {
+			margin-top: 500px;
+		}
+	}
+
+// Footer // -----------------------------------------------------
+#footer{
+	margin-top: 40px;
+	padding-bottom: 30px;
+
+	.text-muted a{
+		color: @color-gray-light;
+	}
+
+	
+
+	.participate{
+		//height: 30px;
+		//background-color: red;
+		float: right;
+		
+		@media (max-width: @screen-sm) {
+			float: none
+		}
+
+		p{
+			display: inline;
+		}
+
+		p .fa{
+			font-size: 20px;
+			margin-left: 10px;
+		}
+	}
+}
+
+
