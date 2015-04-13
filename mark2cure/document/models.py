@@ -32,14 +32,14 @@ class Document(models.Model):
         return self.section_set.exclude(kind='o').count()
 
     def get_pubtator(self):
+        # Load up our various pubtator responses
+        chem_reader = BioCReader(source=self.pubtator_chem)
+        chem_reader.read()
+        gene_reader = BioCReader(source=self.pubtator_gene)
+        gene_reader.read()
+        disease_reader = BioCReader(source=self.pubtator_chem)
+        disease_reader.read()
 
-        # tmChem
-        #reader = BioCReader(source=self.pubtator_chem)
-        #reader.read()
-
-        # tmChem
-        reader = BioCReader(source=self.pubtator_gene)
-        reader.read()
         for document in reader.collection.documents:
             for idx, passage in enumerate(document.passages):
                 passage.put_infon('section', 'unknown')

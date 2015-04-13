@@ -39,14 +39,6 @@ script.
     },
   });
 
-  YPet.addInitializer(function(options) {
-    var p = new Paragraph({'text': $('p.paragraph').text().trim()});
-    YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
-    YPet.addRegions({'quest': '#quest'});
-    YPet['quest'].show(new WordCollectionView({collection: p.get('words')}));
-  });
-  YPet.start();
-
   var correct = function() {
     $('#partner').slideDown();
     $('#next-container').popover('disable');
@@ -64,21 +56,18 @@ script.
     return '';
   };
 
+  /*
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
     console.log(model_json);
-    /*
      * Check if the array doesn't contain the selected word.
      * 1) Alert if (contains/overlap/miss)error 2) Unselect
-     */
     if( !_.filter(answers, function(obj) { return model_json.start == obj.start && model_json.text == obj.text; }).length ) {
       model_json['help_message'] = '';
       model_json['instructions_link'] = '';
       incorrect_counter++;
 
-      /*
       * Overlaps (start or before) check
-      */
       if( _.filter(answers, function(answer) {
         return  model_json.start < answer.start &&
                 _.str.include(model_json.text, answer.text); }).length ) {
@@ -92,9 +81,7 @@ script.
         model_json.help_message = "(Please check that your selection <strong>only</strong> includes required terms)";
       }
 
-      /*
       * Contains check
-      */
       if( _.filter(answers, function(answer) {
         return  model_json.start >= answer.start &&
                 model_json.start+model_json.text.length <= answer.start+answer.text.length &&
@@ -122,3 +109,4 @@ script.
     };
   });
   YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
+  */

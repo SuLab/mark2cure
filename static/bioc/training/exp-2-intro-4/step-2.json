@@ -1,0 +1,71 @@
+{
+   "collection":{
+      "source":"Mark2Cure Training API",
+      "date":"20150311",
+      "key":null,
+      "document":{
+         "id":"1",
+         "infon":[
+            {
+               "@key":"source",
+               "#text":"NCBI_corpus_training"
+            },
+            {
+               "@key":"id",
+               "#text":"1"
+            },
+            {
+               "@key":"opponent",
+               "#text":"false"
+            }
+         ],
+         "passage":[
+            {
+               "infon":[
+                  {
+                     "@key":"section",
+                     "#text":"title"
+                  },
+                  {
+                     "@key":"type",
+                     "#text":"paragraph"
+                  },
+                  {
+                     "@key":"id",
+                     "#text":"983"
+                  }
+               ],
+               "offset":"0",
+               "text":"Ehlers–Danlos syndrome ( EDS ) is a connective tissue disorder caused by defects in the structure , production , or processing of collagen proteins .",
+               "annotation":{
+                  "@id":"1",
+                  "infon":[
+                     {
+                        "@key":"user_name",
+                        "#text":"trainee"
+                     },
+                     {
+                        "@key":"type",
+                        "#text":"disease:modifier"
+                     },
+                     {
+                        "@key":"user",
+                        "#text":"1"
+                     },
+                     {
+                        "@key":"type",
+                        "#text":"0"
+                     }
+                  ],
+                  "location":{
+                     "@offset":"0",
+                     "@length":"22"
+                  },
+                  "text":"Ehlers–Danlos syndrome"
+               }
+            },
+
+         ]
+      }
+   }
+}
