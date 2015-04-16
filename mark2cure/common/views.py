@@ -56,7 +56,7 @@ def why_mark2cure(request):
 @login_required
 def dashboard(request):
     if request.user.profile.highest_level("skill").level <= 2:
-        return redirect('training:index')
+        return redirect('training:introduction', step_num=1)
 
     profile = request.user.profile
     tasks = Task.objects.filter(kind=Task.QUEST).all()
