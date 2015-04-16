@@ -1,16 +1,29 @@
 extends training/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2 Rather than starting from scratch, docs in this campaign may be pre-populated with annotations done by a computer algorithm
-  p Do NOT assume the algorithm’s annotations are correct (Eg- Nitric Oxide is a drug, but was missed).
-  p The machine is just there to (hopefully) reduce the amount of clicking you must do.
-  p Please correct the annotations as you see fit.
+  div(id='instructions-p1')
+    h2 Rather than starting from scratch, docs in this campaign may be pre-populated with annotations done by a computer algorithm
+    p Do NOT assume the algorithm’s annotations are correct (Eg- Nitric Oxide is a drug, but was missed).
+    p The machine is just there to (hopefully) reduce the amount of clicking you must do.
+    p Please correct the annotations as you see fit.
+
+  div(id='instructions-p2', style='display:none;')
+    h2 After you submit your markings, you will receive feedback on how well your markings matched those of your partner’s.
+    p Your partner’s markings will use the same color coding, but will be presented as underlines
+
+    .row
+      .col-xs-8.col-xs-offset-2
+        .alert.alert-info
+          .row
+            p.text-center.lead If you would like to try again, please do so until you're comfortable
+            .col-xs-4.col-xs-offset-4
+              button(onclick="location.reload()").btn.btn-info.btn-block Refresh
 
 block progress-bar
   div(role='progressbar', aria-valuenow='80', aria-valuemin='0', aria-valuemax='100', style='width: 80%;').progress-bar.progress-bar-striped.active
 
 block next-link
-  a(href='{% url "training:four" step_num="6" %}', id='next').btn.btn-default.pull-right Submit
+  a(href='{% url "training:four" step_num="feedback" %}', id='next').btn.btn-default.pull-right Submit
 
 block ypet
   script.
@@ -37,30 +50,21 @@ block ypet
             }) );
           });
 
-          YPet[0].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-            var model_json = model.toJSON();
-            console.log(model_json);
-          });
-
-          YPet[1].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-            var model_json = model.toJSON();
-            console.log(model_json);
-          });
-
       });
     });
     YPet.start();
 
+    $('#next').one('click', function(evt) {
+        evt.preventDefault();
+        $.getJSON('/static/bioc/training/exp-2-intro-4/step-5-partner.json', function( data ) {
+          partner_data = data;
+          var passages = data.collection.document.passage;
+          _.each(passages, function(passage, passage_idx) {
+            YPet[passage_idx].currentView.drawBioC(passage, true);
+          });
+        });
+        $('#instructions-p1').hide();
+        $('#instructions-p2').show();
+        $('#next').html('Next');
+    });
 
-  script.
-    var help = [
-      {text: 'depression', msg: 'Mark only treatment concepts in this tutorial. Do NOT mark disease or gene concepts'},
-      {text: 'fluoxetine', msg: 'Mark the full name of the drug or treatment as specifically as possible'},
-      {text: 'hydrochloride', msg: 'Mark the full name of the drug or treatment as specifically as possible'},
-      {text: 'Prozac and Sarafem', msg: 'Mark different drug names separately even if they are the same drug'},
-    ];
-    var answers = [{text: "Lilly 110140", start: 0}, {text: "fluoxetine hydrochloride", start: 68}, {text: "Prozac", start: 150}, {text: "Sarafem", start: 161}];
-
-    var validation_check = function(collection) {
-      if(validate(collection, answers)) { correct(); }
-    };
