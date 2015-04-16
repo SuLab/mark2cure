@@ -38,6 +38,19 @@ block content
       #quest.col-md-10.col-md-offset-1
         #paragraphs
 
+    block highlightkey
+      .row
+        .col-xs-1
+          h2 Key
+        .col-xs-3.head-space
+          ul.list-unstyled
+            li(style='background-color: #00ccff;')
+              p.text-center Disease Concept
+            li(style='background-color: #22A301;')
+              p.text-center Genes Concept
+            li(style='background-color: yellow;')
+              p.text-center Treatments Concept
+
     .row.head-space-xl
       .col-md-8.col-md-offset-2
         .progress
@@ -48,13 +61,5 @@ block content
 
 
 block post-footer
-  include training/includes/intro-multi-js
   include instructions/multi-concept-instructions-modal
-
-  block answers
-
-  script.
-      var validation_check = function(collection) {
-        if(validate(collection, answers)) { correct(); }
-      };
-
+  block ypet

@@ -1,21 +1,11 @@
-<script id="alert-template" type="text/template">
-<div class="alert alert-warning alert-training" role="alert">
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
-<% if (help_message) { %>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= help_message %></p></div></div>
-<% }; if (instructions_link) { %>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= instructions_link %></p></div></div>
-<% } %>
-</div>
-</script>
-
 script.
   var incorrect_counter = 0;
+
   var validate = function(needle, gold) {
     var all_match = true;
     _.each(gold, function(gold_item) {
       var matches = _.filter(needle.toJSON(), function(obj) {
-        return obj.start == gold_item.start && obj.text == gold_item.text }).length;
+        return obj.type == gold_item.type && obj.start == gold_item.start && obj.text == gold_item.text }).length;
       if(!matches) { all_match = false; }
     });
 
@@ -46,67 +36,3 @@ script.
     window.scrollTo(0,document.body.scrollHeight);
   };
 
-  var check_common_mistakes = function(text) {
-    var universal_help = _.findWhere(help, {text: '*'});
-    if(universal_help) { return universal_help.msg; }
-
-    var specific_help = _.findWhere(help, {text: text});
-    if(specific_help) { console.log('found help', text, help); return specific_help.msg; }
-
-    return '';
-  };
-
-  /*
-  YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-    var model_json = model.toJSON();
-    console.log(model_json);
-     * Check if the array doesn't contain the selected word.
-     * 1) Alert if (contains/overlap/miss)error 2) Unselect
-    if( !_.filter(answers, function(obj) { return model_json.start == obj.start && model_json.text == obj.text; }).length ) {
-      model_json['help_message'] = '';
-      model_json['instructions_link'] = '';
-      incorrect_counter++;
-
-      * Overlaps (start or before) check
-      if( _.filter(answers, function(answer) {
-        return  model_json.start < answer.start &&
-                _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "(Please check that your selection <strong>only</strong> includes required terms)";
-      }
-
-      if( _.filter(answers, function(answer) {
-        return  model_json.start >= answer.start &&
-                model_json.start+model_json.text.length > answer.start+answer.text.length &&
-                _.str.include(model_json.text, answer.text); }).length ) {
-        model_json.help_message = "(Please check that your selection <strong>only</strong> includes required terms)";
-      }
-
-      * Contains check
-      if( _.filter(answers, function(answer) {
-        return  model_json.start >= answer.start &&
-                model_json.start+model_json.text.length <= answer.start+answer.text.length &&
-                _.str.include(answer.text, model_json.text); }).length ) {
-        model_json.help_message = "(Please check that your selection contains <strong>all</strong> required words)";
-      }
-
-      if(incorrect_counter >= 3) { model_json.instructions_link = 'Having trouble? View full <a data-toggle="modal" data-target="#instructionsModal">instruction set</a>.'; }
-
-      var specific_message = check_common_mistakes(model_json.text);
-      if(specific_message.length) {
-        model_json.help_message = specific_message;
-      }
-
-      var temp = _.template($('#alert-template').html());
-      $('#quest-alerts').fadeOut('fast', function() {
-        $(this).html(temp(model_json));
-        $(this).fadeIn('fast');
-      });
-      model.destroy();
-    } else {
-      incorrect_counter = 0;
-      $('#quest-alerts').fadeOut('fast');
-      validation_check(collection);
-    };
-  });
-  YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
-  */

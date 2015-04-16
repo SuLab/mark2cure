@@ -1,10 +1,8 @@
 extends training/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2 Rather than starting from scratch, docs in this campaign may be pre-populated with annotations done by a computer algorithm
-  p Do NOT assume the algorithm’s annotations are correct (Eg- Nitric Oxide is a drug, but was missed).
-  p The machine is just there to (hopefully) reduce the amount of clicking you must do.
-  p Please correct the annotations as you see fit.
+  h2 After you submit your markings, you will receive feedback on how well your markings matched those of your partner’s.
+  p Your partner’s markings will use the same color coding, but will be presented as underlines
 
 block progress-bar
   div(role='progressbar', aria-valuenow='80', aria-valuemin='0', aria-valuemax='100', style='width: 80%;').progress-bar.progress-bar-striped.active
@@ -14,11 +12,11 @@ block next-link
 
 block ypet
   script.
-    var self_data;
+    var self_data, partner_data;
     YPet.addInitializer(function(options) {
 
       /* data fetches the original document and annotations */
-      $.getJSON('/static/bioc/training/exp-2-intro-4/step-5.json', function( data ) {
+      $.getJSON('/static/bioc/training/exp-2-intro-4/step-6.json', function( data ) {
           self_data = data;
           var passages = data.collection.document.passage;
           var regions = {};
@@ -37,14 +35,12 @@ block ypet
             }) );
           });
 
-          YPet[0].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-            var model_json = model.toJSON();
-            console.log(model_json);
-          });
-
-          YPet[1].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
-            var model_json = model.toJSON();
-            console.log(model_json);
+          $.getJSON('/static/bioc/training/exp-2-intro-4/step-6-partner.json', function( data ) {
+            partner_data = data;
+            var passages = data.collection.document.passage;
+            _.each(passages, function(passage, passage_idx) {
+              YPet[passage_idx].currentView.drawBioC(passage, true);
+            });
           });
 
       });

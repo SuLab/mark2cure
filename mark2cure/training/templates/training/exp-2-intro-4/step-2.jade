@@ -1,7 +1,7 @@
 extends training/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2 To change the color of a marking, first mark the word or span of words that fit a concept. Then, click on the mark you just made to change it’s color.
+  h2 To change the color of a marking, first mark the word or span of words that fit a concept. Then, click on the mark you just made to change its color.
   h2 <span class="user_annotated_green"><strong>Green</strong></span> will refer to the Genes Concept
   p In the box below, use your Gene Marking Skill to highlight gene concept terms in green
 
@@ -11,60 +11,69 @@ block progress-bar
 block next-link
   a(href='{% url "training:four" step_num=3 %}', id='next', disabled).btn.btn-default.pull-right Next
 
-block answers
+block highlightkey
+  .row
+    .col-xs-1
+      h2 Key
+    .col-xs-3.head-space
+      ul.list-unstyled
+        li(style='background-color: #00ccff;')
+          p.text-center Disease Concept
+        li(style='background-color: #22A301;')
+          p.text-center Genes Concept
+
+
+block ypet
+  include training/includes/intro-multi-js
   script.
-    console.log('asdfasdf');
     var self_data;
     YPet.addInitializer(function(options) {
-      console.log('2222 asdfasdf');
+
       /* data fetches the original document and annotations */
       $.getJSON('/static/bioc/training/exp-2-intro-4/step-2.json', function( data ) {
-        console.log('333 asdfasdf');
-        self_data = data;
-        console.log('data', data);
-        var passages = data.collection.document.passage;
-        var regions = {};
-        _.each(passages, function(passage, passage_idx) {
-          $('#paragraphs').append('<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box"><p class="paragraph"></p></div></div>');
-          regions[passage_idx] = '#'+passage.infon[2]['#text'];
-        });
-        YPet.addRegions(regions);
+          self_data = data;
+          var passages = data.collection.document.passage;
+          var regions = {};
+          _.each(passages, function(passage, passage_idx) {
+            $('#paragraphs').append('<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box"><p class="paragraph"></p></div></div>');
+            regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+          });
+          YPet.addRegions(regions);
 
-        _.each(passages, function(passage, passage_idx) {
-          var p = new Paragraph({'text': passage.text});
-          YPet[passage_idx].show( new WordCollectionView({
-            collection: p.get('words'),
-            passage_json: passage,
-            bioc_json: data
-          }) );
-        });
+          _.each(passages, function(passage, passage_idx) {
+            var p = new Paragraph({'text': passage.text});
+            YPet[''+passage_idx].show( new WordCollectionView({
+              collection: p.get('words'),
+              passage_json: passage,
+              bioc_json: data
+            }) );
+          });
+
+          YPet[0].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) { validation_check(collection); });
+          YPet[0].currentView.collection.parentDocument.get('annotations').on('change', function(model) { validation_check(model.collection); });
+          YPet[0].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
+          _.each(YPet[0].currentView.options.collection.first(13), function(word_model) {
+            word_model.set('disabled', true);
+            word_model.set('masked', true);
+          });
+
       });
     });
+    YPet.AnnotationTypes = new AnnotationTypeList([
+      {name: 'Disease', color: '#00ccff'},
+      {name: 'Gene', color: '#22A301'},
+    ]);
     YPet.start();
 
-    /*
-    $(window).resize(function() {
-      $('.underline').remove();
-      $('.underline-space').remove();
 
-      if(self_data) {
-        _.each(self_data.collection.document.passage, function(passage, passage_idx) {
-          YPet[passage_idx].currentView.drawBioC(passage, false);
-        });
-      }
+  script.
+    var answers = [
+      {text: "Ehlers–Danlos syndrome", start: 0, type: 0},
+      {text: "EDS", start: 25, type: 0},
+      {text: "connective tissue disorder", start: 36, type: 0},
 
-      if(partner_data) {
-        _.each(partner_data.collection.document.passage, function(passage, passage_idx) {
-          YPet[passage_idx].currentView.drawBioC(passage, true);
-        });
-      }
-    });
-    */
+      {text: "collagen", start: 130, type: 1}];
 
-    var help = [
-      {text: 'depression', msg: 'Mark only treatment concepts in this tutorial. Do NOT mark disease or gene concepts'},
-      {text: 'fluoxetine', msg: 'Mark the full name of the drug or treatment as specifically as possible'},
-      {text: 'hydrochloride', msg: 'Mark the full name of the drug or treatment as specifically as possible'},
-      {text: 'Prozac and Sarafem', msg: 'Mark different drug names separately even if they are the same drug'},
-    ];
-    var answers = [{text: "Lilly 110140", start: 0}, {text: "fluoxetine hydrochloride", start: 68}, {text: "Prozac", start: 150}, {text: "Sarafem", start: 161}];
+    var validation_check = function(collection) {
+      if(validate(collection, answers)) { correct(); }
+    };

@@ -19,15 +19,6 @@ WordList = Backbone.Collection.extend({
    * models for house keeping and search */
   model: Word,
   url: '/api/v1/words',
-
-  clone: function(deep) {
-    if(deep) {
-      return new this.constructor(_.map(this.models, function(m) { return m.clone(); }));
-    } else {
-      return Backbone.Collection.prototype.clone();
-    }
-  }
-
 });
 
 Annotation = Backbone.RelationalModel.extend({
@@ -120,54 +111,11 @@ AnnotationList = Backbone.Collection.extend({
   drawAnnotations: function(annotation) {
     var annotation_type = YPet.AnnotationTypes.at(annotation.get('type')),
         words_len = annotation.get('words').length;
-    var parent_document = this.parentDocument || this._parentDocument;
 
-    /* Collect Words
-    annotation.get('start'), annotation.get('text').length
-    */
-    var selected = parent_document.get('words').filter(function(word) {
-      return word.get('start') >= annotation.get('start') && word.get('start') < annotation.get('start')+annotation.get('text').length;
-    });
-    annotation.set('words', selected);
-
-    /*
-    console.log('drawAnnotations', words_len);
-    console.log(annotation);
-    console.log('------', annotation.get('text') ,'--------');*/
-
-    /* Draw all the basic background or underlines */
     annotation.get('words').each(function(word, word_index) {
-      if(annotation.get('opponent')) {
-        word.trigger('underline', {'color': annotation_type.get('color')});
-      } else {
-        word.trigger('highlight', {'color': annotation_type.get('color')});
-        if(word_index == words_len-1) { word.set('neighbor', true); }
-      }
+      word.trigger('highlight', {'color': annotation_type.get('color')});
+      if(word_index == words_len-1) { word.set('neighbor', true); }
     });
-
-    if(annotation.get('opponent')) {
-      var words = annotation.get('words')
-      var author_annotations = parent_document.get('annotations');
-
-      var anns = []
-      author_annotations.each(function(main_ann) {
-        if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
-          anns.push(main_ann.cid);
-        }
-      });
-
-      if(_.uniq(anns).length > 1) {
-        /* 2 Different Parent Annotations */
-        words.each(function(word) {
-          if(word == words.last()) {
-            word.trigger('underline-space', {'color': '#fff', 'last_word': true});
-          } else {
-            word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
-          }
-        });
-      }
-    }
-
   },
 
   add : function(ann) {
@@ -195,18 +143,6 @@ Paragraph = Backbone.RelationalModel.extend({
       key : 'parentDocument',
       includeInJSON: false,
     }
-  }, {
-      type: 'HasMany',
-      key: 'opponent_annotations',
-
-      relatedModel: Annotation,
-      collectionType: AnnotationList,
-
-      reverseRelation : {
-            /* This needs a sep key as the same model above */
-            key : '_parentDocument',
-            includeInJSON: false,
-          }
   }, {
     type: 'HasMany',
     key: 'words',
@@ -271,50 +207,6 @@ WordView = Backbone.Marionette.ItemView.extend({
     this.listenTo(this.model, 'highlight', function(options) {
       this.$el.css({'backgroundColor': options.color});
     });
-
-    this.listenTo(this.model, 'change:masked', function(options) {
-      if(this.model.get('masked')) {
-        this.$el.css({'color': '#000', 'cursor': 'default', 'opacity': '.5'});
-      }
-    });
-
-    this.listenTo(this.model, 'underline', function(options) {
-      var $container = this.$el.parent(),
-      pos = this.$el.position();
-
-      var yaxis = pos.top + this.$el.height() + 2;
-      var width = this.$el.width();
-
-      $container.append('<div class="underline" style=" \
-        position: absolute; \
-        height: 4px; \
-        width: '+ width +'px; \
-        top: '+ yaxis +'px; \
-        left: '+ pos.left +'px; \
-        background-color: '+ d3.rgb(options.color).darker(1) +';"></div>');
-    });
-
-    this.listenTo(this.model, 'underline-space', function(options) {
-      var $container = this.$el.parent(),
-      pos = this.$el.position(),
-      color = d3.rgb(options.color).darker(2);
-
-      var yaxis = pos.top + this.$el.height() + 2;
-      var width = this.$el.width();
-      if(options.last_word) {
-        width = width - 5;
-        color = '#fff';
-      }
-
-      $container.append('<div class="underline-space" style=" \
-        position: absolute; \
-        height: 4px; \
-        width: 5px; \
-        top: '+ yaxis +'px; \
-        left: '+ (pos.left+width) +'px; \
-        background-color: '+ color +';"></div>');
-    });
-
  },
 
   /* Triggers the proper class assignment
@@ -328,13 +220,11 @@ WordView = Backbone.Marionette.ItemView.extend({
    * element */
   mousedown : function(evt) {
     evt.stopPropagation();
-    if(this.model.get('disabled')) { return; };
     this.model.set({'latest': 1});
   },
 
   mouseover : function(evt) {
     evt.stopPropagation();
-    if(this.model.get('disabled')) { this.$el.css({'color': '#000', 'cursor': 'default'}); return; };
     var word = this.model,
         words = word.collection;
 
@@ -372,7 +262,6 @@ WordView = Backbone.Marionette.ItemView.extend({
 
   mouseup : function(evt) {
     evt.stopPropagation();
-    if(this.model.get('disabled')) { return; };
     var word = this.model,
         words = word.collection;
 
@@ -403,61 +292,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
     'mousemove': 'startHoverCapture',
     'mouseup': 'captureAnnotation',
     'mouseleave': 'captureAnnotation',
-  },
-
-  onRender : function() {
-    this.drawBioC(this.options.passage_json);
-  },
-
-  drawBioC : function(passage, opponent) {
-    opponent = opponent || false
-    var words = this.collection,
-        parentDocument = words.parentDocument;
-
-    if(opponent) {
-      /* If you're showing a partner's results, disallow highlighting */
-      this.$el.css({'color': '#000', 'cursor': 'default'});;
-      words.each(function(w) {
-        w.set('disabled', true);
-      });
-
-    }
-
-    if(passage) {
-      var annotations = _.compact(_.flatten([passage.annotation]));
-      var passage_offset = +passage.offset;
-
-      // Fragile pulling infon index like that
-      if(annotations.length) {
-
-
-        var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
-        if(user_ids.length != 1) { console.log('throw error'); }
-        var user_id = +user_ids[0];
-
-        _.each(annotations, function(annotation, annotation_idx) {
-          var ann_start = +annotation.location['@offset'] - passage_offset;
-          var ann_length = +annotation.location['@length'];
-          var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
-
-          var selected = words.filter(function(word) {
-            return (word.get('start') == ann_start) || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
-          });
-
-          if(selected.length) {
-            if(opponent) {
-              var opp_anns = parentDocument.get('opponent_annotations');
-              opp_anns.create({words: selected, type: ann_type, opponent: opponent});
-            } else {
-              var anns = parentDocument.get('annotations');
-              anns.create({words: selected, type: ann_type, opponent: opponent});
-            }
-          }
-
-        });
-      }
-    }
-
   },
 
   outsideBox: function(evt) {
@@ -542,6 +376,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
 YPet = new Backbone.Marionette.Application();
 YPet.AnnotationTypes = new AnnotationTypeList([
   {name: 'Disease', color: '#00ccff'},
-  {name: 'Gene', color: '#22A301'},
-  {name: 'Protein', color: 'yellow'}
+  {name: 'Drugs', color: '#6FDE89'},
+  {name: 'Genes/Proteins', color: '#E64C66'}
 ]);

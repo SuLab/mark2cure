@@ -40,16 +40,18 @@ class Document(models.Model):
         disease_reader = BioCReader(source=self.pubtator_chem)
         disease_reader.read()
 
-        for document in reader.collection.documents:
-            for idx, passage in enumerate(document.passages):
-                passage.put_infon('section', 'unknown')
-                passage.put_infon('id', str(idx))
+        for d_idx, document in enumerate(reader.collection.documents):
+            for p_idx, passage in enumerate(document.passages):
+                print d_idx, p_idx
 
-                for idx, annotation in enumerate(passage.annotations):
-                    annotation.put_infon('user', 'pubtator')
-                    annotation.put_infon('user_name', 'pubtator')
+                #passage.put_infon('section', 'unknown')
+                #passage.put_infon('id', str(idx))
+
+                #for idx, annotation in enumerate(passage.annotations):
+                #    annotation.put_infon('user', 'pubtator')
+                #    annotation.put_infon('user_name', 'pubtator')
                     # Our int type
-                    annotation.put_infon('type', '0')
+                #    annotation.put_infon('type', '0')
                     # annotation.postion.start =
 
         return reader

@@ -14,6 +14,15 @@ block progress-bar
 block next-link
   a(href='{% url "training:four" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
 
+block highlightkey
+  .row
+    .col-xs-1
+      h2 Key
+    .col-xs-3.head-space
+      ul.list-unstyled
+        li(style='background-color: #00ccff;')
+          p.text-center Disease Concept
+
 block answers
   script.
       $('#Training4Modal').modal('show');
