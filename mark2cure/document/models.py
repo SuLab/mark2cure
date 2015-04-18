@@ -16,10 +16,6 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
 
-    pubtator_chem = models.TextField(blank=True)
-    pubtator_disease = models.TextField(blank=True)
-    pubtator_gene = models.TextField(blank=True)
-
     objects = DocumentManager()
 
     def __unicode__(self):
@@ -33,6 +29,8 @@ class Document(models.Model):
 
     def get_pubtator(self):
         # Load up our various pubtator responses
+        #reader = self.
+
         chem_reader = BioCReader(source=self.pubtator_chem)
         chem_reader.read()
         gene_reader = BioCReader(source=self.pubtator_gene)
@@ -66,6 +64,30 @@ class Document(models.Model):
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
+
+
+class Pubtator(models.Model):
+    document = models.ForeignKey(Document)
+
+    kind = models.CharField(max_length=200, blank=True)
+    session_id = models.CharField(max_length=200, blank=True)
+    content = models.TextField(blank=True, null=True)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def as_writer(self):
+        from mark2cure.common.formatter import bioc_writer
+        writer = bioc_writer(None)
+        document = self.document.as_bioc()
+
+        passage_offset = 0
+        for section in self.document.available_sections():
+            passage = section.as_bioc(passage_offset)
+            passage_offset += len(passage.text)
+            document.add_passage(passage)
+        writer.collection.add_document(document)
+        return writer
 
 
 class Section(models.Model):

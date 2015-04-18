@@ -11,14 +11,15 @@ from datetime import datetime, timedelta
 import time
 
 @task()
-def get_pubtator_response(doc_pk, api_ann, session_id, data, payload, idx):
+def get_pubtator_response(bioc_pk, data, payload, idx):
     attempts = 5
+    pubtator = Pubtator.objects.get(pk=bioc_pk)
 
     while idx < attempts:
         idx += 1
         time.sleep(idx * 10)
         results = requests.post(
-            'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=session_id),
+            'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator.session_id),
             data=data, params=payload)
         print api_ann +' : '+ results.content
 
@@ -26,20 +27,20 @@ def get_pubtator_response(doc_pk, api_ann, session_id, data, payload, idx):
             idx = 100
 
     if results.content and idx == 100:
-        doc = Document.objects.get(pk=doc_pk)
-        if api_ann == 'tmChem':
-            doc.pubtator_chem = results.content
-        if api_ann == 'DNorm':
-            doc.pubtator_disease = results.content
-        if api_ann == 'GNormPlus':
-            doc.pubtator_gene = results.content
-        doc.save()
+        pubtator.content = results.content
+        pubtator.save()
 
 
 @task()
-def get_pubmed_document(pubmed_id):
+def get_pubmed_document(pubmed_ids):
     Entrez.email = settings.ENTREZ_EMAIL
-    h = Entrez.efetch(db='pubmed', id=[str(pubmed_id),], rettype='medline', retmode='text')
+
+    if type(pubmed_ids) == list:
+        ids = [str(doc_id) for doc_id in pubmed_ids]
+    else:
+        ids = [str(pubmed_ids)]
+
+    h = Entrez.efetch(db='pubmed', id=ids, rettype='medline', retmode='text')
     records = Medline.parse(h)
 
     # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
@@ -74,30 +75,5 @@ def get_pubmed_documents(terms=settings.ENTREZ_TERMS):
         h = Entrez.esearch(db='pubmed', retmax=settings.ENTREZ_MAX_COUNT, term=term)
         result = Entrez.read(h)
         ids = result['IdList']
-        h = Entrez.efetch(db='pubmed', id=ids, rettype='medline', retmode='text')
-        records = Medline.parse(h)
-
-        # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
-        for record in records:
-            if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
-                if Document.objects.pubmed_count(record.get('PMID')) is 0:
-                    doc = Document.objects.create(document_id=record.get('PMID'))
-                    doc.title = record.get('TI')
-                    doc.created = datetime.strptime(record.get('CRDT')[0], '%Y/%m/%d %H:%M')
-                    doc.source = 'pubmed'
-                    doc.save()
-
-                    sec = Section(kind='o')
-                    sec.document = doc
-                    sec.save()
-
-                    sec = Section(kind='t')
-                    sec.text = record.get('TI')
-                    sec.document = doc
-                    sec.save()
-
-                    sec = Section(kind='a')
-                    sec.text = record.get('AB')
-                    sec.document = doc
-                    sec.save()
+        get_pubmed_document(ids)
 
