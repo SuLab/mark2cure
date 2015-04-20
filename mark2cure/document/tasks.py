@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from mark2cure.document.models import Document, Section
+from mark2cure.document.models import Document, Pubtator, Section
 from mark2cure.common.formatter import pad_split
 
 from Bio import Entrez, Medline
@@ -10,18 +10,17 @@ import requests
 from datetime import datetime, timedelta
 import time
 
+
 @task()
-def get_pubtator_response(bioc_pk, data, payload, idx):
+def get_pubtator_response(pubtator, data, payload, idx):
     attempts = 5
-    pubtator = Pubtator.objects.get(pk=bioc_pk)
 
     while idx < attempts:
         idx += 1
         time.sleep(idx * 10)
-        results = requests.post(
-            'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator.session_id),
-            data=data, params=payload)
-        print api_ann +' : '+ results.content
+
+        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator.session_id)
+        results = requests.post(url, data=data, params=payload)
 
         if results.content != 'Not yet':
             idx = 100

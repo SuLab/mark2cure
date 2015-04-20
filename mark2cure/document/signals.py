@@ -8,28 +8,30 @@ from mark2cure.document.tasks import get_pubtator_response
 from datetime import datetime, timedelta
 import requests
 
-@receiver(post_save, sender=Pubtator)
-def provider_post_save(sender, instance, created, **kwargs):
+
+def fetchPubtator(sender, instance, created, **kwargs):
     '''
         When a new Pubtator model is created,
         start fetching it's content
     '''
     pubtator = instance
-    print 'post Pubtator save', pubtator.pk
 
     if created:
         # Make response to post job to pubtator
         payload = {'content-type': 'text/xml'}
         writer = pubtator.as_writer()
         data = str(writer)
-        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind),
+        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
         response = requests.post(url, data=data, params=payload)
         pubtator.session_id = response.content
         pubtator.save()
 
+        # (TODO) This is bad but pk passing wasn't working
         get_pubtator_response.apply_async(
-            args=[pubtator.pk, data, payload, 0],
+            args=[pubtator, data, payload, 0],
         )
+
+post_save.connect(fetchPubtator, sender=Pubtator)
 
 
 @receiver(post_save, sender=Document)
@@ -40,7 +42,8 @@ def provider_post_save(sender, instance, created, **kwargs):
     '''
     doc = instance
 
-    for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
-        if doc.available_sections().exists() and not Pubtator.objects.filter(document=doc, kind=api_ann).exists():
-            Pubtator.objects.get_or_create(document=doc, kind=api_ann)
-
+    if created:
+        for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
+            #if doc.available_sections().exists() and not Pubtator.objects.filter(document=doc, kind=api_ann).exists():
+            pub, pub_c = Pubtator.objects.get_or_create(document=doc, kind=api_ann)
+            pub.save(force_update=True)

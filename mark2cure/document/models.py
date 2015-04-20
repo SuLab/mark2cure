@@ -76,6 +76,9 @@ class Pubtator(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return 'pubtator'
+
     def as_writer(self):
         from mark2cure.common.formatter import bioc_writer
         writer = bioc_writer(None)
