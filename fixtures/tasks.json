@@ -43,5 +43,82 @@
     },
     "model": "common.task",
     "pk": 3
-}
+},
+
+
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:49Z",
+        "name": "Basic Training",
+        "completions": null,
+        "created": "2014-10-01T18:40:37Z",
+        "meta_url": "/training/basics/step/1/",
+        "provides_qualification": 4,
+        "points": 1000,
+        "requires_qualification": 0
+    },
+    "model": "common.task",
+    "pk": null
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training 1 – Learning a new concept: Diseases",
+        "completions": null,
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/1/step/1/",
+        "provides_qualification": 5,
+        "points": 4000,
+        "requires_qualification": 4
+    },
+    "model": "common.task",
+    "pk": null
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training 2 - Learning a new concept: Genes",
+        "completions": null,
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/2/step/1/",
+        "provides_qualification": 6,
+        "points": 4000,
+        "requires_qualification": 5
+    },
+    "model": "common.task",
+    "pk": null
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training 3 – Learning a new concept: Treatments",
+        "completions": null,
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/3/step/1/",
+        "provides_qualification": 7,
+        "points": 4000,
+        "requires_qualification": 6
+    },
+    "model": "common.task",
+    "pk": null
+},
+{
+    "fields": {
+        "kind": "t",
+        "updated": "2014-10-01T19:31:46Z",
+        "name": "Training 4 - Multi-Marking Mode",
+        "completions": null,
+        "created": "2014-10-01T18:41:16Z",
+        "meta_url": "/training/intro/4/step/1/",
+        "provides_qualification": 8,
+        "points": 4000,
+        "requires_qualification": 7
+    },
+    "model": "common.task",
+    "pk": null
+},
 ]
