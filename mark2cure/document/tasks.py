@@ -12,8 +12,9 @@ import time
 
 
 @task()
-def get_pubtator_response(pubtator, data, payload, idx):
+def get_pubtator_response(pk, data, payload, idx):
     attempts = 5
+    pubtator = Pubtator.objects.get(pk=pk)
 
     while idx < attempts:
         idx += 1
@@ -31,7 +32,7 @@ def get_pubtator_response(pubtator, data, payload, idx):
 
 
 @task()
-def get_pubmed_document(pubmed_ids):
+def get_pubmed_document(pubmed_ids, include_pubtator=True):
     Entrez.email = settings.ENTREZ_EMAIL
 
     if type(pubmed_ids) == list:
@@ -62,7 +63,9 @@ def get_pubmed_document(pubmed_ids):
                 sec.text = abstract
                 sec.save()
 
-                doc.save(force_update=True)
+                if include_pubtator:
+                    doc.init_pubtator()
+
 
 
 

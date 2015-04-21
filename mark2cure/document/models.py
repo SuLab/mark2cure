@@ -27,32 +27,44 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
 
-    def get_pubtator(self):
-        # Load up our various pubtator responses
-        #reader = self.
+    def init_pubtator(self):
+        if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
+            for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
+                Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
-        chem_reader = BioCReader(source=self.pubtator_chem)
-        chem_reader.read()
-        gene_reader = BioCReader(source=self.pubtator_gene)
-        gene_reader.read()
-        disease_reader = BioCReader(source=self.pubtator_chem)
-        disease_reader.read()
+    def get_pubtator(self):
+        self.init_pubtator()
+
+        reader = self.as_writer()
+
+        # Load up our various pubtator responses
+        pub_readers = []
+        for pubtator in Pubtator.objects.filter(document=self):
+            r = BioCReader(source=pubtator.content)
+            r.read()
+            pub_readers.append(r)
 
         for d_idx, document in enumerate(reader.collection.documents):
             for p_idx, passage in enumerate(document.passages):
-                print d_idx, p_idx
+                for p in pub_readers:
+                    for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
+                        reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
-                #passage.put_infon('section', 'unknown')
-                #passage.put_infon('id', str(idx))
-
-                #for idx, annotation in enumerate(passage.annotations):
-                #    annotation.put_infon('user', 'pubtator')
-                #    annotation.put_infon('user_name', 'pubtator')
-                    # Our int type
-                #    annotation.put_infon('type', '0')
-                    # annotation.postion.start =
 
         return reader
+
+    def as_writer(self):
+        from mark2cure.common.formatter import bioc_writer
+        writer = bioc_writer(None)
+        document = self.as_bioc()
+
+        passage_offset = 0
+        for section in self.available_sections():
+            passage = section.as_bioc(passage_offset)
+            passage_offset += len(passage.text)
+            document.add_passage(passage)
+        writer.collection.add_document(document)
+        return writer
 
     def as_bioc(self):
         document = BioCDocument()
@@ -78,19 +90,6 @@ class Pubtator(models.Model):
 
     def __unicode__(self):
         return 'pubtator'
-
-    def as_writer(self):
-        from mark2cure.common.formatter import bioc_writer
-        writer = bioc_writer(None)
-        document = self.document.as_bioc()
-
-        passage_offset = 0
-        for section in self.document.available_sections():
-            passage = section.as_bioc(passage_offset)
-            passage_offset += len(passage.text)
-            document.add_passage(passage)
-        writer.collection.add_document(document)
-        return writer
 
 
 class Section(models.Model):
