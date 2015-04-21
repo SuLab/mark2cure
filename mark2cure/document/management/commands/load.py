@@ -6,9 +6,11 @@ from django.conf import settings
 from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document, Section, View, Annotation
 from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
+from mark2cure.document.tasks import get_pubmed_document
 
 from brabeion import badges
 
+import requests
 import random
 import csv
 
@@ -206,21 +208,8 @@ class Command(BaseCommand):
             without performing any quest binning
         '''
         if options['documents']:
-            for dataset in datasets:
-                with open('assets/datasets/{dataset}_cleaned.txt'.format(dataset=dataset), 'r') as f:
-                    reader = csv.reader(f, delimiter='\t')
-                    for num, title, text in reader:
-                        print title
-                        doc, doc_c = Document.objects.get_or_create(document_id=num)
-                        doc.title = title
-                        doc.source = dataset
-                        doc.save()
-
-                        sec, sec_c = Section.objects.get_or_create(kind='t', document=doc)
-                        sec.text = title
-                        sec.save()
-
-                        sec, sec_c = Section.objects.get_or_create(kind='a', document=doc)
-                        sec.text = text
-                        sec.save()
+            res = requests.get('https://s3.amazonaws.com/uploads.hipchat.com/25885/154162/fVP7w1pKOOQCOJa/congen_dis_glyco_pmids.txt')
+            ids = res.content.split('\n')
+            for pmid in ids[:10]:
+                get_pubmed_document(pmid)
 
