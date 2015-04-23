@@ -215,6 +215,7 @@ class Command(BaseCommand):
             without performing any quest binning
         '''
         if options['documents']:
+            # https://s3.amazonaws.com/uploads.hipchat.com/25885/154162/RD9pzKYNggkhj6O/combined.txt
             res = requests.get('https://s3.amazonaws.com/uploads.hipchat.com/25885/154162/fVP7w1pKOOQCOJa/congen_dis_glyco_pmids.txt')
             ids = res.text.split('\n')
             for pmid in ids:
