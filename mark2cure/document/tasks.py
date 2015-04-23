@@ -27,7 +27,11 @@ def get_pubtator_response(pk, data, payload, idx):
             idx = 100
 
     if results.content and idx == 100:
-        pubtator.content = results.content
+        # http://www.ncbi.nlm.nih.gov/pubmed/25890113
+        # http://www.ncbi.nlm.nih.gov/pubmed/25815806
+        # http://www.ncbi.nlm.nih.gov/pubmed/25815809
+
+        pubtator.content = results.text
         pubtator.save()
 
 

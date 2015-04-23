@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from mark2cure.userprofile.models import UserProfile
-from mark2cure.document.models import Document, Section, View, Annotation
+from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
+
 from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
-from mark2cure.document.tasks import get_pubmed_document
+from mark2cure.document.tasks import get_pubmed_document, get_pubtator_response
 
 from brabeion import badges
 
@@ -24,6 +25,12 @@ class Command(BaseCommand):
             dest='documents',
             default=False,
             help='Load the Documents into Mark2Cure and require 0 associations'),
+
+        make_option('--pubtator',
+            action='store_true',
+            dest='pubtator',
+            default=False,
+            help='Fetch any lingering pubtator content'),
 
         make_option('--assign',
             action='store_true',
@@ -209,7 +216,31 @@ class Command(BaseCommand):
         '''
         if options['documents']:
             res = requests.get('https://s3.amazonaws.com/uploads.hipchat.com/25885/154162/fVP7w1pKOOQCOJa/congen_dis_glyco_pmids.txt')
-            ids = res.content.split('\n')
-            for pmid in ids[:10]:
+            ids = res.text.split('\n')
+            for pmid in ids:
                 get_pubmed_document(pmid)
+                print pmid
+
+        '''
+            Check for any unfetched Pubtator objects
+        '''
+        if options['pubtator']:
+            '''
+            from django.db.models.signals import post_save
+            for pubtator in Pubtator.objects.filter(content__isnull=True).all():
+                post_save.send(Pubtator, instance=pubtator, created=True)
+            '''
+
+            '''
+            # Gracefully check for updates to session id
+            for pubtator in Pubtator.objects.filter(content__isnull=True).all():
+                # Make response to post job to pubtator
+                payload = {'content-type': 'text/xml'}
+                writer = pubtator.document.as_writer()
+                data = str(writer)
+
+                get_pubtator_response.apply_async(
+                    args=[pubtator.pk, data, payload, 0],
+                )
+            '''
 

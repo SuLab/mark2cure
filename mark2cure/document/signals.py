@@ -31,4 +31,3 @@ def pubtator_post_save(sender, instance, created, **kwargs):
             args=[pubtator.pk, data, payload, 0],
         )
 
-

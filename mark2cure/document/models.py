@@ -28,13 +28,14 @@ class Document(models.Model):
         return self.section_set.exclude(kind='o').count()
 
     def init_pubtator(self):
+        # (TODO) Remove any documents that don't have perfect pubtator
         if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
     def get_pubtator(self):
+        approved_types = ['Disease', 'Gene', 'Chemical']
         self.init_pubtator()
-
         reader = self.as_writer()
 
         # Load up our various pubtator responses
@@ -46,9 +47,17 @@ class Document(models.Model):
 
         for d_idx, document in enumerate(reader.collection.documents):
             for p_idx, passage in enumerate(document.passages):
+                # For each passage in each document in the collection
+                # add the appropriate annotation
                 for p in pub_readers:
                     for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
-                        reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
+                        ann_type = annotation.infons['type']
+
+                        if ann_type in approved_types:
+                            annotation.clear_infons()
+                            annotation.put_infon('type', str( approved_types.index(ann_type) ))
+                            annotation.put_infon('user', 'pubtator')
+                            reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
 
         return reader

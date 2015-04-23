@@ -543,5 +543,5 @@ YPet = new Backbone.Marionette.Application();
 YPet.AnnotationTypes = new AnnotationTypeList([
   {name: 'Disease', color: '#00ccff'},
   {name: 'Gene', color: '#22A301'},
-  {name: 'Protein', color: 'yellow'}
+  {name: 'Drug', color: 'yellow'}
 ]);
