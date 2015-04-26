@@ -27,8 +27,11 @@ block answers
   script.
       $('#Training4Modal').modal('show');
       var help = [
-        {text: '110140', msg: 'Be sure to include the entire name of the experimental drug'},
-        {text: 'pain', msg: 'Mark only treatment concepts in this tutorial. Do NOT mark disease or gene concepts'},
+        {text: 'Ehlers–Danlos syndrome ( EDS', msg: 'Whenever possible, don't mark disease abbreviations in the same span as the disease.'},
+        {text: 'Ehlers–Danlos', msg: 'Almost, mark the entire name of the disease.'},
+        {text: 'syndrome', msg: 'Almost, mark the entire name of the disease.'},
+        {text: 'disorder', msg: 'Almost, mark the entire name of the disease class.'},
       ];
       var answers = [ {text: "Ehlers–Danlos syndrome", start: 0},
-                      {text: 'EDS', start: 25}];
+                      {text: 'EDS', start: 25},
+                      {text: 'connective tissue disorder', start: 36}];
