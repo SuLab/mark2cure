@@ -59,8 +59,7 @@ script.
     if(universal_help) { return universal_help.msg; }
 
     var specific_help = _.findWhere(help, {text: text});
-    if(specific_help) { console.log('found help', text, help); return specific_help.msg; }
-
+    if(specific_help) { return specific_help.msg; }
     return '';
   };
 
@@ -113,7 +112,13 @@ script.
         $(this).html(temp(model_json));
         $(this).fadeIn('fast');
       });
-      model.destroy();
+
+
+      setTimeout(function() {
+        var first_word = model.get('words').first();
+        first_word.trigger('unclick');
+      }, 50);
+
     } else {
       incorrect_counter = 0;
       $('#quest-alerts').fadeOut('fast');
