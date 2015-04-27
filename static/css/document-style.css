@@ -54,17 +54,18 @@ p.paragraph .neighbor_u {
 
 p.paragraph span.user_annotated,
 span.user_annotated {
-  background-color: #0cf;
+  background-color: #d1f3ff;
+  color: #333;
 }
 
 p.paragraph span.user_annotated_green,
 span.user_annotated_green {
-  background-color: green;
+  background-color: #d1ffdd;
 }
 
 p.paragraph span.user_annotated_pink,
 span.user_annotated_pink {
-  background-color: pink;
+  background-color: #ffd1dc;
 }
 
 p.paragraph span.focused {

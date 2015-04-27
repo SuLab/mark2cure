@@ -22,7 +22,7 @@ block post-footer
     script.
       YPet.addInitializer(function(options) {
         var p = new Paragraph({'text': $('#basics').text().trim()});
-        YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#00ccff'}]);
+        YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
         YPet.addRegions({'basics': '#basics'});
         YPet['basics'].show(new WordCollectionView({collection: p.get('words')}))
       });

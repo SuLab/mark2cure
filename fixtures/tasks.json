@@ -44,8 +44,6 @@
     "model": "common.task",
     "pk": 3
 },
-
-
 {
     "fields": {
         "kind": "t",
@@ -54,7 +52,7 @@
         "completions": null,
         "created": "2014-10-01T18:40:37Z",
         "meta_url": "/training/basics/step/1/",
-        "provides_qualification": 4,
+        "provides_qualification": 0,
         "points": 1000,
         "requires_qualification": 0
     },
@@ -69,9 +67,9 @@
         "completions": null,
         "created": "2014-10-01T18:41:16Z",
         "meta_url": "/training/intro/1/step/1/",
-        "provides_qualification": 5,
+        "provides_qualification": 4,
         "points": 4000,
-        "requires_qualification": 4
+        "requires_qualification": 0
     },
     "model": "common.task",
     "pk": null
@@ -84,9 +82,9 @@
         "completions": null,
         "created": "2014-10-01T18:41:16Z",
         "meta_url": "/training/intro/2/step/1/",
-        "provides_qualification": 6,
+        "provides_qualification": 5,
         "points": 4000,
-        "requires_qualification": 5
+        "requires_qualification": 4
     },
     "model": "common.task",
     "pk": null
@@ -99,9 +97,9 @@
         "completions": null,
         "created": "2014-10-01T18:41:16Z",
         "meta_url": "/training/intro/3/step/1/",
-        "provides_qualification": 7,
+        "provides_qualification": 6,
         "points": 4000,
-        "requires_qualification": 6
+        "requires_qualification": 5
     },
     "model": "common.task",
     "pk": null
@@ -114,11 +112,11 @@
         "completions": null,
         "created": "2014-10-01T18:41:16Z",
         "meta_url": "/training/intro/4/step/1/",
-        "provides_qualification": 8,
+        "provides_qualification": 7,
         "points": 4000,
-        "requires_qualification": 7
+        "requires_qualification": 6
     },
     "model": "common.task",
     "pk": null
-},
+}
 ]

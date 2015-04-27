@@ -16,7 +16,7 @@ block content
           h4 To skip the tutorial in the future and to save your score and any points you accumulate, please register for an account.
 
       .row.foot-space-xl
-        .col-md-6.col-md-offset-3
+        .col-md-6
           .row
             .col-sm-12
               h3.text-center Register for an account
@@ -45,6 +45,17 @@ block content
 
               fieldset
                 .form-group
-                  .col-xs-4.col-xs-offset-4
+                  .col-xs-8.col-xs-offset-4
                     button(type="submit").btn.btn-default Create Account
+
+
+
+
+        .col-md-6
+          .row
+            .col-sm-12
+              h3.text-center Already have an account?
+          .row.head-space
+            .col-sm-4.col-sm-offset-4
+              a(href='{% url "registration:login" %}').btn.btn-block.btn-default Login
 

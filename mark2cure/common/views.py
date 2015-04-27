@@ -55,8 +55,8 @@ def why_mark2cure(request):
 
 @login_required
 def dashboard(request):
-    if request.user.profile.highest_level("skill").level <= 2:
-        return redirect('training:introduction', step_num=1)
+    if not request.user.profile.highest_level("skill").level == 7:
+        return redirect('training:route')
 
     profile = request.user.profile
     tasks = Task.objects.filter(kind=Task.QUEST).all()
@@ -79,6 +79,7 @@ def dashboard(request):
     community_completed = filter(lambda task: task['progress']['completed'] is True, serializer.data)
     community_completed_count = len(community_completed)
     query_set_count = len(queryset)
+    '''
     msg_footer = '<p class="text-center">Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.</p>'
 
     if user_completed_count == len(serializer.data):
@@ -99,8 +100,11 @@ def dashboard(request):
 
     msg = '<p class="lead text-center">The first Mark2Cure annotation campaign has just finished! Congratulations, nearly 9,000 annotation tasks were completed in 3 weeks thanks to our amazing community of Mark2Curators! While we analyze the collected data and prepare for the next annotation campaign, please do your part by helping us to find other Mark2Curators. Thank you! - Team Mark2Cure'
     messages.info(request, msg, extra_tags='safe alert-success')
-
-    ctx = {'tasks': tasks,
+    '''
+    groups = []
+    ctx = {
+            'groups': groups,
+            'tasks': tasks,
            'welcome': welcome,
            'profile': profile}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)

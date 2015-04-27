@@ -12,7 +12,7 @@ block progress
   div(role='progressbar', aria-valuenow='90', aria-valuemin='0', aria-valuemax='100', style='width: 90%;').progress-bar.progress-bar-striped.active
 
 block next-link
-  a(href='{% url "training:one" step_num=1 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "registration:user_creation" %}', id='next', disabled).btn.btn-default.pull-right Next
 
 block answers
   script.

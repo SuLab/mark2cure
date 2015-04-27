@@ -28,9 +28,9 @@ class SkillBadge(Badge):
         user = state["user"]
         level = state.pop("level", None)
         current_highest = user.profile.highest_level(self.slug).level
-        if level and level == current_highest + 1:
-            return BadgeAwarded(level=level + 1)
 
+        if (level and level == current_highest + 1) or state.get('force', None):
+            return BadgeAwarded(level=level + 1)
 
 badges.register(SkillBadge)
 

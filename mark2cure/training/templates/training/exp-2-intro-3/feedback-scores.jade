@@ -14,7 +14,7 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-center New skill acquired: Disease Marking
+        h2.text-center New skill acquired: Treatment Marking
       .col-xs-10.col-xs-offset-1
         h2.text-center Points gained: <span id='score'>0</span>
 
@@ -26,10 +26,6 @@ block content
           li <strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action
           li <strong>Non-drug Treatment</strong> – Non-drug-based means of mitigating a disease or symptoms of a disease
 
-
-
-
-
     .row.head-space-xl
       .col-xs-4.col-xs-offset-4
         a(href='{% url "training:four" step_num=1 %}', id='next').btn.btn-default.btn-block Next
@@ -38,7 +34,5 @@ block content
 block post-footer
   script(src='#{STATIC_URL}js/quest-app.js')
   script.
-    od.update(1000);
-
-
+    od.update(4000);
 

@@ -24,6 +24,9 @@ import os
 
 
 def user_creation(request):
+    if request.user.is_authenticated():
+        return redirect('common:dashboard')
+
     user_create_form = forms.UserCreateForm(data=request.POST or None)
     if request.POST and user_create_form.is_valid():
         user = user_create_form.save()

@@ -20,5 +20,7 @@ urlpatterns = patterns('',
 
     url(r'^intro/$',
         views.read, name='index'),
+
+    url(r'', views.route, name='route'),
 )
 
