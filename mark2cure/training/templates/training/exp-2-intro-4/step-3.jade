@@ -15,10 +15,12 @@ block highlightkey
       h2 Key
     .col-xs-3.head-space
       ul.list-unstyled
-        li(style='background-color: #00ccff;')
-          p.text-center Disease Concept
-        li(style='background-color: #22A301;')
-          p.text-center Genes Concept
+        li(style='background-color: #d1f3ff;')
+          a(href='{% url "instructions:disease-marking" %}', target='_blank')
+            p.text-center Disease Concept
+        li(style='background-color: #d1ffdd;')
+          a(href='{% url "instructions:gene-marking" %}', target='_blank')
+            p.text-center Genes Concept
 
 block ypet
   include training/includes/intro-multi-js

@@ -45,11 +45,14 @@ block content
         .col-xs-3.head-space
           ul.list-unstyled
             li(style='background-color: #d1f3ff;')
-              p.text-center Disease Concept
+              a(href='{% url "instructions:disease-marking" %}', target='_blank')
+                p.text-center Disease Concept
             li(style='background-color: #d1ffdd;')
-              p.text-center Genes Concept
+              a(href='{% url "instructions:gene-marking" %}', target='_blank')
+                p.text-center Genes Concept
             li(style='background-color: #ffd1dc;')
-              p.text-center Treatments Concept
+              a(href='{% url "instructions:treatment-marking" %}', target='_blank')
+                p.text-center Treatments Concept
 
     .row.head-space-xl
       .col-md-8.col-md-offset-2
