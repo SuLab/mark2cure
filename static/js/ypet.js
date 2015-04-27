@@ -130,11 +130,6 @@ AnnotationList = Backbone.Collection.extend({
     });
     annotation.set('words', selected);
 
-    /*
-    console.log('drawAnnotations', words_len);
-    console.log(annotation);
-    console.log('------', annotation.get('text') ,'--------');*/
-
     /* Draw all the basic background or underlines */
     annotation.get('words').each(function(word, word_index) {
       if(annotation.get('opponent')) {

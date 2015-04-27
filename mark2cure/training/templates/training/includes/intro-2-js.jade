@@ -262,7 +262,6 @@ script.
 
   YPet['quest-2'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
-    console.log(model_json);
     /*
     * Check if the array doesn't contain the selected word.
     * 1) Alert if (contains/overlap/miss)error 2) Unselect

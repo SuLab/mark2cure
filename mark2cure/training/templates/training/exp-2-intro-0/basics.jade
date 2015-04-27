@@ -40,11 +40,9 @@ block post-footer
             var $biomedical = $('p.paragraph span:nth(0)');
 
             opts['pos'] = $biomedical.offset();
-            console.log(opts.pos);
             opts.pos.top = opts.pos.top - $('.popover').height() - 90;
             opts.pos.left = opts.pos.left - $('.popover').width() - 90;
             opts['placement'] = 'top';
-            console.log(opts.pos);
             break;
 
           case 1:
