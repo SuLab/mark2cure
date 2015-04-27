@@ -21,7 +21,7 @@ block next-link
 block answers
   script.
       var help = [
-        {text: 'serotonin', msg: 'Nice try, but serotonin is not a drug--it\'s a neurotransmitter. Try again!'},
+        {text: 'serotonin', msg: 'Nice try, but serotonin is not a drug – it\'s a neurotransmitter. Try again!'},
         {text: 'selective serotonin', msg: 'Include the entire name of the drug class'},
         {text: 'selective serotonin reuptake', msg: 'Include the entire name of the drug class'},
         {text: 'serotonin reuptake inhibitor', msg: 'Include the entire name of the drug class'},
@@ -29,4 +29,7 @@ block answers
         {text: 'selective serotonin reuptake inhibitors ( SSRIs )', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
         {text: 'selective serotonin reuptake inhibitors ( SSRIs', msg: 'Whenever possible, mark abbreviations separately from the terms they represent.'},
       ];
-      var answers = [{text: "Fluoxetine", start: 0}, {text: "selective serotonin reuptake inhibitors", start: 48}, {text: "SSRIs", start: 90}];
+      var answers = [
+        {text: "Fluoxetine", start: 0},
+        {text: "selective serotonin reuptake inhibitors", start: 48},
+        {text: "SSRIs", start: 90}];
