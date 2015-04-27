@@ -15,11 +15,11 @@ block content
           li
             p Mark every instance of a Gene or Gene Product (like proteins or MicroRNAs)
             p --This includes Gene or Gene Product names and symbols
-            p Eg- <span class='user_annotated_green'>Caveolin1</span class='user_annotated_green'> or <span class='user_annotated_green'>CAV1</span class='user_annotated_green'>
+            p Eg- <span class='user_annotated_green'>Caveolin1</span class='user_annotated_green'> gene or <span class='user_annotated_green'>CAV1</span class='user_annotated_green'> protein
 
           li
             p Use the minimum span needed to encompass multiple terms of a Gene or Gene Product.
-            p Eg- <span class='user_annotated_green'>Cluster of Differentiation IV</span class='user_annotated_green'> or <span class='user_annotated_green'>CD4</span class='user_annotated_green'> , NOT just <span class='user_annotated_green'>Cluster</span class='user_annotated_green'> or <span class='user_annotated_green'>Differentiation IV</span class='user_annotated_green'>
+            p Eg- <span class='user_annotated_green'>Cluster of Differentiation IV</span class='user_annotated_green'> gene or <span class='user_annotated_green'>CD4</span class='user_annotated_green'> protein , NOT just <span class='user_annotated_green'>Cluster</span class='user_annotated_green'> or <span class='user_annotated_green'>Differentiation IV</span class='user_annotated_green'>
 
           li
             p Mark each instance of a Gene or Gene Product separately or in a separate span (if an instance has multiple words
@@ -28,6 +28,10 @@ block content
           li
             p Mark each instance of an abbreviation of a Gene or Gene Product
             p Eg- <span class='user_annotated_green'>AKT</span class='user_annotated_green'> levels may affect <span class='user_annotated_green'>PIM1</span class='user_annotated_green'> expression in
+
+          li
+            p Don't highlight generic terms like 'gene' or 'protein' unless they are part of a gene or protein name
+            p Eg- <span class='user_annotated_green'>Heat shock protein 90</span class='user_annotated_green'> is correct, but NOT <span class='user_annotated_green'>CAV1 protein</span class='user_annotated_green'>  
 
           li
             p If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>http://www.genenames.org/</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>http://www.ncbi.nlm.nih.gov/gene/</a>
