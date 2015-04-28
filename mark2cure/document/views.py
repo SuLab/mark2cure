@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.contrib.auth.models import User
 
 from django.template.response import TemplateResponse
@@ -53,21 +53,6 @@ def read_pubmed_bioc(request, pubmed_id, format_type):
 
 '''
   Views for completing the Concept Recognition task
-
-@login_required
-def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
-    # If they're attempting to view or work on the document
-    task = get_object_or_404(Task, pk=task_id)
-    doc = get_object_or_404(Document, pk=doc_id)
-
-    sections = doc.available_sections()
-
-    ctx = { 'task': task,
-            'doc': doc,
-            'sections': sections,
-            'user_profile': request.user.profile,
-            'task_type': 'concept-recognition'}
-    return TemplateResponse(request, 'document/concept-recognition.jade', ctx)
 '''
 
 
@@ -85,15 +70,22 @@ def identify_annotations_submit(request, task_id, doc_id, section_id):
     user_quest_rel_views = user_quest_rel.views
     view = user_quest_rel_views.filter(section=section, completed=False).first()
 
+    print 'Task:', task.pk
+    print 'Section:', section.pk
+    print 'UQR:', user_quest_rel.pk
+    print 'UQR views:', user_quest_rel_views
+    print 'View:', view
+
     if view:
         form = AnnotationForm(data=request.POST or None)
+        print form.is_valid(), form.errors
         if form.is_valid():
             ann = form.save(commit=False)
             ann.view = view
             ann.save()
             return HttpResponse(200)
 
-    return HttpResponse(500)
+    return HttpResponseServerError()
 
 
 @login_required
