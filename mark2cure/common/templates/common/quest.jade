@@ -38,6 +38,19 @@ block content
 
   .container.head-space
     .row
+      .col-xs-3.head-space
+        ul.list-unstyled
+          li(style='background-color: #d1f3ff;')
+            a(href='{% url "instructions:disease-marking" %}', target='_blank')
+              p.text-center Disease Concept
+          li(style='background-color: #d1ffdd;')
+            a(href='{% url "instructions:gene-marking" %}', target='_blank')
+              p.text-center Genes Concept
+          li(style='background-color: #ffd1dc;')
+            a(href='{% url "instructions:treatment-marking" %}', target='_blank')
+              p.text-center Treatments Concept
+
+    .row
       .col-xs-3.col-xs-offset-1
         ul.annotation-type-list.list-group
       div(style="padding-top:2px;").col-xs-4.col-xs-offset-1
