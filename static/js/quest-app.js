@@ -34,10 +34,10 @@ $('#quest-submit').on('click', function(evt) {
    * 2. Go to next Doc
    * 3. Complete / Submit Quest
    */
-  var $document = $("#insert .container.document:visible");
-  var document_id = $document.data('doc');
-  var $document_form = $document.find('form');
-  var sections = $document.find('.game div').map(function(k,v) { return +$(v).attr('id'); });
+  var $el_doc = $('.container.document:visible');
+  var doc_pk = $el_doc.data('doc_pk');
+  var $el_doc_form = $el_doc.find('form');
+  var sections = $el_doc.find('.paragraphs .paragraph-box').map(function(k,v) { return +$(v).attr('id'); });
 
   $(this).attr('disabled', 'disabled');
   /* Submit the annotations to the server, then tell the server
@@ -48,12 +48,17 @@ $('#quest-submit').on('click', function(evt) {
   evt.preventDefault();
   window.scrollTo(0,0);
 
-  if($document.find('.results').length) {
+  if($el_doc.find('.results').length) {
+    /* This submits the document as complete after it
+     * has been reviewed */
+
     var doc_ids = [];
     $('.doc-item-col').each(function() { doc_ids.push($(this).data('doc')); });
 
-    if( doc_ids.indexOf(document_id) == doc_ids.length-1) {
-      /* Submit the Quest */
+    if( doc_ids.indexOf(doc_pk) == doc_ids.length-1) {
+      /*
+       * Submit the Quest
+       */
       var form = $('#quest-complete');
       var data = {},
         input;
@@ -71,31 +76,42 @@ $('#quest-submit').on('click', function(evt) {
         cache: false,
         async: false,
         success: function(data) {
-          $document.html(data);
+          $el_doc.html(data);
           $('#quest-submit').hide();
         }
       });
 
     } else {
-      /* Show the next Document */
-      var next_id = doc_ids[ doc_ids.indexOf(document_id)+1 ];
+      /*
+       * Show the next Document
+       */
+      var next_id = doc_ids[ doc_ids.indexOf(doc_pk)+1 ];
       activate_tabs(next_id);
     };
 
-    /* Currently looking at results */
+    /*
+     * Convert the button back for Annotation Submission
+     */
     $(this).text('Submit');
     $(this).attr('disabled', false);
   } else {
+    /*
+     * AJAX submit all of the current Annotaitons
+     */
+
     var counter = 0,
         ann_counter = 0;
 
     /* Iterate over each of the paragraphs or annotatable sections on the page */
-    _.each(sections, function(section_id) {
-      var annotations = YPet[section_id].currentView.collection.parentDocument.get('annotations').toJSON(),
-          url = '/document/'+ task_id +'/'+ document_id +'/section/'+ section_id +'/annotation/create/';
+    _.each(sections, function(section_id, idx) {
+
+      var annotations = YPet[idx].currentView.collection.parentDocument.get('annotations').toJSON(),
+          url = '/document/'+ task_id +'/'+ doc_pk +'/section/'+ section_id +'/annotation/create/';
       ann_counter += annotations.length;
 
-      var csrf = $document.find('input[name="csrfmiddlewaretoken"]').val();
+      var csrf = $el_doc.find('input[name="csrfmiddlewaretoken"]').val();
+
+      console.log('Annotations:', annotations);
 
       /* Iterate over each of the annotations within that section */
       _.each(annotations, function(annotation) {
@@ -112,7 +128,7 @@ $('#quest-submit').on('click', function(evt) {
 
     /* If they all got sent to the server, let's move on */
     if(counter === ann_counter) {
-      var form = $document_form,
+      var form = $el_doc_form,
           data = {},
           input;
 
@@ -130,8 +146,8 @@ $('#quest-submit').on('click', function(evt) {
         cache: false,
         async: false,
         success: function(data) {
-          $document.html(data);
-          $pag_tab = $('.pagination li[data-doc='+document_id+']');
+          $el_doc.html(data);
+          $pag_tab = $('.pagination li[data-doc_pk='+doc_pk+']');
           $pag_tab.addClass('disabled');
           $pag_tab.next().addClass('active').trigger('click');
           update_score();

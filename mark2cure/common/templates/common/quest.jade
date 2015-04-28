@@ -11,7 +11,11 @@ block content
   .container-fluid
     div(style="background: #f5f5f5;").row
       .col-xs-6.col-xs-offset-1
-        // List of document Icons
+
+        // Document header Information
+        // 1) List of document Icons
+        // 2) Ongoing score (live)
+        // 3) Current Level (not live)
         .row.quest-guide
           - for doc in completed_docs
             div.doc-item-col.col-xs-2.col-sm-1.text-center
@@ -29,6 +33,7 @@ block content
           div(id="doc_{{doc.pk}}", data-doc_pk="{{doc.pk}}", data-pmid="{{doc.document_id}}", style="display:none;").container.document
             .paragraphs
 
+            // Hiiden form in place to submit the document annotations
             div(style="display:none;")
               form(method="post", action="/document/{{task.pk}}/{{doc.pk}}/submit/")
                 - csrf_token
@@ -38,7 +43,7 @@ block content
 
   .container.head-space
     .row
-      .col-xs-3.head-space
+      .col-xs-3
         ul.list-unstyled
           li(style='background-color: #d1f3ff;')
             a(href='{% url "instructions:disease-marking" %}', target='_blank')
@@ -50,12 +55,14 @@ block content
             a(href='{% url "instructions:treatment-marking" %}', target='_blank')
               p.text-center Treatments Concept
 
-    .row
-      .col-xs-3.col-xs-offset-1
-        ul.annotation-type-list.list-group
+      // Init all submission events
+      // 1) Submit the document
+      // 2) Go to next document (after review)
+      // 3) Submit the Quest as complete
       div(style="padding-top:2px;").col-xs-4.col-xs-offset-1
         div(id="quest-submit").button.btn.btn-default.btn-block.done Submit
 
+  // Hidden form to submit the quest
   div(style="display: none;").container
     form(id="quest-complete", method="post", action="/quest/{{task.pk}}/")
       - csrf_token
@@ -66,20 +73,22 @@ block content
 block post-footer
   script(src='#{STATIC_URL}js/quest-app.js')
   script.
+    var task_id = "{{ task.pk }}";
+    var self_data;
+
     $('.document').each(function(iter_idx) {
       var $el = $(this),
           doc_pk = $(this).data('doc_pk'),
           pmid = $(this).data('pmid'),
           $paragraphs = $('.paragraphs', $el);
 
-      var self_data;
       YPet.addInitializer(function(options) {
       $.getJSON('/document/'+ pmid +'.json', function( data ) {
         self_data = data;
         var passages = data.collection.document.passage;
         var regions = {};
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box head-space"><p class="paragraph"></p></div></div>';
           $paragraphs.append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });
