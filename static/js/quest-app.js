@@ -4,7 +4,7 @@ var activate_tabs = function(doc_id) {
   $tab_el.addClass('active');
   $tab_el.prevAll().addClass('muted').removeClass('active');
 
-  $('#insert .container.document').hide();
+  $('.container.document').hide();
   $('#doc_'+doc_id).fadeIn();
 };
 

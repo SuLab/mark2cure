@@ -60,10 +60,10 @@ class Document(models.Model):
 
         return True
 
-    def get_pubtator(self):
+    def get_pubtator(self, request=None):
         approved_types = ['Disease', 'Gene', 'Chemical']
         self.init_pubtator()
-        reader = self.as_writer()
+        reader = self.as_writer(request)
 
         # Load up our various pubtator responses
         pub_readers = []
@@ -88,9 +88,9 @@ class Document(models.Model):
 
         return reader
 
-    def as_writer(self):
+    def as_writer(self, request):
         from mark2cure.common.formatter import bioc_writer
-        writer = bioc_writer(None)
+        writer = bioc_writer(request)
         document = self.as_bioc()
 
         passage_offset = 0

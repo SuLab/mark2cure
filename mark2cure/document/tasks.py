@@ -47,25 +47,27 @@ def get_pubmed_document(pubmed_ids, include_pubtator=True):
     # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
     for record in records:
         if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
-            if Document.objects.pubmed_count(record.get('PMID')) is 0:
-                title = ' '.join( pad_split(record.get('TI')) )
-                abstract = ' '.join( pad_split(record.get('AB')) )
+            #if Document.objects.pubmed_count(record.get('PMID')) is 0:
+            title = ' '.join( pad_split(record.get('TI')) )
+            abstract = ' '.join( pad_split(record.get('AB')) )
 
-                doc, doc_c = Document.objects.get_or_create(document_id=record.get('PMID'))
-                doc.title = title
-                doc.source = 'pubmed'
-                doc.save()
+            print title
 
-                sec, sec_c = Section.objects.get_or_create(kind='t', document=doc)
-                sec.text = title
-                sec.save()
+            doc, doc_c = Document.objects.get_or_create(document_id=record.get('PMID'))
+            doc.title = title
+            doc.source = 'pubmed'
+            doc.save()
 
-                sec, sec_c = Section.objects.get_or_create(kind='a', document=doc)
-                sec.text = abstract
-                sec.save()
+            sec, sec_c = Section.objects.get_or_create(kind='t', document=doc)
+            sec.text = title
+            sec.save()
 
-                if include_pubtator:
-                    doc.init_pubtator()
+            sec, sec_c = Section.objects.get_or_create(kind='a', document=doc)
+            sec.text = abstract
+            sec.save()
+
+            if include_pubtator:
+                doc.init_pubtator()
 
 
 

@@ -42,14 +42,7 @@ def read_pubmed_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)
-    document = doc.as_bioc()
-
-    passage_offset = 0
-    for section in doc.available_sections():
-        passage = section.as_bioc(passage_offset)
-        passage_offset += len(passage.text)
-        document.add_passage(passage)
-    writer.collection.add_document(document)
+    writer = doc.get_pubtator()
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -60,8 +53,6 @@ def read_pubmed_bioc(request, pubmed_id, format_type):
 
 '''
   Views for completing the Concept Recognition task
-'''
-
 
 @login_required
 def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
@@ -77,6 +68,7 @@ def identify_annotations(request, task_id, doc_id, treat_as_gm=False):
             'user_profile': request.user.profile,
             'task_type': 'concept-recognition'}
     return TemplateResponse(request, 'document/concept-recognition.jade', ctx)
+'''
 
 
 @login_required
