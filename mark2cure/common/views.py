@@ -71,7 +71,8 @@ def dashboard(request):
             welcome = True
 
     # Figure out state of the view for the user
-    queryset = Task.objects.filter(kind=Task.QUEST).all()
+    group = Group.objects.first()
+    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
 
     user_completed = filter(lambda task: task['user']['completed'] is True, serializer.data)
@@ -79,28 +80,23 @@ def dashboard(request):
     community_completed = filter(lambda task: task['progress']['completed'] is True, serializer.data)
     community_completed_count = len(community_completed)
     query_set_count = len(queryset)
-    '''
+
     msg_footer = '<p class="text-center">Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.</p>'
 
     if user_completed_count == len(serializer.data):
         msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-success')
 
     elif user_completed_count >= 1 and community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you very much for your participation in the first experiment. The Mark2Cure community has completed all the quests available.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-info')
 
     elif community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
     else:
         msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
-        #messages.info(request, msg, extra_tags='safe alert-success')
 
-    msg = '<p class="lead text-center">The first Mark2Cure annotation campaign has just finished! Congratulations, nearly 9,000 annotation tasks were completed in 3 weeks thanks to our amazing community of Mark2Curators! While we analyze the collected data and prepare for the next annotation campaign, please do your part by helping us to find other Mark2Curators. Thank you! - Team Mark2Cure'
     messages.info(request, msg, extra_tags='safe alert-success')
-    '''
+
     groups = []
     ctx = {
             'groups': groups,
