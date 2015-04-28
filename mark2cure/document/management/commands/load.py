@@ -6,7 +6,7 @@ from django.conf import settings
 from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
 
-from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
+from mark2cure.common.models import Task, Group, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
 from mark2cure.document.tasks import get_pubmed_document, get_pubtator_response
 
 from brabeion import badges
@@ -128,18 +128,18 @@ class Command(BaseCommand):
                                             kind='e')
 
         '''
-            Randomly assign the loaded documents into our bins
-            ensure the 4 training always go into Quest 1
+            1) Create a Group to Organize Tasks
+            2) Create tasks w/ 5 documents each that all have valid pubtator
+                content from 622 set
+            3) Organize these tasks into Group to know wh
         '''
         if options['assign']:
-            gm_documents = Document.objects.filter(source='NCBI_corpus_training', document_id__in=gm_documents_ids).all()
-            task_counter = 1
-
+            '''
             # GM hidden
             task, task_created = Task.objects.get_or_create(
                 name=str(task_counter),
                 completions=None,
-                requires_qualification=3,
+                requires_qualification=,
                 provides_qualification=4,
                 points=5000,
                 experiment=settings.EXPERIMENT)
@@ -150,44 +150,46 @@ class Command(BaseCommand):
 
             for gold_document in gm_documents:
                 DocumentQuestRelationship.objects.create(task=task, document=gold_document)
+            '''
+
+            documents = Document.objects.filter(source='pubmed')
+            task_counter = Task.objects.filter(kind='q').count()
 
             # Insert the other Documents
-            document_set = list(
-                Document.objects.filter(document_id__in=doc_set)
-                                .exclude(document_id__in=gm_documents_ids)
-                                .values_list('id', flat=True)
-            )
-
-            print "Length of appended experimental document set:", len(document_set)
+            document_set = list(documents.values_list('id', flat=True))
 
             smallest_bin = 5
             largest_bin = 5
             completions = 15
             random.shuffle(document_set)
 
+            group, group_v = Group.objects.get_or_create(name='622', stub='622', enabled=True)
+
             while len(document_set) > smallest_bin:
                 task_counter += 1
                 task, task_created = Task.objects.get_or_create(
                     name=str(task_counter),
                     completions=completions,
-                    requires_qualification=4,
-                    provides_qualification=4,
+                    requires_qualification=7,
+                    provides_qualification=7,
                     points=5000,
-                    experiment=settings.EXPERIMENT)
+                    group=group)
 
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
                 sel = document_set[0:quest_size]
 
-                for i in sel:
-                    document_set.remove(i)
+                task.clear_documents()
+                # (TODO) If not validate, add aonther so bin size is equal
+                for idx in range(quest_size):
 
-                for doc in task.documents.all():
-                    dqr = DocumentQuestRelationship.objects.get(task=task, document=doc),
-                    dqr.delete()
+                    # Shuffle & Remove the document_pk for use and from being selected again
+                    random.shuffle(document_set)
+                    doc_pk = document_set[0]
+                    document_set.remove(doc_pk)
 
-                for doc_idx in sel:
-                    document = Document.objects.get(pk=doc_idx)
-                    DocumentQuestRelationship.objects.create(task=task, document=document)
+                    document = Document.objects.get(pk=doc_pk)
+                    if document.valid_pubtator():
+                        DocumentQuestRelationship.objects.create(task=task, document=document)
 
             else:
                 if len(document_set) > 0:
@@ -195,20 +197,17 @@ class Command(BaseCommand):
                     task, task_created = Task.objects.get_or_create(
                         name=str(task_counter),
                         completions=completions,
-                        requires_qualification=4,
-                        provides_qualification=4,
+                        requires_qualification=7,
+                        provides_qualification=7,
                         points=5000,
-                        experiment=settings.EXPERIMENT)
+                        group=group)
 
-                    print "Adding", len(document_set), "to Quest:", task_counter, 'remaining', len(document_set)
+                    task.clear_documents()
+                    for doc_pk in document_set:
+                        document = Document.objects.get(pk=doc_pk)
+                        if document.valid_pubtator():
+                            DocumentQuestRelationship.objects.create(task=task, document=document)
 
-                    for doc in task.documents.all():
-                        dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
-                        dqr.delete()
-
-                    for doc_idx in document_set:
-                        document = Document.objects.get(pk=doc_idx)
-                        DocumentQuestRelationship.objects.create(task=task, document=document)
 
         '''
             Import the set of documents into Mark2Cure
@@ -220,7 +219,6 @@ class Command(BaseCommand):
             ids = res.text.split('\n')
             for pmid in ids:
                 get_pubmed_document(pmid)
-                print pmid
 
         '''
             Check for any unfetched Pubtator objects

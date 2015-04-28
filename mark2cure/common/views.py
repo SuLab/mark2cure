@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from mark2cure.userprofile.models import UserProfile
-from .models import Task, UserQuestRelationship
+from .models import Group, Task, UserQuestRelationship
 from .serializers import QuestSerializer
 from .forms import SupportMessageForm
 
@@ -113,7 +113,8 @@ def dashboard(request):
 @login_required
 @api_view(['GET'])
 def quest_list(request):
-    queryset = Task.objects.filter(kind=Task.QUEST, experiment=settings.EXPERIMENT).all()
+    group = Group.objects.first()
+    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 

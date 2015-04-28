@@ -33,6 +33,31 @@ class Document(models.Model):
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
+    def valid_pubtator(self):
+        pub_query_set = Pubtator.objects.filter(document=self)
+
+        # They've all been validated in the past, leave early
+        if pub_query_set.filter(validate_cache=True).count() == 3:
+            return True
+
+        # The Docment doesn't have a response for each type
+        if pub_query_set.count() < 3:
+            return False
+
+        # Check if each type validates, if so save
+        for pubtator in Pubtator.objects.filter(document=self):
+            try:
+                # (TODO) Maybe try to validate actual content as well?
+                r = BioCReader(source=pubtator.content)
+                r.read()
+                pubtator.validate_cache = True
+                pubtator.save()
+            except Exception as e:
+                # If one of them doesn't validate leave
+                return False
+
+        return True
+
     def get_pubtator(self):
         approved_types = ['Disease', 'Gene', 'Chemical']
         self.init_pubtator()
@@ -58,7 +83,6 @@ class Document(models.Model):
                             annotation.put_infon('type', str( approved_types.index(ann_type) ))
                             annotation.put_infon('user', 'pubtator')
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
-
 
         return reader
 
@@ -93,6 +117,9 @@ class Pubtator(models.Model):
     kind = models.CharField(max_length=200, blank=True)
     session_id = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True, null=True)
+
+    request_count = models.IntegerField(default=0)
+    validate_cache = models.BooleanField(default=False)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

@@ -12,26 +12,23 @@ import time
 
 
 @task()
-def get_pubtator_response(pk, data, payload, idx):
-    attempts = 5
+def get_pubtator_response(pk):
     pubtator = Pubtator.objects.get(pk=pk)
 
-    while idx < attempts:
-        idx += 1
-        time.sleep(idx * 10)
+    if pubtator.session_id:
+        # Make response to post job to pubtator
+        payload = {'content-type': 'text/xml'}
+        writer = pubtator.document.as_writer()
+        data = str(writer)
+        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
+            session_id=pubtator.session_id)
 
-        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator.session_id)
         results = requests.post(url, data=data, params=payload)
+        pubtator.request_count = pubtator.request_count + 1
 
         if results.content != 'Not yet':
-            idx = 100
+            pubtator.content = results.text
 
-    if results.content and idx == 100:
-        # http://www.ncbi.nlm.nih.gov/pubmed/25890113
-        # http://www.ncbi.nlm.nih.gov/pubmed/25815806
-        # http://www.ncbi.nlm.nih.gov/pubmed/25815809
-
-        pubtator.content = results.text
         pubtator.save()
 
 
