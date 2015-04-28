@@ -37,8 +37,8 @@ class Document(models.Model):
         pub_query_set = Pubtator.objects.filter(document=self)
 
         # They've all been validated in the past, leave early
-        if pub_query_set.filter(validate_cache=True).count() == 3:
-            return True
+        #if pub_query_set.filter(validate_cache=True).count() == 3:
+        #    return True
 
         # The Docment doesn't have a response for each type
         if pub_query_set.count() < 3:
@@ -50,6 +50,8 @@ class Document(models.Model):
                 # (TODO) Maybe try to validate actual content as well?
                 r = BioCReader(source=pubtator.content)
                 r.read()
+
+                pubtator.document = Document.objects.get(document_id=r.collection.documents[0].id)
                 pubtator.validate_cache = True
                 pubtator.save()
             except Exception as e:
