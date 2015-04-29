@@ -122,7 +122,6 @@ def quest_prevent_duplicates(request, task):
         return redirect('common:dashboard')
 
 
-
 @login_required
 def quest_read_doc(request, quest_pk, doc_idx):
     task = get_object_or_404(Task, pk=quest_pk)
@@ -170,20 +169,19 @@ def document_quest_submit(request, quest_pk, document_pk):
 
 
 @login_required
-@require_http_methods(['POST'])
-def quest_submit(request, quest_pk, bypass_post=False):
+def quest_submit(request, task, bypass_post=False):
     # (TODO) Add validation check here at some point
-    task = get_object_or_404(Task, pk=quest_pk)
 
-    user_quest_relationship = task.user_relationship(request.user, False)
-    user_quest_relationship.completed = True
-    user_quest_relationship.save()
+    if request.POST or bypass_post:
+        user_quest_relationship = task.user_relationship(request.user, False)
+        user_quest_relationship.completed = True
+        user_quest_relationship.save()
 
-    request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-    badges.possibly_award_badge("points_awarded", user=request.user)
-    badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge("points_awarded", user=request.user)
+        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
 
-    return redirect('common:dashboard')
+        return redirect('common:dashboard')
 
 
 @login_required
@@ -197,9 +195,15 @@ def quest_read(request, quest_pk):
         # Not using get_or_create b/c get occasionally returned multiple (unknown bug source)
         user_quest_relationship = user_quest_rel_queryset.first()
 
-        task_doc_ids_completed = user_quest_relationship.completed_document_ids()
-        next_doc_idx = len(task_doc_ids_completed)+1
-        print 'NEXT DOC IDX:', next_doc_idx
+        task_doc_pks_completed = user_quest_relationship.completed_document_ids()
+
+        # If there are no more documents to do, mark the Quest
+        # as completed and go to dashboard
+        task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
+        if len(task_doc_uncompleted) == 0:
+            return quest_submit(request, task, True)
+
+        next_doc_idx = len(task_doc_pks_completed)+1
         return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
 
     else:

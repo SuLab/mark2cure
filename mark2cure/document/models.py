@@ -252,6 +252,10 @@ class Annotation(models.Model):
     type = models.CharField(max_length=40, blank=True, null=True, default='disease')
 
     text = models.TextField(blank=True, null=True)
+
+    # (WARNING) Different than BioC
+    # This is always the start position relative
+    # to the section, not the entire document
     start = models.IntegerField(blank=True, null=True)
 
     created = models.DateTimeField(auto_now_add=True)
