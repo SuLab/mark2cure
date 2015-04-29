@@ -137,16 +137,36 @@ def quest_read_doc(request, quest_pk, doc_idx):
     if not user_quest_relationship:
         return redirect('common:quest-home', quest_pk=task.pk)
 
+
     # Fetch available documents
     task_doc_pks_completed = user_quest_relationship.completed_document_ids()
     task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
     random.shuffle( task_doc_uncompleted )
 
+    document = task_doc_uncompleted[0]
+    #task.create_views(document, request.user)
+
     ctx = {'task': task,
            'completed_doc_pks': task_doc_pks_completed,
            'uncompleted_docs': task_doc_uncompleted,
-           'document': task_doc_uncompleted[0]}
+           'document': document}
     return TemplateResponse(request, 'common/quest.jade', ctx)
+
+
+@login_required
+@require_http_methods(['POST'])
+def document_quest_submit(request, quest_pk, document_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+    user_quest_relationship = task.user_relationship(request.user, False)
+
+    if not user_quest_relationship:
+        return HttpResponseServerError()
+
+    for view in user_quest_relationship.views.filter(section__document__pk=document_pk):
+        view.completed = True
+        view.save()
+
+    return HttpResponse(200)
 
 
 @login_required
@@ -179,6 +199,7 @@ def quest_read(request, quest_pk):
 
         task_doc_ids_completed = user_quest_relationship.completed_document_ids()
         next_doc_idx = len(task_doc_ids_completed)+1
+        print 'NEXT DOC IDX:', next_doc_idx
         return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
 
     else:
@@ -190,5 +211,5 @@ def quest_read(request, quest_pk):
             task.create_views(document, request.user)
 
         # Route the user to the right idx doc
-        return redirect('common:quest-document', quest_id=task.pk, doc_idx=1)
+        return redirect('common:quest-document', quest_pk=task.pk, doc_idx=1)
 

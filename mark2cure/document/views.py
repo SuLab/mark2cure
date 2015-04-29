@@ -88,7 +88,10 @@ def identify_annotations_results_bioc(request, task_id, doc_id, format_type):
     task = get_object_or_404(Task, pk=task_id)
     # (TODO) follow common_document_quest_relationship
     query_set = Document.objects.filter(pk=doc_id)
+
     opponent = select_best_opponent(task, query_set.first(), request.user)
+    if not opponent:
+        return HttpResponseServerError()
 
     writer = bioc_writer(request)
     apply_bioc_documents(query_set.all(), writer.collection, opponent)
@@ -98,10 +101,6 @@ def identify_annotations_results_bioc(request, task_id, doc_id, format_type):
         return HttpResponse(writer_json, content_type='application/json')
     else:
         return HttpResponse(writer, content_type='text/xml')
-
-
-def test_results(request):
-    return identify_annotations_results_bioc(request, 11, 492)
 
 
 @login_required

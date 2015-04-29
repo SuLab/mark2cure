@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/$',
         views.quest_read_doc, name='quest-document'),
 
+    url(r'^quest/(?P<quest_pk>\d+)/(?P<document_pk>\d+)/submit/$',
+        views.document_quest_submit, name='doc-quest-submit'),
+
     url(r'^quest/(?P<quest_pk>\d+)/$',
         views.quest_read, name='quest-home'),
 
