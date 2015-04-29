@@ -45,14 +45,15 @@ def select_best_opponent(task, document, player):
     others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
 
     # (TODO) Search by Skill badges, if many return 1 at random
-    gm_user = User.objects.get(username='Doc_G-man')
+    gm_user = User.objects.filter(username='Doc_G-man')
 
-    if others_quest_relationships.exists() and \
-            others_quest_relationships.filter(user=gm_user).exists() and \
-            others_quest_relationships.get(user=gm_user).views.filter(section__document=document, completed=True).exists():
-        # There is an "expert's" annotations (GM) so
-        # show those as the partner's
-        return gm_user
+    if gm_user.exists():
+        if others_quest_relationships.exists() and \
+                others_quest_relationships.filter(user=gm_user.first()).exists() and \
+                others_quest_relationships.get(user=gm_user.first()).views.filter(section__document=document, completed=True).exists():
+            # There is an "expert's" annotations (GM) so
+            # show those as the partner's
+            return gm_user
 
     # Gather users from completed documents
     # that may come from uncompleted quests
