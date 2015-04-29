@@ -26,7 +26,7 @@ urlpatterns = patterns('',
         views.identify_annotations_results, name='results'),
 
     # "API" Endpoint to submit Document Annotations
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$',
+    url(r'^(?P<task_pk>\d+)/(?P<section_pk>\d+)/annotation/$',
         views.identify_annotations_submit, name='create'),
 
     # (TODO ???) Task submission (moved to common?)

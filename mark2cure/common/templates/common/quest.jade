@@ -106,7 +106,6 @@ block post-footer
       if(clicks == 0) { evt.preventDefault(); }
       if(clicks > 0) { return; }
       clicks++;
-      console.log('continued...');
 
       $(this).attr('disabled', true);
       /*
@@ -120,7 +119,7 @@ block post-footer
 
         var section_pk = +_.find(passage.infon, function(o){return o['@key']=='id';})['#text'],
             annotations = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON(),
-            url = '/document/{{task.pk}}/{{document.pk}}/section/'+ section_pk +'/annotation/create/';
+            url = '/document/{{task.pk}}/'+ section_pk +'/annotation/';
         ann_counter += annotations.length;
 
         var csrf = $('form').find('input[name="csrfmiddlewaretoken"]').val();

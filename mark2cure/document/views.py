@@ -58,22 +58,20 @@ def read_pubmed_bioc(request, pubmed_id, format_type):
 
 @login_required
 @require_http_methods(['POST'])
-def identify_annotations_submit(request, task_id, doc_id, section_id):
+def identify_annotations_submit(request, task_pk, section_pk):
     '''
       This is broken out because there can be many submissions per document
       We don't want to use these submission to direct the user to elsewhere in the app
     '''
-    task = get_object_or_404(Task, pk=task_id)
-    section = get_object_or_404(Section, pk=section_id)
+    task = get_object_or_404(Task, pk=task_pk)
+    section = get_object_or_404(Section, pk=section_pk)
 
     user_quest_rel = task.userquestrelationship_set.filter(user=request.user, completed=False).first()
     view = user_quest_rel.views.filter(section=section, completed=False).first()
 
-    print 'View:', view.pk
-
     if view:
         form = AnnotationForm(data=request.POST or None)
-        print form.is_valid(), form.errors
+
         if form.is_valid():
             ann = form.save(commit=False)
             ann.view = view
