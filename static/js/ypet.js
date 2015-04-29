@@ -514,25 +514,29 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       words.each(function(w) {
         w.set('disabled', true);
       });
-
     }
 
     if(passage) {
+
+      /*
+       * Make selections if Annotations are present
+       */
       var annotations = _.compact(_.flatten([passage.annotation]));
       var passage_offset = +passage.offset;
-
-      // Fragile pulling infon index like that
       if(annotations.length) {
-
 
         var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
         if(user_ids.length != 1) { console.log('throw error'); }
         var user_id = +user_ids[0];
+        if(passage_offset != 0) {
+          passage_offset++;
+        }
 
         _.each(annotations, function(annotation, annotation_idx) {
           var ann_start = +annotation.location['@offset'] - passage_offset;
           var ann_length = +annotation.location['@length'];
           var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
+
 
           var selected = words.filter(function(word) {
             return (word.get('start') == ann_start) || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );

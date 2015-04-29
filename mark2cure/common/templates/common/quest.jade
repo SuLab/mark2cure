@@ -103,11 +103,10 @@ block post-footer
 
     var clicks = 0;
     $('#quest-submit').on('click', function(evt) {
-      if(clicks == 0) { evt.preventDefault(); }
-      if(clicks > 0) { return; }
-      clicks++;
-
       $(this).attr('disabled', true);
+      if(clicks > 0) { return; }
+      if(clicks == 0) { evt.preventDefault(); clicks++; }
+
       /*
        * AJAX submit all of the current Annotaitons
        */
