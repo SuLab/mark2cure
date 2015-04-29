@@ -115,6 +115,19 @@ class Task(models.Model):
     def total_points(self):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
 
+    def remaining_documents(self, completed_ids=[]):
+        # Document pks for the Quest the user has left
+        if self.documents:
+            # Document pks for the Quest the user has left
+            return list(self.documents.exclude(pk__in=completed_ids).all())
+        else:
+            return []
+
+
+    def user_relationship(self, user, completed=False):
+        return UserQuestRelationship.objects.filter(task=self, user=user, completed=completed).first()
+
+
     def create_views(self, document, user):
         user_quest_rel = self.userquestrelationship_set.filter(user=user, completed=False).first()
         user_quest_rel_views = user_quest_rel.views
@@ -157,6 +170,14 @@ class UserQuestRelationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    def completed_views(self):
+        return self.views.filter(completed=True)
+
+    def completed_document_ids(self):
+        # Collect the completed document pks the user has done for this quest
+        return list(set(
+            self.completed_views().values_list('section__document', flat=True)
+        ))
 
     class Meta:
         get_latest_by = 'updated'

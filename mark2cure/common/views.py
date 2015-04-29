@@ -115,51 +115,80 @@ def quest_list(request):
     return Response(serializer.data)
 
 
-@login_required
-def quest_read(request, quest_num):
-    task = get_object_or_404(Task, pk=quest_num)
-
+def quest_prevent_duplicates(request, task):
     # Prevent a user from completing the same Quest multiple times
     if UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists():
         messages.warning(request, '<p class="lead text-center">We\'re sorry, but you can only do Quest {quest_pk} once.</p>'.format(quest_pk=task.name), extra_tags='safe alert-warning')
         return redirect('common:dashboard')
 
-    user_quest_rels = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False)
-    user_quest_rel_created = False
 
-    if user_quest_rels.exists():
-        user_quest_rel = user_quest_rels.first()
+
+@login_required
+def quest_read_doc(request, quest_pk, doc_idx):
+    task = get_object_or_404(Task, pk=quest_pk)
+
+    # Redirect if trying to access more documents
+    # than this task contains
+    if int(doc_idx) > len( task.remaining_documents() ):
+        return redirect('common:quest-home', quest_pk=task.pk)
+
+    # Confirm the user has started, but not completed this Task
+    user_quest_relationship = task.user_relationship(request.user, False)
+    if not user_quest_relationship:
+        return redirect('common:quest-home', quest_pk=task.pk)
+
+    # Fetch available documents
+    task_doc_pks_completed = user_quest_relationship.completed_document_ids()
+    task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
+    random.shuffle( task_doc_uncompleted )
+
+    ctx = {'task': task,
+           'completed_doc_pks': task_doc_pks_completed,
+           'uncompleted_docs': task_doc_uncompleted,
+           'document': task_doc_uncompleted[0]}
+    return TemplateResponse(request, 'common/quest.jade', ctx)
+
+
+@login_required
+@require_http_methods(['POST'])
+def quest_submit(request, quest_pk, bypass_post=False):
+    # (TODO) Add validation check here at some point
+    task = get_object_or_404(Task, pk=quest_pk)
+
+    user_quest_relationship = task.user_relationship(request.user, False)
+    user_quest_relationship.completed = True
+    user_quest_relationship.save()
+
+    request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+    badges.possibly_award_badge("points_awarded", user=request.user)
+    badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
+    return redirect('common:dashboard')
+
+
+@login_required
+def quest_read(request, quest_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+
+    # Check if user has pre-existing relationship with Quest
+    user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False)
+
+    if user_quest_rel_queryset.exists():
+        # Not using get_or_create b/c get occasionally returned multiple (unknown bug source)
+        user_quest_relationship = user_quest_rel_queryset.first()
+
+        task_doc_ids_completed = user_quest_relationship.completed_document_ids()
+        next_doc_idx = len(task_doc_ids_completed)+1
+        return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
+
     else:
+        # Create the User >> Quest relationship
         user_quest_rel = UserQuestRelationship.objects.create(task=task, user=request.user, completed=False)
-        user_quest_rel_created = True
 
-    task_doc_ids_completed = []
-
-    if user_quest_rel_created:
         documents = list(task.documents.all())
         for document in documents:
             task.create_views(document, request.user)
-    else:
-        task_doc_ids_completed = list(set(user_quest_rel.views.filter(completed=True).values_list('section__document', flat=True)))
-        documents = list(task.documents.exclude(pk__in=task_doc_ids_completed).all())
 
-    random.shuffle(documents)
-
-    if (request.method == 'POST' and user_quest_rel_created is False) or len(documents) == 0:
-        # (TODO) Add validation check here at some point
-        user_quest_rel.completed = True
-        user_quest_rel.save()
-
-        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge("points_awarded", user=request.user)
-        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
-
-        ctx = {'task': task}
-        return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
-
-    user_quest_rel.save()
-    ctx = {'task': task,
-           'completed_docs': task_doc_ids_completed,
-           'documents': documents}
-    return TemplateResponse(request, 'common/quest.jade', ctx)
+        # Route the user to the right idx doc
+        return redirect('common:quest-document', quest_id=task.pk, doc_idx=1)
 

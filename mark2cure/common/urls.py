@@ -14,8 +14,15 @@ urlpatterns = patterns('',
         views.support, name='support'),
 
     # Initial training for fresh signups
-    url(r'^quest/(?P<quest_num>\w+)/$',
-        views.quest_read, name='quest'),
+    url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/$',
+        views.quest_read_doc, name='quest-document'),
+
+    url(r'^quest/(?P<quest_pk>\d+)/$',
+        views.quest_read, name='quest-home'),
+
+    url(r'^quest/(?P<quest_pk>\d+)/submit/$',
+        views.quest_submit, name='quest-submit'),
+
     # REST Framework
     url(r'^quest/api/read/$',
         views.quest_list, name='quest-api'),
