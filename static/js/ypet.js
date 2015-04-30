@@ -523,6 +523,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
        */
       var annotations = _.compact(_.flatten([passage.annotation]));
       var passage_offset = +passage.offset;
+      console.log('P Offset:', passage_offset);
       if(annotations.length) {
 
         var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
@@ -533,24 +534,39 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
         }
 
         _.each(annotations, function(annotation, annotation_idx) {
-          var ann_start = +annotation.location['@offset'] - passage_offset;
-          var ann_length = +annotation.location['@length'];
-          var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
+          try {
+            var ann_start = +annotation.location['@offset'] - passage_offset;
+            var ann_length = +annotation.location['@length'];
+            var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
 
+            var start_match = false;
+            var selected = words.filter(function(word) {
+              /* The Annotation found a word which matches start position exactly */
+              var starts = word.get('start') == ann_start;
+              if (starts) { start_match = true; }
+              return starts || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
+            });
 
-          var selected = words.filter(function(word) {
-            return (word.get('start') == ann_start) || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
-          });
-
-          if(selected.length) {
-            if(opponent) {
-              var opp_anns = parentDocument.get('opponent_annotations');
-              opp_anns.create({words: selected, type: ann_type, opponent: opponent});
-            } else {
-              var anns = parentDocument.get('annotations');
-              anns.create({words: selected, type: ann_type, opponent: opponent});
+            if(selected.length) {
+              if(opponent) {
+                var opp_anns = parentDocument.get('opponent_annotations');
+                opp_anns.create({words: selected, type: ann_type, opponent: opponent});
+              } else {
+                var anns = parentDocument.get('annotations');
+                anns.create({words: selected, type: ann_type, opponent: opponent});
+              }
             }
-          }
+
+            var words_match = selected.length == _.str.words(annotation.text).length;
+            if(words_match==false && start_match==false) {
+              Raven.captureMessage('Imperfect Pubtator >> YPet Match', {tags: {
+                'selected': selected,
+                'annotation': annotation,
+                'passage': passage
+              }});
+            }
+
+          } catch(e) { Raven.captureException(e); }
 
         });
       }
