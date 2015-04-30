@@ -559,7 +559,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
 
             var words_match = selected.length == _.str.words(annotation.text).length;
             if(words_match==false && start_match==false) {
-              Raven.captureMessage('Imperfect Pubtator >> YPet Match', {tags: {
+              Raven.captureMessage('Imperfect Pubtator >> YPet Match', {extra: {
                 'selected': selected,
                 'annotation': annotation,
                 'passage': passage
