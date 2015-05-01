@@ -18,7 +18,7 @@ urlpatterns = patterns('',
 
     # BioC File for Partner for Task & PMID Paring
     # Score in BioC File?
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results.(?P<format_type>\w+)$',
+    url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
 
     # View results (only if new)

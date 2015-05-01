@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.template.response import TemplateResponse
 
 from mark2cure.common.models import Task
-from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_documents
+from mark2cure.common.formatter import bioc_writer, bioc_as_json
 
 from .models import Document, Section, Annotation
 from .forms import AnnotationForm
@@ -82,17 +82,19 @@ def identify_annotations_submit(request, task_pk, section_pk):
 
 
 @login_required
-def identify_annotations_results_bioc(request, task_id, doc_id, format_type):
-    task = get_object_or_404(Task, pk=task_id)
-    # (TODO) follow common_document_quest_relationship
-    query_set = Document.objects.filter(pk=doc_id)
+def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
+    task = get_object_or_404(Task, pk=task_pk)
+    document = task.documents.filter(pk=doc_pk).first()
+    if not document:
+        return HttpResponseServerError()
 
-    opponent = select_best_opponent(task, query_set.first(), request.user)
+    opponent = select_best_opponent(task, document, request.user)
+    print 'Pair against:', opponent
     if not opponent:
         return HttpResponseServerError()
 
-    writer = bioc_writer(request)
-    apply_bioc_documents(query_set.all(), writer.collection, opponent)
+    writer = document.as_writer()
+    # (TODO) Append opponents annotations to the writer's passages
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

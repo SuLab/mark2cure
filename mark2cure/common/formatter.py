@@ -43,6 +43,7 @@ def bioc_as_json(writer):
     return json.dumps(o)
 
 
+'''
 def apply_bioc_documents(documents, bioc_collection, user=None):
     for doc in documents:
         d = doc.as_bioc()
@@ -56,7 +57,7 @@ def apply_bioc_documents(documents, bioc_collection, user=None):
             d.add_passage(passage)
 
         bioc_collection.add_document(d)
-
+'''
 
 def apply_bioc_annotations(section, bioc_passage, passage_offset, user=None):
     if user:
