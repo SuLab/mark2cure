@@ -41,6 +41,7 @@ class Document(models.Model):
         #    return True
 
         # The Docment doesn't have a response for each type
+        print pub_query_set.count()
         if pub_query_set.count() < 3:
             return False
 
@@ -56,8 +57,10 @@ class Document(models.Model):
                 pubtator.save()
             except Exception as e:
                 # If one of them doesn't validate leave
+                print e
                 return False
 
+        print ' -- '
         return True
 
     def get_pubtator(self, request=None):
