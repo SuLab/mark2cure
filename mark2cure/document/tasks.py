@@ -12,6 +12,12 @@ import time
 
 
 @task()
+def check_pubtator_responses():
+    for pubtator_pk in Pubtator.objects.filter(validate_cache=False).value_list('pk', flat=True):
+        get_pubtator_response(pubtator_pk)
+
+
+@task()
 def get_pubtator_response(pk):
     pubtator = Pubtator.objects.get(pk=pk)
 

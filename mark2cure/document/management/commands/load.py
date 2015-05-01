@@ -164,23 +164,15 @@ class Command(BaseCommand):
             random.shuffle(document_set)
 
             group, group_v = Group.objects.get_or_create(name='622', stub='622', enabled=True)
+            #task.clear_documents()
+            last_task = group.task_set.last()
 
             while len(document_set) > smallest_bin:
-                task_counter += 1
-                task, task_created = Task.objects.get_or_create(
-                    name=str(task_counter),
-                    completions=completions,
-                    requires_qualification=7,
-                    provides_qualification=7,
-                    points=5000,
-                    group=group)
 
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
-                sel = document_set[0:quest_size]
-
-                task.clear_documents()
-                # (TODO) If not validate, add aonther so bin size is equal
-                for idx in range(quest_size):
+                # If there was an existing Task with less than the
+                # desired number of documents
+                if last_task and last_task.documents.count() < quest_size:
 
                     # Shuffle & Remove the document_pk for use and from being selected again
                     random.shuffle(document_set)
@@ -188,25 +180,24 @@ class Command(BaseCommand):
                     document_set.remove(doc_pk)
 
                     document = Document.objects.get(pk=doc_pk)
+                    print 'Add Document', len(document_set), document.valid_pubtator(), last_task
                     if document.valid_pubtator():
-                        DocumentQuestRelationship.objects.create(task=task, document=document)
+                        DocumentQuestRelationship.objects.create(task=last_task, document=document)
 
-            else:
-                if len(document_set) > 0:
-                    task_counter += 1
-                    task, task_created = Task.objects.get_or_create(
-                        name=str(task_counter),
+                else:
+                    print '> Add New Task'
+                    if last_task:
+                        idx = last_task.pk
+                    else:
+                        idx = Task.objects.last().pk
+
+                    last_task, task_created = Task.objects.get_or_create(
+                        name=str(idx+1),
                         completions=completions,
                         requires_qualification=7,
                         provides_qualification=7,
                         points=5000,
                         group=group)
-
-                    task.clear_documents()
-                    for doc_pk in document_set:
-                        document = Document.objects.get(pk=doc_pk)
-                        if document.valid_pubtator():
-                            DocumentQuestRelationship.objects.create(task=task, document=document)
 
 
         '''

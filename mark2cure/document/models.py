@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from mark2cure.document.managers import DocumentManager
+from mark2cure.document.managers import DocumentManager, PubtatorManager
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
@@ -37,12 +37,12 @@ class Document(models.Model):
         pub_query_set = Pubtator.objects.filter(document=self)
 
         # They've all been validated in the past, leave early
-        #if pub_query_set.filter(validate_cache=True).count() == 3:
-        #    return True
+        if pub_query_set.filter(validate_cache=True).count() == 3:
+            return True
 
         # The Docment doesn't have a response for each type
-        print pub_query_set.count()
-        if pub_query_set.count() < 3:
+        # (TODO) also cases grater than 3
+        if pub_query_set.filter(session_id__isnull=False, content__isnull=False).count() < 3:
             return False
 
         # Check if each type validates, if so save
@@ -60,7 +60,6 @@ class Document(models.Model):
                 print e
                 return False
 
-        print ' -- '
         return True
 
     def get_pubtator(self, request=None):
@@ -91,7 +90,7 @@ class Document(models.Model):
 
         return reader
 
-    def as_writer(self, request):
+    def as_writer(self, request=None):
         from mark2cure.common.formatter import bioc_writer
         writer = bioc_writer(request)
         document = self.as_bioc()
@@ -128,6 +127,8 @@ class Pubtator(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    objects = PubtatorManager()
 
     def __unicode__(self):
         return 'pubtator'
