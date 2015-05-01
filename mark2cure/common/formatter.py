@@ -45,6 +45,7 @@ def bioc_as_json(writer):
 
 def apply_bioc_annotations(writer, user=None):
     bioc_doc = writer.collection.documents[0]
+    approved_types = ['disease', 'gene_protein', 'drug']
 
     for bioc_passage in bioc_doc.passages:
         section_pk = bioc_passage.infons['id']
@@ -61,8 +62,7 @@ def apply_bioc_annotations(writer, user=None):
             annotation.put_infon('user_name', str(ann.view.user.username))
 
             # (TODO) Map type strings back to 0,1,2
-            annotation.put_infon('type', str(ann.type))
-            annotation.put_infon('type', str(0))
+            annotation.put_infon('type', str( approved_types.index(ann.type) ))
 
             location = BioCLocation()
             location.offset = str(offset + ann.start)
