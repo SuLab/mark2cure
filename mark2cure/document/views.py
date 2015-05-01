@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.template.response import TemplateResponse
 
 from mark2cure.common.models import Task
-from mark2cure.common.formatter import bioc_writer, bioc_as_json
+from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
 
 from .models import Document, Section, Annotation
 from .forms import AnnotationForm
@@ -94,7 +94,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         return HttpResponseServerError()
 
     writer = document.as_writer()
-    # (TODO) Append opponents annotations to the writer's passages
+    writer = apply_bioc_annotations(writer, opponent)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
