@@ -136,6 +136,15 @@ def quest_read_doc(request, quest_pk, doc_idx):
     if not user_quest_relationship:
         return redirect('common:quest-home', quest_pk=task.pk)
 
+    '''
+    # only take the one that has views
+    user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).latest()
+    user_quest_rel_views = user_quest_rel.views
+
+    # If a completed view doesn't exist, redirect them to complete the document submission
+    if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
+        return redirect('document:read', task.pk, doc.pk)
+    '''
 
     # Fetch available documents
     task_doc_pks_completed = user_quest_relationship.completed_document_ids()
@@ -150,6 +159,24 @@ def quest_read_doc(request, quest_pk, doc_idx):
            'uncompleted_docs': task_doc_uncompleted,
            'document': document}
     return TemplateResponse(request, 'common/quest.jade', ctx)
+
+
+@login_required
+def quest_read_doc_feedback(request, quest_pk, doc_idx):
+    '''
+        /quest/10/3/feedback/
+
+        For now, we will not have a dedicated feedback page.
+        This may be added in the future if desired, for now
+        all feedback comes after ajax request to fetch the
+        opponents BioC file.
+
+        Logic for this decision: Would be 3 api requests
+        User read, Opponent Read
+                vs
+        User read. User read, Opponent Read
+    '''
+    pass
 
 
 @login_required

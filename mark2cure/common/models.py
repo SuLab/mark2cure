@@ -184,7 +184,9 @@ class UserQuestRelationship(models.Model):
 
 
     def __unicode__(self):
-        return u'User Quest Relationship'
+        return u'/quest/{quest_pk}/ {username}'.format(
+                quest_pk=self.task.pk,
+                username=self.user.username)
 
 
 class DocumentQuestRelationship(models.Model):

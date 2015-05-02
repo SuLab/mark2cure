@@ -21,9 +21,10 @@ urlpatterns = patterns('',
     url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
 
+    # (TODO) Deprecated
     # View results (only if new)
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',
-        views.identify_annotations_results, name='results'),
+    #url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',
+    #    views.identify_annotations_results, name='results'),
 
     # "API" Endpoint to submit Document Annotations
     url(r'^(?P<task_pk>\d+)/(?P<section_pk>\d+)/annotation/$',
