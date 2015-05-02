@@ -29,6 +29,24 @@ block content
       .col-xs-2
         h4 Level: #{user.userprofile.highest_level.name}
 
+    #partner-results(style='display:none;').row
+      .col-xs-8.col-xs-offset-2
+        .row.alert.alert-info.alert-info-minimal.alert-sticky
+          #partner-info.col-sm-4
+            p(style='margin-bottom: 0px;')
+              small You were paired with:
+
+            h3#partner-username(style='margin-top: 0px;')
+            h4 Level: <span id="partner-level"></span>
+
+          .col-xs-8
+            h2#flatter.text-center
+            h3.text-center
+              | Earned
+              | <span id='points'></span>
+              | points!
+
+
     #new-alert-congrats(style='display:none;').row
       .col-xs-8.col-xs-offset-2
         .row.alert.alert-info.alert-info-minimal.alert-sticky
@@ -150,11 +168,24 @@ block post-footer
           dataType: 'json',
           success: function(data) {
 
-            /* Show underliens */
             partner_data = data;
-            var passages = data.collection.document.passage;
-            _.each(passages, function(passage, passage_idx) {
-              YPet[passage_idx].currentView.drawBioC(passage, true);
+
+            window.scrollTo(0,0);
+            var points = _.find(partner_data.collection.infon, function(o){return o['@key']=='points';})['#text'];
+            var partner = _.find(partner_data.collection.infon, function(o){return o['@key']=='partner';})['#text'];
+            var partner_level = _.find(partner_data.collection.infon, function(o){return o['@key']=='partner_level';})['#text'];
+            var flatter = _.find(partner_data.collection.infon, function(o){return o['@key']=='flatter';})['#text'];
+
+            $('#points').html(points);
+            $('#partner-username').html(partner);
+            $('#partner-level').html(partner_level);
+            $('#flatter').html(flatter);
+            $('#partner-results').slideDown(function() {
+              /* Show underlines */
+              var passages = data.collection.document.passage;
+              _.each(passages, function(passage, passage_idx) {
+                YPet[passage_idx].currentView.drawBioC(passage, true);
+              });
             });
 
           },

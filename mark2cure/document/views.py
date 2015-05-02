@@ -146,7 +146,9 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         badges.possibly_award_badge('points_awarded', user=request.user)
 
     writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
-    writer.collection.put_infon('points', str(score))
+    writer.collection.put_infon('points', str( int(round(score)) ))
+    writer.collection.put_infon('partner', str(opponent.username))
+    writer.collection.put_infon('partner_level', str(opponent.userprofile.highest_level().name))
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
