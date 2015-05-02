@@ -136,6 +136,10 @@ def quest_read_doc(request, quest_pk, doc_idx):
     if not user_quest_relationship:
         return redirect('common:quest-home', quest_pk=task.pk)
 
+    task_doc_pks_completed = user_quest_relationship.completed_document_ids()
+    if int(doc_idx) <= len( task_doc_pks_completed ):
+        return redirect('common:quest-home', quest_pk=task.pk)
+
     '''
     # only take the one that has views
     user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).latest()
@@ -147,7 +151,6 @@ def quest_read_doc(request, quest_pk, doc_idx):
     '''
 
     # Fetch available documents
-    task_doc_pks_completed = user_quest_relationship.completed_document_ids()
     task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
     random.shuffle( task_doc_uncompleted )
 

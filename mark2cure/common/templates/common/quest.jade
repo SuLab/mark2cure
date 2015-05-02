@@ -181,6 +181,8 @@ block post-footer
             $('#partner-level').html(partner_level);
             $('#flatter').html(flatter);
             $('#partner-results').slideDown(function() {
+              update_score();
+
               /* Show underlines */
               var passages = data.collection.document.passage;
               _.each(passages, function(passage, passage_idx) {
