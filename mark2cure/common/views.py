@@ -213,8 +213,6 @@ def quest_submit(request, task, bypass_post=False):
         user_quest_relationship.completed = True
         user_quest_relationship.save()
 
-        return redirect('common:dashboard')
-
 
 @login_required
 def quest_feedback(request, quest_pk):
@@ -246,7 +244,8 @@ def quest_read(request, quest_pk):
         # as completed and go to dashboard
         task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
         if len(task_doc_uncompleted) == 0:
-            return quest_submit(request, task, True)
+            uest_submit(request, task, True)
+            return redirect('common:quest-feedback', quest_pk=task.pk)
 
         next_doc_idx = len(task_doc_pks_completed)+1
         return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
