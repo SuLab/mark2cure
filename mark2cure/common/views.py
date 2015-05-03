@@ -204,14 +204,23 @@ def quest_submit(request, task, bypass_post=False):
 
     if request.POST or bypass_post:
         user_quest_relationship = task.user_relationship(request.user, False)
+
+        if not user_quest_relationship.completed:
+            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge("points_awarded", user=request.user)
+            badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
         user_quest_relationship.completed = True
         user_quest_relationship.save()
 
-        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge("points_awarded", user=request.user)
-        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
-
         return redirect('common:dashboard')
+
+
+@login_required
+def quest_feedback(request, quest_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+    ctx = {'task':task}
+    return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
 
 
 @login_required
@@ -219,12 +228,18 @@ def quest_read(request, quest_pk):
     task = get_object_or_404(Task, pk=quest_pk)
 
     # Check if user has pre-existing relationship with Quest
-    user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False)
+    user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user)
+    #, completed=False)
 
     if user_quest_rel_queryset.exists():
+
+        # User has viewed this Quest before and Completed it
+        # so show them the feedback page
+        if user_quest_rel_queryset.filter(completed=True).exists():
+            return redirect('common:quest-feedback', quest_pk=task.pk)
+
         # Not using get_or_create b/c get occasionally returned multiple (unknown bug source)
         user_quest_relationship = user_quest_rel_queryset.first()
-
         task_doc_pks_completed = user_quest_relationship.completed_document_ids()
 
         # If there are no more documents to do, mark the Quest
