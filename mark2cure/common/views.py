@@ -244,7 +244,7 @@ def quest_read(request, quest_pk):
         # as completed and go to dashboard
         task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
         if len(task_doc_uncompleted) == 0:
-            uest_submit(request, task, True)
+            quest_submit(request, task, True)
             return redirect('common:quest-feedback', quest_pk=task.pk)
 
         next_doc_idx = len(task_doc_pks_completed)+1

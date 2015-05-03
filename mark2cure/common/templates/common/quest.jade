@@ -190,7 +190,8 @@ block post-footer
             });
 
           },
-          error: function(data) {
+          error: function(error_res) {
+            console.log(error_res.responseText);
             _.each(passages, function(passage, passage_idx) {
               YPet[passage_idx].currentView.drawBioC(null, true);
             });

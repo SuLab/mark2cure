@@ -12,10 +12,15 @@ import time
 
 
 @task()
-def check_pubtator_responses():
-    for pubtator_pk in Pubtator.objects.filter(validate_cache=False).value_list('pk', flat=True):
+def check_corpus_health():
+    for document in Document.objects.all():
+        if document.available_sections().count() < 2:
+            get_pubmed_document(document.document_id)
+
+    for pubtator_pk in Pubtator.objects.filter(validate_cache=False).values_list('pk', flat=True):
         get_pubtator_response(pubtator_pk)
 
+    Pubtator.objects.correct_parent_relation()
 
 @task()
 def get_pubtator_response(pk):
