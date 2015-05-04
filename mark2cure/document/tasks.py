@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import time
 
 
+
 @task()
 def check_corpus_health():
     for document in Document.objects.all():
@@ -21,6 +22,19 @@ def check_corpus_health():
         get_pubtator_response(pubtator_pk)
 
     Pubtator.objects.correct_parent_relation()
+
+@task()
+def ensure_proper_tokenization(doc_pk):
+    document = Document.objects.get(pk=doc_pk)
+
+    for section in document.available_sections():
+        if( section.text != pad_split(section.text) ):
+            # If a change was identified:
+            # 1) Resubmit it to pubtator
+            # 2) Remove any submissions for this doc OR flag their annotations
+            pass
+
+
 
 @task()
 def get_pubtator_response(pk):
