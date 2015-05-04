@@ -37,12 +37,12 @@ class Document(models.Model):
         pub_query_set = Pubtator.objects.filter(document=self)
 
         # They've all been validated in the past, leave early
-        if pub_query_set.filter(validate_cache=True).count() == 3:
-            return True
+        #if pub_query_set.filter(validate_cache=True).count() == 3:
+        #    return True
 
         # The Docment doesn't have a response for each type
         # (TODO) also cases grater than 3
-        if pub_query_set.filter(session_id__isnull=False, content__isnull=False).count() < 3:
+        if pub_query_set.filter(session_id__isnull=False, content__isnull=False).count() == 3:
             return False
 
         # Check if each type validates, if so save

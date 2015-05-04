@@ -13,27 +13,49 @@ import time
 
 
 @task()
-def check_corpus_health():
-    for document in Document.objects.all():
+def check_corpus_health(group_pk=1):
+    group = Group.objects.get(pk=group_pk)
+    documents = Document.objects.filter(task__group=group).all()
+
+    for document in documents:
+        # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
             get_pubmed_document(document.document_id)
 
-    for pubtator_pk in Pubtator.objects.filter(validate_cache=False).values_list('pk', flat=True):
-        get_pubtator_response(pubtator_pk)
+        # Update any newly enforced padding rules
+        ensure_proper_tokenization(document.pk)
+        print 'Done processing: Doc #', document.pk
+
+        if not document.valid_pubtator():
+            Pubtator.objects.filter(document=document).all().delete()
+            document.init_pubtator()
+            print 'New Pubtator responses for Doc #', document.pk
+
+
+def check_pubtator_health():
+    for pubtator in Pubtator.objects.all():
+        get_pubtator_response(pubtator.pk)
 
     Pubtator.objects.correct_parent_relation()
+
 
 @task()
 def ensure_proper_tokenization(doc_pk):
     document = Document.objects.get(pk=doc_pk)
+    doc_changed = False
 
     for section in document.available_sections():
-        if( section.text != pad_split(section.text) ):
+        padded = ' '.join( pad_split( section.text ) )
+        if( section.text != padded ):
             # If a change was identified:
             # 1) Resubmit it to pubtator
             # 2) Remove any submissions for this doc OR flag their annotations
-            pass
+            section.text = padded
+            section.save()
+            doc_changed = True
 
+    if doc_changed:
+        Pubtator.objects.filter(document=document).all().delete()
 
 
 @task()
@@ -52,6 +74,8 @@ def get_pubtator_response(pk):
         pubtator.request_count = pubtator.request_count + 1
 
         if results.content != 'Not yet':
+            print 'Finished checking: Pub #', pubtator.pk
+            pubtator.session_id = ''
             pubtator.content = results.text
 
         pubtator.save()
@@ -93,8 +117,6 @@ def get_pubmed_document(pubmed_ids, include_pubtator=True):
 
             if include_pubtator:
                 doc.init_pubtator()
-
-
 
 
 @task
