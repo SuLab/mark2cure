@@ -36,9 +36,13 @@ def check_corpus_health(group_pk=1):
 
 
 def check_pubtator_health():
-    for pubtator in Pubtator.objects.all():
+    # Try to fetch all the pending pubtator requests
+    for pubtator in Pubtator.objects.exclude(session_id='').all():
         get_pubtator_response(pubtator.pk)
 
+    # For all Pubtator models with content
+    # ensure it validates and cleanup the session_id and content
+    # if it does or doesn't
     Pubtator.objects.correct_parent_relation()
 
 

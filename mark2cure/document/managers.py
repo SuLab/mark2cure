@@ -13,7 +13,7 @@ class PubtatorManager(models.Manager):
     def correct_parent_relation(self):
         from mark2cure.document.models import Document
         # Check if each type validates, if so save
-        for pubtator in self.all():
+        for pubtator in self.filter(content__isnull=False).all():
             try:
                 r = BioCReader(source=pubtator.content)
                 r.read()
@@ -22,7 +22,7 @@ class PubtatorManager(models.Manager):
                 pubtator.session_id = ''
             except Exception as e:
                 # If one of them doesn't validate leave
-                #pubtator.content = None
+                pubtator.content = None
                 print e
 
             # Do this just so the first time valid_pubtator
