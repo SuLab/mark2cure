@@ -33,6 +33,27 @@ class Document(models.Model):
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
+
+    def update_padding(self):
+        from mark2cure.common.formatter import pad_split
+        changed = False
+
+        for section in self.available_sections():
+            padded = ' '.join( pad_split( section.text ) )
+            if section.text != padded:
+                print padded
+                print '  v  v  v  v  '
+                print section.text
+                # If a change was identified:
+                # 1) Resubmit it to pubtator
+                # 2) Remove any submissions for this doc OR flag their annotations
+                section.text = padded
+                section.save()
+                changed = True
+
+        return changed
+
+
     def valid_pubtator(self):
         pub_query_set = Pubtator.objects.filter(document=self)
 

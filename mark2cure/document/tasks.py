@@ -24,12 +24,9 @@ def check_corpus_health(group_pk=1):
             get_pubmed_document(document.document_id)
 
         # Update any newly enforced padding rules
-        doc_changed = ensure_proper_tokenization(document.pk)
-        print 'Done processing: Doc #', document.pk
-
         # If the document doesn't pass the validator
         # delete all existing content and retry
-        if not document.valid_pubtator() or doc_changed:
+        if not document.valid_pubtator() or document.update_padding():
             Pubtator.objects.filter(document=document).all().delete()
             document.init_pubtator()
             print 'New Pubtator responses for Doc #', document.pk
@@ -44,24 +41,6 @@ def check_pubtator_health():
     # ensure it validates and cleanup the session_id and content
     # if it does or doesn't
     Pubtator.objects.correct_parent_relation()
-
-
-@task()
-def ensure_proper_tokenization(doc_pk):
-    document = Document.objects.get(pk=doc_pk)
-    doc_changed = False
-
-    for section in document.available_sections():
-        padded = ' '.join( pad_split( section.text ) )
-        if( section.text != padded ):
-            # If a change was identified:
-            # 1) Resubmit it to pubtator
-            # 2) Remove any submissions for this doc OR flag their annotations
-            section.text = padded
-            section.save()
-            doc_changed = True
-
-    return doc_changed
 
 
 @task()
