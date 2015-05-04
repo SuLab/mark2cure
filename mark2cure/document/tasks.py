@@ -21,15 +21,25 @@ def check_corpus_health(group_pk=1):
     for document in documents:
         # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
+            print '  > Downloading Sections: '
             get_pubmed_document(document.document_id)
 
         # Update any newly enforced padding rules
         # If the document doesn't pass the validator
         # delete all existing content and retry
-        if not document.valid_pubtator() or document.update_padding():
+        valid_pubtator_responses = document.valid_pubtator()
+        update_padding = document.update_padding()
+
+        print '  > Valid Pub: ', valid_pubtator_responses
+        print '  > Updated Padding: ', update_padding
+
+        if not valid_pubtator_responses or update_padding:
             Pubtator.objects.filter(document=document).all().delete()
             document.init_pubtator()
-            print 'New Pubtator responses for Doc #', document.pk
+            print ' > New Pubtator requests for Doc #', document.pk
+
+        print 'Done checking Doc #', document.pk
+
 
 
 def check_pubtator_health():
