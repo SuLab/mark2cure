@@ -23,10 +23,12 @@ def check_corpus_health(group_pk=1):
             get_pubmed_document(document.document_id)
 
         # Update any newly enforced padding rules
-        ensure_proper_tokenization(document.pk)
+        doc_changed = ensure_proper_tokenization(document.pk)
         print 'Done processing: Doc #', document.pk
 
-        if not document.valid_pubtator():
+        # If the document doesn't pass the validator
+        # delete all existing content and retry
+        if not document.valid_pubtator() or doc_changed:
             Pubtator.objects.filter(document=document).all().delete()
             document.init_pubtator()
             print 'New Pubtator responses for Doc #', document.pk
@@ -54,8 +56,7 @@ def ensure_proper_tokenization(doc_pk):
             section.save()
             doc_changed = True
 
-    if doc_changed:
-        Pubtator.objects.filter(document=document).all().delete()
+    return doc_changed
 
 
 @task()
