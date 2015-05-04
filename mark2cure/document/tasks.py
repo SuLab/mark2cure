@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from mark2cure.common.models import Group
 from mark2cure.document.models import Document, Pubtator, Section
 from mark2cure.common.formatter import pad_split
 
