@@ -333,7 +333,7 @@ class Annotation(models.Model):
     view = models.ForeignKey(View)
 
     def is_exact_match(self, comparing_annotation):
-        return True if self.start == comparing_annotation.start and len(self.text) == len(comparing_annotation.text) else False
+        return True if self.start == comparing_annotation.start and len(self.text) == len(comparing_annotation.text) and self.type == comparing_annotation.type else False
 
     def __unicode__(self):
         if self.kind == 'r':
