@@ -377,7 +377,7 @@ WordView = Backbone.Marionette.ItemView.extend({
       pos = this.$el.position();
 
       var yaxis = pos.top + this.$el.height() + 2;
-      var width = this.$el.width();
+      var width = this.$el.width() + 1;
 
       $container.append('<div class="underline" style=" \
         position: absolute; \
@@ -523,7 +523,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
        */
       var annotations = _.compact(_.flatten([passage.annotation]));
       var passage_offset = +passage.offset;
-      console.log('P Offset:', passage_offset);
       if(annotations.length) {
 
         var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
