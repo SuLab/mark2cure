@@ -41,9 +41,6 @@ class Document(models.Model):
         for section in self.available_sections():
             padded = ' '.join( pad_split( section.text ) )
             if section.text != padded:
-                print padded
-                print '  v  v  v  v  '
-                print section.text
                 # If a change was identified:
                 # 1) Resubmit it to pubtator
                 # 2) Remove any submissions for this doc OR flag their annotations
@@ -55,30 +52,25 @@ class Document(models.Model):
 
 
     def valid_pubtator(self):
-        pub_query_set = Pubtator.objects.filter(document=self)
-
-        # They've all been validated in the past, leave early
-        #if pub_query_set.filter(validate_cache=True).count() == 3:
-        #    return True
+        # All responses that are not waiting to fetch conent b/c they already have it
+        pub_query_set = Pubtator.objects.filter(
+                document=self,
+                session_id='',
+                content__isnull=False)
 
         # The Docment doesn't have a response for each type
         # (TODO) also cases grater than 3
-        if pub_query_set.filter(session_id__isnull=False, content__isnull=False).count() == 3:
+        if pub_query_set.count() != 3:
             return False
 
         # Check if each type validates, if so save
-        for pubtator in Pubtator.objects.filter(document=self):
-            try:
-                # (TODO) Maybe try to validate actual content as well?
-                r = BioCReader(source=pubtator.content)
-                r.read()
+        for pubtator in pub_query_set.all():
 
-                pubtator.document = Document.objects.get(document_id=r.collection.documents[0].id)
-                pubtator.validate_cache = True
+            p_valid = pubtator.valid()
+            if p_valid:
+                pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
                 pubtator.save()
-            except Exception as e:
-                # If one of them doesn't validate leave
-                print e
+            else:
                 return False
 
         return True
@@ -153,6 +145,21 @@ class Pubtator(models.Model):
 
     def __unicode__(self):
         return 'pubtator'
+
+    def valid(self):
+        if self.session_id != '':
+            return False
+
+        if self.content == None:
+            return False
+
+        try:
+            r = BioCReader(source=self.content)
+            r.read()
+            return r
+        except Exception as e:
+            # If one of them doesn't validate leave
+            return False
 
 
 class Section(models.Model):

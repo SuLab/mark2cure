@@ -14,16 +14,12 @@ class PubtatorManager(models.Manager):
         from mark2cure.document.models import Document
         # Check if each type validates, if so save
         for pubtator in self.filter(content__isnull=False).all():
-            try:
-                r = BioCReader(source=pubtator.content)
-                r.read()
-
-                pubtator.document = Document.objects.get(document_id=r.collection.documents[0].id)
+            p_valid = pubtator.valid()
+            if p_valid:
+                pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
                 pubtator.session_id = ''
-            except Exception as e:
-                # If one of them doesn't validate leave
+            else:
                 pubtator.content = None
-                print e
 
             # Do this just so the first time valid_pubtator
             # actually runs we know it's fresh'

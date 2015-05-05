@@ -34,12 +34,17 @@ def check_corpus_health(group_pk=1):
         print '  > Updated Padding: ', update_padding
 
         if not valid_pubtator_responses or update_padding:
-            Pubtator.objects.filter(document=document).all().delete()
+            # Delete only the Pubtator models that are not currently
+            # being fetched
+            #Pubtator.objects.filter(
+            #    document=document,
+            #    session_id='',
+            #    content__isnull=True).all().delete()
+
             document.init_pubtator()
             print ' > New Pubtator requests for Doc #', document.pk
 
         print 'Done checking Doc #', document.pk
-
 
 
 def check_pubtator_health():
