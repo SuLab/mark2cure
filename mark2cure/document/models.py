@@ -123,6 +123,22 @@ class Document(models.Model):
                         if not ann is longest_ann:
                             reader.collection.documents[d_idx].passages[p_idx].remove_annotation(ann)
 
+                # Remove any annoations that overlap, prefer selection for longest
+                anns = reader.collection.documents[d_idx].passages[p_idx].annotations
+                for needle_ann in anns:
+                    needle_ann_offset = int(needle_ann.locations[0].offset)
+                    needle_ann_length = int(needle_ann.locations[0].length)
+
+                    for stack_ann in anns:
+                        stack_ann_offset = int(stack_ann.locations[0].offset)
+                        stack_ann_length = int(stack_ann.locations[0].length)
+
+                        if needle_ann_offset >= stack_ann_offset and needle_ann_length < stack_ann_length:
+                            try:
+                                reader.collection.documents[d_idx].passages[p_idx].remove_annotation(needle_ann)
+                            except:
+                                pass
+
         return reader
 
     def as_writer(self, request=None):
