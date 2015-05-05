@@ -76,6 +76,11 @@ class Document(models.Model):
         return True
 
     def get_pubtator(self, request=None):
+        '''
+            This is a function that merges the 3 different pubtator
+            reponses into 1 main file. It performances selective
+            ordering and precedence for some annotations types / instances
+        '''
         approved_types = ['Disease', 'Gene', 'Chemical']
         self.init_pubtator()
         reader = self.as_writer(request)
@@ -92,6 +97,7 @@ class Document(models.Model):
                 # For each passage in each document in the collection
                 # add the appropriate annotation
                 for p in pub_readers:
+
                     for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
                         ann_type = annotation.infons['type']
 
@@ -100,6 +106,22 @@ class Document(models.Model):
                             annotation.put_infon('type', str( approved_types.index(ann_type) ))
                             annotation.put_infon('user', 'pubtator')
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
+
+                # Remove the shorter annotation if they're multiple
+                # at the same start position
+                anns = reader.collection.documents[d_idx].passages[p_idx].annotations
+                ann_offsets = [x.locations[0].offset for x in anns]
+
+                import collections
+                # For each of the offset positions where there are multiple annotations
+                for offset in [x for x, y in collections.Counter(ann_offsets).items() if y > 1]:
+
+                    conflicting_anns = [x for x in anns if x.locations[0].offset == offset]
+                    longest_ann = max(conflicting_anns, key=lambda a: int(a.locations[0].length))
+
+                    for ann in conflicting_anns:
+                        if not ann is longest_ann:
+                            reader.collection.documents[d_idx].passages[p_idx].remove_annotation(ann)
 
         return reader
 
