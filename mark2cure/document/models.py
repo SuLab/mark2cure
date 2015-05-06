@@ -90,9 +90,14 @@ class Document(models.Model):
         self.init_pubtator()
         reader = self.as_writer(request)
 
+        pub_query_set = Pubtator.objects.filter(
+                document=self,
+                session_id='',
+                content__isnull=False)
+
         # Load up our various pubtator responses
         pub_readers = []
-        for pubtator in Pubtator.objects.filter(document=self):
+        for pubtator in pub_query_set.all():
             r = BioCReader(source=pubtator.content)
             r.read()
             pub_readers.append(r)
