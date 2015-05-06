@@ -44,7 +44,7 @@ def select_best_opponent(task, document, player):
     # that have been completed
     others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
 
-    # (TODO) Search by Skill badges, if many return 1 at random
+    # If the known GM User is in the DB, use them for partner comparison
     gm_user = User.objects.filter(username='Doc_G-man')
 
     if gm_user.exists():

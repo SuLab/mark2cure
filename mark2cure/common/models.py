@@ -83,6 +83,10 @@ class Group(models.Model):
 
     enabled = models.BooleanField(default=False)
 
+    def get_documents(self):
+        # (TODO?) Return for __in of task_ids
+        return Document.objects.filter(task__group=self)
+
 
 class Task(models.Model):
     name = models.CharField(max_length=200)

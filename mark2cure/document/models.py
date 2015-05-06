@@ -5,6 +5,7 @@ from mark2cure.document.managers import DocumentManager, PubtatorManager
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
+from django.forms.models import model_to_dict
 
 
 class Document(models.Model):
@@ -337,7 +338,10 @@ class Annotation(models.Model):
     view = models.ForeignKey(View)
 
     def is_exact_match(self, comparing_annotation):
-        return True if self.start == comparing_annotation.start and len(self.text) == len(comparing_annotation.text) and self.type == comparing_annotation.type else False
+        required_matching_keys = ['kind', 'start', 'text', 'type']
+        self_d = model_to_dict(self)
+        compare_d = model_to_dict(comparing_annotation)
+        return all([True if self_d[k] == compare_d[k] else False for k in required_matching_keys])
 
     def __unicode__(self):
         if self.kind == 'r':
