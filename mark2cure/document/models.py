@@ -321,8 +321,8 @@ class Annotation(models.Model):
     # Disease, Gene, Protein, et cetera...
     ANNOTATION_TYPE_CHOICE = (
         'disease',
-        'drug',
         'gene_protein',
+        'drug',
     )
     type = models.CharField(max_length=40, blank=True, null=True, default='disease')
 
