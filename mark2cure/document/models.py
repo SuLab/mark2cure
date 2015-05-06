@@ -58,6 +58,10 @@ class Document(models.Model):
                 session_id='',
                 content__isnull=False)
 
+        for section in self.available_sections():
+            for needle in ['<', '>']:
+                if needle in section.text: return False
+
         # The Docment doesn't have a response for each type
         # (TODO) also cases grater than 3
         if pub_query_set.count() != 3:
