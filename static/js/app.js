@@ -1,11 +1,13 @@
 $(document).ready(function() {
   var $el = document.querySelector('#score');
-  od = new Odometer({
-    el: $el,
-    value: $el.innerHTML,
-    format: '(,ddd)',
-    theme: 'minimal'
-  });
+  if($el) {
+    od = new Odometer({
+      el: $el,
+      value: $el.innerHTML,
+      format: '(,ddd)',
+      theme: 'minimal'
+    });
+  }
 });
 
 var update_score = function() {
