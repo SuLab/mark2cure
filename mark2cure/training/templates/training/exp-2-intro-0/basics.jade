@@ -13,7 +13,8 @@ block content
     .row.head-space-xl
       #basics.col-xs-10.col-xs-offset-1.paragraph.entity_tag
         p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
-    #popover-1
+
+    #popover
 
     .row.head-space
       a(href='{% url "training:introduction" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
@@ -29,8 +30,9 @@ block post-footer
       YPet.start();
 
       var step_idx = 0;
-      var $container = $('#popover-1');
-      var opts = {'container': 'body', 'html': true};
+      var $container = $('#popover');
+      var opts = {'container': 'body', 'html': true, 'pos': {'top': 0, 'left': 0}};
+
       var step_function = function() {
         $container.popover('destroy');
 
@@ -56,6 +58,7 @@ block post-footer
             var same_line = $because.offset().top == $help.offset().top;
 
             opts['pos'] = $because.offset();
+
             if(same_line) {
               opts.pos.top = opts.pos.top + $because.height();
               opts.pos.left = opts.pos.left - ($('.popover').width()/2) + 30;
@@ -92,7 +95,7 @@ block post-footer
         var model_json = model.toJSON();
 
         /* Unselect wrong answers */
-        if( !_.contains(['Biomedical', 'information', 'because I am ready to help'], model_json.text) ) {
+        if( !_.contains(['Biomedical', 'because I am ready to help'], model_json.text) ) {
 
           setTimeout(function() {
             var first_word = model.get('words').first();
