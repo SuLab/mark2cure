@@ -93,7 +93,12 @@ block post-footer
 
         /* Unselect wrong answers */
         if( !_.contains(['Biomedical', 'information', 'because I am ready to help'], model_json.text) ) {
-          model.destroy();
+
+          setTimeout(function() {
+            var first_word = model.get('words').first();
+            first_word.trigger('unclick');
+          }, 50);
+
           collection.drawAnnotations(model);
         }
 
