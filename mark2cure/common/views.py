@@ -165,6 +165,32 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
 
 @login_required
+def quest_read_doc_results(request, quest_pk, doc_idx):
+    '''
+        Allows player to revist result page to look at comparision
+    '''
+    task = get_object_or_404(Task, pk=quest_pk)
+    # Get the UQR. Completed=False b/c they may want to view results
+    # of previous doc_idx's before finishing the rest of the document
+    user_quest_relationship = task.user_relationship(request.user, False)
+
+    # The completed document at this index
+    # Using Abstracts but this [1,1,2,2,3,3,4,4,5,5] assumption
+    # is extremely fragile
+    relevant_view = uqr.views.filter(section__kind='a').all()[doc_idx]
+
+    opponent = relevant_view.section.document
+    document = relevant_view.opponent
+
+
+    ctx = {'task': task,
+           'completed_doc_pks': task_doc_pks_completed,
+           'uncompleted_docs': task_doc_uncompleted,
+           'document': document}
+    return TemplateResponse(request, 'common/quest-results-review.jade', ctx)
+
+
+@login_required
 def quest_read_doc_feedback(request, quest_pk, doc_idx):
     '''
         /quest/10/3/feedback/

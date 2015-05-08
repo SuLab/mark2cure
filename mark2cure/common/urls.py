@@ -14,6 +14,9 @@ urlpatterns = patterns('',
         views.support, name='support'),
 
     # Initial training for fresh signups
+    url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/results/$',
+        views.quest_read_doc_results, name='quest-document-results'),
+
     url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/$',
         views.quest_read_doc, name='quest-document'),
 
