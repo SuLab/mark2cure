@@ -25,7 +25,7 @@ block post-footer
 
     YPet.addInitializer(function(options) {
 
-      $.getJSON('/document/{{document.document_id}}.json', function( data ) {
+      $.getJSON('/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function( data ) {
         self_data = data;
         passages = data.collection.document.passage;
         regions = {};
@@ -50,90 +50,21 @@ block post-footer
     });
     YPet.start();
 
-    var clicks = 0;
-    $('#quest-submit').on('click', function(evt) {
-      $(this).attr('disabled', true);
-      if(clicks > 0) { return; }
-      if(clicks == 0) { evt.preventDefault(); clicks++; }
+    /* Submit Feedback and show partner */
+    $.ajax({
+      url:'/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
+      dataType: 'json',
+      success: function(data) {
 
-      /*
-       * AJAX submit all of the current Annotaitons
-       */
-      var counter = 0,
-          ann_counter = 0;
+        partner_data = data;
 
-      /* Iterate over each of the paragraphs or annotatable sections on the page */
-      _.each(passages, function(passage, passage_idx) {
-
-        var section_pk = +_.find(passage.infon, function(o){return o['@key']=='id';})['#text'],
-            annotations = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON(),
-            url = '/document/{{task.pk}}/'+ section_pk +'/annotation/';
-        ann_counter += annotations.length;
-
-        var csrf = $('form').find('input[name="csrfmiddlewaretoken"]').val();
-
-        /* Iterate over each of the annotations within that section */
-        _.each(annotations, function(annotation) {
-          $.ajax({
-            type: 'POST',
-            url: url,
-            data: $.extend({'csrfmiddlewaretoken': csrf}, annotation),
-            cache: false,
-            async: false,
-            success: function() { counter++; },
-          });
-        });
-      });
-
-      /* If they all got sent to the server, let's move on */
-      if(counter === ann_counter) {
-        /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
-        $('form').trigger('submit');
-
-        $(this).text('Next');
-        $(this).attr('disabled', false);
-
-        /* Submit Feedback and show partner */
-        $.ajax({
-          url:'/document/{{task.pk}}/{{document.pk}}/results.json',
-          dataType: 'json',
-          success: function(data) {
-
-            partner_data = data;
-
-            window.scrollTo(0,0);
-            var points = _.find(partner_data.collection.infon, function(o){return o['@key']=='points';})['#text'];
-            var partner = _.find(partner_data.collection.infon, function(o){return o['@key']=='partner';})['#text'];
-            var partner_level = _.find(partner_data.collection.infon, function(o){return o['@key']=='partner_level';})['#text'];
-            var flatter = _.find(partner_data.collection.infon, function(o){return o['@key']=='flatter';})['#text'];
-
-            $('#points').html(points);
-            $('#partner-username').html(partner);
-            $('#partner-level').html(partner_level);
-            $('#flatter').html(flatter);
-            $('#partner-results').slideDown(function() {
-              update_score();
-
-              /* Show underlines */
-              var passages = data.collection.document.passage;
-              _.each(passages, function(passage, passage_idx) {
-                YPet[passage_idx].currentView.drawBioC(passage, true);
-              });
-            });
-
-          },
-          error: function(error_res) {
-            console.log(error_res.responseText);
-            _.each(passages, function(passage, passage_idx) {
-              YPet[passage_idx].currentView.drawBioC(null, true);
-            });
-            window.scrollTo(0,0);
-            $('#new-alert-congrats').slideDown()
-          }
+        /* Show underlines */
+        var passages = data.collection.document.passage;
+        _.each(passages, function(passage, passage_idx) {
+          YPet[passage_idx].currentView.drawBioC(passage, true);
         });
 
-      } else {
-        alert('There was a problem submitting this document. Please try another.');
-      }
+      },
+      error: function(error_res) { }
     });
 

@@ -5,14 +5,17 @@ from django.views.decorators.http import require_http_methods
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.contrib import messages
 from django.http import HttpResponse
 
 from mark2cure.userprofile.models import UserProfile
+from mark2cure.document.models import Document
 from .models import Group, Task, UserQuestRelationship
 from .serializers import QuestSerializer
 from .forms import SupportMessageForm
+from mark2cure.common.formatter import bioc_as_json, apply_bioc_annotations
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -165,6 +168,26 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
 
 @login_required
+def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type):
+    task = get_object_or_404(Task, pk=quest_pk)
+    document = get_object_or_404(Document, pk=doc_pk)
+    user = get_object_or_404(User, pk=user_pk)
+
+    # BioC Writer Response that will serve all partner comparison information
+    writer = document.as_writer()
+    writer = apply_bioc_annotations(writer, user)
+
+    writer.collection.put_infon('partner', str(user.username))
+    writer.collection.put_infon('partner_level', str(user.userprofile.highest_level().name))
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+@login_required
 def quest_read_doc_results(request, quest_pk, doc_idx):
     '''
         Allows player to revist result page to look at comparision
@@ -172,22 +195,28 @@ def quest_read_doc_results(request, quest_pk, doc_idx):
     task = get_object_or_404(Task, pk=quest_pk)
     # Get the UQR. Completed=False b/c they may want to view results
     # of previous doc_idx's before finishing the rest of the document
-    user_quest_relationship = task.user_relationship(request.user, False)
+    user_quest_relationship = task.user_relationship(request.user, True)
 
     # The completed document at this index
     # Using Abstracts but this [1,1,2,2,3,3,4,4,5,5] assumption
     # is extremely fragile
-    relevant_view = uqr.views.filter(section__kind='a').all()[doc_idx]
+    relevant_view = user_quest_relationship.views.filter(section__kind='a').all()[int(doc_idx)]
 
-    opponent = relevant_view.section.document
-    document = relevant_view.opponent
+    document = relevant_view.section.document
+    if relevant_view.opponent:
+        opponent = relevant_view.opponent.user
+    else:
+        # Novel annotations for the player (unpaired)
+        opponent = None
 
+    print ' > Results for:', relevant_view
+    print ' > Opponent:', opponent
+    print ' > Doc', document
 
     ctx = {'task': task,
-           'completed_doc_pks': task_doc_pks_completed,
-           'uncompleted_docs': task_doc_uncompleted,
+           'opponent': opponent,
            'document': document}
-    return TemplateResponse(request, 'common/quest-results-review.jade', ctx)
+    return TemplateResponse(request, 'common/quest-results.jade', ctx)
 
 
 @login_required

@@ -17,6 +17,10 @@ urlpatterns = patterns('',
     url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/results/$',
         views.quest_read_doc_results, name='quest-document-results'),
 
+    # BioC File for Results Page
+    url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_pk>\d+)/results/(?P<user_pk>\d+).(?P<format_type>\w+)$',
+        views.quest_read_doc_results_bioc, name='quest-document-results-bioc'),
+
     url(r'^quest/(?P<quest_pk>\d+)/(?P<doc_idx>\d+)/$',
         views.quest_read_doc, name='quest-document'),
 
