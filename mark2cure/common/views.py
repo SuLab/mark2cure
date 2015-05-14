@@ -200,22 +200,19 @@ def quest_read_doc_results(request, quest_pk, doc_idx):
     # The completed document at this index
     # Using Abstracts but this [1,1,2,2,3,3,4,4,5,5] assumption
     # is extremely fragile
-    relevant_view = user_quest_relationship.views.filter(section__kind='a').all()[int(doc_idx)]
+    relevant_views = user_quest_relationship.views.filter(section__kind='a')
 
-    document = relevant_view.section.document
-    if relevant_view.opponent:
+    if relevant_views.filter(opponent__isnull=False).exists():
+        relevant_view = relevant_views.filter(opponent__isnull=False)[int(doc_idx)]
         opponent = relevant_view.opponent.user
     else:
         # Novel annotations for the player (unpaired)
+        relevant_view = relevant_views.all()[int(doc_idx)]
         opponent = None
-
-    print ' > Results for:', relevant_view
-    print ' > Opponent:', opponent
-    print ' > Doc', document
 
     ctx = {'task': task,
            'opponent': opponent,
-           'document': document}
+           'document': relevant_view.section.document}
     return TemplateResponse(request, 'common/quest-results.jade', ctx)
 
 
