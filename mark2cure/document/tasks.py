@@ -82,7 +82,7 @@ def get_pubtator_response(pk):
 
 
 @task()
-def get_pubmed_document(pubmed_ids, include_pubtator=True):
+def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
     Entrez.email = settings.ENTREZ_EMAIL
 
     if type(pubmed_ids) == list:
@@ -104,7 +104,7 @@ def get_pubmed_document(pubmed_ids, include_pubtator=True):
 
             doc, doc_c = Document.objects.get_or_create(document_id=record.get('PMID'))
             doc.title = title
-            doc.source = 'pubmed'
+            doc.source = source
             doc.save()
 
             sec, sec_c = Section.objects.get_or_create(kind='t', document=doc)

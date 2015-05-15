@@ -111,6 +111,15 @@ def dashboard(request):
 
 @login_required
 @api_view(['GET'])
+def quest_group_list(request, quest_pk):
+    group = get_object_or_404(Group, pk=quest_pk)
+    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
+    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
+    return Response(serializer.data)
+
+
+@login_required
+@api_view(['GET'])
 def quest_list(request):
     group = Group.objects.first()
     queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
