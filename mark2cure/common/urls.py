@@ -39,10 +39,4 @@ urlpatterns = patterns('',
     url(r'^quest/(?P<quest_pk>\d+)/submit/$',
         views.quest_submit, name='quest-submit'),
 
-    # REST Framework
-    url(r'^quest/(?P<quest_pk>\d+)/api/read/$',
-        views.quest_group_list, name='quest-group-api'),
-
-    url(r'^quest/api/read/$',
-        views.quest_list, name='quest-api'),
 )

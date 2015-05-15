@@ -13,12 +13,9 @@ from django.http import HttpResponse
 from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document
 from .models import Group, Task, UserQuestRelationship
-from .serializers import QuestSerializer
+from mark2cure.api.serializers import QuestSerializer
 from .forms import SupportMessageForm
 from mark2cure.common.formatter import bioc_as_json, apply_bioc_annotations
-
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 
 from brabeion import badges
 
@@ -108,23 +105,6 @@ def dashboard(request):
            'profile': profile}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
-
-@login_required
-@api_view(['GET'])
-def quest_group_list(request, quest_pk):
-    group = get_object_or_404(Group, pk=quest_pk)
-    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
-    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
-    return Response(serializer.data)
-
-
-@login_required
-@api_view(['GET'])
-def quest_list(request):
-    group = Group.objects.first()
-    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
-    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
-    return Response(serializer.data)
 
 
 def quest_prevent_duplicates(request, task):

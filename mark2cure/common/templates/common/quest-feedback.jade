@@ -49,7 +49,7 @@ block post-footer
 
       var ajax_settings = {
         'type': 'GET',
-        'url': '/quest/api/read/',
+        'url': '/api/quest/{{task.group_id}}/',
         'success': function(data) {
           var set = _.filter(data, function(q) {
             return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;

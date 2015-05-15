@@ -20,6 +20,9 @@ urlpatterns = patterns('',
     url(r'', include('mark2cure.common.urls',
         namespace='common')),
 
+    url(r'^api/', include('mark2cure.api.urls',
+        namespace='api')),
+
     url(r'^analysis/', include('mark2cure.analysis.urls',
         namespace='analysis')),
 
