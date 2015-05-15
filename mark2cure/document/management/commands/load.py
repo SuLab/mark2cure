@@ -213,35 +213,35 @@ class Command(BaseCommand):
             for pmid in [25514328, 21431621, 10364520]:
                 get_pubmed_document(pmid, 'training-disease')
                 task, task_created = Task.objects.get_or_create(name='T1', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
-                document = Document.objects.get(document_id=pmid, source='training-disease', include_pubtator=False)
+                document = Document.objects.get(document_id=pmid, source='training-disease')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
             # Genes marking
             for pmid in [23542699, 25274141, 23437350]:
                 get_pubmed_document(pmid, 'training-genes')
                 task, task_created = Task.objects.get_or_create(name='T2', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
-                document = Document.objects.get(document_id=pmid, source='training-genes', include_pubtator=False)
+                document = Document.objects.get(document_id=pmid, source='training-genes')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
             # Treatment marking
             for pmid in [25467138, 25671401, 25779362]:
                 get_pubmed_document(pmid, 'training-treatment')
                 task, task_created = Task.objects.get_or_create(name='T3', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
-                document = Document.objects.get(document_id=pmid, source='training-treatment', include_pubtator=False)
+                document = Document.objects.get(document_id=pmid, source='training-treatment')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
             # All concepts
             for pmid in [24883236, 25732996, 18797263, 25663566]:
                 get_pubmed_document(pmid, 'training-all')
                 task, task_created = Task.objects.get_or_create(name='T4', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
-                document = Document.objects.get(document_id=pmid, source='training-all', include_pubtator=False)
+                document = Document.objects.get(document_id=pmid, source='training-all')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
             # Extra practice
             for pmid in [25927578, 25931357]:
                 get_pubmed_document(pmid, 'training-extra')
                 task, task_created = Task.objects.get_or_create(name='T5', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
-                document = Document.objects.get(document_id=pmid, source='training-extra', include_pubtator=False)
+                document = Document.objects.get(document_id=pmid, source='training-extra')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
 
