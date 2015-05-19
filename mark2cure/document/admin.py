@@ -12,6 +12,33 @@ class MyInlineModelOptions(admin.TabularInline):
     # define sortable_excludes
     sortable_excludes = ('authors',)
 
+
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('document_id', 'title', 'sections',
+            'pubtator', 'annotations', 'completed_views',
+            'pending_views', 'source')
+
+    readonly_fields = ('document_id', 'title', 'authors',
+            'source')
+
+    def sections(self, obj):
+        return obj.count_available_sections()
+
+    def pubtator(self, obj):
+        return obj.valid_pubtator()
+
+    def annotations(self, obj):
+        return Annotation.objects.filter(view__section__document=obj).count()
+
+    def completed_views(self, obj):
+        return View.objects.filter(section__document=obj, completed=True).count()
+
+    def pending_views(self, obj):
+        return View.objects.filter(section__document=obj, completed=False).count()
+
+    mymodel = models.ForeignKey(Document)
+
+
 class AnnotationAdmin(admin.ModelAdmin):
     list_display = ('text', 'type', 'start',
             'section', 'username', 'pmid',
@@ -46,7 +73,7 @@ class AnnotationAdmin(admin.ModelAdmin):
 
     mymodel = models.ForeignKey(Annotation)
 
-admin.site.register(Document)
+admin.site.register(Document, DocumentAdmin)
 admin.site.register(Pubtator)
 admin.site.register(Section)
 admin.site.register(View)
