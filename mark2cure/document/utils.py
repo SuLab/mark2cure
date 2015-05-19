@@ -45,15 +45,16 @@ def select_best_opponent(task, document, player):
     others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
 
     # If the known GM User is in the DB, use them for partner comparison
-    gm_user = User.objects.filter(username='GATTACA')
+    gm_user_query = User.objects.filter(username='GATTACA')
 
-    if gm_user.exists():
+    if gm_user_query.exists():
+        gm_user = gm_user_query.first()
         if others_quest_relationships.exists() and \
-                others_quest_relationships.filter(user=gm_user.first()).exists() and \
-                others_quest_relationships.get(user=gm_user.first()).views.filter(section__document=document, completed=True).exists():
+                others_quest_relationships.filter(user=gm_user).exists() and \
+                others_quest_relationships.filter(user=gm_user).first().views.filter(section__document=document, completed=True).exists():
             # There is an "expert's" annotations (GM) so
             # show those as the partner's
-            return gm_user.first()
+            return gm_user
 
     # Gather users from completed documents
     # that may come from uncompleted quests
