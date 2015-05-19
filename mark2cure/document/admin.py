@@ -39,6 +39,43 @@ class DocumentAdmin(admin.ModelAdmin):
     mymodel = models.ForeignKey(Document)
 
 
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ('text_preview', 'kind', 'updated',
+            'annotations', 'completed_views', 'pending_views',
+            'created', 'document')
+
+    readonly_fields = ('kind', 'text', 'source',
+            'updated', 'created', 'document')
+
+    def text_preview(self, obj):
+        # Make sure it's unicode
+        value = unicode(obj.text)
+        limit = 100
+
+        # Return the string itself if length is smaller or equal to the limit
+        if len(value) <= limit:
+            return value
+
+        # Cut the string
+        value = value[:limit]
+
+        # Break into words and remove the last
+        words = value.split(' ')[:-1]
+
+        # Join the words and return
+        return ' '.join(words) + '...'
+
+    def annotations(self, obj):
+        return Annotation.objects.filter(view__section=obj).count()
+
+    def completed_views(self, obj):
+        return View.objects.filter(section=obj, completed=True).count()
+
+    def pending_views(self, obj):
+        return View.objects.filter(section=obj, completed=False).count()
+
+    mymodel = models.ForeignKey(Document)
+
 class AnnotationAdmin(admin.ModelAdmin):
     list_display = ('text', 'type', 'start',
             'section', 'username', 'pmid',
@@ -75,6 +112,6 @@ class AnnotationAdmin(admin.ModelAdmin):
 
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Pubtator)
-admin.site.register(Section)
+admin.site.register(Section, SectionAdmin)
 admin.site.register(View)
 admin.site.register(Annotation, AnnotationAdmin)
