@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.contrib.humanize.templatetags.humanize import naturalday
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
 
@@ -15,7 +15,8 @@ class MyInlineModelOptions(admin.TabularInline):
 class AnnotationAdmin(admin.ModelAdmin):
     list_display = ('text', 'type', 'start',
             'section', 'username', 'pmid',
-            'quest', 'group', 'time_ago')
+            'quest', 'group', 'time_ago',
+            'created')
 
     readonly_fields = ('kind', 'type', 'text',
             'start', 'created', 'view')
@@ -41,9 +42,7 @@ class AnnotationAdmin(admin.ModelAdmin):
         return uqr.task.group.name
 
     def time_ago(self, obj):
-        return '{delta} ({full_time})'.format(
-                delta=naturalday(obj.created),
-                full_time=obj.created)
+        return naturaltime(obj.created)
 
     mymodel = models.ForeignKey(Annotation)
 
