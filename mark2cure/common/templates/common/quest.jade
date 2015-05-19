@@ -19,10 +19,14 @@ block content
         .row.quest-guide
           - for doc in completed_doc_pks
             div.doc-item-col.col-xs-2.col-sm-1.text-center
-              h4 &#8226;
-          - for doc in uncompleted_docs
+              h4.text-muted &#8226;
+
+          - each val, index in uncompleted_docs
             div.doc-item-col.col-xs-2.col-sm-1.text-center
-              h4 &#8226;
+              - if index == 0
+                h4(style="color: #7F3CFF;") &#8226;
+              - else
+                h4 &#8226;
 
       .col-xs-2
         h4.pull-right Score: <span id='score'>#{user.userprofile.rating_score}</span>
