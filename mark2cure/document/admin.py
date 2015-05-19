@@ -39,7 +39,7 @@ class AnnotationAdmin(admin.ModelAdmin):
 
     def group(self, obj):
         uqr = obj.view.userquestrelationship_set.first()
-        return uqr.task.group.name
+        return uqr.task.group.stub
 
     def time_ago(self, obj):
         return naturaltime(obj.created)
