@@ -5,13 +5,6 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
 from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
-class MyInlineModelOptions(admin.TabularInline):
-    fields = ('title', 'updated',)
-    # define the sortable
-    # sortable_field_name = 'position'
-    # define sortable_excludes
-    sortable_excludes = ('authors',)
-
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('document_id', 'title', 'sections',
@@ -37,6 +30,27 @@ class DocumentAdmin(admin.ModelAdmin):
         return View.objects.filter(section__document=obj, completed=False).count()
 
     mymodel = models.ForeignKey(Document)
+
+
+class PubtatorAdmin(admin.ModelAdmin):
+    list_display = ('pmid', 'kind', 'session_id',
+            'annotations', 'valid', 'request_count',
+            'updated', 'created',)
+
+    readonly_fields = ('document', 'kind', 'session_id',
+            'content', 'validate_cache',
+            'request_count', 'updated', 'created',)
+
+    def pmid(self, obj):
+        return obj.document.document_id
+
+    def valid(self, obj):
+        return False != obj.valid()
+
+    def annotations(self, obj):
+        return obj.count_annotations()
+
+    mymodel = models.ForeignKey(Pubtator)
 
 
 class SectionAdmin(admin.ModelAdmin):
@@ -126,7 +140,7 @@ class AnnotationAdmin(admin.ModelAdmin):
     mymodel = models.ForeignKey(Annotation)
 
 admin.site.register(Document, DocumentAdmin)
-admin.site.register(Pubtator)
+admin.site.register(Pubtator, PubtatorAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(View, ViewAdmin)
 admin.site.register(Annotation, AnnotationAdmin)
