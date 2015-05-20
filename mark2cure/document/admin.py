@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.humanize.templatetags.humanize import naturaltime
 
 from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
-
+from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
 class MyInlineModelOptions(admin.TabularInline):
     fields = ('title', 'updated',)
@@ -48,22 +48,7 @@ class SectionAdmin(admin.ModelAdmin):
             'updated', 'created', 'document')
 
     def text_preview(self, obj):
-        # Make sure it's unicode
-        value = unicode(obj.text)
-        limit = 100
-
-        # Return the string itself if length is smaller or equal to the limit
-        if len(value) <= limit:
-            return value
-
-        # Cut the string
-        value = value[:limit]
-
-        # Break into words and remove the last
-        words = value.split(' ')[:-1]
-
-        # Join the words and return
-        return ' '.join(words) + '...'
+        return truncatesmart(obj.text)
 
     def annotations(self, obj):
         return Annotation.objects.filter(view__section=obj).count()
@@ -74,7 +59,37 @@ class SectionAdmin(admin.ModelAdmin):
     def pending_views(self, obj):
         return View.objects.filter(section=obj, completed=False).count()
 
-    mymodel = models.ForeignKey(Document)
+    mymodel = models.ForeignKey(Section)
+
+
+class ViewAdmin(admin.ModelAdmin):
+    list_display = ('task_type', 'partner', 'section_preview',
+            'annotations', 'user', 'quest', 'group', 'completed')
+
+    readonly_fields = ('task_type', 'completed', 'opponent',
+            'section', 'user',)
+
+    def section_preview(self, obj):
+        return truncatesmart(obj.section.text)
+
+    def partner(self, obj):
+        if obj.opponent:
+            return obj.opponent.user
+        else:
+            return '[new anns]'
+
+    def annotations(self, obj):
+        return Annotation.objects.filter(view=obj).count()
+
+    def quest(self, obj):
+        uqr = obj.userquestrelationship_set.first()
+        return uqr.task
+
+    def group(self, obj):
+        uqr = obj.userquestrelationship_set.first()
+        return uqr.task.group.stub
+
+    mymodel = models.ForeignKey(View)
 
 class AnnotationAdmin(admin.ModelAdmin):
     list_display = ('text', 'type', 'start',
@@ -113,5 +128,5 @@ class AnnotationAdmin(admin.ModelAdmin):
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Pubtator)
 admin.site.register(Section, SectionAdmin)
-admin.site.register(View)
+admin.site.register(View, ViewAdmin)
 admin.site.register(Annotation, AnnotationAdmin)
