@@ -20,7 +20,10 @@ class UserQuestRelationshipAdmin(admin.ModelAdmin):
         return obj.views.count()
 
     def group(self, obj):
-        return obj.task.group.stub
+        if obj.task.group:
+            return obj.task.group.stub
+        else:
+            return '[none]'
 
     mymodel = models.ForeignKey(DocumentQuestRelationship)
 
@@ -42,7 +45,10 @@ class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
         return obj.document.document_id
 
     def group(self, obj):
-        return obj.task.group.stub
+        if obj.task.group:
+            return obj.task.group.stub
+        else:
+            return '[none]'
 
     mymodel = models.ForeignKey(DocumentQuestRelationship)
 
@@ -65,7 +71,10 @@ class TaskAdmin(admin.ModelAdmin):
         return UserQuestRelationship.objects.filter(task=obj, completed=True).count()
 
     def group_preview(self, obj):
-        return obj.group.stub
+        if obj.group:
+            return obj.group.stub
+        else:
+            return '[none]'
 
     def document_count(self, obj):
         return obj.documents.count()
