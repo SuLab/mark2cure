@@ -209,6 +209,17 @@ class Pubtator(models.Model):
             # If one of them doesn't validate leave
             return False
 
+    def count_annotations(self):
+        reader = self.valid()
+        count = 0
+
+        if reader:
+            for doc in reader.collection.documents:
+                for passage in doc.passages:
+                    count += len(passage.annotations)
+
+        return count
+
 
 class Section(models.Model):
     SECTION_KIND_CHOICE = (
@@ -319,7 +330,6 @@ class Annotation(models.Model):
         ('a', 'Attributes'),
         ('r', 'Relations'),
         ('t', 'Triggers'),
-        ('e', 'Events'),
     )
     kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
 

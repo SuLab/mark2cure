@@ -87,6 +87,9 @@ class Group(models.Model):
         # (TODO?) Return for __in of task_ids
         return Document.objects.filter(task__group=self)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Task(models.Model):
     name = models.CharField(max_length=200)
@@ -158,8 +161,6 @@ class Task(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
 
 
 class UserQuestRelationship(models.Model):
