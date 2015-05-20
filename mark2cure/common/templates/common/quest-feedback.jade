@@ -1,3 +1,5 @@
+extends base
+
 - load humanize
 
 block content
@@ -30,15 +32,16 @@ block content
 
     .row
       .col-xs-3.col-xs-offset-2
-        a(href='/dashboard/').btn.btn-default.btn-block Go to dashboard
+        a(href='{% url "common:dashboard" %}').btn.btn-default.btn-block Go to dashboard
       .col-xs-3.col-xs-offset-2
         a(href='#', id='nextavailquest').btn.btn-default.btn-block Start next quest
 
+
+block post-footer
   script.
     /* Rather than have a view to fetch the ramining quests, use the
     API and filter so we can on-click determine what quest the
     player should do next */
-    update_score();
 
     $('#nextavailquest').on('click', function(evt) {
       evt.preventDefault();
@@ -46,7 +49,7 @@ block content
 
       var ajax_settings = {
         'type': 'GET',
-        'url': '/quest/api/read/',
+        'url': '/api/quest/{{task.group_id}}/',
         'success': function(data) {
           var set = _.filter(data, function(q) {
             return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
@@ -58,5 +61,3 @@ block content
       };
       $.ajax(ajax_settings);
     });
-
-

@@ -22,9 +22,7 @@ block content
   .container
     .row
       .col-md-10.col-md-offset-1
-        #dashboard.row.head-space.paragraph-box
-          .col-xs-12.text-center
-            h2.quest-loading Loading...
+        #dashboard
 
   include document/includes/welcome-modal
 
@@ -35,11 +33,11 @@ block post-footer
         $('#dashboardWelcomeModal').modal('show');
 
     script.
-      var draw_dashboard = function(data) {
-        $('#dashboard').html('');
-        var canvas = d3.select('#dashboard');
+      var draw_dashboard = function(group, quests) {
+        $('#group-'+ group.pk).html('');
+        var canvas = d3.select('#group-'+ group.pk);
 
-        var available_quests = _.filter(data, function(item) { return item.enabled && !item.completed });
+        var available_quests = _.filter(quests, function(item) { return item.enabled && !item.completed });
         var completion_size = _.map(available_quests, function(item) { return item.completions; });
 
         var completion_scale = d3.scale.linear()
@@ -84,7 +82,7 @@ block post-footer
         var styles = {
         };
         var quest = canvas.selectAll('.quest').remove();
-        var quest = canvas.selectAll('.quest').data(data);
+        var quest = canvas.selectAll('.quest').data(quests);
 
         quest.enter().append('div')
           .attr(attrs)
@@ -100,19 +98,37 @@ block post-footer
         quest.exit().remove();
       };
 
-      var ajax_settings = {
+      $.ajax({
         'type': 'GET',
-        'url': '/quest/api/read/',
+        'url': '/api/groups/',
         'success': function(data) {
-          draw_dashboard(data);
+          _.each(data, function(v) {
+            var template = _.template("
+              <h3><%- name %></h3>
+              <div id='group-<%- pk %>' class='row head-space paragraph-box'>
+                <div class='col-xs-12 text-center'>
+                  <h2 class='quest-loading'>Loading...</h2>
+                </div>
+              </div>");
+            $('#dashboard').append(template(v));
 
-          $('#dashboard .quest').click(function(evt) {
-            var link = $(this).find('a');
-            if(link.length) { location.href=link.attr('href'); }
+            $.ajax({
+              'type': 'GET',
+              'url': '/api/quest/'+ v.pk +'/',
+              'success': function(data) {
+                draw_dashboard(v, data);
+
+                $('#dashboard .quest').click(function(evt) {
+                  var link = $(this).find('a');
+                  if(link.length) { location.href=link.attr('href'); }
+                });
+
+              }
+            });
+
+
           });
-
         }
-      };
+      });
 
-      $.ajax(ajax_settings);
 

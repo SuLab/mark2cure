@@ -42,6 +42,7 @@ head
     link(rel='stylesheet', href='#{STATIC_URL}css/introjs-nassim.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/odometer-theme-minimal.css')
 
+
     //- Fonts
     link(rel='stylesheet', href='#{STATIC_URL}fonts/equity_text_b_regular/equity.css')
     link(rel='stylesheet', href='#{STATIC_URL}fonts/px-grotesk/PxGrotesk-font.css')
@@ -74,7 +75,6 @@ head
 
     block footer
       include includes/footer
-
       script(src="//code.jquery.com/jquery-1.11.1.min.js")
       script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
       script(src="#{STATIC_URL}js/libs/underscore-min.js")
@@ -93,11 +93,11 @@ head
 
       script(src='#{STATIC_URL}js/ypet.js')
       script(src='#{STATIC_URL}js/app.js')
-
-      script(src='//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js')
+      script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
 
       a#support-icon(data-toggle="modal", data-target="#support-modal")
         img(src='#{STATIC_URL}images/support-icon.png')
+
       include instructions/multi-concept-instructions-modal
       .modal.fade#support-modal
         .modal-dialog
@@ -121,29 +121,25 @@ head
               button(type="button", data-dismiss="modal").btn.btn-default Cancel
               button(type="button").btn.btn-default.modal-form-submit Submit
 
-      - if request.user.is_authenticated
+      script.
+        var raven_options = {
+          logger: 'js-logger',
+          whitelistUrls: [/mark2cure\.org/, /localhost/],
+          fetchContext: true,
+          linesOfContext: 30
+        };
+
+      - if debug
         script.
+          Raven.config('http://cd8a9437c30643369291b1ec35c69592@sentry.sulab.org/10', raven_options).install();
+
+      - else
+        script.
+          Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', raven_options).install();
           Raven.setUser({
             email: "{{ request.user.email }}",
             id: "{{ request.user.pk }}"
           });
-
-          window.intercomSettings = {
-            name: "{{ request.user.username }}",
-            email: "{{ request.user.email }}",
-            created_at: {{ request.user.date_joined|date:"U" }},
-            app_id: 'ru006jn3',
-          };
-
-        - if not debug
-          script.
-            window.intercomSettings['app_id'] = 'geb4sut8';
-
-      - if not debug
-        script.
-          Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {
-            whitelistUrls: [/mark2cure\.org/]
-          }).install();
 
           var _gaq = _gaq || [];
           _gaq.push(['_setAccount', 'UA-43341013-1']);
@@ -154,7 +150,6 @@ head
             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
           })();
-
 
       .modal.fade#touch-modal
         .modal-dialog
@@ -170,7 +165,6 @@ head
               button(type="button", data-dismiss="modal").btn.btn-default Okay
       script.
         if(Modernizr.touch) { $('#touch-modal').modal('show'); }
-
 
 
     block post-footer

@@ -20,6 +20,8 @@ def pad_split(text):
     text = text.replace("\\[", " [ ")
     text = text.replace("\\]", " ] ")
     text = text.replace("\\;", " ; ");
+    text = text.replace("\\/", " / ");
+    text = text.replace("/", " / ");
     text = text.replace("\\\"", " \" ")
     text = text.replace("  ", " ")
     text = text.replace("  ", " ")
@@ -43,41 +45,35 @@ def bioc_as_json(writer):
     return json.dumps(o)
 
 
-def apply_bioc_documents(documents, bioc_collection, user=None):
-    for doc in documents:
-        d = doc.as_bioc()
+def apply_bioc_annotations(writer, user=None):
+    bioc_doc = writer.collection.documents[0]
+    approved_types = ['disease', 'gene_protein', 'drug']
 
-        passage_offset = 0
-        for section in doc.available_sections():
-            passage = section.as_bioc(passage_offset)
-            passage_offset += len(section.text)
+    for bioc_passage in bioc_doc.passages:
+        section_pk = bioc_passage.infons['id']
+        offset = int(bioc_passage.offset)
 
-            apply_bioc_annotations(section, passage, passage_offset, user)
-            d.add_passage(passage)
+        query_set = Annotation.objects.filter(view__section__pk=section_pk)
+        if user:
+            query_set = query_set.filter(view__user=user)
 
-        bioc_collection.add_document(d)
+        for ann in query_set.all():
+            annotation = BioCAnnotation()
+            annotation.id = str(ann.pk)
+            annotation.put_infon('user', str(ann.view.user.pk))
+            annotation.put_infon('user_name', str(ann.view.user.username))
 
+            # (TODO) Map type strings back to 0,1,2
+            annotation.put_infon('type', str( approved_types.index(ann.type) ))
 
-def apply_bioc_annotations(section, bioc_passage, passage_offset, user=None):
-    if user:
-        query_set = Annotation.objects.filter(view__section=section, view__user=user)
-    else:
-        query_set = Annotation.objects.filter(view__section=section)
+            location = BioCLocation()
+            location.offset = str(offset + ann.start)
+            location.length = str(len(ann.text))
+            annotation.add_location(location)
 
-    for ann in query_set.all():
-        annotation = BioCAnnotation()
-        annotation.id = str(ann.pk)
-        annotation.put_infon('type', str(ann.type))
-        annotation.put_infon('user', str(ann.view.user.pk))
-        annotation.put_infon('user_name', str(ann.view.user.username))
+            annotation.text = ann.text
 
-        annotation.put_infon('type', str(0))
+            bioc_passage.add_annotation(annotation)
 
-        location = BioCLocation()
-        location.offset = str(passage_offset+ann.start)
-        location.length = str(len(ann.text))
-        annotation.add_location(location)
+    return writer
 
-        annotation.text = ann.text
-
-        bioc_passage.add_annotation(annotation)

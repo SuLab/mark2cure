@@ -374,18 +374,46 @@ WordView = Backbone.Marionette.ItemView.extend({
 
     this.listenTo(this.model, 'underline', function(options) {
       var $container = this.$el.parent(),
-      pos = this.$el.position();
+          pos = this.$el.position(),
+          split_end = this.$el.height() >= 30; /* (TODO) Compare to reference single height unit */
 
       var yaxis = pos.top + this.$el.height() + 2;
-      var width = this.$el.width();
+      var width = this.$el.width() + 1;
 
-      $container.append('<div class="underline" style=" \
-        position: absolute; \
-        height: 4px; \
-        width: '+ width +'px; \
-        top: '+ yaxis +'px; \
-        left: '+ pos.left +'px; \
-        background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+      if (split_end) {
+        /* The first part of the word that wraps to the second line */
+        var absolute_left = $container.find('span').first().position().left;
+        var split_left = $prev.position().left + $prev.width();
+        var $prev = this.$el.prev(),
+            $next = this.$el.next();
+
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ (Math.abs( pos.left+width - split_left)) +'px; \
+          top: '+ (pos.top+(this.$el.height()/2)-5)  +'px; \
+          left: '+ split_left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+
+        /* The reminder on the line below */
+        /* (TODO) sometimes it'll split and there will be no next word */
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ ($next.position().left - absolute_left) +'px; \
+          top: '+ yaxis +'px; \
+          left: '+ absolute_left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+
+      } else {
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ width +'px; \
+          top: '+ yaxis +'px; \
+          left: '+ pos.left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+      }
     });
 
     this.listenTo(this.model, 'underline-space', function(options) {
@@ -514,39 +542,58 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       words.each(function(w) {
         w.set('disabled', true);
       });
-
     }
 
     if(passage) {
+
+      /*
+       * Make selections if Annotations are present
+       */
       var annotations = _.compact(_.flatten([passage.annotation]));
       var passage_offset = +passage.offset;
-
-      // Fragile pulling infon index like that
       if(annotations.length) {
-
 
         var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
         if(user_ids.length != 1) { console.log('throw error'); }
         var user_id = +user_ids[0];
+        if(passage_offset != 0) {
+          passage_offset++;
+        }
 
         _.each(annotations, function(annotation, annotation_idx) {
-          var ann_start = +annotation.location['@offset'] - passage_offset;
-          var ann_length = +annotation.location['@length'];
-          var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
+          try {
+            var ann_start = +annotation.location['@offset'] - passage_offset;
+            var ann_length = +annotation.location['@length'];
+            var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
 
-          var selected = words.filter(function(word) {
-            return (word.get('start') == ann_start) || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
-          });
+            var start_match = false;
+            var selected = words.filter(function(word) {
+              /* The Annotation found a word which matches start position exactly */
+              var starts = word.get('start') == ann_start;
+              if (starts) { start_match = true; }
+              return starts || (word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
+            });
 
-          if(selected.length) {
-            if(opponent) {
-              var opp_anns = parentDocument.get('opponent_annotations');
-              opp_anns.create({words: selected, type: ann_type, opponent: opponent});
-            } else {
-              var anns = parentDocument.get('annotations');
-              anns.create({words: selected, type: ann_type, opponent: opponent});
+            if(selected.length) {
+              if(opponent) {
+                var opp_anns = parentDocument.get('opponent_annotations');
+                opp_anns.create({words: selected, type: ann_type, opponent: opponent});
+              } else {
+                var anns = parentDocument.get('annotations');
+                anns.create({words: selected, type: ann_type, opponent: opponent});
+              }
             }
-          }
+
+            var words_match = selected.length == _.str.words(annotation.text).length;
+            if(words_match==false && start_match==false) {
+              Raven.captureMessage('Imperfect Pubtator >> YPet Match', {extra: {
+                'selected': selected,
+                'annotation': annotation,
+                'passage': passage
+              }});
+            }
+
+          } catch(e) { Raven.captureException(e); }
 
         });
       }

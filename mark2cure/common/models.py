@@ -76,6 +76,21 @@ class PointsBadge(Badge):
 badges.register(PointsBadge)
 
 
+class Group(models.Model):
+    name = models.CharField(max_length=200)
+    stub = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+
+    enabled = models.BooleanField(default=False)
+
+    def get_documents(self):
+        # (TODO?) Return for __in of task_ids
+        return Document.objects.filter(task__group=self)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Task(models.Model):
     name = models.CharField(max_length=200)
 
@@ -101,8 +116,24 @@ class Task(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    # Tasks are not shared between groups so no need for m2m
+    group = models.ForeignKey(Group, blank=True, null=True)
+
     def total_points(self):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
+
+    def remaining_documents(self, completed_ids=[]):
+        # Document pks for the Quest the user has left
+        if self.documents:
+            # Document pks for the Quest the user has left
+            return list(self.documents.exclude(pk__in=completed_ids).all())
+        else:
+            return []
+
+
+    def user_relationship(self, user, completed=False):
+        return UserQuestRelationship.objects.filter(task=self, user=user, completed=completed).first()
+
 
     def create_views(self, document, user):
         user_quest_rel = self.userquestrelationship_set.filter(user=user, completed=False).first()
@@ -122,6 +153,12 @@ class Task(models.Model):
             view.completed = True
             view.save()
 
+    def clear_documents(self):
+        # Remove any previous DocumentQuestRelationship which may have been in place
+        for doc in self.documents.all():
+            dqr = DocumentQuestRelationship.objects.get(document=doc, task=self)
+            dqr.delete()
+
     def __unicode__(self):
         return self.name
 
@@ -138,13 +175,23 @@ class UserQuestRelationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    def completed_views(self):
+        return self.views.filter(completed=True)
+
+    def completed_document_ids(self):
+        # Collect the completed document pks the user has done for this quest
+        return list(set(
+            self.completed_views().values_list('section__document', flat=True)
+        ))
 
     class Meta:
         get_latest_by = 'updated'
 
 
     def __unicode__(self):
-        return u'User Quest Relationship'
+        return u'/quest/{quest_pk}/ {username}'.format(
+                quest_pk=self.task.pk,
+                username=self.user.username)
 
 
 class DocumentQuestRelationship(models.Model):

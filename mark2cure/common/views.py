@@ -5,17 +5,17 @@ from django.views.decorators.http import require_http_methods
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.contrib import messages
 from django.http import HttpResponse
 
 from mark2cure.userprofile.models import UserProfile
-from .models import Task, UserQuestRelationship
-from .serializers import QuestSerializer
+from mark2cure.document.models import Document
+from .models import Group, Task, UserQuestRelationship
+from mark2cure.api.serializers import QuestSerializer
 from .forms import SupportMessageForm
-
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from mark2cure.common.formatter import bioc_as_json, apply_bioc_annotations
 
 from brabeion import badges
 
@@ -71,7 +71,8 @@ def dashboard(request):
             welcome = True
 
     # Figure out state of the view for the user
-    queryset = Task.objects.filter(kind=Task.QUEST).all()
+    group = Group.objects.first()
+    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
 
     user_completed = filter(lambda task: task['user']['completed'] is True, serializer.data)
@@ -79,28 +80,23 @@ def dashboard(request):
     community_completed = filter(lambda task: task['progress']['completed'] is True, serializer.data)
     community_completed_count = len(community_completed)
     query_set_count = len(queryset)
-    '''
+
     msg_footer = '<p class="text-center">Be sure to check your email and follow us on twitter (<a href="https://twitter.com/mark2cure">@Mark2Cure</a>) to be notified when we launch our next one.</p>'
 
     if user_completed_count == len(serializer.data):
         msg = '<p class="lead text-center">Congratulations! You have completed all quests available to you. Thank you for your participation in this experiment.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-success')
 
     elif user_completed_count >= 1 and community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you very much for your participation in the first experiment. The Mark2Cure community has completed all the quests available.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-info')
 
     elif community_completed_count == query_set_count - 1:
         msg = '<p class="lead text-center">Thank you for joining Mark2Cure. The Mark2Cure community has completed all the quests available.</p>'
-        #messages.info(request, msg + msg_footer, extra_tags='safe alert-warning')
 
     else:
         msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
-        #messages.info(request, msg, extra_tags='safe alert-success')
 
-    msg = '<p class="lead text-center">The first Mark2Cure annotation campaign has just finished! Congratulations, nearly 9,000 annotation tasks were completed in 3 weeks thanks to our amazing community of Mark2Curators! While we analyze the collected data and prepare for the next annotation campaign, please do your part by helping us to find other Mark2Curators. Thank you! - Team Mark2Cure'
     messages.info(request, msg, extra_tags='safe alert-success')
-    '''
+
     groups = []
     ctx = {
             'groups': groups,
@@ -110,59 +106,199 @@ def dashboard(request):
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 
-@login_required
-@api_view(['GET'])
-def quest_list(request):
-    queryset = Task.objects.filter(kind=Task.QUEST, experiment=settings.EXPERIMENT).all()
-    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
-    return Response(serializer.data)
 
-
-@login_required
-def quest_read(request, quest_num):
-    task = get_object_or_404(Task, pk=quest_num)
-
+def quest_prevent_duplicates(request, task):
     # Prevent a user from completing the same Quest multiple times
     if UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists():
         messages.warning(request, '<p class="lead text-center">We\'re sorry, but you can only do Quest {quest_pk} once.</p>'.format(quest_pk=task.name), extra_tags='safe alert-warning')
         return redirect('common:dashboard')
 
-    user_quest_rels = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False)
-    user_quest_rel_created = False
 
-    if user_quest_rels.exists():
-        user_quest_rel = user_quest_rels.first()
+@login_required
+def quest_read_doc(request, quest_pk, doc_idx):
+    task = get_object_or_404(Task, pk=quest_pk)
+
+    # Redirect if trying to access more documents
+    # than this task contains
+    if int(doc_idx) > len( task.remaining_documents() ):
+        return redirect('common:quest-home', quest_pk=task.pk)
+
+    # Confirm the user has started, but not completed this Task
+    user_quest_relationship = task.user_relationship(request.user, False)
+    if not user_quest_relationship:
+        return redirect('common:quest-home', quest_pk=task.pk)
+
+    task_doc_pks_completed = user_quest_relationship.completed_document_ids()
+    if int(doc_idx) <= len( task_doc_pks_completed ):
+        return redirect('common:quest-home', quest_pk=task.pk)
+
+    '''
+    # only take the one that has views
+    user_quest_rel = task.userquestrelationship_set.filter(user=user, completed=False).latest()
+    user_quest_rel_views = user_quest_rel.views
+
+    # If a completed view doesn't exist, redirect them to complete the document submission
+    if not user_quest_rel_views.filter(section__document=doc, completed=True).exists():
+        return redirect('document:read', task.pk, doc.pk)
+    '''
+
+    # Fetch available documents
+    task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
+    random.shuffle( task_doc_uncompleted )
+
+    document = task_doc_uncompleted[0]
+    #task.create_views(document, request.user)
+
+    ctx = {'task': task,
+           'completed_doc_pks': task_doc_pks_completed,
+           'uncompleted_docs': task_doc_uncompleted,
+           'document': document}
+    return TemplateResponse(request, 'common/quest.jade', ctx)
+
+
+@login_required
+def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type):
+    task = get_object_or_404(Task, pk=quest_pk)
+    document = get_object_or_404(Document, pk=doc_pk)
+    user = get_object_or_404(User, pk=user_pk)
+
+    # BioC Writer Response that will serve all partner comparison information
+    writer = document.as_writer()
+    writer = apply_bioc_annotations(writer, user)
+
+    writer.collection.put_infon('partner', str(user.username))
+    writer.collection.put_infon('partner_level', str(user.userprofile.highest_level().name))
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
     else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+@login_required
+def quest_read_doc_results(request, quest_pk, doc_idx):
+    '''
+        Allows player to revist result page to look at comparision
+    '''
+    task = get_object_or_404(Task, pk=quest_pk)
+    # Get the UQR. Completed=False b/c they may want to view results
+    # of previous doc_idx's before finishing the rest of the document
+    user_quest_relationship = task.user_relationship(request.user, True)
+
+    # The completed document at this index
+    # Using Abstracts but this [1,1,2,2,3,3,4,4,5,5] assumption
+    # is extremely fragile
+    relevant_views = user_quest_relationship.views.filter(section__kind='a')
+
+    if relevant_views.filter(opponent__isnull=False).exists():
+        relevant_view = relevant_views.filter(opponent__isnull=False)[int(doc_idx)]
+        opponent = relevant_view.opponent.user
+    else:
+        # Novel annotations for the player (unpaired)
+        relevant_view = relevant_views.all()[int(doc_idx)]
+        opponent = None
+
+    ctx = {'task': task,
+           'opponent': opponent,
+           'document': relevant_view.section.document}
+    return TemplateResponse(request, 'common/quest-results.jade', ctx)
+
+
+@login_required
+def quest_read_doc_feedback(request, quest_pk, doc_idx):
+    '''
+        /quest/10/3/feedback/
+
+        For now, we will not have a dedicated feedback page.
+        This may be added in the future if desired, for now
+        all feedback comes after ajax request to fetch the
+        opponents BioC file.
+
+        Logic for this decision: Would be 3 api requests
+        User read, Opponent Read
+                vs
+        User read. User read, Opponent Read
+    '''
+    pass
+
+
+@login_required
+@require_http_methods(['POST'])
+def document_quest_submit(request, quest_pk, document_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+    user_quest_relationship = task.user_relationship(request.user, False)
+
+    if not user_quest_relationship:
+        return HttpResponseServerError()
+
+    for view in user_quest_relationship.views.filter(section__document__pk=document_pk):
+        view.completed = True
+        view.save()
+
+    return HttpResponse(200)
+
+
+@login_required
+def quest_submit(request, task, bypass_post=False):
+    # (TODO) Add validation check here at some point
+
+    if request.POST or bypass_post:
+        user_quest_relationship = task.user_relationship(request.user, False)
+
+        if not user_quest_relationship.completed:
+            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge("points_awarded", user=request.user)
+            badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
+        user_quest_relationship.completed = True
+        user_quest_relationship.save()
+
+
+@login_required
+def quest_feedback(request, quest_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+    ctx = {'task':task}
+    return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
+
+
+@login_required
+def quest_read(request, quest_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+
+    # Check if user has pre-existing relationship with Quest
+    user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user)
+    #, completed=False)
+
+    if user_quest_rel_queryset.exists():
+
+        # User has viewed this Quest before and Completed it
+        # so show them the feedback page
+        if user_quest_rel_queryset.filter(completed=True).exists():
+            return redirect('common:quest-feedback', quest_pk=task.pk)
+
+        # Not using get_or_create b/c get occasionally returned multiple (unknown bug source)
+        user_quest_relationship = user_quest_rel_queryset.first()
+        task_doc_pks_completed = user_quest_relationship.completed_document_ids()
+
+        # If there are no more documents to do, mark the Quest
+        # as completed and go to dashboard
+        task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
+        if len(task_doc_uncompleted) == 0:
+            quest_submit(request, task, True)
+            return redirect('common:quest-feedback', quest_pk=task.pk)
+
+        next_doc_idx = len(task_doc_pks_completed)+1
+        return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
+
+    else:
+        # Create the User >> Quest relationship
         user_quest_rel = UserQuestRelationship.objects.create(task=task, user=request.user, completed=False)
-        user_quest_rel_created = True
 
-    task_doc_ids_completed = []
-
-    if user_quest_rel_created:
         documents = list(task.documents.all())
         for document in documents:
             task.create_views(document, request.user)
-    else:
-        task_doc_ids_completed = list(set(user_quest_rel.views.filter(completed=True).values_list('section__document', flat=True)))
-        documents = list(task.documents.exclude(pk__in=task_doc_ids_completed).all())
 
-    random.shuffle(documents)
-
-    if (request.method == 'POST' and user_quest_rel_created is False) or len(documents) == 0:
-        # (TODO) Add validation check here at some point
-        user_quest_rel.completed = True
-        user_quest_rel.save()
-
-        request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge("points_awarded", user=request.user)
-        badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
-
-        ctx = {'task': task}
-        return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
-
-    user_quest_rel.save()
-    ctx = {'task': task,
-           'completed_docs': task_doc_ids_completed,
-           'documents': documents}
-    return TemplateResponse(request, 'common/quest.jade', ctx)
+        # Route the user to the right idx doc
+        return redirect('common:quest-document', quest_pk=task.pk, doc_idx=1)
 

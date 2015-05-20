@@ -9,7 +9,8 @@
         "meta_url": "/training/intro/1/step/1/",
         "provides_qualification": 1,
         "points": 1000,
-        "requires_qualification": 0
+        "requires_qualification": 0,
+        "group": null
     },
     "model": "common.task",
     "pk": 1
@@ -24,7 +25,8 @@
         "meta_url": "/training/intro/2/step/1/",
         "provides_qualification": 2,
         "points": 4000,
-        "requires_qualification": 1
+        "requires_qualification": 1,
+        "group": null
     },
     "model": "common.task",
     "pk": 2
@@ -39,7 +41,8 @@
         "meta_url": "/training/intro/3/",
         "provides_qualification": 3,
         "points": 1000,
-        "requires_qualification": 2
+        "requires_qualification": 2,
+        "group": null
     },
     "model": "common.task",
     "pk": 3
@@ -54,7 +57,8 @@
         "meta_url": "/training/basics/step/1/",
         "provides_qualification": 0,
         "points": 1000,
-        "requires_qualification": 0
+        "requires_qualification": 0,
+        "group": null
     },
     "model": "common.task",
     "pk": null
@@ -69,7 +73,8 @@
         "meta_url": "/training/intro/1/step/1/",
         "provides_qualification": 4,
         "points": 4000,
-        "requires_qualification": 0
+        "requires_qualification": 0,
+        "group": null
     },
     "model": "common.task",
     "pk": null
@@ -84,7 +89,8 @@
         "meta_url": "/training/intro/2/step/1/",
         "provides_qualification": 5,
         "points": 4000,
-        "requires_qualification": 4
+        "requires_qualification": 4,
+        "group": null
     },
     "model": "common.task",
     "pk": null
@@ -99,7 +105,8 @@
         "meta_url": "/training/intro/3/step/1/",
         "provides_qualification": 6,
         "points": 4000,
-        "requires_qualification": 5
+        "requires_qualification": 5,
+        "group": null
     },
     "model": "common.task",
     "pk": null
@@ -114,7 +121,8 @@
         "meta_url": "/training/intro/4/step/1/",
         "provides_qualification": 7,
         "points": 4000,
-        "requires_qualification": 6
+        "requires_qualification": 6,
+        "group": null
     },
     "model": "common.task",
     "pk": null

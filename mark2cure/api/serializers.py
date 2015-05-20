@@ -1,5 +1,11 @@
-from mark2cure.common.models import Task, UserQuestRelationship
+from mark2cure.common.models import Group, Task, UserQuestRelationship
 from rest_framework import serializers
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('pk', 'name', 'stub', 'description')
 
 
 class QuestSerializer(serializers.ModelSerializer):

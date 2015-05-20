@@ -6,7 +6,7 @@ from django.conf import settings
 from mark2cure.userprofile.models import UserProfile
 from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
 
-from mark2cure.common.models import Task, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
+from mark2cure.common.models import Task, Group, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
 from mark2cure.document.tasks import get_pubmed_document, get_pubtator_response
 
 from brabeion import badges
@@ -37,6 +37,12 @@ class Command(BaseCommand):
             dest='assign',
             default=False,
             help='Bin the Documents into associated Quests'),
+
+        make_option('--training',
+            action='store_true',
+            dest='training',
+            default=False,
+            help='Load the Training Documents into Mark2Cure'),
 
         make_option('--gm_anns',
             action='store_true',
@@ -128,18 +134,18 @@ class Command(BaseCommand):
                                             kind='e')
 
         '''
-            Randomly assign the loaded documents into our bins
-            ensure the 4 training always go into Quest 1
+            1) Create a Group to Organize Tasks
+            2) Create tasks w/ 5 documents each that all have valid pubtator
+                content from 622 set
+            3) Organize these tasks into Group to know wh
         '''
         if options['assign']:
-            gm_documents = Document.objects.filter(source='NCBI_corpus_training', document_id__in=gm_documents_ids).all()
-            task_counter = 1
-
+            '''
             # GM hidden
             task, task_created = Task.objects.get_or_create(
                 name=str(task_counter),
                 completions=None,
-                requires_qualification=3,
+                requires_qualification=,
                 provides_qualification=4,
                 points=5000,
                 experiment=settings.EXPERIMENT)
@@ -150,65 +156,94 @@ class Command(BaseCommand):
 
             for gold_document in gm_documents:
                 DocumentQuestRelationship.objects.create(task=task, document=gold_document)
+            '''
+
+            documents = Document.objects.filter(source='pubmed')
+            task_counter = Task.objects.filter(kind='q').count()
 
             # Insert the other Documents
-            document_set = list(
-                Document.objects.filter(document_id__in=doc_set)
-                                .exclude(document_id__in=gm_documents_ids)
-                                .values_list('id', flat=True)
-            )
-
-            print "Length of appended experimental document set:", len(document_set)
+            document_set = list(documents.values_list('id', flat=True))
 
             smallest_bin = 5
             largest_bin = 5
             completions = 15
             random.shuffle(document_set)
 
+            group, group_v = Group.objects.get_or_create(name='622', stub='622', enabled=True)
+            #task.clear_documents()
+            last_task = group.task_set.last()
+
             while len(document_set) > smallest_bin:
-                task_counter += 1
-                task, task_created = Task.objects.get_or_create(
-                    name=str(task_counter),
-                    completions=completions,
-                    requires_qualification=4,
-                    provides_qualification=4,
-                    points=5000,
-                    experiment=settings.EXPERIMENT)
 
                 quest_size = int(random.uniform(smallest_bin, largest_bin))
-                sel = document_set[0:quest_size]
+                # If there was an existing Task with less than the
+                # desired number of documents
+                if last_task and last_task.documents.count() < quest_size:
 
-                for i in sel:
-                    document_set.remove(i)
+                    # Shuffle & Remove the document_pk for use and from being selected again
+                    random.shuffle(document_set)
+                    doc_pk = document_set[0]
+                    document_set.remove(doc_pk)
 
-                for doc in task.documents.all():
-                    dqr = DocumentQuestRelationship.objects.get(task=task, document=doc),
-                    dqr.delete()
+                    document = Document.objects.get(pk=doc_pk)
+                    print 'Add Document', len(document_set), document.valid_pubtator(), last_task
+                    if document.valid_pubtator():
+                        DocumentQuestRelationship.objects.create(task=last_task, document=document)
 
-                for doc_idx in sel:
-                    document = Document.objects.get(pk=doc_idx)
-                    DocumentQuestRelationship.objects.create(task=task, document=document)
+                else:
+                    print '> Add New Task'
+                    if last_task:
+                        idx = last_task.pk
+                    else:
+                        idx = Task.objects.last().pk
 
-            else:
-                if len(document_set) > 0:
-                    task_counter += 1
-                    task, task_created = Task.objects.get_or_create(
-                        name=str(task_counter),
+                    last_task, task_created = Task.objects.get_or_create(
+                        name=str(idx+1),
                         completions=completions,
-                        requires_qualification=4,
-                        provides_qualification=4,
+                        requires_qualification=7,
+                        provides_qualification=7,
                         points=5000,
-                        experiment=settings.EXPERIMENT)
+                        group=group)
 
-                    print "Adding", len(document_set), "to Quest:", task_counter, 'remaining', len(document_set)
 
-                    for doc in task.documents.all():
-                        dqr = DocumentQuestRelationship.objects.get(document=doc, task=task)
-                        dqr.delete()
+        if options['training']:
+            group, group_c = Group.objects.get_or_create(name='Training', stub='training', enabled=False)
 
-                    for doc_idx in document_set:
-                        document = Document.objects.get(pk=doc_idx)
-                        DocumentQuestRelationship.objects.create(task=task, document=document)
+            # Disease marking
+            for pmid in [25514328, 21431621, 10364520]:
+                get_pubmed_document(pmid, 'training-disease')
+                task, task_created = Task.objects.get_or_create(name='T1', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
+                document = Document.objects.get(document_id=pmid, source='training-disease')
+                DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
+
+            # Genes marking
+            for pmid in [23542699, 25274141, 23437350]:
+                get_pubmed_document(pmid, 'training-genes')
+                task, task_created = Task.objects.get_or_create(name='T2', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
+                document = Document.objects.get(document_id=pmid, source='training-genes')
+                DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
+
+            # Treatment marking
+            for pmid in [25467138, 25671401, 25779362]:
+                get_pubmed_document(pmid, 'training-treatment')
+                task, task_created = Task.objects.get_or_create(name='T3', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
+                document = Document.objects.get(document_id=pmid, source='training-treatment')
+                DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
+
+            # All concepts
+            for pmid in [24883236, 25732996, 18797263, 25663566]:
+                get_pubmed_document(pmid, 'training-all')
+                task, task_created = Task.objects.get_or_create(name='T4', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
+                document = Document.objects.get(document_id=pmid, source='training-all')
+                DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
+
+            # Extra practice
+            for pmid in [25927578, 25931357]:
+                get_pubmed_document(pmid, 'training-extra')
+                task, task_created = Task.objects.get_or_create(name='T5', completions=None, requires_qualification=7, provides_qualification=7, points=5000, group=group)
+                document = Document.objects.get(document_id=pmid, source='training-extra')
+                DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
+
 
         '''
             Import the set of documents into Mark2Cure
@@ -220,7 +255,6 @@ class Command(BaseCommand):
             ids = res.text.split('\n')
             for pmid in ids:
                 get_pubmed_document(pmid)
-                print pmid
 
         '''
             Check for any unfetched Pubtator objects

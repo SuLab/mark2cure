@@ -8,27 +8,29 @@ router = routers.DefaultRouter()
 
 urlpatterns = patterns('',
 
+    # Pubtator BioC File for PMID
     url(r'^pubtator/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubtator_bioc, name='read-pubtator-bioc'),
 
+    # BioC File for PMID (basic / no annotations)
     url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubmed_bioc, name='read-pubmed-bioc'),
 
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/$',
-        views.identify_annotations, name='read'),
-
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results.(?P<format_type>\w+)$',
+    # BioC File for Partner for Task & PMID Paring
+    # Score in BioC File?
+    url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
 
-    url(r'^test-results/$',
-        views.test_results, name='test-results'),
+    # (TODO) Deprecated
+    # View results (only if new)
+    #url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',
+    #    views.identify_annotations_results, name='results'),
 
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',
-        views.identify_annotations_results, name='results'),
-
-    url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/section/(?P<section_id>\d+)/annotation/create/$',
+    # "API" Endpoint to submit Document Annotations
+    url(r'^(?P<task_pk>\d+)/(?P<section_pk>\d+)/annotation/$',
         views.identify_annotations_submit, name='create'),
 
+    # (TODO ???) Task submission (moved to common?)
     url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/submit/$',
         views.submit, name='submit'),
 
