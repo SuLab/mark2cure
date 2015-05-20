@@ -2,6 +2,29 @@ from django.contrib import admin
 from django.db import models
 
 from mark2cure.common.models import Group, Task, UserQuestRelationship, DocumentQuestRelationship, SupportMessage
+from mark2cure.common.templatetags.truncatesmart import truncatesmart
+
+
+class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
+
+    list_display = ('task', 'document_preview', 'document_pmid', 'points',
+                    'group',
+                    'updated', 'created')
+
+
+    readonly_fields = ('task', 'document',
+                    'updated', 'created')
+
+    def document_preview(self, obj):
+        return truncatesmart(obj.document.title)
+
+    def document_pmid(self, obj):
+        return obj.document.document_id
+
+    def group(self, obj):
+        return obj.task.group.stub
+
+    mymodel = models.ForeignKey(DocumentQuestRelationship)
 
 
 class SupportMessageAdmin(admin.ModelAdmin):
@@ -23,8 +46,9 @@ class SupportMessageAdmin(admin.ModelAdmin):
 
     mymodel = models.ForeignKey(SupportMessage)
 
+
 admin.site.register(Group)
 admin.site.register(Task)
 admin.site.register(UserQuestRelationship)
-admin.site.register(DocumentQuestRelationship)
+admin.site.register(DocumentQuestRelationship, DocumentQuestRelationshipAdmin)
 admin.site.register(SupportMessage, SupportMessageAdmin)

@@ -7,12 +7,15 @@ from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('document_id', 'title', 'sections',
+    list_display = ('document_id', 'title_preview', 'sections',
             'pubtator', 'annotations', 'completed_views',
             'pending_views', 'source')
 
     readonly_fields = ('document_id', 'title', 'authors',
             'source')
+
+    def title_preview(self, obj):
+        return truncatesmart(obj.title)
 
     def sections(self, obj):
         return obj.count_available_sections()
