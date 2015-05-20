@@ -36,7 +36,7 @@
                   }
                ],
                "offset":"0",
-               "text":"Ehlers–Danlos syndrome ( EDS ) is a connective tissue disorder caused by defects in the structure , production , or processing of collagen proteins . Mutations in the COL5A or COL3A genes are only a few of the genetic causes of EDS .",
+               "text":"Ehlers–Danlos syndrome ( EDS ) is a connective tissue disorder caused by defects in the structure , production , or processing of proteins like collagen 3A and collagen 3B . Mutations in the COL5A or COL3A genes are only a few of the genetic causes of EDS .",
                "annotation":[{
                   "@id":"1",
                   "infon":[
@@ -117,10 +117,31 @@
                      }
                   ],
                   "location":{
-                     "@offset":"130",
-                     "@length":"8"
+                     "@offset":"144",
+                     "@length":"11"
                   },
-                  "text":"collagen"
+                  "text":"collagen 3A"
+               }, {
+                  "@id":"4",
+                  "infon":[
+                     {
+                        "@key":"user_name",
+                        "#text":"trainee"
+                     },
+                     {
+                        "@key":"user",
+                        "#text":"1"
+                     },
+                     {
+                        "@key":"type",
+                        "#text":"1"
+                     }
+                  ],
+                  "location":{
+                     "@offset":"160",
+                     "@length":"11"
+                  },
+                  "text":"collagen 5A"
                }
 
                ]
