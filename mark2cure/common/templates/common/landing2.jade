@@ -5,10 +5,7 @@ html
 
     link(rel="shortcut icon", href="/static/favicon.ico", type="image/x-icon")
     link(rel="icon", href="/static/favicon.ico", type="image/x-icon")
-    link(rel="apple-touch-icon", href="/static/touch-icon-iphone.png")
-    link(rel="apple-touch-icon", sizes="76x76", href="/static/touch-icon-ipad.png")
-    link(rel="apple-touch-icon", sizes="120x120", href="/static/touch-icon-iphone-retina.png")
-    link(rel="apple-touch-icon", sizes="152x152", href="/static/touch-icon-ipad-retina.png")
+    link(rel="apple-touch-icon", href="/static/images/landing/mark2cure-flatbox-logo.jpg")
 
     meta(name="description", content="Mark2Cure – Scientific communication is broken")
     meta(name="keywords", content="mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology")
@@ -17,13 +14,13 @@ html
     meta(name="application-name", content="Mark2Cure")
     meta(property="og:title", content="Mark2Cure")
     meta(property="og:type", content="article")
-    meta(property="og:image", content="/static/static/img/mark2ure.png")
+    meta(property="og:image", content="/static/images/landing/mark2cure-flatbox-logo.jpg")
     meta(property="og:url", content="http://mark2cure.org")
-    meta(property="og:description", content="")
+    meta(property="og:description", content="Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.")
     meta(name="twitter:card", content="summary")
     meta(name="twitter:title", content="Mark2Cure")
-    meta(name="twitter:description", content="")
-    meta(name="twitter:image", content="/static/static/img/profile.jpg")
+    meta(name="twitter:description", content="Let's help scientists organize biomedical knowledge and uncover hidden links.")
+    meta(name="twitter:image", content="/static/images/landing/mark2cure-flatbox-logo.jpg")
 
     title Mark2Cure
 
@@ -38,7 +35,7 @@ html
     link(rel="stylesheet", href="#{STATIC_URL}css/bootstrap-theme.css")
     link(rel="stylesheet", href="#{STATIC_URL}css/style.css")
     link(rel="stylesheet", href="#{STATIC_URL}css/document-style.css")
-    link(rel="stylesheet", href="#{STATIC_URL}/css/landing-style.css")
+    link(rel="stylesheet", href="#{STATIC_URL}css/landing-style.css")
 
   body
     include registration/login-modal
@@ -54,7 +51,7 @@ html
               span.icon-bar
               span.icon-bar
             a.navbar-brand(href="/")
-              img(src="#{STATIC_URL}/images/landing/mark2cure-flatbox-logo-white.png", alt="Mark 2 Cure")
+              img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
 
           div(id="navbar").collapse.navbar-collapse
             ul.nav.navbar-nav.pull-right-sm
