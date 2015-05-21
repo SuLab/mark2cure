@@ -1,4 +1,6 @@
 from mark2cure.common.models import Group, Task, UserQuestRelationship
+from mark2cure.userprofile.models import UserProfile
+
 from rest_framework import serializers
 
 
@@ -7,6 +9,21 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('pk', 'name', 'stub', 'description')
 
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    user = serializers.SerializerMethodField('get_user_obj')
+
+    def get_user_obj(self, profile):
+        user = profile.user
+        return {'pk': user.pk,
+                'username': user.username,
+                'level': profile.highest_level().name
+                }
+
+    class Meta:
+        model = UserProfile
+        fields = ('user', 'rating_score', 'rating_votes',
+                'quote', 'motivation')
 
 class QuestSerializer(serializers.ModelSerializer):
 

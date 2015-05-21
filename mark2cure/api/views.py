@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from mark2cure.api.serializers import QuestSerializer, GroupSerializer
+from mark2cure.api.serializers import QuestSerializer, UserProfileSerializer, GroupSerializer
 from mark2cure.common.models import Group, Task, UserQuestRelationship
+from mark2cure.userprofile.models import UserProfile
 
-# Create your views here.
 
 @login_required
 @api_view(['GET'])
@@ -24,5 +24,13 @@ def quest_group_list(request, group_pk):
 def group_list(request):
     queryset = Group.objects.filter(enabled=True).order_by('-name').all()
     serializer = GroupSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@login_required
+@api_view(['GET'])
+def leaderboard_users(request):
+    queryset = UserProfile.objects.order_by('-rating_score').all()[:100]
+    serializer = UserProfileSerializer(queryset, many=True)
     return Response(serializer.data)
 
