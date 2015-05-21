@@ -52,6 +52,10 @@ def why_mark2cure(request):
     query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
     return TemplateResponse(request, 'common/why-mark2cure.jade', {'profiles': query})
 
+def group_view(request, group_stub):
+    group = get_object_or_404(Group, stub=group_stub)
+    ctx = {'group': group}
+    return TemplateResponse(request, 'common/group_home.jade', ctx)
 
 @login_required
 def dashboard(request):

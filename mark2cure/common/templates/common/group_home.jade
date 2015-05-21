@@ -5,7 +5,7 @@ extends base
 - load humanize
 
 block header
-  - with headerMessage='Community Dashboard'
+  - with headerMessage=group.name
     include includes/header
 
 block content
@@ -24,13 +24,9 @@ block content
       .col-md-10.col-md-offset-1
         #dashboard
 
-  include document/includes/welcome-modal
 
 block post-footer
     #fb-root
-    - if welcome
-      script.
-        $('#dashboardWelcomeModal').modal('show');
 
     script.
       var draw_dashboard = function(group, quests) {
@@ -98,37 +94,27 @@ block post-footer
         quest.exit().remove();
       };
 
+
+      var pk = #{group.pk};
+      var template = _.template("
+        <h3><%- name %></h3>
+        <div id='group-<%- pk %>' class='row head-space paragraph-box'>
+          <div class='col-xs-12 text-center'>
+            <h2 class='quest-loading'>Loading...</h2>
+          </div>
+        </div>");
+      $('#dashboard').append(template({'pk': pk}));
+
       $.ajax({
         'type': 'GET',
-        'url': '/api/groups/',
+        'url': '/api/quest/'+ pk +'/',
         'success': function(data) {
-          _.each(data, function(v) {
-            var template = _.template("
-              <h3><a href='/group/<%- stub %>/'><%- name %></a></h3>
-              <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-                <div class='col-xs-12 text-center'>
-                  <h2 class='quest-loading'>Loading...</h2>
-                </div>
-              </div>");
-            $('#dashboard').append(template(v));
+          draw_dashboard({'pk': pk}, data);
 
-            $.ajax({
-              'type': 'GET',
-              'url': '/api/quest/'+ v.pk +'/',
-              'success': function(data) {
-                draw_dashboard(v, data);
-
-                $('#dashboard .quest').click(function(evt) {
-                  var link = $(this).find('a');
-                  if(link.length) { location.href=link.attr('href'); }
-                });
-
-              }
-            });
-
-
+          $('#dashboard .quest').click(function(evt) {
+            var link = $(this).find('a');
+            if(link.length) { location.href=link.attr('href'); }
           });
+
         }
       });
-
-

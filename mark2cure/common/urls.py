@@ -10,6 +10,9 @@ urlpatterns = patterns('',
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),
 
+    url(r'^group/(?P<group_stub>\w+)/$',
+        views.group_view, name='group'),
+
     url(r'^support/$',
         views.support, name='support'),
 
