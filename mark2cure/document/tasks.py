@@ -72,6 +72,7 @@ def get_pubtator_response(pk):
 
         results = requests.post(url, data=data, params=payload)
         pubtator.request_count = pubtator.request_count + 1
+        print results.text
 
         if results.content != 'Not yet':
             print 'Finished checking: Pub #', pubtator.pk
