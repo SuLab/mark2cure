@@ -51,7 +51,7 @@ block ypet
           YPet[0].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) { validation_check(collection); });
           YPet[0].currentView.collection.parentDocument.get('annotations').on('change', function(model) { validation_check(model.collection); });
           YPet[0].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
-          _.each(YPet[0].currentView.options.collection.first(25), function(word_model) {
+          _.each(YPet[0].currentView.options.collection.first(30), function(word_model) {
             word_model.set('disabled', true);
             word_model.set('masked', true);
           });
