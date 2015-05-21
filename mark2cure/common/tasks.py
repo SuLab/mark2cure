@@ -23,7 +23,6 @@ def bin_group(group_pk, document_set_pks):
     random.shuffle(document_set_pks)
 
     last_task = group.task_set.last()
-    document_set_pks = []
 
     while len(document_set_pks) > smallest_bin:
 
@@ -39,8 +38,8 @@ def bin_group(group_pk, document_set_pks):
 
             document = Document.objects.get(pk=doc_pk)
             print 'Add Document', len(document_set_pks), document.valid_pubtator(), last_task
-            if document.valid_pubtator():
-                DocumentQuestRelationship.objects.create(task=last_task, document=document)
+            #if document.valid_pubtator():
+            DocumentQuestRelationship.objects.create(task=last_task, document=document)
 
         else:
             print '> Add New Task'
