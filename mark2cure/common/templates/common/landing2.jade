@@ -67,7 +67,7 @@ html
               li
                 a(href="/contact/") Contact
               li
-                a(data-toggle="modal", data-target="#subscribe-modal") Login
+                a(href='{% url "registration:login" %}') Login
 
               li.social
                 a(href="http://sulab.org/category/mark2cure/feed")
@@ -89,7 +89,7 @@ html
 
                 .row.push30
                   .col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-4
-                    a(data-toggle="modal", data-target="#subscribe-modal").btn.btn-block.btn-white I want to help
+                    a(href='{% url "training:introduction" step_num=1 %}').btn.btn-block.btn-white I want to help
                   .col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-0
                     <a href="#learnMore" class="hidden-xs hidden-sm"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
                     <a href="https://www.youtube.com/watch?v=hT_pj1cB0Q8" class="hidden-md hidden-lg"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
@@ -152,7 +152,7 @@ html
         .row.push50
           .col-sm-12.text-center
             p.font-purple.medium If you can read you can help.
-            a(data-toggle="modal", data-target="#subscribe-modal").push15.btn.btn-large.btn-primary I want to help
+            a(href='{% url "training:introduction" step_num=1 %}').push15.btn.btn-large.btn-primary I want to help
 
       .container.push100
         <hr style="font-size:3px;">
