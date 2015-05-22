@@ -10,6 +10,12 @@ from djangoratings.fields import RatingField
 import os
 
 
+class Team(models.Model):
+    owner = models.OneToOneField(User, unique=True)
+    name = models.CharField(max_length=255, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+
 def _createHash():
     return os.urandom(40).encode('hex')
 
@@ -21,6 +27,7 @@ def _content_file_name(instance, filename):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
+    team = models.ForeignKey(Team, null=True, blank=True)
 
     timezone = TimeZoneField(default='America/Los_Angeles',
                              blank=True, null=True)
