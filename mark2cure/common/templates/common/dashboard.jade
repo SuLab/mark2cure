@@ -21,8 +21,12 @@ block content
 
   .container
     .row
-      .col-md-10.col-md-offset-1
+      .col-sm-8.col-sm-offset-0.col-md-8.col-md-offset-1
         #dashboard
+
+      .col-sm-3.col-md-3.col-lg-2
+        h2 Leaderboard
+        #leaderboard
 
   include document/includes/welcome-modal
 
@@ -131,4 +135,11 @@ block post-footer
         }
       });
 
-
+    script.
+      LeaderBoard.addInitializer(function(options) {
+        LeaderBoard.addRegions({'leaderboard': '#leaderboard'});
+        var users = new UserList();
+        users.fetch();
+        LeaderBoard['leaderboard'].show( new UserCollectionView({'collection': users}) );
+      });
+      LeaderBoard.start();

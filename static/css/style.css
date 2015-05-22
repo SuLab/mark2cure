@@ -284,6 +284,11 @@ a.close-btn {
   color: #fff;
 }
 
+#leaderboard {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
 .quest-guide .doc-item-col {
   height: 40px;
 }

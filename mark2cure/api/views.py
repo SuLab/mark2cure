@@ -30,7 +30,7 @@ def group_list(request):
 @login_required
 @api_view(['GET'])
 def leaderboard_users(request):
-    queryset = UserProfile.objects.order_by('-rating_score').all()[:100]
+    queryset = UserProfile.objects.order_by('-rating_score').all()[:25]
     serializer = UserProfileSerializer(queryset, many=True)
     return Response(serializer.data)
 
