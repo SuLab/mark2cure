@@ -1,0 +1,45 @@
+- load render_widget from bootstrap
+
+- if bound_field.is_hidden
+  {{ bound_field }}
+
+- else
+  div(class='form-group {{ bound_field.html_name }}{% if bound_field.errors %} has-error{% endif %}{% if input_type == "input" %} has-feedback{% endif %}{% if bound_field.field.required %} required{% endif %}')
+    .row
+      - if show_label
+        label(for='id_{{ bound_field.html_name }}').control-label
+          #{bound_field.label}
+
+      div
+        - if input_type == 'input' or input_type == 'textarea' or input_type == 'select'
+          {% render_widget bound_field class="form-control" %}
+
+        - if input_type == 'checkbox'
+          .checkbox
+            label(for="id_{{ bound_field.html_name }}")
+              {% render_widget bound_field %}
+              {{ bound_field.label }}
+
+        - if input_type == 'radio'
+          div(data-toggle='buttons').btn-group
+            - for value, name in bound_field.field.choices
+              - if value
+                label(for='id_{{ bound_field.html_name }}_{{ forloop.counter0 }}', class='{% if forloop.first %}active{% endif %}').btn.btn-default
+                  input(type='radio', value='{{ value }}', id='id_{{ bound_field.html_name }}_{{ forloop.counter0 }}', name='{{ bound_field.html_name }}', {% if forloop.first %} checked{% endif %})
+                    {{ name }}
+
+
+        - if input_type == 'multi_widget'
+          .row
+            {% render_widget bound_field class="form-control" %}
+
+        - if bound_field.help_text
+          span.help-block
+            {{ bound_field.help_text }}
+
+        - if bound_field.errors
+          - for error in bound_field.errors
+            - if input_type == 'input'
+              span.glyphicon.glyphicon-remove.form-control-feedback
+            span.text-danger
+              {{ error }}

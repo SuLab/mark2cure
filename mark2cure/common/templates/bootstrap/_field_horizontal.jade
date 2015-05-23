@@ -1,0 +1,40 @@
+- load render_widget from bootstrap
+
+- if bound_field.is_hidden
+  {{ bound_field }}
+
+- else
+  div(class='{{ bound_field.html_name }}{% if bound_field.errors %} has-error{% endif %}{% if bound_field.field.required %} required{% endif %}').form-group
+    .row
+      - if show_label
+        label(for='id_{{ bound_field.html_name }}').col-sm-2.control-label
+          {{ bound_field.label }}
+
+      div(class='{% if not show_label %} col-sm-offset-2{% endif %}').col-sm-10
+        - if input_type == 'input' or input_type == 'textarea' or input_type == 'select'
+          {% render_widget bound_field class="form-control" %}
+
+        - if input_type == 'checkbox'
+          label(for='id_{{ bound_field.html_name }}').checkbox
+            {% render_widget bound_field class="form-control" %}
+            {{ bound_field.label }}
+
+        - if input_type == 'radio'
+          - for value, name in bound_field.field.choices
+            - if value
+              label(for='id_{{ bound_field.html_name }}_{{ forloop.counter0 }}').radio
+                input(type='radio', value='{{ value }}', name='{{ bound_field.html_name }}', id='id_{{ bound_field.html_name }}_{{ forloop.counter0 }}').form-control
+                {{ name }}
+
+        - if input_type == 'multi_widget'
+          .row
+            {% render_widget bound_field class="form-control" %}
+
+        - if bound_field.help_text
+          span.help-block
+            {{ bound_field.help_text }}
+
+        - if bound_field.errors
+          - for error in bound_field.errors
+            span.label.label-danger
+              {{ error }}

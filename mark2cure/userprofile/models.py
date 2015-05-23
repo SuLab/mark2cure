@@ -78,9 +78,9 @@ class UserProfile(models.Model):
         Profile page features
     '''
 
-    referral = models.TextField(blank=True)
-    motivation = models.TextField(blank=True)
-    quote = models.TextField(blank=True)
+    referral = models.TextField(verbose_name=u'I heard about Mark2Cure from', blank=True)
+    motivation = models.TextField(verbose_name=u'I contribute to Mark2Cure because', blank=True)
+    quote = models.TextField(verbose_name=u'Quote / Signature', blank=True)
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
