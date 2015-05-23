@@ -21,7 +21,7 @@ block content
 
   .container
     .row.head-space
-      .col-sm-6
+      .col-sm-6.col-xs-10.col-xs-offset-1
         form.form-horizontal
           .form-group
             label(for='id_username').control-label.col-md-4 Username
@@ -38,10 +38,10 @@ block content
       - csrf_token
 
       .row
-        .col-md-12
+        .col-md-12.col-xs-10.col-xs-offset-1
           h2 Account Settings
 
-        .col-sm-10.col-sm-offset-1
+        .col-md-12.col-xs-10.col-xs-offset-1
           .row
             .col-sm-8
               fieldset
@@ -50,20 +50,20 @@ block content
 
       hr
       .row
-        .col-md-12
+        .col-md-12.col-xs-10.col-xs-offset-1
           h2 Profile Information
 
-        .col-md-12
+        .col-md-12.col-xs-10.col-xs-offset-1
           .row
             .col-md-4.col-md-offset-1
-              #{user_profile_form.referral|as_vertical_form}
+              #{user_profile_form.motivation|as_vertical_form}
             .col-md-4.col-md-offset-1
               #{user_profile_form.referral|as_vertical_form}
 
           .row
-            .col-md-10.col-md-offset-1
+            .col-md-9.col-md-offset-1
               #{user_profile_form.quote|as_vertical_form}
 
           .row.head-space
-            .col-sm-3.col-sm-offset-8
+            .col-sm-3.col-sm-offset-7
               button(type='submit').btn.btn-default.btn-block.pull-right Update

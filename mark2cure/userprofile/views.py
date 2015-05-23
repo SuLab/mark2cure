@@ -42,7 +42,7 @@ def settings(request):
     if request.method == 'POST':
         user_change_form.save()
         user_profile_form.save()
-        messages.info(request, 'helloooo', extra_tags='safe alert-success')
+        messages.info(request, '<p class="lead text-center">Profile Successfully Updated</p>', extra_tags='safe alert-info')
         return redirect('userprofile:settings')
 
     ctx = {'user_change_form': user_change_form,
