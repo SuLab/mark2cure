@@ -48,6 +48,11 @@ block content
                 #{user_change_form.first_name|as_horizontal_form}
                 #{user_change_form.last_name|as_horizontal_form}
 
+            .col-sm-2.col-sm-offset-1.col-xs-offset-1.col-xs-10
+              #{user_profile_form.team|as_vertical_form}
+              - if user_profile_form.team.value == None
+                #{team_form.name|as_vertical_form}
+
       hr
       .row
         .col-md-12.col-xs-10.col-xs-offset-1

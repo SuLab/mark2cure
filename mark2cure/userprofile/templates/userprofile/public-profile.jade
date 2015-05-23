@@ -61,6 +61,10 @@ block content
                     p Score: #{player.userprofile.rating_score|intcomma}
                   li
                     p Level: #{player.userprofile.highest_level.name}
+                  - if player.userprofile.team
+                    li
+                      p Team: #{player.userprofile.team.name}
+
 
 
 

@@ -1,11 +1,11 @@
 from django import forms
-from .models import UserProfile
+from .models import UserProfile, Team
 
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['timezone', 'avatar', 'email_notify',
+        fields = ['timezone', 'avatar', 'team', 'email_notify',
                   'gender', 'age', 'occupation', 'education',
                   'science_education', 'country', 'referral',
                   'motivation', 'quote']
@@ -16,3 +16,8 @@ class UserProfileForm(forms.ModelForm):
             'quote': forms.Textarea(attrs={'rows':4}),
         }
 
+
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['name', ]
