@@ -6,6 +6,7 @@ from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
 
 class UserQuestRelationshipAdmin(admin.ModelAdmin):
+    search_fields = ('user__username', 'task__name')
 
     list_display = ('task', 'user', 'views_preview',
                     'completed', 'score',
@@ -29,6 +30,7 @@ class UserQuestRelationshipAdmin(admin.ModelAdmin):
 
 
 class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
+    search_fields = ('document__document_id', 'task__name', 'task__group__name')
 
     list_display = ('task', 'document_preview', 'document_pmid', 'points',
                     'group',
@@ -54,6 +56,7 @@ class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'group__name' )
 
     list_display = ('name', 'kind', 'contributions', 'completions',
                     'points', 'experiment', 'document_count',
@@ -83,6 +86,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'description', 'stub']
 
     list_display = ('name', 'enabled', 'stub',
                     'description', 'tasks', 'total_documents')
@@ -100,6 +104,8 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class SupportMessageAdmin(admin.ModelAdmin):
+    search_fields = ('user__username', 'user__first_name', 'user__last_name',
+            'user__email', 'text')
 
     list_display = ( 'get_email', 'text', 'referral',
     'created')
