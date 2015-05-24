@@ -7,6 +7,8 @@ from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
 
 class DocumentAdmin(admin.ModelAdmin):
+    search_fields = ('document_id', 'title',)
+
     list_display = ('document_id', 'title_preview', 'sections',
             'pubtator', 'annotations', 'completed_views',
             'pending_views', 'source')
@@ -36,6 +38,8 @@ class DocumentAdmin(admin.ModelAdmin):
 
 
 class PubtatorAdmin(admin.ModelAdmin):
+    search_fields = ('document__document_id', 'session_id', 'content', 'kind')
+
     list_display = ('pmid', 'kind', 'session_id',
             'annotations', 'valid', 'request_count',
             'updated', 'created',)
@@ -57,6 +61,8 @@ class PubtatorAdmin(admin.ModelAdmin):
 
 
 class SectionAdmin(admin.ModelAdmin):
+    search_fields = ('text', 'document__document_id')
+
     list_display = ('text_preview', 'kind', 'updated',
             'annotations', 'completed_views', 'pending_views',
             'created', 'document')
@@ -80,8 +86,10 @@ class SectionAdmin(admin.ModelAdmin):
 
 
 class ViewAdmin(admin.ModelAdmin):
-    list_display = ('task_type', 'partner', 'section_preview',
-            'annotations', 'user', 'quest', 'group', 'completed')
+    search_fields = ('user__username', 'opponent__user__username', 'section__document__document_id')
+
+    list_display = ('task_type', 'section_preview', 'annotations',
+                    'user', 'partner', 'quest', 'group', 'completed')
 
     readonly_fields = ('task_type', 'completed', 'opponent',
             'section', 'user',)
@@ -100,15 +108,21 @@ class ViewAdmin(admin.ModelAdmin):
 
     def quest(self, obj):
         uqr = obj.userquestrelationship_set.first()
-        return uqr.task
+        if uqr:
+            return uqr.task
 
     def group(self, obj):
         uqr = obj.userquestrelationship_set.first()
-        return uqr.task.group.stub
+        if uqr:
+            if uqr.task:
+                if uqr.task.group:
+                    return uqr.task.group.stub
 
     mymodel = models.ForeignKey(View)
 
 class AnnotationAdmin(admin.ModelAdmin):
+    search_fields = ('view__user__username', 'text', 'kind', 'type')
+
     list_display = ('text', 'type', 'start',
             'section', 'username', 'pmid',
             'quest', 'group', 'time_ago',
@@ -131,11 +145,16 @@ class AnnotationAdmin(admin.ModelAdmin):
 
     def quest(self, obj):
         uqr = obj.view.userquestrelationship_set.first()
-        return uqr.task
+        if uqr:
+            if uqr.task:
+                return uqr.task
 
     def group(self, obj):
         uqr = obj.view.userquestrelationship_set.first()
-        return uqr.task.group.stub
+        if uqr:
+            if uqr.task:
+                if uqr.task.group:
+                    return uqr.task.group.stub
 
     def time_ago(self, obj):
         return naturaltime(obj.created)
