@@ -121,7 +121,7 @@ class ViewAdmin(admin.ModelAdmin):
     mymodel = models.ForeignKey(View)
 
 class AnnotationAdmin(admin.ModelAdmin):
-    search_fields = ('view__user__username', 'text', 'kind', 'type')
+    search_fields = ('view__user__username', 'view__section__document__document_id', 'text', 'kind', 'type')
 
     list_display = ('text', 'type', 'start',
             'section', 'username', 'pmid',
