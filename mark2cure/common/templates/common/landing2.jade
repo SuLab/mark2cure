@@ -168,24 +168,23 @@ html
           .col-sm-6
             <div class="small text-muted participate"><p class="inline"><span style="margin-bottom:5px;">Participate in the Community!</span></p> <p class=""><a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a> <a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a></p>
 
-
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="/static/js/libs/underscore-min.js"></script>
-    <script src="/static/js/libs/backbone-min.js"></script>
-    <script src="/static/js/libs/underscore.string.min.js"></script>
-    <script src="/static/js/libs/backbone-relational.js"></script>
-    <script src="/static/js/libs/backbone.marionette.min.js"></script>
-    <script src="/static/js/libs/d3.v3.js"></script>
-    <script src="/static/js/libs/md5.js"></script>
-    <script src="/static/js/libs/moment.js"></script>
-    <script src="/static/js/libs/selectize.js"></script>
-    <script src="/static/js/libs/intro.min.js"></script>
-    <script src="/static/js/libs/odometer.min.js"></script>
-    <script src="/static/js/libs/modernizr.custom.js"></script>
-    <script src="/static/js/ypet.js"></script>
-    <script src="/static/js/app.js"></script>
-    <script src="//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js"></script>
+    script(src="//code.jquery.com/jquery-1.11.1.min.js")
+    script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
+    script(src="/static/js/libs/underscore-min.js")
+    script(src="/static/js/libs/backbone-min.js")
+    script(src="/static/js/libs/underscore.string.min.js")
+    script(src="/static/js/libs/backbone-relational.js")
+    script(src="/static/js/libs/backbone.marionette.min.js")
+    script(src="/static/js/libs/d3.v3.js")
+    script(src="/static/js/libs/md5.js")
+    script(src="/static/js/libs/moment.js")
+    script(src="/static/js/libs/selectize.js")
+    script(src="/static/js/libs/intro.min.js")
+    script(src="/static/js/libs/odometer.min.js")
+    script(src="/static/js/libs/modernizr.custom.js")
+    script(src="/static/js/ypet.js")
+    script(src="/static/js/app.js")
+    script(src="//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js")
 
     a#support-icon(data-toggle="modal", data-target="#support-modal")
       img(src='#{STATIC_URL}images/support-icon.png')
@@ -211,41 +210,25 @@ html
             button(type="button", data-dismiss="modal").btn.btn-default Cancel
             button(type="button").btn.btn-default.modal-form-submit Submit
 
-    <script type="text/javascript" src="static/js/libs/jFeed-master/jquery/jquery.js"></script>
-    <script type="text/javascript" src="static/js/libs/jFeed-master/build/dist/jquery.jfeed.js"></script>
-    script.
-      jQuery(function() {
-        jQuery.getFeed({
-          url: 'http://pipes.yahoo.com/pipes/pipe.run?_id=435acae6559a1e8119eea1b80f7b59e9&_render=rss',
-          success: function(feed) {
-            jQuery('#result').append('<h3 class="text-muted text-uppercase">News</h3>');
-            var html = '';
-            for(var i = 0; i < feed.items.length && i < 5; i++) {
-              var item = feed.items[i];
-              html += '<p class="push15">'
-              + '<a href="' + item.link + '">' + item.title + '</a>' + '<br>' +'<span class="text-muted text-uppercase">' + item.prettyUpdated + '</span></p>';
-            }
-            jQuery('#result').append(html);
-          }
-        });
-      });
 
     script.
       $(function() {
         $('a[href*=#]:not([href=#])').click(function() {
-          if (location.pathname.replace(/^\\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+          if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
             var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1)+']');
+            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
             if (target.length) {
-              $('html,body').animate({scrollTop: target.offset().top}, 1000);
-            return false;
+              $('html,body').animate({
+                scrollTop: target.offset().top
+              }, 1000);
+              return false;
             }
           }
         });
       });
 
-    <script>Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {  whitelistUrls: [/mark2cure\.org/]}).install();var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-43341013-1']);_gaq.push(['_setDomainName', 'mark2cure.org']);_gaq.push(['_trackPageview']);(function() {  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
-    </script>
+
+    <script>Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {  whitelistUrls: [/mark2cure\.org/]}).install();var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-43341013-1']);_gaq.push(['_setDomainName', 'mark2cure.org']);_gaq.push(['_trackPageview']);(function() {  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script>
 
     #touch-modal.modal.fade
       .modal-dialog
