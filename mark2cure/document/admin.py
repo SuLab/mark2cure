@@ -7,7 +7,7 @@ from mark2cure.common.templatetags.truncatesmart import truncatesmart
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    search_fields = ('document_id', 'title',)
+    search_fields = ('document_id', 'title', 'source')
 
     list_display = ('document_id', 'title_preview', 'sections',
             'pubtator', 'annotations', 'completed_views',
