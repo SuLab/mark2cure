@@ -109,6 +109,7 @@ block post-footer
           _.each(data, function(v) {
             var template = _.template("
               <h3><a href='/group/<%- stub %>/'><%- name %></a></h3>
+              <a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a>
               <div id='group-<%- pk %>' class='row head-space paragraph-box'>
                 <div class='col-xs-12 text-center'>
                   <h2 class='quest-loading'>Loading...</h2>

@@ -21,6 +21,9 @@ block content
 
   .container
     .row
+      - if group.description
+        .col-md-10.col-md-offset-1.head-space
+          p.lead #{group.description}
       .col-md-10.col-md-offset-1
         #dashboard
 
