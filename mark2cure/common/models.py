@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from brabeion import badges
 from brabeion.base import Badge, BadgeAwarded
 
+from decimal import Decimal
+
 
 class SkillBadge(Badge):
     slug = "skill"
@@ -86,6 +88,17 @@ class Group(models.Model):
     def get_documents(self):
         # (TODO?) Return for __in of task_ids
         return Document.objects.filter(task__group=self)
+
+    def percentage_complete(self):
+        completed = 0
+        required = 0
+        for task in self.task_set.all():
+            # If an unlimited / training task ignore it
+            if task.completions:
+                completed += UserQuestRelationship.objects.filter(task=task, completed=True).count()
+                required += task.completions
+
+        return (Decimal(completed) / Decimal (required))*100
 
     def __unicode__(self):
         return self.name
