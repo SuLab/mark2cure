@@ -99,7 +99,10 @@ class Group(models.Model):
                 completed += UserQuestRelationship.objects.filter(task=task, completed=True).count()
                 required += task.completions
 
-        return (Decimal(completed) / Decimal(required))*100
+        if required:
+            return (Decimal(completed) / Decimal(required))*100
+        else:
+            return 0
 
     def __unicode__(self):
         return self.name
