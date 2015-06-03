@@ -24,6 +24,14 @@ block content
       - if group.description
         .col-md-10.col-md-offset-1.head-space
           p.lead #{group.description}
+
+      .col-md-10.col-md-offset-1.head-space
+        -with progress=group.percentage_complete
+          h4.progress-label Community progress on this set:
+          .progress
+            div(role='progressbar', aria-valuenow='{{ progress }}', aria-valuemin='0', aria-valuemax='100', style='width: {{progress}}%;').progress-bar.active
+              #{progress|floatformat:"2"}%
+
       .col-md-10.col-md-offset-1
         #dashboard
 
