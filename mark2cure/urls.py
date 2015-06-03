@@ -4,6 +4,15 @@ from django.contrib.flatpages import views
 
 from django.contrib.auth import views as reset_views
 
+from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import FlatPageSitemap
+
+
+sitemaps = {
+    'flatpages': FlatPageSitemap
+}
+
+
 urlpatterns = patterns('',
     # Response / Confirm Changes
     url(r'^reset/done/$',
@@ -48,4 +57,7 @@ urlpatterns = patterns('',
 
     (r'^robots\.txt$', include('robots.urls')),
     url(r'^(?P<url>.*/)$', views.flatpage),
+
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+            name='django.contrib.sitemaps.views.sitemap'),
 )
