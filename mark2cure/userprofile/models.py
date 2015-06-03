@@ -18,6 +18,13 @@ class Team(models.Model):
     def __unicode__(self):
         return self.name
 
+    def last_active_user(self):
+        member_profile = self.userprofile_set.order_by('-user__last_login').first()
+        if member_profile:
+            return member_profile.user
+        else:
+            return None
+
 
 def _createHash():
     return os.urandom(40).encode('hex')
