@@ -82,6 +82,7 @@ class Group(models.Model):
     name = models.CharField(max_length=200)
     stub = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
+    order = models.DecimalField(default=0, max_digits=3, decimal_places=3)
 
     enabled = models.BooleanField(default=False)
 
@@ -98,7 +99,7 @@ class Group(models.Model):
                 completed += UserQuestRelationship.objects.filter(task=task, completed=True).count()
                 required += task.completions
 
-        return (Decimal(completed) / Decimal (required))*100
+        return (Decimal(completed) / Decimal(required))*100
 
     def __unicode__(self):
         return self.name

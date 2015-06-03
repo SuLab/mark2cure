@@ -88,7 +88,7 @@ class TaskAdmin(admin.ModelAdmin):
 class GroupAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description', 'stub']
 
-    list_display = ('name', 'enabled', 'stub',
+    list_display = ('name', 'order', 'enabled', 'stub',
                     'description', 'tasks', 'total_documents')
 
     def tasks(self, obj):

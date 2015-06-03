@@ -22,7 +22,7 @@ def quest_group_list(request, group_pk):
 @login_required
 @api_view(['GET'])
 def group_list(request):
-    queryset = Group.objects.filter(enabled=True).order_by('-name').all()
+    queryset = Group.objects.filter(enabled=True).order_by('-order').all()
     serializer = GroupSerializer(queryset, many=True)
     return Response(serializer.data)
 
