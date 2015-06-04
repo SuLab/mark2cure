@@ -25,6 +25,9 @@ class Team(models.Model):
         else:
             return None
 
+    def members_count(self):
+        return self.userprofile_set.count()
+
 
 def _createHash():
     return os.urandom(40).encode('hex')
