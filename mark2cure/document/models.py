@@ -76,39 +76,39 @@ class Document(models.Model):
                 return False
         return True
 
-    def get_user_annotations(self, request=None):
+    def as_bioc_with_user_annotations(self, request=None):
         '''
             Get the user annotations for a Document
         '''
-        reader = self.as_writer(request)
+        document = self.as_bioc()
         approved_types = ['disease', 'gene_protein', 'drug']
 
-        for d_idx, document in enumerate(reader.collection.documents):
-            for p_idx, passage in enumerate(document.passages):
-                # For each passage in each document in the collection
-                # add the appropriate annotationa
-                section_pk = passage.infons.get('id')
-                offset = int(passage.offset)
+        passage_offset = 0
+        for section in self.available_sections():
+            passage = section.as_bioc(passage_offset)
 
-                for ann in Annotation.objects.filter(view__section__pk=section_pk).values('pk', 'start', 'text', 'type', 'view__user__username', 'view__user__pk').all():
-                    annotation = BioCAnnotation()
-                    annotation.id = str(ann.get('pk'))
-                    annotation.put_infon('user', str(ann.get('view__user__pk')))
-                    annotation.put_infon('user_name', str(ann.get('view__user__username')))
+            for ann in Annotation.objects.filter(view__section=section).values('pk', 'start', 'text', 'type', 'view__user__username', 'view__user__pk').all():
+                annotation = BioCAnnotation()
+                annotation.id = str(ann.get('pk'))
+                annotation.put_infon('user', str(ann.get('view__user__pk')))
+                annotation.put_infon('user_name', str(ann.get('view__user__username')))
 
-                    # (TODO) Map type strings back to 0,1,2
-                    annotation.put_infon('type', str( approved_types.index(ann.get('type')) ))
+                # (TODO) Map type strings back to 0,1,2
+                annotation.put_infon('type', str( approved_types.index(ann.get('type')) ))
+                annotation.put_infon('type_name', str( ann.get('type') ))
 
-                    location = BioCLocation()
-                    location.offset = str(offset + ann.get('start'))
-                    location.length = str(len(ann.get('text')))
-                    annotation.add_location(location)
+                location = BioCLocation()
+                location.offset = str(passage_offset + ann.get('start'))
+                location.length = str(len(ann.get('text')))
+                annotation.add_location(location)
 
-                    annotation.text = ann.get('text')
+                annotation.text = ann.get('text')
+                passage.add_annotation(annotation)
 
-                    passage.add_annotation(annotation)
+            passage_offset += len(passage.text)
+            document.add_passage(passage)
 
-        return reader
+        return document
 
     def get_pubtator(self, request=None):
         '''

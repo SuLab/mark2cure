@@ -55,7 +55,8 @@ def read_users_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)
-    writer = doc.get_user_annotations()
+    doc_bioc = doc.as_bioc_with_user_annotations()
+    writer.collection.add_document(doc_bioc)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
