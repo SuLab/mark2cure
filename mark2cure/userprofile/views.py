@@ -19,14 +19,9 @@ from mark2cure.common.models import UserQuestRelationship
 
 def public_profile(request, username):
     user = get_object_or_404(User, username=username)
-    anns = Annotation.objects.filter(view__user=user)
-    quests = UserQuestRelationship.objects.filter(user=user, completed=True)
 
     ctx = {'player': user,
-           'owner': True if request.user == user else False,
-           'quests_count': quests.count(),
-           'annotations_count': anns.count()}
-
+           'owner': True if request.user == user else False}
     return TemplateResponse(request, 'userprofile/public-profile.jade', ctx)
 
 

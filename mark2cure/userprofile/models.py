@@ -7,6 +7,9 @@ from django_countries.fields import CountryField
 from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
+from mark2cure.document.models import Annotation
+from mark2cure.common.models import UserQuestRelationship
+
 import os
 
 
@@ -101,6 +104,12 @@ class UserProfile(models.Model):
     def highest_level(self, slug='skill'):
         res = BadgeAward.objects.filter(user=self.user, slug=slug).order_by('-level').first()
         return res if res else BadgeAward(name='', level=0)
+
+    def annotations_count(self):
+        return Annotation.objects.filter(view__user=self).count()
+
+    def quests_count(self):
+        return UserQuestRelationship.objects.filter(user=self, completed=True).count()
 
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

@@ -19,14 +19,36 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
-  .container
+  .container-fluid
     .row
-      .col-sm-8.col-sm-offset-0.col-md-8.col-md-offset-1
+      .col-md-7.col-md-offset-1
         #dashboard
 
-      .col-sm-3.col-md-3.col-lg-2
-        h2 Leaderboard
-        #leaderboard
+      .col-md-3.col-md-offset-0
+        .row
+          .col-md-8.col-md-offset-2.col-sm-12.col-sm-offset-0
+            .panel.panel-default
+              .panel-heading
+                | My Stats
+              .panel-body
+                ol.list-unstyled
+                  li
+                    p Total Quests: #{user.userprofile.quests_count|intcomma}
+                  li
+                    p Total Annotations: #{user.userprofile.annotations_count|intcomma}
+                  li
+                    p Score: #{user.userprofile.rating_score|intcomma}
+                  li
+                    p Level: #{user.userprofile.highest_level.name}
+
+                .row
+                  .col-xs-12.text-center
+                    a(href='{% url "userprofile:public-profile" username=user.username %}')
+                      |  View Profile
+
+        .row
+          h2 Leaderboard
+          #leaderboard
 
   include document/includes/welcome-modal
 
