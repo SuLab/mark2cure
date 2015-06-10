@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from mark2cure.document.managers import DocumentManager, PubtatorManager
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
+from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from django.forms.models import model_to_dict
 
 
@@ -33,7 +33,6 @@ class Document(models.Model):
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
-
     def update_padding(self):
         from mark2cure.common.formatter import pad_split
         changed = False
@@ -49,7 +48,6 @@ class Document(models.Model):
                 changed = True
 
         return changed
-
 
     def valid_pubtator(self):
         # All responses that are not waiting to fetch conent b/c they already have it
@@ -76,8 +74,41 @@ class Document(models.Model):
                 pubtator.save()
             else:
                 return False
-
         return True
+
+    def get_user_annotations(self, request=None):
+        '''
+            Get the user annotations for a Document
+        '''
+        reader = self.as_writer(request)
+        approved_types = ['disease', 'gene_protein', 'drug']
+
+        for d_idx, document in enumerate(reader.collection.documents):
+            for p_idx, passage in enumerate(document.passages):
+                # For each passage in each document in the collection
+                # add the appropriate annotationa
+                section_pk = passage.infons.get('id')
+                offset = int(passage.offset)
+
+                for ann in Annotation.objects.filter(view__section__pk=section_pk).values('pk', 'start', 'text', 'type', 'view__user__username', 'view__user__pk').all():
+                    annotation = BioCAnnotation()
+                    annotation.id = str(ann.get('pk'))
+                    annotation.put_infon('user', str(ann.get('view__user__pk')))
+                    annotation.put_infon('user_name', str(ann.get('view__user__username')))
+
+                    # (TODO) Map type strings back to 0,1,2
+                    annotation.put_infon('type', str( approved_types.index(ann.get('type')) ))
+
+                    location = BioCLocation()
+                    location.offset = str(offset + ann.get('start'))
+                    location.length = str(len(ann.get('text')))
+                    annotation.add_location(location)
+
+                    annotation.text = ann.get('text')
+
+                    passage.add_annotation(annotation)
+
+        return reader
 
     def get_pubtator(self, request=None):
         '''

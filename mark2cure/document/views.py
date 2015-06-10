@@ -51,6 +51,19 @@ def read_pubmed_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
+def read_users_bioc(request, pubmed_id, format_type):
+    # When fetching via pubmed, include all user annotaitons
+    writer = bioc_writer(request)
+    doc = get_object_or_404(Document, document_id=pubmed_id)
+    writer = doc.get_user_annotations()
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
 '''
   Views for completing the Concept Recognition task
 '''
