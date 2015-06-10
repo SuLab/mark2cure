@@ -683,6 +683,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
 YPet = new Backbone.Marionette.Application();
 YPet.AnnotationTypes = new AnnotationTypeList([
   {name: 'Disease', color: '#d1f3ff'},
-  {name: 'Gene', color: '#d1ffdd'},
+  {name: 'Gene', color: '#B1FFA8'},
   {name: 'Drug', color: '#ffd1dc'}
 ]);
