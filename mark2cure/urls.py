@@ -42,6 +42,8 @@ urlpatterns = patterns('',
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
 
+    url(r'team/', include('mark2cure.team.urls',
+        namespace='team', app_name='team')),
     url(r'u/', include('mark2cure.userprofile.urls',
         namespace='profile', app_name='userprofile')),
     url(r'^registration/', include('mark2cure.registration.urls',
