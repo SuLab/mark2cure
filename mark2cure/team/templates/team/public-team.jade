@@ -14,38 +14,67 @@ block content
   .container
     .row.head-space
       .col-xs-12
-        h1.text-center
-          #{team.name}
+        h1.text-center Team #{team.name}
 
     hr
 
     .row
-      .col-xs-offset-1.col-xs-7
+      .col-xs-10.col-xs-offset-1
+        .panel.panel-default
+          .panel-heading
+            | Description
+          .panel-body
+            #{team.description}
+
+    .row
+      .col-xs-6.col-xs-offset-1
+        .panel.panel-info
+          .panel-heading
+            | Quick Stats
+          .panel-body
+            ol.list-unstyled
+              - with user=team.last_active_user
+                li
+                  p Last Active User:
+                    a(href='{% url "userprofile:public-profile" username=user.username %}')
+                      |  #{user.username}
+
+                li
+                  p Last Member Activity: #{user.last_login|naturaltime}
+
+      .col-xs-4
         .row
           .col-xs-12
-            .panel.panel-info
+            .panel.panel-default
               .panel-heading
-                | Motivation
-              .panel-body
-
-          .col-xs-12
-            .panel.panel-info
-              .panel-heading
-                | Quote
-
-
-      .col-xs-3
-        .row
-          .col-xs-12
-            .panel.panel-info
-              .panel-heading
-                | Statistics
+                | About
               .panel-body
                 ol.list-unstyled
                   li
                     p Created: #{team.created|naturaltime}
                   li
-                    p Member Count: #{team.members_count}
+                    p Created by:
+                      a(href='{% url "userprofile:public-profile" username=team.owner.username %}')
+                        |  #{team.owner}
+                  li
+                    p Members: #{team.members_count}
+
+                  li
+                    - with userprofile=team.userprofile_set.last
+                      p Newest Member:
+                        a(href='{% url "userprofile:public-profile" username=userprofile.user.username %}')
+                          |  #{userprofile.user.username}
 
 
 
+    .row
+      .col-xs-10.col-xs-offset-1
+        .panel.panel-info
+          .panel-heading
+            | Members
+          .panel-body
+            .row
+              - for member_profile in team.userprofile_set.all
+                .col-xs-4
+                  a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
+                    p.lead.text-center #{member_profile.user.username}

@@ -27,14 +27,14 @@ block content
       .col-xs-offset-1.col-xs-7
         .row
           .col-xs-12
-            .panel.panel-info
+            .panel.panel-default
               .panel-heading
                 | Motivation
               .panel-body
                 #{player.userprofile.motivation}
 
           .col-xs-12
-            .panel.panel-info
+            .panel.panel-default
               .panel-heading
                 | Quote
               .panel-body
@@ -44,7 +44,7 @@ block content
       .col-xs-3
         .row
           .col-xs-12
-            .panel.panel-info
+            .panel.panel-default
               .panel-heading
                 | Statistics
               .panel-body
@@ -63,8 +63,9 @@ block content
                     p Level: #{player.userprofile.highest_level.name}
                   - if player.userprofile.team
                     li
-                      p Team: 
-                        a(href='{% url "team:home" teamname=player.userprofile.team.name %}')#{player.userprofile.team.name}
+                      p Team:
+                        a(href='{% url "team:home" teamname=player.userprofile.team.name %}')
+                          |  #{player.userprofile.team.name}
 
 
 
