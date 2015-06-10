@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 import time
 
 
-
 @task()
 def check_corpus_health(group_pk=1):
     group = Group.objects.get(pk=group_pk)
@@ -63,7 +62,7 @@ def get_pubtator_response(pk):
     pubtator = Pubtator.objects.get(pk=pk)
 
     if pubtator.session_id:
-        # Make response to post job to pubtator
+        # Body required to fetch content from previous session
         payload = {'content-type': 'text/xml'}
         writer = pubtator.document.as_writer()
         data = str(writer)
@@ -72,7 +71,6 @@ def get_pubtator_response(pk):
 
         results = requests.post(url, data=data, params=payload)
         pubtator.request_count = pubtator.request_count + 1
-        print results.text
 
         if results.content != 'Not yet':
             print 'Finished checking: Pub #', pubtator.pk

@@ -46,7 +46,6 @@ html
         div.container
           div.navbar-header
             button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded="false", aria-controls="navbar")
-              span.sr-only > Toggle navigation
               span.icon-bar
               span.icon-bar
               span.icon-bar
@@ -66,30 +65,36 @@ html
               li
                 a(href='{% url "registration:login" %}') Login
 
-              li.social
+              li.social.hidden-xs
                 a(href="http://sulab.org/category/mark2cure/feed")
-                  <i class="fa fa-rss-square"></i></a></li>
-              li.social
-                <a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a></li>
-              li.social
-                <a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a></li>
+                  <i class="fa fa-rss-square"></i>
+              li.social.hidden-xs
+                a(href="https://www.facebook.com/pages/Mark2Cure/586806781439862")
+                  <i class="fa fa-facebook-square"></i>
+              li.social.hidden-xs
+                a(href="https://twitter.com/Mark2Cure")
+                  <i class="fa fa-twitter-square"></i>
 
       #bg-case-study
         .container
           .row
             .col-xs-12
               .cta.text-center
-                <h1>Bertrand  was the first case of <br class="hidden-xs"> NGLY1, but he is not alone.</h1>
+                h1 Bertrand  was the first case of <br class="hidden-xs"> NGLY1, but he is not alone.
                 .row
                   .col-sm-8.col-sm-offset-2
-                    <p>NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.</p>
+                    p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
 
                 .row.push30
                   .col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-4
                     a(href='{% url "training:introduction" step_num=1 %}').btn.btn-block.btn-white I want to help
                   .col-xs-6.col-xs-offset-3.col-md-2.col-md-offset-0
-                    <a href="#learnMore" class="hidden-xs hidden-sm"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
-                    <a href="https://www.youtube.com/watch?v=hT_pj1cB0Q8" class="hidden-md hidden-lg"><button class="btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
+                    a(href="#learnMore").hidden-xs.hidden-sm
+                      button.btn.btn-block.btn-white.btn-outline
+                        <i class="fa fa-play"></i> Watch Video
+                    a(href="https://www.youtube.com/watch?v=hT_pj1cB0Q8").hidden-md.hidden-lg
+                      button.btn.btn-block.btn-white.btn-outline
+                        <i class="fa fa-play"></i> Watch Video
 
 
         .cta-bar
@@ -104,45 +109,44 @@ html
       .container-fluid.sci-comm-cs
         .row
           .col-xs-5
-            img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="", class="aligncenter img-responsive")
+            img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="").aligncenter.img-responsive
 
           .col-xs-2
-            img(src="#{STATIC_URL}images/landing/red-book.jpg", alt="", class="aligncenter img-responsive")
+            img(src="#{STATIC_URL}images/landing/red-book.jpg", alt="").aligncenter.img-responsive
 
           .col-xs-5
-            img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="", class="aligncenter img-responsive")
+            img(src="#{STATIC_URL}images/landing/grey-book.jpg", alt="").aligncenter.img-responsive
 
       .container
         .row
           .col-sm-12.text-center
-            <h2>Scientific <span class="font-red text-uppercase">communication</span> is broken.</h2>
+            h2 Scientific <span class="font-red text-uppercase">communication</span> is broken.
             p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
 
       .container.push30
         .row
           .col-xs-12
-            <img src="#{STATIC_URL}images/landing/words.jpg" alt="" class="aligncenter img-responsive">
-
+            img(src="#{STATIC_URL}images/landing/words.jpg", alt="").aligncenter.img-responsive
 
       .container.push30
         .row
           .col-sm-12.text-center
-            <h2><span class="font-red text-uppercase">you</span> can fix it and help find cures.</h2>
-            <p class="medium">The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.</p>
+            h2 <span class="font-red text-uppercase">you</span> can fix it and help find cures.
+            p.medium The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.
 
 
         .row.push50
-          .col-sm-3.col-sm-offset-3
-            <img src="#{STATIC_URL}images/landing/ngly1-child.png" alt="" class="aligncenter img-responsive">
+          .col-md-3.col-md-offset-3
+            img(src="#{STATIC_URL}images/landing/ngly1-child.png", alt="").aligncenter.img-responsive
 
-          .col-sm-3
-            <p>It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a></p>
+          .col-md-3
+            p It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a>
 
 
-      .container.push100.hidden-xs.hidden-sm
+      .container.push100
         .row
           .col-sm-12.text-center
-            <h2 id="learnMore">Learn More</h2>
+            h2#learnMore Learn More
             .center-block.push50
               <iframe width="640" height="360" src="https://www.youtube.com/embed/hT_pj1cB0Q8" frameborder="0" allowfullscreen></iframe>
 
@@ -163,10 +167,11 @@ html
 
         .row.push100
           .col-sm-6
-            <p class="small text-muted">&copy; 2015 Mark2Cure.org &bull; <a href="/tos">Terms of Service &bull; Privacy Policy</a></p>
+            p.small.text-muted &copy; 2015 Mark2Cure.org &bull; <a href="/tos">Terms of Service &bull; Privacy Policy</a>
 
           .col-sm-6
-            <div class="small text-muted participate"><p class="inline"><span style="margin-bottom:5px;">Participate in the Community!</span></p> <p class=""><a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a> <a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a></p>
+            div.small.text-muted.participate
+              p.inline <span style="margin-bottom:5px;">Participate in the Community!</span></p> <p class=""><a href="https://www.facebook.com/pages/Mark2Cure/586806781439862"><i class="fa fa-facebook-square"></i></a> <a href="https://twitter.com/Mark2Cure"><i class="fa fa-twitter-square"></i></a>
 
     script(src="//code.jquery.com/jquery-1.11.1.min.js")
     script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")

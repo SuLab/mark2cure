@@ -29,7 +29,6 @@ class Document(models.Model):
         return self.section_set.exclude(kind='o').count()
 
     def init_pubtator(self):
-        # (TODO) Remove any documents that don't have perfect pubtator
         if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)

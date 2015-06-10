@@ -21,7 +21,6 @@ def public_profile(request, username):
     user = get_object_or_404(User, username=username)
     anns = Annotation.objects.filter(view__user=user)
     quests = UserQuestRelationship.objects.filter(user=user, completed=True)
-    # (TODO) Latest Qoutes
 
     ctx = {'player': user,
            'owner': True if request.user == user else False,
@@ -29,6 +28,7 @@ def public_profile(request, username):
            'annotations_count': anns.count()}
 
     return TemplateResponse(request, 'userprofile/public-profile.jade', ctx)
+
 
 @login_required
 def settings(request):

@@ -625,3 +625,23 @@ a:hover {
 .list-group-item p {
   margin: 0px;
 }
+
+.navbar-default .navbar-toggle:hover {
+  background-color: #fff !important;
+}
+
+.navbar-default .navbar-toggle:hover span {
+  background-color: #7F3CFF !important;
+}
+
+
+/*
+#navbar.collapse.in > ul > li > a {
+  font-size: 2em;
+  padding-top: 20px;
+  letter-spacing: 4px;
+}
+#navbar.collapse.in > ul > li.active > a {
+  color: #7F3CFF;
+}
+*/
