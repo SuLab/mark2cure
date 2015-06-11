@@ -10,8 +10,11 @@ from django.template.response import TemplateResponse
 
 from mark2cure.api.serializers import QuestSerializer, UserProfileSerializer, GroupSerializer
 from mark2cure.common.models import Group, Task, UserQuestRelationship
-from mark2cure.common.formatter import bioc_writer
+from mark2cure.common.formatter import bioc_writer, bioc_as_json
 from mark2cure.userprofile.models import UserProfile
+
+from django.db.models import Sum
+import datetime
 
 
 @login_required
