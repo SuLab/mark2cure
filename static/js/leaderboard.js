@@ -17,7 +17,7 @@ UserList = Backbone.Collection.extend({
  * Views
  */
 UserView = Backbone.Marionette.ItemView.extend({
-  template: _.template('<p><a href="/u/<%- user.username %>" class="text-muted"><% if(hover){ %><%= rating_score %>i<% } else {%><%= user.username %><% } %></a></p>'),
+  template: _.template('<p><a href="/u/<%- user.username %>" class="text-muted"><% if(hover){ %><%= rating_score %><% } else {%><%= user.username %><% } %></a></p>'),
   tagName: 'li',
   className: 'list-group-item',
 

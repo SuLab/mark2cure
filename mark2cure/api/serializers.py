@@ -12,6 +12,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField('get_user_obj')
+    #month_score = serializers.SerializerMethodField('get_month_field')
 
     def get_user_obj(self, profile):
         user = profile.user
@@ -22,8 +23,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'rating_score', 'rating_votes',
-                'quote', 'motivation')
+        fields = ('user', 'rating_score', 'rating_votes', 'quote', 'motivation')
 
 class QuestSerializer(serializers.ModelSerializer):
 
