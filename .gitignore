@@ -11,10 +11,7 @@
 
 /web-app/js/main.built.js
 
-
 mark2cure.db
-mark2cure/settings.py
-mark2cure/local_settings.py
 
 #codekit
 config.codekit
@@ -72,10 +69,6 @@ docs/_build/
 
 /results
 
-/mark2cure/app_settings.py
-
-/mark2cure/aws_settings.py
-
 /..bfg-report
 /static/fonts/*
-/mark2cure/beat_settings.py
+env_vars

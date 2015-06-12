@@ -43,12 +43,11 @@ class Base(Configuration):
             )
         }
 
-    SECRET_KEY = SecretValue()
+    SECRET_KEY = SecretValue(environ_prefix='MARK2CURE')
     ADMINS = (
         ('Max Nanis', 'max@maxnanis.com'),
     )
     MANAGERS = ADMINS
-    VERSION = '0.1'
     SITE_ID = 1
     INTERNAL_IPS = ('127.0.0.1',)
 
@@ -98,6 +97,14 @@ class Base(Configuration):
         'storages',
         'gunicorn'
     )
+
+    SENTRY_ENABLED = BooleanValue(True)
+    SENTRY_PROTOCOL = Value('http')
+    SENTRY_PROJECT_DOMAIN = Value('sentry.sulab.org')
+
+    SENTRY_PUBLIC_KEY = SecretValue(environ_prefix='MARK2CURE')
+    SENTRY_PRIVATE_KEY = SecretValue(environ_prefix='MARK2CURE')
+    SENTRY_PROJECT_ID = SecretValue(environ_prefix='MARK2CURE')
 
     LOGGING = {
         'version': 1,
@@ -241,8 +248,8 @@ class Base(Configuration):
     )
 
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    AWS_ACCESS_KEY_ID = SecretValue()
-    AWS_SECRET_ACCESS_KEY = SecretValue()
+    AWS_ACCESS_KEY_ID = SecretValue(environ_prefix='MARK2CURE')
+    AWS_SECRET_ACCESS_KEY = SecretValue(environ_prefix='MARK2CURE')
     AWS_STORAGE_BUCKET_NAME = 'mark2cure'
 
     STATICFILES_FINDERS = (
@@ -257,7 +264,7 @@ class Base(Configuration):
     CELERY_TIMEZONE = 'America/Los_Angeles'
 
     # Admin/Control settings
-    ADMIN_PASSWORD = SecretValue()
+    ADMIN_PASSWORD = SecretValue(environ_prefix='MARK2CURE')
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
     SOUTH_TESTS_MIGRATE = False
     REUSE_DB = 1
@@ -278,7 +285,7 @@ class Base(Configuration):
         )
     }
 
-    ENTREZ_EMAIL = SecretValue()
+    ENTREZ_EMAIL = SecretValue(environ_prefix='MARK2CURE')
     ENTREZ_TERMS = ['chordoma', 'breast cancer', 'diabetes']
     ENTREZ_MAX_COUNT = 10
 
@@ -297,7 +304,7 @@ class Base(Configuration):
     # Email Settings
     DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
     SERVER_EMAIL = DEFAULT_FROM_EMAIL
-    MANDRILL_API_KEY = SecretValue()
+    MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
     EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
     ROBOTS_USE_SITEMAP = True
 
@@ -310,11 +317,11 @@ class Development(Base):
     CORS_ORIGIN_ALLOW_ALL = True
     ALLOWED_HOSTS = ['*']
 
-    DATABASES = DatabaseURLValue()
+    DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
     DOMAIN = 'localhost:8000'
     DEBUG_FILENAME = 'mark2cure-local-debug.log'
-    VERSION += " (Local)"
+    VERSION = '0.1 (Local)'
 
 
 
@@ -326,11 +333,11 @@ class Production(Base):
     CORS_ORIGIN_ALLOW_ALL = False
     ALLOWED_HOSTS = ['.mark2cure.org']
 
-    DATABASES = DatabaseURLValue()
+    DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
     DOMAIN = 'mark2cure.org'
     DEBUG_FILENAME = 'mark2cure-debug.log'
-    VERSION += " (Production)"
+    VERSION = '0.1 (Production)'
 
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 

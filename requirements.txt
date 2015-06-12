@@ -20,9 +20,11 @@ boto==2.36.0
 brabeion==0.1
 celery==3.1.17
 certifi==14.05.14
+dj-database-url==0.3.0
 django-blog-zinnia==0.15.1
 django-celery==3.1.16
 django-configuration==0.0.3
+django-configurations==0.8
 django-contrib-comments==1.5
 django-cors-headers==1.0.0
 django-countries==3.1.1
