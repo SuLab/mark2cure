@@ -26,13 +26,30 @@ def quest_group_list(request, group_pk):
     return Response(serializer.data)
 
 
-def quest_users_bioc(request, group_pk, format_type):
+def group_users_bioc(request, group_pk, format_type):
     group = get_object_or_404(Group, pk=group_pk)
 
     # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
 
     for doc in group.get_documents():
+        doc_bioc = doc.as_bioc_with_user_annotations()
+        writer.collection.add_document(doc_bioc)
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+def group_pubtator_bioc(request, group_pk, format_type):
+    group = get_object_or_404(Group, pk=group_pk)
+
+    # When fetching via pubmed, include all user annotaitons
+    writer = bioc_writer(request)
+
+    for doc in group.get_documents()[:2]:
         doc_bioc = doc.as_bioc_with_user_annotations()
         writer.collection.add_document(doc_bioc)
 

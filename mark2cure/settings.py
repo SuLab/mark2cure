@@ -319,6 +319,11 @@ class Development(Base):
 
     DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
+    if 'test' in sys.argv:
+        import dj_database_url
+        DATABASES = {'default': dj_database_url.parse('sqlite://'+ Base.PROJECT_PATH + '/test_db.sqlite')}
+        SOUTH_TESTS_MIGRATE = False
+
     DOMAIN = 'localhost:8000'
     DEBUG_FILENAME = 'mark2cure-local-debug.log'
     VERSION = '0.1 (Local)'
@@ -343,14 +348,6 @@ class Production(Base):
 
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
-    #DATABASES = {}
-    #DATABASE_OPTIONS = {
-    #    'charset': 'utf8',
-    #    'init_command': 'SET storage_engine=InnoDB',
-    #}
-    #if 'test' in sys.argv:
-    #    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
-    #    SOUTH_TESTS_MIGRATE = False
     #CELERYBEAT_SCHEDULE = {
     #    'check-corpus': {
     #        'task': 'mark2cure.document.tasks.check_corpus_health',
@@ -361,10 +358,6 @@ class Production(Base):
     #        'schedule': timedelta(minutes=15)
     #    },
     #}
-    #try:
-    #    from mark2cure.beat_settings import *
-    #except ImportError:
-    #    print '[!] You need to configure Celery Beat jobs'
     # CACHES = {
     #     'default': {
     #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

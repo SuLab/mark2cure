@@ -26,10 +26,10 @@ import random
 def read_pubtator_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     doc = get_object_or_404(Document, document_id=pubmed_id)
-    reader = doc.get_pubtator()
 
     writer = bioc_writer(request)
-    writer.collection = reader.collection
+    bioc_document = doc.as_bioc_with_pubtator_annotations()
+    writer.collection.add_document(bioc_document)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

@@ -110,7 +110,7 @@ class Document(models.Model):
 
         return document
 
-    def get_pubtator(self, request=None):
+    def as_bioc_with_pubtator_annotations(self, request=None):
         '''
             This is a function that merges the 3 different pubtator
             reponses into 1 main file. It performances selective
@@ -179,11 +179,16 @@ class Document(models.Model):
                             except:
                                 pass
 
-        return reader
+        return reader.collection.documents[0]
 
     def as_writer(self, request=None):
         from mark2cure.common.formatter import bioc_writer
         writer = bioc_writer(request)
+        document = self.as_bioc_with_passages()
+        writer.collection.add_document(document)
+        return writer
+
+    def as_bioc_with_passages(self):
         document = self.as_bioc()
 
         passage_offset = 0
@@ -191,8 +196,7 @@ class Document(models.Model):
             passage = section.as_bioc(passage_offset)
             passage_offset += len(passage.text)
             document.add_passage(passage)
-        writer.collection.add_document(document)
-        return writer
+        return document
 
     def as_bioc(self):
         document = BioCDocument()
