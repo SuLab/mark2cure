@@ -73,7 +73,6 @@ def get_pubtator_response(pk):
         pubtator.request_count = pubtator.request_count + 1
 
         if results.content != 'Not yet':
-            print 'Finished checking: Pub #', pubtator.pk
             pubtator.session_id = ''
             pubtator.content = results.text
 
@@ -98,8 +97,6 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
             #if Document.objects.pubmed_count(record.get('PMID')) is 0:
             title = ' '.join( pad_split(record.get('TI')) )
             abstract = ' '.join( pad_split(record.get('AB')) )
-
-            print title
 
             doc, doc_c = Document.objects.get_or_create(document_id=record.get('PMID'))
             doc.title = title
