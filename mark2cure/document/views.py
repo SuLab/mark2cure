@@ -23,6 +23,22 @@ import os
 import random
 
 
+def read_pubmed_bioc(request, pubmed_id, format_type):
+    # When fetching via pubmed, include no annotaitons
+    writer = bioc_writer(request)
+    doc = get_object_or_404(Document, document_id=pubmed_id)
+
+    writer = bioc_writer(request)
+    bioc_document = doc.as_bioc_with_passages()
+    writer.collection.add_document(bioc_document)
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
 def read_pubtator_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     doc = get_object_or_404(Document, document_id=pubmed_id)
@@ -38,17 +54,6 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-def read_pubmed_bioc(request, pubmed_id, format_type):
-    # When fetching via pubmed, include no annotaitons
-    writer = bioc_writer(request)
-    doc = get_object_or_404(Document, document_id=pubmed_id)
-    writer = doc.get_pubtator()
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
 
 
 def read_users_bioc(request, pubmed_id, format_type):
