@@ -247,6 +247,10 @@ class Base(Configuration):
         'static'
     )
 
+    FIXTURE_DIRS = (
+        PROJECT_PATH + '/fixtures/',
+    )
+
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     AWS_ACCESS_KEY_ID = SecretValue(environ_prefix='MARK2CURE')
     AWS_SECRET_ACCESS_KEY = SecretValue(environ_prefix='MARK2CURE')
