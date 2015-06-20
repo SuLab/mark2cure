@@ -77,10 +77,44 @@ class DocumentAPIViews(TestCase):
         self.assertEqual(int(r.collection.documents[0].id), self.doc.document_id)
         self.assertEqual(len(r.collection.documents[0].passages), 2)
         self.assertEqual(len(r.collection.documents[0].passages[0].annotations), 0)
+        self.assertEqual(len(r.collection.documents[0].passages[1].annotations), 0)
 
 
     def test_document_as_bioc_with_pubtator(self):
-        pass
+
+        pub_query_set = Pubtator.objects.filter(
+                document=self,
+                session_id='',
+                content__isnull=False)
+
+        print 'QUERY: ', pub_query_set.count()
+
+        response = self.client.get('/document/pubtator/{pmid}.json'.format(pmid=self.doc.document_id))
+        json_string = response.content
+        self.assertNotEqual(json_string, '', msg='API returned empty response for document BioC Pubtator Representation.')
+
+        data = json.loads(json_string)
+
+        # Make sure it's the same document in BioC as DB
+        self.assertEqual(int(data.get('collection').get('document').get('id')), self.doc.document_id)
+        self.assertEqual(len(data.get('collection').get('document').get('passage')), 2)
+        self.assertEqual(data.get('collection').get('document').get('passage')[0].get('text'), self.doc.section_set.first().text)
+        self.assertEqual(data.get('collection').get('document').get('passage')[1].get('text'), self.doc.section_set.last().text)
+
+        # Make sure it doesn't contain any annotations
+        self.assertNotEqual(len(data.get('collection').get('document').get('passage')[0].get('annotation')), 0)
+        self.assertNotEqual(len(data.get('collection').get('document').get('passage')[1].get('annotation')), 0)
+
+        # We already validated everything in JSON b/c it's easier. Let's just
+        # make sure the XML document passes too without specific checks
+        response = self.client.get('/document/pubtator/{pmid}.xml'.format(pmid=self.doc.document_id))
+        r = BioCReader(source=response.content)
+        r.read()
+        self.assertEqual(len(r.collection.documents), 1)
+        self.assertEqual(int(r.collection.documents[0].id), self.doc.document_id)
+        self.assertEqual(len(r.collection.documents[0].passages), 2)
+        self.assertNotEqual(len(r.collection.documents[0].passages[0].annotations), 0)
+        self.assertNotEqual(len(r.collection.documents[0].passages[1].annotations), 0)
 
     def test_document_as_bioc_for_pairing(self):
         # (TODO) requires auth & previous submissions
