@@ -43,8 +43,9 @@ class DocumentAPIMethods(TestCase):
 class DocumentAPIViews(TestCase):
     fixtures = ['tests_document.json']
 
-    def setUp(self):
-        self.doc = Document.objects.first()
+    @classmethod
+    def setUp(cls):
+        cls.doc = Document.objects.first()
 
     def test_document_init(self):
         self.assertEqual(Document.objects.count(), 1)
@@ -81,13 +82,10 @@ class DocumentAPIViews(TestCase):
 
 
     def test_document_as_bioc_with_pubtator(self):
-
         pub_query_set = Pubtator.objects.filter(
-                document=self,
+                document=self.doc,
                 session_id='',
                 content__isnull=False)
-
-        print 'QUERY: ', pub_query_set.count()
 
         response = self.client.get('/document/pubtator/{pmid}.json'.format(pmid=self.doc.document_id))
         json_string = response.content
@@ -101,7 +99,7 @@ class DocumentAPIViews(TestCase):
         self.assertEqual(data.get('collection').get('document').get('passage')[0].get('text'), self.doc.section_set.first().text)
         self.assertEqual(data.get('collection').get('document').get('passage')[1].get('text'), self.doc.section_set.last().text)
 
-        # Make sure it doesn't contain any annotations
+        # Make sure it contains any annotations
         self.assertNotEqual(len(data.get('collection').get('document').get('passage')[0].get('annotation')), 0)
         self.assertNotEqual(len(data.get('collection').get('document').get('passage')[1].get('annotation')), 0)
 

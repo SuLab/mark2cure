@@ -23,7 +23,7 @@ import os
 import random
 
 
-def read_pubmed_bioc(request, pubmed_id, format_type):
+def read_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)

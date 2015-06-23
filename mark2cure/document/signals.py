@@ -17,7 +17,7 @@ def pubtator_post_save(sender, instance, created, **kwargs):
     '''
     pubtator = instance
 
-    if created:
+    if created and pubtator.content is None:
         # Make response to post job to pubtator
         payload = {'content-type': 'text/xml'}
         writer = pubtator.document.as_writer()

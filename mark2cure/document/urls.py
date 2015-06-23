@@ -8,13 +8,13 @@ router = routers.DefaultRouter()
 
 urlpatterns = patterns('',
 
+    # BioC File for PMID (basic / no annotations)
+    url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
+        views.read_bioc, name='read-bioc'),
+
     # Pubtator BioC File for PMID
     url(r'^pubtator/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubtator_bioc, name='read-pubtator-bioc'),
-
-    # BioC File for PMID (basic / no annotations)
-    url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
-        views.read_pubmed_bioc, name='read-pubmed-bioc'),
 
     # BioC File for M2C annotations
     url(r'^m2c/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
