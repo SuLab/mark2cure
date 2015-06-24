@@ -1,5 +1,5 @@
 from mark2cure.common.models import Group, Task, UserQuestRelationship
-from mark2cure.userprofile.models import UserProfile
+from mark2cure.userprofile.models import UserProfile, Team
 
 from rest_framework import serializers
 
@@ -13,19 +13,34 @@ class GroupSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
 
-    def get_score(self, profile):
-        return int(profile.score) if profile.score else 0
+    def get_name(self, profile):
+        return profile.user.username
 
     def get_user(self, profile):
         user = profile.user
         return {'pk': user.pk,
                 'username': user.username}
 
+    def get_score(self, profile):
+        return int(profile.score) if profile.score else 0
+
     class Meta:
         model = UserProfile
-        fields = ('user', 'score', 'quote', 'motivation')
+        fields = ('user', 'name', 'score', 'quote', 'motivation')
+
+class TeamLeaderboardSerializer(serializers.ModelSerializer):
+
+    score = serializers.SerializerMethodField()
+
+    def get_score(self, profile):
+        return int(profile.score) if profile.score else 0
+
+    class Meta:
+        model = Team
+        fields = ('name', 'score',)
 
 
 class QuestSerializer(serializers.ModelSerializer):

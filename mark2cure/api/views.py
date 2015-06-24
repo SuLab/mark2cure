@@ -8,10 +8,10 @@ from rest_framework.decorators import api_view
 
 from django.template.response import TemplateResponse
 
-from mark2cure.api.serializers import QuestSerializer, UserProfileSerializer, GroupSerializer
+from mark2cure.api.serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
 from mark2cure.common.models import Group, Task, UserQuestRelationship
 from mark2cure.common.formatter import bioc_writer, bioc_as_json
-from mark2cure.userprofile.models import UserProfile
+from mark2cure.userprofile.models import UserProfile, Team
 
 from django.db.models import Sum
 import datetime
@@ -68,7 +68,6 @@ def group_list(request):
     return Response(serializer.data)
 
 
-
 def get_annotated_user_profiles(days=30, limit=25):
     '''
         content_type_id = 22 is a userprofile
@@ -88,10 +87,47 @@ def get_annotated_user_profiles(days=30, limit=25):
         }).prefetch_related('user').order_by("-score",)[:limit]
 
 
+def get_annotated_teams(days=30, limit=25):
+    '''
+        content_type_id = 22 is a userprofile
+    '''
+    today = datetime.datetime.now()
+    since = today - datetime.timedelta(days)
+
+    # (TODO) This could be smaller by only being UserProfiles that
+    # we know are part of a Team
+    user_profiles = UserProfile.objects.exclude(pk__in=[5, 160]).extra(select = {
+    "score" : """
+        SELECT SUM(djangoratings_vote.score) AS score
+        FROM djangoratings_vote
+        WHERE (djangoratings_vote.content_type_id = 22
+            AND djangoratings_vote.object_id = userprofile_userprofile.id
+            AND djangoratings_vote.date_added > '%s'
+            AND djangoratings_vote.date_added <= '%s')
+        GROUP BY djangoratings_vote.object_id ORDER BY NULL""" % (since, today)
+        }).order_by("-score",)
+
+    teams = Team.objects.all()
+    for team in teams:
+        team_user_profile_pks = team.userprofile_set.values_list('pk', flat=True)
+        team.score = sum(filter(None, user_profiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
+    teams = list(teams)
+    teams.sort(key=lambda x: x.score, reverse=True)
+    return teams
+
+
 @login_required
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
     queryset = get_annotated_user_profiles(days=int(day_window))
     serializer = UserProfileSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@login_required
+@api_view(['GET'])
+def leaderboard_teams(request, day_window):
+    queryset = get_annotated_teams(days=int(day_window))
+    serializer = TeamLeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
