@@ -63,10 +63,6 @@ def dashboard(request):
         return redirect('training:route')
 
     profile = request.user.profile
-    tasks = Task.objects.filter(kind=Task.QUEST).all()
-    for task in tasks:
-        setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification)
-        setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists())
 
     welcome = False
     storage = get_messages(request)
@@ -104,7 +100,6 @@ def dashboard(request):
     groups = []
     ctx = {
             'groups': groups,
-            'tasks': tasks,
            'welcome': welcome,
            'profile': profile}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
