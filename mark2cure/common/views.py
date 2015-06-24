@@ -89,7 +89,7 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
     # Redirect if trying to access more documents
     # than this task contains
-    if int(doc_idx) > len( task.remaining_documents() ):
+    if int(doc_idx) > task.remaining_documents_count():
         return redirect('common:quest-home', quest_pk=task.pk)
 
     # Confirm the user has started, but not completed this Task

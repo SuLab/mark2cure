@@ -139,6 +139,14 @@ class Task(models.Model):
     def total_points(self):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
 
+    def remaining_documents_count(self, completed_ids=[]):
+        # Document pks for the Quest the user has left
+        if self.documents:
+            # Document pks for the Quest the user has left
+            return self.documents.exclude(pk__in=completed_ids).count()
+        else:
+            return 0
+
     def remaining_documents(self, completed_ids=[]):
         # Document pks for the Quest the user has left
         if self.documents:
