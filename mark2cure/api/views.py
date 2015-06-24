@@ -22,6 +22,7 @@ import datetime
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
     queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
+
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
@@ -49,8 +50,8 @@ def group_pubtator_bioc(request, group_pk, format_type):
     # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
 
-    for doc in group.get_documents()[:2]:
-        doc_bioc = doc.as_bioc_with_user_annotations()
+    for doc in group.get_documents():
+        doc_bioc = doc.as_bioc_with_pubtator_annotations()
         writer.collection.add_document(doc_bioc)
 
     if format_type == 'json':
