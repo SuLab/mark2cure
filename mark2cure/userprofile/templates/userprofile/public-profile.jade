@@ -54,9 +54,9 @@ block content
                   li
                     p Last Seen: #{player.last_login|naturaltime}
                   li
-                    p Total Quests: #{user.userprofile.quests_count|intcomma}
+                    p Total Quests: #{player.userprofile.quests_count|intcomma}
                   li
-                    p Total Annotations: #{user.userprofile.annotations_count|intcomma}
+                    p Total Annotations: #{player.userprofile.annotations_count|intcomma}
                   li
                     p Score: #{player.userprofile.rating_score|intcomma}
                   li
