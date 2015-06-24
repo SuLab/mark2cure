@@ -71,16 +71,15 @@ block content
   .container.head-space
     .row
       .col-xs-3
-        ul.list-unstyled
-          li(style='background-color: #d1f3ff;')
-            a(href='{% url "instructions:disease-marking" %}', target='_blank')
-              p.text-center Disease Concept
-          li(style='background-color: #B1FFA8;')
-            a(href='{% url "instructions:gene-marking" %}', target='_blank')
-              p.text-center Genes Concept
-          li(style='background-color: #ffd1dc;')
-            a(href='{% url "instructions:treatment-marking" %}', target='_blank')
-              p.text-center Treatments Concept
+        div(role="group").btn-group-vertical
+          a(href='{% url "instructions:disease-marking" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
+            | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
+
+          a(href='{% url "instructions:gene-marking" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-info
+            | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
+
+          a(href='{% url "instructions:treatment-marking" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-info
+            | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
 
       // Init all submission events
       // 1) Submit the document
