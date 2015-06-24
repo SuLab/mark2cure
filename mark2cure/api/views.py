@@ -71,34 +71,26 @@ def group_list(request):
 
 def get_annotated_user_profiles(days=30, limit=25):
     '''
-    userprofiles = UserProfile.objects.all().extra(select = {
-    "score" : """
-        SELECT `djangoratings_vote`.`object_id`, SUM(`djangoratings_vote`.`score`) AS `score`
-        FROM `djangoratings_vote` WHERE (`djangoratings_vote`.`content_type_id` = %s
-        AND `djangoratings_vote`.`object_id` = %s
-            AND `djangoratings_vote`.`date_added` > %s
-            AND `djangoratings_vote`.`content_type_id` = %s
-            AND `djangoratings_vote`.`date_added` <= %s)
-            GROUP BY `djangoratings_vote`.`object_id` ORDER BY NULL""" % (user_id, 66, u'2015-05-11 20:46:42', 22, u'2015-06-10 20:46:42')
-    }).order_by("-score",)
+        content_type_id = 22 is a userprofile
     '''
+    today = datetime.datetime.now()
+    since = today - datetime.timedelta(days)
 
-
-    # (TODO) Use Extra // http://timmyomahony.com/blog/filtering-annotations-django/
-    sorted_up_dicts = []
-    for up in UserProfile.objects.all():
-        up_arr = up.rating.get_ratings().filter(content_type_id=22, date_added__lte=datetime.datetime.today(), date_added__gt=datetime.datetime.today()-datetime.timedelta(days=30)).values('object_id').annotate(score=Sum('score'))
-        if len(up_arr) == 1:
-            sorted_up_dicts.append(up_arr[0])
-
-    sorted_up_dicts = sorted(sorted_up_dicts, key=lambda k: -k['score'])
-    return sorted_up_dicts[:limit]
+    return UserProfile.objects.exclude(pk__in=[5, 160]).extra(select = {
+    "score" : """
+        SELECT SUM(djangoratings_vote.score) AS score
+        FROM djangoratings_vote
+        WHERE (djangoratings_vote.content_type_id = 22
+            AND djangoratings_vote.object_id = userprofile_userprofile.id
+            AND djangoratings_vote.date_added > '%s'
+            AND djangoratings_vote.date_added <= '%s')
+        GROUP BY djangoratings_vote.object_id ORDER BY NULL""" % (since, today)
+        }).prefetch_related('user').order_by("-score",)[:limit]
 
 
 @login_required
 @api_view(['GET'])
-def leaderboard_users(request):
-    #userprofiles = get_annotated_user_profiles(30)
-    queryset = UserProfile.objects.exclude(user__username__in=['CheckingOnTesters', 'roarwithphoebe']).order_by('-rating_score').all()[:25]
+def leaderboard_users(request, day_window):
+    queryset = get_annotated_user_profiles(days=int(day_window))
     serializer = UserProfileSerializer(queryset, many=True)
     return Response(serializer.data)

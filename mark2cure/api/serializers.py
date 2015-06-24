@@ -9,21 +9,24 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('pk', 'name', 'stub', 'description')
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
 
-    user = serializers.SerializerMethodField('get_user_obj')
-    #month_score = serializers.SerializerMethodField('get_month_field')
+    user = serializers.SerializerMethodField()
+    score = serializers.SerializerMethodField()
 
-    def get_user_obj(self, profile):
+    def get_score(self, profile):
+        return int(profile.score) if profile.score else 0
+
+    def get_user(self, profile):
         user = profile.user
         return {'pk': user.pk,
-                'username': user.username,
-                'level': profile.highest_level().name
-                }
+                'username': user.username}
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'rating_score', 'rating_votes', 'quote', 'motivation')
+        fields = ('user', 'score', 'quote', 'motivation')
+
 
 class QuestSerializer(serializers.ModelSerializer):
 

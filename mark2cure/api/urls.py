@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^groups/$',
         views.group_list, name='groups-api'),
 
-    url(r'^leaderboard/users/$',
+    url(r'^leaderboard/(?P<day_window>\d+)/$',
         views.leaderboard_users, name='leaderboard-users'),
 
 )
