@@ -1,23 +1,38 @@
 /*
  *  Models & Collections
  */
+LeaderBoardSettings = Backbone.RelationalModel.extend({
+  defaults: {'time_range': 0, 'text': 'This Month', 'days': 31},
+  time_key: [
+      {'text': 'This Month', 'days': 31},
+      {'text': 'This Week', 'days': 7},
+      {'text': 'Today', 'days': 1}
+  ],
+
+  toggle_time_range: function() {
+    var idx = this.get('time_range');
+    idx++;
+    if(idx==3) { idx = 0; }
+    this.set('time_range', idx);
+  },
+
+});
+
 User = Backbone.RelationalModel.extend({
   defaults: {hover: false}
 });
 
 UserList = Backbone.Collection.extend({
-  /* Common utils to perform on an array of Word
-   * models for house keeping and search */
   model: User,
-  url: '/api/leaderboard/users/?format=json',
+  initialize: function() { this.days = 31; },
+  url: function() { return '/api/leaderboard/'+ this.days +'/?format=json'; },
 });
-
 
 /*
  * Views
  */
 UserView = Backbone.Marionette.ItemView.extend({
-  template: _.template('<p><a href="/u/<%- user.username %>" class="text-muted"><% if(hover){ %><%= rating_score %><% } else {%><%= user.username %><% } %></a></p>'),
+  template: _.template('<p><a href="/u/<%- user.username %>" class="text-muted"><% if(hover){ %><%= score %><% } else {%><%= user.username %><% } %></a></p>'),
   tagName: 'li',
   className: 'list-group-item',
 
@@ -50,14 +65,32 @@ UserView = Backbone.Marionette.ItemView.extend({
 
 });
 
-UserCollectionView = Backbone.Marionette.CollectionView.extend({
+UserCompositeView = Backbone.Marionette.CompositeView.extend({
+  template: _.template('<h4 class="text-center"><%- text %> <strong class="font-purple">></strong></h4><ol class="list-unstyled list-group"></ol>'),
   childView  : UserView,
-  tagName   : 'ol',
-  className : 'list-unstyled list-group',
-  events : {
+  childViewContainer: "ol",
+
+  initialize : function(options) {
+    this.listenTo(this.model, 'change:time_range', function() {
+      var time_obj = this.model.time_key[this.model.get('time_range')];
+      this.model.set('text', time_obj.text);
+      this.model.set('days', time_obj.days);
+      this.collection.days = time_obj.days;
+      this.collection.fetch();
+    });
+
+    this.listenTo(this.model, 'change:text', function() {
+      this.render();
+    });
+
+    this.collection.fetch();
   },
 
   onRender : function() {
+    var self = this;
+    this.$('h4').on('click', function() {
+      self.model.toggle_time_range();
+    });
   },
 
 });

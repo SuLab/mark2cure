@@ -48,7 +48,7 @@ block content
 
         .row
           .col-md-8.col-md-offset-2.col-sm-12.col-sm-offset-0
-            h2 Leaderboard
+            h2 Top Contributors
             #leaderboard
 
   include document/includes/welcome-modal
@@ -162,8 +162,8 @@ block post-footer
     script.
       LeaderBoard.addInitializer(function(options) {
         LeaderBoard.addRegions({'leaderboard': '#leaderboard'});
+        var settings = new LeaderBoardSettings();
         var users = new UserList();
-        users.fetch();
-        LeaderBoard['leaderboard'].show( new UserCollectionView({'collection': users}) );
+        LeaderBoard['leaderboard'].show( new UserCompositeView({'model': settings, 'collection': users}) );
       });
       LeaderBoard.start();

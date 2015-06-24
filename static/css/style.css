@@ -289,6 +289,14 @@ a.close-btn {
   letter-spacing: 2px;
 }
 
+#leaderboard h4 {
+  cursor: pointer;
+}
+
+.font-purple {
+  color: #7f3cff;
+}
+
 .quest-guide .doc-item-col {
   height: 40px;
 }

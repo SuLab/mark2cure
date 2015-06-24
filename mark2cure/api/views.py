@@ -94,3 +94,4 @@ def leaderboard_users(request, day_window):
     queryset = get_annotated_user_profiles(days=int(day_window))
     serializer = UserProfileSerializer(queryset, many=True)
     return Response(serializer.data)
+
