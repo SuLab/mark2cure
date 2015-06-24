@@ -73,7 +73,7 @@ def get_annotated_user_profiles(days=30, limit=25):
         content_type_id = 22 is a userprofile
     '''
     today = datetime.datetime.now()
-    since = today - datetime.timedelta(days)
+    since = today - datetime.timedelta(days=days)
 
     return UserProfile.objects.exclude(pk__in=[5, 160]).extra(select = {
     "score" : """
@@ -92,7 +92,7 @@ def get_annotated_teams(days=30, limit=25):
         content_type_id = 22 is a userprofile
     '''
     today = datetime.datetime.now()
-    since = today - datetime.timedelta(days)
+    since = today - datetime.timedelta(days=days)
 
     # (TODO) This could be smaller by only being UserProfiles that
     # we know are part of a Team

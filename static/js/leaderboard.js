@@ -2,12 +2,20 @@
  *  Models & Collections
  */
 LeaderBoardSettings = Backbone.RelationalModel.extend({
-  defaults: {'time_range': 0, 'text': 'This Month', 'days': 31},
+  defaults: {'time_range': 0, 'text': 'This Month', 'days': 31, 'api': 'users'},
   time_key: [
       {'text': 'This Month', 'days': 31},
       {'text': 'This Week', 'days': 7},
       {'text': 'Today', 'days': 1}
   ],
+
+  toggle_api: function() {
+    if(this.get('api') == 'users') {
+      this.set('api', 'teams');
+    } else {
+      this.set('api', 'users');
+    }
+  },
 
   toggle_time_range: function() {
     var idx = this.get('time_range');
@@ -19,20 +27,23 @@ LeaderBoardSettings = Backbone.RelationalModel.extend({
 });
 
 User = Backbone.RelationalModel.extend({
-  defaults: {hover: false}
+  defaults: {'user': false, 'hover': false}
 });
 
 UserList = Backbone.Collection.extend({
   model: User,
-  initialize: function() { this.days = 31; },
-  url: function() { return '/api/leaderboard/'+ this.days +'/?format=json'; },
+  initialize: function() {
+    this.api = 'users';
+    this.days = 31;
+  },
+  url: function() { return '/api/leaderboard/'+ this.api +'/'+ this.days +'/?format=json'; },
 });
 
 /*
  * Views
  */
 UserView = Backbone.Marionette.ItemView.extend({
-  template: _.template('<p><a href="/u/<%- user.username %>" class="text-muted"><% if(hover){ %><%= score %><% } else {%><%= user.username %><% } %></a></p>'),
+  template: _.template('<p><a <% if(user){ %>href="/u/<%- name %>/"<% } else { %>href="/team/<%- name %>/"<% } %> class="text-muted"><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></a></p>'),
   tagName: 'li',
   className: 'list-group-item',
 
@@ -66,7 +77,7 @@ UserView = Backbone.Marionette.ItemView.extend({
 });
 
 UserCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<h4 class="text-center"><%- text %> <strong class="font-purple">></strong></h4><ol class="list-unstyled list-group"></ol>'),
+  template: _.template('<h2 class="text-center">Top <%- api %> <strong class="font-purple">></strong></h2><h4 class="text-center"><%- text %> <strong class="font-purple">></strong></h4><ol class="list-unstyled list-group"></ol>'),
   childView  : UserView,
   childViewContainer: "ol",
 
@@ -79,6 +90,12 @@ UserCompositeView = Backbone.Marionette.CompositeView.extend({
       this.collection.fetch();
     });
 
+    this.listenTo(this.model, 'change:api', function() {
+      this.collection.api = this.model.get('api');
+      this.collection.fetch();
+      this.render();
+    });
+
     this.listenTo(this.model, 'change:text', function() {
       this.render();
     });
@@ -88,9 +105,8 @@ UserCompositeView = Backbone.Marionette.CompositeView.extend({
 
   onRender : function() {
     var self = this;
-    this.$('h4').on('click', function() {
-      self.model.toggle_time_range();
-    });
+    this.$('h2').on('click', function() { self.model.toggle_api(); });
+    this.$('h4').on('click', function() { self.model.toggle_time_range(); });
   },
 
 });
