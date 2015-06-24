@@ -78,7 +78,7 @@ class Base(Configuration):
         'rest_framework',
         'tagging',
         'mptt',
-        'zinnia',
+        #'zinnia',
         'brabeion',
         'debug_toolbar',
 

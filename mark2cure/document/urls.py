@@ -21,7 +21,6 @@ urlpatterns = patterns('',
         views.read_users_bioc, name='read-users-bioc'),
 
     # BioC File for Partner for Task & PMID Paring
-    # Score in BioC File?
     url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
 

@@ -46,7 +46,7 @@ def select_best_opponent(task, document, player):
 
     # If the known GM User is in the DB, use them for partner comparison
     gm_user_query = User.objects.filter(username='GATTACA')
-
+    gm_user = None
     if gm_user_query.exists():
         gm_user = gm_user_query.first()
         if others_quest_relationships.exists() and \
