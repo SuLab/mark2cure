@@ -13,7 +13,7 @@ urlpatterns = patterns('',
 
     # BioC File for Pubtator annotations by Group
     url(r'^group/(?P<group_pk>\d+)/pubtator_annotations.(?P<format_type>\w+)$',
-        views.group_pubtator_bioc, name='gorup-pubtator-bioc'),
+        views.group_pubtator_bioc, name='group-pubtator-bioc'),
 
     url(r'^groups/$',
         views.group_list, name='groups-api'),
