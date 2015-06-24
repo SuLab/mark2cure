@@ -186,16 +186,20 @@ class DocumentSubmissionsAPIViews(TestCase):
         r = BioCReader(source=response.content)
         r.read()
 
+        # Make sure the BioC document has the opponent's infp
         self.assertEqual(len(r.collection.documents), 1)
         self.assertEqual(int(r.collection.documents[0].id), doc.document_id)
         self.assertEqual(len(r.collection.documents[0].passages), 2)
         self.assertEqual(len(r.collection.documents[0].passages[0].annotations), 0)
         self.assertEqual(len(r.collection.documents[0].passages[1].annotations), 3)
+
+        self.assertEqual(r.collection.documents[0].passages[1].annotations[0].infons['user_name'], 'opponent')
+        self.assertEqual(int(r.collection.documents[0].passages[1].annotations[0].infons['type']), 0)
+        self.assertEqual(r.collection.documents[0].passages[1].annotations[0].text, 'text annotation 0')
+        self.assertEqual(int(r.collection.infons['points']), 0)
+        self.assertEqual(r.collection.infons['partner'], 'opponent')
         self.client.logout()
 
-
-'''
     def test_document_as_bioc_with_m2c(self):
         pass
-'''
 
