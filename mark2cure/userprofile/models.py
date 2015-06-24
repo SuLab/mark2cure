@@ -106,10 +106,10 @@ class UserProfile(models.Model):
         return res if res else BadgeAward(name='', level=0)
 
     def annotations_count(self):
-        return Annotation.objects.filter(view__user=self).count()
+        return Annotation.objects.filter(view__user=self.user).count()
 
     def quests_count(self):
-        return UserQuestRelationship.objects.filter(user=self, completed=True).count()
+        return UserQuestRelationship.objects.filter(user=self.user, completed=True).count()
 
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
