@@ -84,7 +84,6 @@ class DocumentAPIViews(TestCase):
         self.assertEqual(len(r.collection.documents[0].passages[0].annotations), 0)
         self.assertEqual(len(r.collection.documents[0].passages[1].annotations), 0)
 
-
     def test_document_as_bioc_with_pubtator(self):
         pub_query_set = Pubtator.objects.filter(
                 document=self.doc,
@@ -163,15 +162,14 @@ class DocumentSubmissionsAPIViews(TestCase):
         # Annotation submit URL
         abstract = doc.available_sections().last()
         url = reverse('document:create', kwargs={'task_pk': self.task.pk, 'section_pk': abstract.pk})
-        self.client.post(url, {'type': 0, 'text': 'text annotation 0', 'start': 0})
-        self.client.post(url, {'type': 1, 'text': 'text annotation 1', 'start': 10})
-        self.client.post(url, {'type': 2, 'text': 'text annotation 2', 'start': 20})
+        self.assertEqual(self.client.post(url, {'type': 0, 'text': 'text annotation 0', 'start': 0}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 1, 'text': 'text annotation 1', 'start': 10}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 2, 'text': 'text annotation 2', 'start': 20}).status_code, 200)
         self.assertEqual(Annotation.objects.count(), 3)
 
         # Then submit the document for the Quest
         response = self.client.post(reverse('common:doc-quest-submit', kwargs={'quest_pk': self.task.pk, 'document_pk': doc.pk}), follow=True)
         self.client.logout()
-
 
         #
         # Try again as the player to see if comparison uses opponents
@@ -201,5 +199,49 @@ class DocumentSubmissionsAPIViews(TestCase):
         self.client.logout()
 
     def test_document_as_bioc_with_m2c(self):
-        pass
+        # Submit Annotations (As User 1) so they show up when inspecting the M2C submissions
+        self.assertEqual(Annotation.objects.count(), 0)
+        self.client.login(username='player', password='password')
+        response = self.client.get(reverse('common:quest-home', kwargs={'quest_pk': self.task.pk}), follow=True)
+
+        doc = response.context['document']
+        abstract = doc.available_sections().last()
+
+        # Annotation submit URL
+        url = reverse('document:create', kwargs={'task_pk': self.task.pk, 'section_pk': abstract.pk})
+        self.assertEqual(self.client.post(url, {'type': 0, 'text': 'text annotation 0', 'start': 0}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 1, 'text': 'text annotation 1', 'start': 10}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 2, 'text': 'text annotation 2', 'start': 20}).status_code, 200)
+        self.assertEqual(Annotation.objects.count(), 3)
+        # Then submit the document for the Quest
+        response = self.client.post(reverse('common:doc-quest-submit', kwargs={'quest_pk': self.task.pk, 'document_pk': doc.pk}), follow=True)
+        self.client.logout()
+
+        # Submit Annotations (As User 1) so they show up when inspecting the M2C submissions
+        self.assertEqual(Annotation.objects.count(), 3)
+        self.client.login(username='opponent', password='password')
+        response = self.client.get(reverse('common:quest-home', kwargs={'quest_pk': self.task.pk}), follow=True)
+
+        # Annotation submit URL
+        url = reverse('document:create', kwargs={'task_pk': self.task.pk, 'section_pk': abstract.pk})
+        self.assertEqual(self.client.post(url, {'type': 0, 'text': 'text annotation 3', 'start': 30}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 1, 'text': 'text annotation 4', 'start': 40}).status_code, 200)
+        self.assertEqual(self.client.post(url, {'type': 2, 'text': 'text annotation 5', 'start': 50}).status_code, 200)
+        self.assertEqual(Annotation.objects.count(), 6)
+        # Then submit the document for the Quest
+        response = self.client.post(reverse('common:doc-quest-submit', kwargs={'quest_pk': self.task.pk, 'document_pk': doc.pk}), follow=True)
+        self.client.logout()
+
+        # As Anon user, export the documents submissions
+        res = self.client.get(reverse('document:read-users-bioc', kwargs={'pubmed_id': doc.document_id, 'format_type': 'xml'}), follow=True)
+        self.assertEqual(res.status_code, 200)
+        bioc = BioCReader(source=res.content)
+        bioc.read()
+
+        # Make sure the BioC document has the opponent's infp
+        self.assertEqual(len(bioc.collection.documents), 1)
+        self.assertEqual(int(bioc.collection.documents[0].id), doc.document_id)
+        self.assertEqual(len(bioc.collection.documents[0].passages), 2)
+        self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
+        self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)
 
