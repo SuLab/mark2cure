@@ -130,13 +130,9 @@ head
           linesOfContext: 30
         };
 
-      - if debug
-        script.
-          Raven.config('http://cd8a9437c30643369291b1ec35c69592@sentry.sulab.org/10', raven_options).install();
-
       - else
         script.
-          Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', raven_options).install();
+          Raven.config('http://bb935ebde8e94f8b9e0bf29365aaf5db@sentry.sulab.org/2', raven_options).install();
           Raven.setUser({
             email: "{{ request.user.email }}",
             id: "{{ request.user.pk }}"
