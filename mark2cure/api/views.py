@@ -69,10 +69,7 @@ def group_list(request):
     return Response(serializer.data)
 
 
-def get_annotated_user_profiles(days=30, limit=25):
-    '''
-        content_type_id = 22 is a userprofile
-    '''
+def userprofiles_with_score(days=30):
     today = datetime.datetime.now()
     since = today - datetime.timedelta(days=days)
 
@@ -85,33 +82,21 @@ def get_annotated_user_profiles(days=30, limit=25):
             AND djangoratings_vote.date_added > '%s'
             AND djangoratings_vote.date_added <= '%s')
         GROUP BY djangoratings_vote.object_id ORDER BY NULL""" % (since, today)
-        }).prefetch_related('user').order_by("-score",)[:limit]
+        }).prefetch_related('user').order_by("-score",)
 
 
-def get_annotated_teams(days=30, limit=25):
-    '''
-        content_type_id = 22 is a userprofile
-    '''
+def get_annotated_teams(days=30):
     today = datetime.datetime.now()
     since = today - datetime.timedelta(days=days)
 
     # (TODO) This could be smaller by only being UserProfiles that
     # we know are part of a Team
-    user_profiles = UserProfile.objects.exclude(pk__in=[5, 160]).extra(select = {
-    "score" : """
-        SELECT SUM(djangoratings_vote.score) AS score
-        FROM djangoratings_vote
-        WHERE (djangoratings_vote.content_type_id = 22
-            AND djangoratings_vote.object_id = userprofile_userprofile.id
-            AND djangoratings_vote.date_added > '%s'
-            AND djangoratings_vote.date_added <= '%s')
-        GROUP BY djangoratings_vote.object_id ORDER BY NULL""" % (since, today)
-        }).order_by("-score",)
+    userprofiles = userprofiles_with_score(days=days)
 
     teams = Team.objects.all()
     for team in teams:
         team_user_profile_pks = team.userprofile_set.values_list('pk', flat=True)
-        team.score = sum(filter(None, user_profiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
+        team.score = sum(filter(None, userprofiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
     teams = list(teams)
     teams.sort(key=lambda x: x.score, reverse=True)
     return teams
@@ -120,7 +105,8 @@ def get_annotated_teams(days=30, limit=25):
 @login_required
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
-    queryset = get_annotated_user_profiles(days=int(day_window))
+    queryset = list(userprofiles_with_score(days=int(day_window))[:25])
+    queryset = [up for up in queryset if not up.score is None]
     serializer = UserProfileSerializer(queryset, many=True)
     return Response(serializer.data)
 
@@ -128,7 +114,8 @@ def leaderboard_users(request, day_window):
 @login_required
 @api_view(['GET'])
 def leaderboard_teams(request, day_window):
-    queryset = get_annotated_teams(days=int(day_window))
+    queryset = list(get_annotated_teams(days=int(day_window)))[:25]
+    queryset = [team for team in queryset if not team.score is 0]
     serializer = TeamLeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
