@@ -16,6 +16,7 @@ import os
 class Team(models.Model):
     owner = models.ForeignKey(User)
     name = models.CharField(verbose_name=u'Team Name', help_text=u'You can create a new team.', max_length=255, blank=True)
+    description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
