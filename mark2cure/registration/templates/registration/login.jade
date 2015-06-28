@@ -1,6 +1,6 @@
 extends base
 
-- load widget_tweaks
+- load as_vertical_form from bootstrap
 
 block header
 
@@ -14,7 +14,6 @@ block content
       .col-xs-4.col-xs-offset-4
         - if form.errors
           p Your username and password didn't match. Please try again.
-          #{form.errors}
 
       .col-xs-6.col-xs-offset-3
         form(method='post')
@@ -23,12 +22,12 @@ block content
           .form-group
             .row
               .col-xs-6.col-xs-offset-3
-                #{form.username|add_class:'form-control'|attr:'placeholder:Username'}
+                #{form.username|as_vertical_form}
 
           .form-group
             .row
               .col-xs-6.col-xs-offset-3
-                #{form.password|add_class:'form-control'|attr:'placeholder:Password'}
+                #{form.password|as_vertical_form}
 
           .form-group.head-space
             .row
