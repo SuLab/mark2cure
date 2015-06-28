@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 
 from ..document.models import Document, View
 from django.contrib.auth.models import User
@@ -91,14 +92,15 @@ class Group(models.Model):
         return Document.objects.filter(task__group=self)
 
     def percentage_complete(self):
-        completed = 0
-        required = 0
-        for task in self.task_set.all():
-            # If an unlimited / training task ignore it
-            if task.completions:
-                completed += UserQuestRelationship.objects.filter(task=task, completed=True).count()
-                required += task.completions
-
+        task_queryset = self.task_set.extra(select = {
+        "completed" : """
+            SELECT COUNT(*) AS completed
+            FROM common_userquestrelationship
+            WHERE (common_userquestrelationship.completed = 1
+                AND common_userquestrelationship.task_id = common_task.id)"""
+            })
+        completed = sum(task_queryset.values_list('completed', flat=True))
+        required = sum(task_queryset.values_list('completions', flat=True))
         if required:
             return (Decimal(completed) / Decimal(required))*100
         else:
