@@ -52,7 +52,7 @@ block content
                   li
                     p Joined: #{player.date_joined|naturaltime}
                   li
-                    p Last Seen: #{player.last_login|naturaltime}
+                    p Last Seen: #{player.userprofile.last_seen|naturaltime}
                   li
                     p Total Quests: #{player.userprofile.quests_count|intcomma}
                   li

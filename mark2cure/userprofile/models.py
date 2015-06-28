@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
@@ -10,6 +11,8 @@ from djangoratings.fields import RatingField
 from mark2cure.document.models import Annotation
 from mark2cure.common.models import UserQuestRelationship
 
+from django.utils import timezone
+import datetime
 import os
 
 
@@ -23,7 +26,7 @@ class Team(models.Model):
         return self.name
 
     def last_active_user(self):
-        member_profile = self.userprofile_set.order_by('-user__last_login').first()
+        member_profile = self.userprofile_set.order_by('-last_seen').first()
         if member_profile:
             return member_profile.user
         else:
@@ -45,6 +48,7 @@ def _content_file_name(instance, filename):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True)
     team = models.ForeignKey(Team, null=True, blank=True)
+    last_seen = models.DateTimeField(null=True, blank=True)
 
     timezone = TimeZoneField(default='America/Los_Angeles',
                              blank=True, null=True)
@@ -111,6 +115,15 @@ class UserProfile(models.Model):
 
     def quests_count(self):
         return UserQuestRelationship.objects.filter(user=self.user, completed=True).count()
+
+    def online(self):
+        if self.last_seen:
+            if timezone.now() > self.last_seen + datetime.timedelta(seconds=settings.USER_ONLINE_TIMEOUT):
+                return False
+            else:
+                return True
+        else:
+            return False
 
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

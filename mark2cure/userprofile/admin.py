@@ -23,7 +23,7 @@ class TeamAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'referral', 'motivation', 'quote']
 
-    list_display = ['user', 'team',
+    list_display = ['user', 'last_seen', 'team',
             'email_notify', 'gender', 'age',
             'occupation', 'education', 'science_education',
             'country', 'referral', 'motivation',

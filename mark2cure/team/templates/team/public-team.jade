@@ -40,7 +40,7 @@ block content
                       |  #{user.username}
 
                 li
-                  p Last Member Activity: #{user.last_login|naturaltime}
+                  p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
 
       .col-xs-4
         .row
