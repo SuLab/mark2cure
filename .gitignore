@@ -72,3 +72,4 @@ docs/_build/
 /..bfg-report
 /static/fonts/*
 env_vars
+mark2cure/*/migrations
