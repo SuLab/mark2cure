@@ -86,9 +86,6 @@ def userprofiles_with_score(days=30):
 
 
 def get_annotated_teams(days=30):
-    today = datetime.datetime.now()
-    since = today - datetime.timedelta(days=days)
-
     # (TODO) This could be smaller by only being UserProfiles that
     # we know are part of a Team
     userprofiles = userprofiles_with_score(days=days)

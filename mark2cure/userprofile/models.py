@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
-from mark2cure.document.models import Annotation
+from mark2cure.document.models import Annotation, Document
 from mark2cure.common.models import UserQuestRelationship
 
 from django.utils import timezone
@@ -34,6 +34,24 @@ class Team(models.Model):
 
     def members_count(self):
         return self.userprofile_set.count()
+
+    def total_annotations(self):
+        team_user_ids = self.userprofile_set.values_list('user__pk', flat=True)
+        return Annotation.objects.filter(view__user__pk__in=team_user_ids)
+
+    def total_documents(self):
+        doc_pks = set(self.total_annotations().values_list('view__section__document__pk', flat=True))
+        return Document.objects.filter(pk__in=doc_pks)
+
+    def finished_quests(self):
+        team_user_ids = self.userprofile_set.values_list('user__pk', flat=True)
+        return UserQuestRelationship.objects.filter(user__pk__in=team_user_ids, completed=True)
+
+    def total_score(self):
+        from mark2cure.api.views import userprofiles_with_score
+        userprofiles = userprofiles_with_score(days=10000)
+        team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
+        return sum(filter(None, userprofiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
 
 
 def _createHash():

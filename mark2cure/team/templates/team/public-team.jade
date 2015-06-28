@@ -32,15 +32,25 @@ block content
           .panel-heading
             | Quick Stats
           .panel-body
-            ol.list-unstyled
-              - with user=team.last_active_user
-                li
-                  p Last Active User:
-                    a(href='{% url "userprofile:public-profile" username=user.username %}')
-                      |  #{user.username}
+            .row
+              .col-xs-6
+                ol.list-unstyled
+                  li Total Contributions: #{team.total_annotations.count|intcomma}
+                  li Total Docs: #{team.total_documents.count|intcomma}
+                  li Quests Finished: #{team.finished_quests.count|intcomma}
+                  li Lifetime Score: #{team.total_score|intcomma}
 
-                li
-                  p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
+              .col-xs-6
+                ol.list-unstyled
+                  - with user=team.last_active_user
+                    li
+                      p Last Active User:
+                        a(href='{% url "userprofile:public-profile" username=user.username %}')
+                          |  #{user.username}
+
+                    li
+                      p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
+
 
       .col-xs-4
         .row
