@@ -89,6 +89,12 @@ block content
         a(id="quest-submit", href='/quest/{{task.pk}}/').button.btn.btn-default.btn-block.done Submit
 
 
+      #google_annotation.col-xs-4
+          a(href='#', target='_blank', style='background-color: #f5f5f5;').btn.btn-block.btn-info
+            | Search <i class="fa fa-external-link fa-lg"></i>
+            br
+            small
+
 block post-footer
   script.
     var task_id = "{{ task.pk }}";
@@ -117,9 +123,22 @@ block post-footer
           }) );
         });
 
+        _.each(passages, function(passage, passage_idx) {
+          YPet[''+passage_idx].currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
+            var model_json = model.toJSON();
+            set_google_annotation(model_json.text);
+          });
+        });
+
       });
     });
     YPet.start();
+
+    function set_google_annotation(ann_text) {
+      var url = 'https://www.google.com/search?q='+ann_text;
+      $('#google_annotation a').attr('href', url);
+      $('#google_annotation a small').text(_.str.truncate(ann_text, 36));
+    };
 
     var clicks = 0;
     $('#quest-submit').on('click', function(evt) {
