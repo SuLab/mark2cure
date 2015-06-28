@@ -84,7 +84,7 @@ block content
             | Members
           .panel-body
             .row
-              - for member_profile in team.userprofile_set.all
+              - for member_profile in members
                 .col-xs-4
                   a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
                     p.lead.text-center #{member_profile.user.username}

@@ -11,5 +11,6 @@ from mark2cure.registration.forms import UserNameChangeForm
 
 def home(request, teamname):
     team = get_object_or_404(Team, name=teamname)
-    ctx = {'team': team}
+    members = team.userprofile_set.select_related('user')
+    ctx = {'team': team, 'members': members}
     return TemplateResponse(request, 'team/public-team.jade', ctx)
