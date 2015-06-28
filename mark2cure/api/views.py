@@ -21,7 +21,20 @@ import datetime
 @api_view(['GET'])
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
-    queryset = Task.objects.filter(kind=Task.QUEST, group=group).all()
+
+    queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select = {
+        "current_submissions_count" : """
+            SELECT COUNT(*) AS current_submissions_count
+            FROM common_userquestrelationship
+            WHERE (common_userquestrelationship.completed = 1
+                AND common_userquestrelationship.task_id = common_task.id)""",
+        "user_completed" : """
+            SELECT COUNT(*) AS user_completed
+            FROM common_userquestrelationship
+            WHERE (common_userquestrelationship.completed = 1
+                AND common_userquestrelationship.user_id = %d
+                AND common_userquestrelationship.task_id = common_task.id)""" % (request.user.pk,)
+            }).prefetch_related('documents')
 
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
