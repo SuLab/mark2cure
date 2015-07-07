@@ -44,9 +44,7 @@ class Base(Configuration):
         }
 
     SECRET_KEY = SecretValue(environ_prefix='MARK2CURE')
-    ADMINS = (
-        ('Max Nanis', 'max@maxnanis.com'),
-    )
+    ADMINS = ()
     MANAGERS = ADMINS
     SITE_ID = 1
     INTERNAL_IPS = ('127.0.0.1',)
