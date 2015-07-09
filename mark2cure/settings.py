@@ -76,7 +76,6 @@ class Base(Configuration):
         'rest_framework',
         'tagging',
         'mptt',
-        #'zinnia',
         'brabeion',
         'debug_toolbar',
 
@@ -221,7 +220,6 @@ class Base(Configuration):
         'django.contrib.auth.context_processors.auth',
         'django.contrib.messages.context_processors.messages',
         'django.core.context_processors.request',
-        'zinnia.context_processors.version',
 
         'mark2cure.common.context_processors.support_form',
         'mark2cure.registration.context_processors.inject_signup_forms',
