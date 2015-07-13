@@ -9,12 +9,22 @@ from brabeion import badges
 
 from mark2cure.common.bioc import BioCReader
 import random
+from random import randint
 import string
 import json
 
-
-def id_generator(size=6, chars=string.ascii_letters + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+# update id_generator to contain realistic biomedical text. JF 7/13/15
+def id_generator(doc_text):
+    split_doc_text = doc_text.split(" ")
+    word_length = len(split_doc_text)
+    user_annotation = []
+    while user_annotation == []:
+        random_number_dif = randint(0,4) # 4 selected for max of annotation text
+        random_number_end = randint(0,word_length)
+        random_number_start = random_number_end - random_number_dif
+        user_annotation = split_doc_text[random_number_start:random_number_end]
+    user_annotation = " ".join(user_annotation)
+    return user_annotation
 
 
 class GroupBioCAPIViews(TestCase):
@@ -48,8 +58,7 @@ class GroupBioCAPIViews(TestCase):
                 ann_count = random.randint(0,30)
                 for x in range(ann_count):
                     url = reverse('document:create', kwargs={'task_pk': self.task.pk, 'section_pk': section.pk})
-                    self.assertEqual(self.client.post(url, {'type': random.randint(0,2), 'text': id_generator(), 'start': random.randint(0, len(section.text))}).status_code, 200)
-
+                    self.assertEqual(self.client.post(url, {'type': random.randint(0,2), 'text': id_generator(doc.title), 'start': random.randint(0, len(section.text))}).status_code, 200)
                 total_ann_count = total_ann_count + ann_count
                 self.assertEqual(Annotation.objects.count(), total_ann_count)
 
@@ -97,4 +106,3 @@ class GroupBioCAPIViews(TestCase):
         self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
         self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)
         '''
-
