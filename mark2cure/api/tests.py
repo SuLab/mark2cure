@@ -1,18 +1,11 @@
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
 from django.core.urlresolvers import reverse
 
-from ..document.models import Document, Section, Pubtator, Annotation, View
-from ..common.models import Group, Task, UserQuestRelationship
+from ..document.models import Annotation
+from ..common.models import Group, Task
 from ..test_base.test_base import TestBase
-from django.contrib.auth.models import User
-from brabeion import badges
 
 from mark2cure.common.bioc import BioCReader
-import random
-from random import randint
-import string
-import json
 
 
 class GroupBioCAPIViews(TestCase, TestBase):
@@ -25,23 +18,25 @@ class GroupBioCAPIViews(TestCase, TestBase):
     @classmethod
     def setUp(cls):
 
+        cls.user_names = ['API-Test-User1', 'API-Test-User2', 'API-Test-User3',
+        'API-Test-User4', 'API-Test-User5']
+
         cls.group = Group.objects.first()
         cls.task = Task.objects.first()
 
-        cls.user_names = ['UserA', 'UserB', 'UserC', 'UserD', 'UserE',\
-        'UserF', 'UserG']
+        # list of all the users we are creating
         cls.users = {}
         cls.user_annotation_list = []
 
-        for user_name in cls.user_names:
-            cls.users[user_name] = User.objects.create_user(user_name,
-                                                            password='password')
-            badges.possibly_award_badge("skill_awarded",
-                                        user=cls.users[user_name],
-                                        level=7, force=True)
-
     def test_group_for_all_user_annotations(self):
-        self.load_fake_annotations()
+        self.create_new_user_accounts(self.user_names, self.users)
+        # Get one document only (for users to share) (here just use user 0)
+        # TODO: this could be improved. Currently using client to login and
+        # retrieve a document to "share". Need to know how to do this more
+        # elegently. JF 7/15/15
+        doc = self.get_document_from_response(self.user_names[0])
+        # Load fake annotations for all the users
+        self.load_fake_annotations(self.user_names, doc)
 
         # Fetch the Group BioC as JSON to ensure is online
         response = self.client.get(reverse('api:group-users-bioc',
@@ -71,7 +66,9 @@ class GroupBioCAPIViews(TestCase, TestBase):
     def test_group_for_all_pubtator_annotations(self):
         '''
         # As Anon user, export the documents submissions
-        res = self.client.get(reverse('document:read-users-bioc', kwargs={'pubmed_id': doc.document_id, 'format_type': 'xml'}), follow=True)
+        res = self.client.get(reverse('document:read-users-bioc',
+                              kwargs={'pubmed_id': doc.document_id,
+                              'format_type': 'xml'}), follow=True)
         self.assertEqual(res.status_code, 200)
         bioc = BioCReader(source=res.content)
         bioc.read()
