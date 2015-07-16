@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
-from mark2cure.document.models import Annotation, Document
+from mark2cure.document.models import Annotation, Document, View
 from mark2cure.common.models import UserQuestRelationship
 
 from django.utils import timezone
@@ -133,6 +133,9 @@ class UserProfile(models.Model):
 
     def quests_count(self):
         return UserQuestRelationship.objects.filter(user=self.user, completed=True).count()
+
+    def completed_document_pks(self):
+        return list(set(View.objects.filter(user=self.user, completed=True).values_list('section__document', flat=True)))
 
     def online(self):
         if self.last_seen:

@@ -56,11 +56,15 @@ class Base(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+
+        'django_comments',
+
         'django.contrib.sites',
         'django.contrib.flatpages',
         'django.contrib.webdesign',
         'django.contrib.sitemaps',
         'raven.contrib.django.raven_compat',
+
         'djangoratings',
         'social.apps.django_app.default',
         'djrill',
@@ -87,6 +91,7 @@ class Base(Configuration):
         'mark2cure.training',
         'mark2cure.document',
         'mark2cure.common',
+        'mark2cure.talk',
         'mark2cure.api',
 
         'django.contrib.humanize',
@@ -95,6 +100,7 @@ class Base(Configuration):
         'gunicorn'
     )
 
+    #COMMENTS_APP = 'threadedcomments'
     SENTRY_ENABLED = BooleanValue(True)
     SENTRY_PROTOCOL = Value('http')
     SENTRY_PROJECT_DOMAIN = Value('sentry.sulab.org')
