@@ -42,6 +42,9 @@ urlpatterns = patterns('',
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
 
+    url(r'^talk/', include('mark2cure.talk.urls',
+        namespace='talk')),
+
     url(r'team/', include('mark2cure.team.urls',
         namespace='team', app_name='team')),
     url(r'u/', include('mark2cure.userprofile.urls',
@@ -51,6 +54,8 @@ urlpatterns = patterns('',
 
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('django.contrib.auth.urls', namespace='auth')),
+
+    url(r'^comments/', include('django_comments.urls')),
 
     url(r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')),

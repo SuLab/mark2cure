@@ -1,0 +1,175 @@
+extends base
+
+- load as_vertical_form from bootstrap
+- load widget_tweaks
+- load brabeion_tags
+- load comments
+
+
+block header
+  nav(role='navigation').navbar.navbar-default.navbar-static-top
+    .container-fluid
+      .row
+        .col-xs-12
+          h3
+            <a href="javascript:window.open('','_self').close();"><i class="fa fa-angle-double-left"></i> Back to Marking</a>
+
+
+block content
+  .container-fluid.talk
+    .row
+      .col-xs-10.col-xs-offset-1
+
+        .row
+          .col-xs-12.foot-space
+            h2.pull-left #{doc}
+            a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{doc.document_id}}', target='_blank', style='background-color: #f5f5f5; margin-top: 10px; margin-left: 10px;').btn.btn-info
+              | PUBMED  <i class="fa fa-external-link fa-lg"></i>
+
+        .row
+          .col-xs-12
+            p.text-muted Mouseover to see other users' annotations:
+            ul.pagination
+              - for user_pk in doc.contributors
+                li
+                  a(data-userpk='{{user_pk}}') #{user_pk}
+
+            .paragraphs.micro
+
+    .row
+      .col-xs-12
+
+        .row.head-space
+          .col-sm-6
+            .row
+              .col-xs-4
+                h4.text-center Diseases
+                table.table.table-condensed.table-striped
+                  thead
+                    tr
+                      th
+                      th Annotation
+                  tbody
+                    - for disease in diseases
+                      tr
+                        th(scope="row") #{disease.1}
+                        td
+                          a(href='/talk/annotation/?q={{disease.0}}')
+                            | #{disease.0}
+
+              .col-xs-4
+                h4.text-center Genes
+                table.table.table-condensed.table-striped
+                  thead
+                    tr
+                      th
+                      th Annotation
+                  tbody
+                    - for gene_protein in gene_proteins
+                      tr
+                        th(scope="row") #{gene_protein.1}
+                        td
+                          a(href='/talk/annotation/?q={{gene_protein.0}}')
+                            | #{gene_protein.0}
+
+              .col-xs-4
+                h4.text-center Drugs
+                table.table.table-condensed.table-striped
+                  thead
+                    tr
+                      th
+                      th Annotation
+                  tbody
+                    - for drug in drugs
+                      tr
+                        th(scope="row") #{drug.1}
+                        td
+                          a(href='/talk/annotation/?q={{drug.0}}')
+                            | #{drug.0}
+
+
+          .col-sm-6
+            .row
+              .col-xs-12
+                - get_comment_list for document.document doc.pk as comment_list
+                .list-group
+                - for comment in comment_list
+                  .list-group-item
+                    h4.list-group-item-heading
+                      a(href='{% url "userprofile:public-profile" comment.user.username %}')
+                        | {{ comment.user.username }}
+                    p.list-group-item-text {{ comment.comment }}
+                    p.text-right.text-muted
+                      small {{ comment.submit_date }}
+
+            .row
+              .col-xs-10.col-xs-offset-1
+                - get_comment_form for document.document doc.pk as form
+                form(action="{% comment_form_target %}", method="post")
+                  - csrf_token
+
+                  fieldset
+                    {{ form.timestamp }}
+                    {{ form.content_type }}
+                    {{ form.object_pk }}
+                    {{ form.security_hash }}
+
+                    {{ form.comment|as_vertical_form }}
+                    input(type="hidden", name="next", value="{% url 'talk:home' doc.document_id %}")
+
+                  fieldset
+                    input(type="submit", name="submit", value="Post").btn.btn-default
+
+block post-footer
+  script.
+    var self_data, passages, regions;
+
+    YPet.addInitializer(function(options) {
+
+      $.getJSON('/document/{{doc.pk}}/user/{{user.pk}}/results.json', function( data ) {
+        self_data = data;
+        passages = data.collection.document.passage;
+        regions = {};
+
+        _.each(passages, function(passage, passage_idx) {
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box head-space"><p class="paragraph"></p></div></div>';
+          $('.paragraphs').append(p_body);
+          regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+        });
+        YPet.addRegions(regions);
+
+        _.each(passages, function(passage, passage_idx) {
+          var p = new Paragraph({'text': passage.text});
+          YPet[''+passage_idx].show( new WordCollectionView({
+            collection: p.get('words'),
+            passage_json: passage,
+            bioc_json: data
+          }) );
+          YPet[''+passage_idx].currentView.drawBioC(passage, false, true);
+        });
+
+      });
+    });
+    YPet.start();
+
+
+    $('ul.pagination li a').on('mouseover', function(evt) {
+      var user_pk = $(this).data('userpk');
+
+      $.getJSON('/document/{{doc.pk}}/user/'+ user_pk +'/results.json', function( data ) {
+        self_data = data;
+        passages = data.collection.document.passage;
+
+        _.each(passages, function(passage, passage_idx) {
+          var p = new Paragraph({'text': passage.text});
+          YPet[''+passage_idx].show( new WordCollectionView({
+            collection: p.get('words'),
+            passage_json: passage,
+            bioc_json: data
+          }) );
+          YPet[''+passage_idx].currentView.drawBioC(passage, false, true);
+        });
+      });
+
+    });
+

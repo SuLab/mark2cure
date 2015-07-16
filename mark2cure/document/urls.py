@@ -24,6 +24,10 @@ urlpatterns = patterns('',
     url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
 
+    # BioC File for Showing User Comparisons accross PMID
+    url(r'^(?P<doc_pk>\d+)/user/(?P<user_pk>\d+)/results.(?P<format_type>\w+)$',
+        views.user_pmid_results_bioc, name='user-pmid-results-bioc'),
+
     # (TODO) Deprecated
     # View results (only if new)
     #url(r'^(?P<task_id>\d+)/(?P<doc_id>\d+)/results/$',

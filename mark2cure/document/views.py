@@ -101,6 +101,22 @@ def identify_annotations_submit(request, task_pk, section_pk):
 
 
 @login_required
+def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
+    document = get_object_or_404(Document, pk=doc_pk)
+    user = get_object_or_404(User, pk=user_pk)
+
+    # BioC Writer Response that will serve all partner comparison information
+    writer = document.as_writer()
+    writer = apply_bioc_annotations(writer, user)
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+@login_required
 def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
@@ -174,6 +190,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         return HttpResponse(writer_json, content_type='application/json')
     else:
         return HttpResponse(writer, content_type='text/xml')
+
 
 
 '''

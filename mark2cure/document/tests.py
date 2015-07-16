@@ -7,6 +7,8 @@ from ..common.models import Group, Task, UserQuestRelationship
 from ..test_base.test_base import TestBase
 
 from mark2cure.common.bioc import BioCReader
+from Bio import Entrez, Medline
+import datetime
 import json
 
 
@@ -39,6 +41,18 @@ class DocumentImportProcessing(TestCase):
         # Actually determine if a doc would be repadded
         self.assertEqual(self.doc.update_padding(), False)
 
+
+class PubtatorImportProcessing(TestCase):
+
+    def setUp(self):
+        date = datetime.datetime.today() - datetime.timedelta(days=5)
+        h = Entrez.esearch(db='pubmed', retmax=10, term='("{date}"[Date - Publication] : "3000"[Date - Publication])'.format(date=date.strftime('%Y/%m/%M')))
+        result = Entrez.read(h)
+        for pmid in result.get('IdList'):
+            print pmid
+
+    def test_document_init(self):
+        pass
 
 class DocumentAPIMethods(TestCase):
     pass

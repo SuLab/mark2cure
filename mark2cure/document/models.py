@@ -205,6 +205,14 @@ class Document(models.Model):
         document.put_infon('source', str(self.source))
         return document
 
+    # Helpers for Talk Page
+    def annotations(self):
+        return Annotation.objects.filter(view__section__document=self)
+
+    def contributors(self):
+        user_ids = list(set(View.objects.filter(section__document=self, completed=True).values_list('user', flat=True)))
+        return user_ids
+
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
