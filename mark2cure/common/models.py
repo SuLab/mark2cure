@@ -97,8 +97,8 @@ class Group(models.Model):
                 WHERE (common_userquestrelationship.completed = 1
                     AND common_userquestrelationship.task_id = common_task.id)"""
         })
-        completed = sum(task_queryset.values_list('completed', flat=True))
-        required = sum(task_queryset.values_list('completions', flat=True))
+        completed = sum([x for x in task_queryset.values_list('completed', flat=True) if x is not None])
+        required = sum([x for x in task_queryset.values_list('completions', flat=True) if x is not None])
         if required:
             return (Decimal(completed) / Decimal(required)) * 100
         else:
