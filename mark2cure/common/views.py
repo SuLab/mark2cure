@@ -25,19 +25,6 @@ import os
 logger = logging.getLogger(__name__)
 
 
-@require_http_methods(['POST'])
-def support(request):
-    form = SupportMessageForm(data=request.POST)
-    if form.is_valid():
-        form.save()
-        return HttpResponse(200)
-    return HttpResponse(500)
-
-
-def beta(request):
-    return redirect('common:home')
-
-
 def home(request):
     if request.user.is_authenticated():
         return redirect('common:dashboard')
@@ -48,14 +35,14 @@ def home(request):
     return TemplateResponse(request, 'common/landing2.jade', {'form': form, 'quotes': quotes})
 
 
+def beta(request):
+    return redirect('common:home')
+
+
 def why_mark2cure(request):
     query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
     return TemplateResponse(request, 'common/why-mark2cure.jade', {'profiles': query})
 
-def group_view(request, group_stub):
-    group = get_object_or_404(Group, stub=group_stub)
-    ctx = {'group': group}
-    return TemplateResponse(request, 'common/group_home.jade', ctx)
 
 @login_required
 def dashboard(request):
@@ -74,6 +61,21 @@ def dashboard(request):
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
+
+@login_required
+def group_view(request, group_stub):
+    group = get_object_or_404(Group, stub=group_stub)
+    ctx = {'group': group}
+    return TemplateResponse(request, 'common/group_home.jade', ctx)
+
+
+@require_http_methods(['POST'])
+def support(request):
+    form = SupportMessageForm(data=request.POST)
+    if form.is_valid():
+        form.save()
+        return HttpResponse(200)
+    return HttpResponse(500)
 
 
 def quest_prevent_duplicates(request, task):
