@@ -1,26 +1,23 @@
-from django.conf import settings
-from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseServerError
-from django.contrib.auth.models import User
-
+from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
+from django.contrib.auth.models import User
+from django.template import RequestContext
+from django.conf import settings
 
-from mark2cure.common.models import Task
 from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
+from mark2cure.common.models import Task
 
-from .models import Document, Section, Annotation
-from .forms import AnnotationForm
 from .utils import generate_results, select_best_opponent
+from .models import Document, Section, Annotation
 from .serializers import AnnotationSerializer
-
-from rest_framework import generics
+from .forms import AnnotationForm
 
 from brabeion import badges
-import os
 import random
+import os
 
 
 def read_bioc(request, pubmed_id, format_type):
@@ -54,8 +51,6 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-
-
 def read_users_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
@@ -68,36 +63,6 @@ def read_users_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer_json, content_type='application/json')
     else:
         return HttpResponse(writer, content_type='text/xml')
-
-
-'''
-  Views for completing the Concept Recognition task
-'''
-
-
-@login_required
-@require_http_methods(['POST'])
-def identify_annotations_submit(request, task_pk, section_pk):
-    '''
-      This is broken out because there can be many submissions per document
-      We don't want to use these submission to direct the user to elsewhere in the app
-    '''
-    task = get_object_or_404(Task, pk=task_pk)
-    section = get_object_or_404(Section, pk=section_pk)
-
-    user_quest_rel = task.userquestrelationship_set.filter(user=request.user, completed=False).first()
-    view = user_quest_rel.views.filter(section=section, completed=False).first()
-
-    if view:
-        form = AnnotationForm(data=request.POST or None)
-
-        if form.is_valid():
-            ann = form.save(commit=False)
-            ann.view = view
-            ann.save()
-            return HttpResponse(200)
-
-    return HttpResponseServerError()
 
 
 @login_required
@@ -192,38 +157,27 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-
-'''
-  Utility views for general document controls
-'''
-
 @login_required
 @require_http_methods(['POST'])
-def submit(request, task_id, doc_id):
+def identify_annotations_submit(request, task_pk, section_pk):
     '''
-      If the user if submitting results for a document an document and sections
+      This is broken out because there can be many submissions per document
+      We don't want to use these submission to direct the user to elsewhere in the app
     '''
-    task = get_object_or_404(Task, pk=task_id)
-    doc = get_object_or_404(Document, pk=doc_id)
+    task = get_object_or_404(Task, pk=task_pk)
+    section = get_object_or_404(Section, pk=section_pk)
 
-    task_type = request.POST.get('task_type')
+    user_quest_rel = task.userquestrelationship_set.filter(user=request.user, completed=False).first()
+    view = user_quest_rel.views.filter(section=section, completed=False).first()
 
-    if task_type == 'concept-recognition':
-        task.complete_views(doc, request.user)
-        return redirect('document:results', task.pk, doc.pk)
-    else:
-        task.complete_views(doc, request.user)
-        return redirect('document:results', task.pk, doc.pk)
+    if view:
+        form = AnnotationForm(data=request.POST or None)
 
+        if form.is_valid():
+            ann = form.save(commit=False)
+            ann.view = view
+            ann.save()
+            return HttpResponse(200)
 
-class AnnotationViewSet(generics.ListAPIView):
-    serializer_class = AnnotationSerializer
+    return HttpResponseServerError()
 
-    def get_queryset(self):
-        section_id = self.kwargs['section_id']
-        user_id = self.kwargs['user_id']
-
-        section = get_object_or_404(Section, pk=section_id)
-        user = get_object_or_404(User, pk=user_id)
-        annotations = section.latest_annotations(user=user)
-        return annotations
