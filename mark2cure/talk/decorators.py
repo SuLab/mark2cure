@@ -10,8 +10,6 @@ def doc_completion_required(function):
         # (TODO) This is horrendous
         doc_pk = Document.objects.filter(document_id=kwargs['pubmed_id']).values('pk')[0]['pk']
 
-        print request.META.get('HTTP_REFERER')
-
         if not doc_pk in completed_document_pks:
             return HttpResponseForbidden('Access denied!')
         else:

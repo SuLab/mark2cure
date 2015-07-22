@@ -145,7 +145,8 @@ block post-footer
             passage_json: passage,
             bioc_json: data
           }) );
-          YPet[''+passage_idx].currentView.drawBioC(passage, false, true);
+          YPet[''+passage_idx].currentView.drawBioC(passage, false);
+          YPet[''+passage_idx].currentView.drawBioC(null, true);
         });
 
       });
@@ -167,7 +168,8 @@ block post-footer
             passage_json: passage,
             bioc_json: data
           }) );
-          YPet[''+passage_idx].currentView.drawBioC(passage, false, true);
+          YPet[''+passage_idx].currentView.drawBioC(passage, false);
+          YPet[''+passage_idx].currentView.drawBioC(null, true);
         });
       });
 
