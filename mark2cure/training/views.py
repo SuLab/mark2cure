@@ -44,7 +44,7 @@ def read(request):
 
 
 def introduction(request, step_num):
-    if step_num == '1' or step_num == None:
+    if step_num == '1' or step_num is None:
         return TemplateResponse(request, 'training/exp-2-intro-0/basics.jade')
     if step_num == '2':
         return TemplateResponse(request, 'training/exp-2-intro-0/step-1.jade')
@@ -76,6 +76,7 @@ def one(request, step_num):
 
     ctx = {'step_num': step_num}
     return TemplateResponse(request, 'training/exp-2-intro-1/step-{step_num}.jade'.format(step_num=step_num), ctx)
+
 
 @login_required
 def two(request, step_num):

@@ -1,12 +1,11 @@
 from django.db import models
 
-from mark2cure.common.bioc import BioCReader
-
 
 class DocumentManager(models.Manager):
 
     def pubmed_count(self, pubmed_id):
         return self.filter(document_id__exact=int(pubmed_id)).count()
+
 
 class PubtatorManager(models.Manager):
 

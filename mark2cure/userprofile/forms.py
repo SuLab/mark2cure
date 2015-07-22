@@ -11,9 +11,9 @@ class UserProfileForm(forms.ModelForm):
                   'motivation', 'quote']
         exclude = ['user', ]
         widgets = {
-            'motivation': forms.Textarea(attrs={'rows':2}),
-            'referral': forms.Textarea(attrs={'rows':2}),
-            'quote': forms.Textarea(attrs={'rows':4}),
+            'motivation': forms.Textarea(attrs={'rows': 2}),
+            'referral': forms.Textarea(attrs={'rows': 2}),
+            'quote': forms.Textarea(attrs={'rows': 4}),
         }
 
 

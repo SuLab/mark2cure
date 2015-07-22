@@ -1,6 +1,7 @@
 from django.utils import timezone
 from .models import UserProfile
 
+
 class ActiveUserMiddleware:
 
     def process_request(self, request):

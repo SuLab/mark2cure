@@ -1,13 +1,13 @@
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
+from ..common.models import Group, Task, UserQuestRelationship
 from .tasks import get_pubmed_document
 from .models import Document, Section, Pubtator, Annotation
-from ..common.models import Group, Task, UserQuestRelationship
 from ..test_base.test_base import TestBase
 
-from mark2cure.common.bioc import BioCReader
-from Bio import Entrez, Medline
+from ..common.bioc import BioCReader
+from Bio import Entrez
 import datetime
 import json
 
@@ -53,6 +53,7 @@ class PubtatorImportProcessing(TestCase):
 
     def test_document_init(self):
         pass
+
 
 class DocumentAPIMethods(TestCase):
     pass

@@ -22,6 +22,7 @@ app.conf.update(
     CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
 )
 
+
 @app.task(bind=True)
 def debug_task(self):
     logger.debug('Debug Task', exc_info=True, extra={'self': self})

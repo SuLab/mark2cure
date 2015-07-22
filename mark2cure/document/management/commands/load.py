@@ -1,16 +1,14 @@
 from django.core.management.base import BaseCommand
-from optparse import make_option
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from mark2cure.userprofile.models import UserProfile
-from mark2cure.document.models import Document, Pubtator, Section, View, Annotation
-
 from mark2cure.common.models import Task, Group, DocumentQuestRelationship, UserQuestRelationship, SkillBadge
-from mark2cure.document.tasks import get_pubmed_document, get_pubtator_response
+from mark2cure.document.models import Document, View, Annotation
+from mark2cure.document.tasks import get_pubmed_document
+from mark2cure.userprofile.models import UserProfile
 
+from optparse import make_option
 from brabeion import badges
-
 import requests
 import random
 import csv
@@ -159,7 +157,6 @@ class Command(BaseCommand):
             '''
 
             documents = Document.objects.filter(source='pubmed')
-            task_counter = Task.objects.filter(kind='q').count()
 
             # Insert the other Documents
             document_set = list(documents.values_list('id', flat=True))
@@ -170,7 +167,7 @@ class Command(BaseCommand):
             random.shuffle(document_set)
 
             group, group_v = Group.objects.get_or_create(name='622', stub='622', enabled=True)
-            #task.clear_documents()
+            # task.clear_documents()
             last_task = group.task_set.last()
 
             while len(document_set) > smallest_bin:
@@ -198,13 +195,12 @@ class Command(BaseCommand):
                         idx = Task.objects.last().pk
 
                     last_task, task_created = Task.objects.get_or_create(
-                        name=str(idx+1),
+                        name=str(idx + 1),
                         completions=completions,
                         requires_qualification=7,
                         provides_qualification=7,
                         points=5000,
                         group=group)
-
 
         if options['training']:
             group, group_c = Group.objects.get_or_create(name='Training', stub='training', enabled=False)
@@ -244,7 +240,6 @@ class Command(BaseCommand):
                 document = Document.objects.get(document_id=pmid, source='training-extra')
                 DocumentQuestRelationship.objects.get_or_create(task=task, document=document)
 
-
         '''
             Import the set of documents into Mark2Cure
             without performing any quest binning
@@ -255,27 +250,4 @@ class Command(BaseCommand):
             ids = res.text.split('\n')
             for pmid in ids:
                 get_pubmed_document(pmid)
-
-        '''
-            Check for any unfetched Pubtator objects
-        '''
-        if options['pubtator']:
-            '''
-            from django.db.models.signals import post_save
-            for pubtator in Pubtator.objects.filter(content__isnull=True).all():
-                post_save.send(Pubtator, instance=pubtator, created=True)
-            '''
-
-            '''
-            # Gracefully check for updates to session id
-            for pubtator in Pubtator.objects.filter(content__isnull=True).all():
-                # Make response to post job to pubtator
-                payload = {'content-type': 'text/xml'}
-                writer = pubtator.document.as_writer()
-                data = str(writer)
-
-                get_pubtator_response.apply_async(
-                    args=[pubtator.pk, data, payload, 0],
-                )
-            '''
 

@@ -4,7 +4,6 @@ from django.forms.util import ErrorList
 from django.template import Library, Context, TemplateSyntaxError
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.conf import settings
 
 register = Library()
 

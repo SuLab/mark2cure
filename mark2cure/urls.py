@@ -66,5 +66,5 @@ urlpatterns = patterns('',
     url(r'^(?P<url>.*/)$', views.flatpage),
 
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
-            name='django.contrib.sitemaps.views.sitemap'),
+        name='django.contrib.sitemaps.views.sitemap'),
 )

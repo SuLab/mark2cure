@@ -13,9 +13,6 @@ from django.contrib import messages
 
 from brabeion.models import BadgeAward
 
-from mark2cure.document.models import Annotation
-from mark2cure.common.models import UserQuestRelationship
-
 
 def public_profile(request, username):
     user = get_object_or_404(User, username=username)

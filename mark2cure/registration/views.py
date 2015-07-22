@@ -3,7 +3,7 @@ from django.template.response import TemplateResponse
 from django.shortcuts import redirect
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
 
 from mark2cure.common.models import Task, UserQuestRelationship
@@ -13,10 +13,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.views import password_reset, password_reset_confirm
 from django.utils.translation import ugettext as _
 
-from brabeion import badges
 from .models import EmailConfirmationRequest, EmailChangeRequest
-from urllib import urlencode
 
+from datetime import datetime
+from urllib import urlencode
+from brabeion import badges
 import forms
 import utils
 
@@ -103,7 +104,7 @@ def confirm_email(request, token):
     if not request.POST:
         try:
             email_confirmation_request = EmailConfirmationRequest.objects.get(
-                token=token, valid_until__gte=now())
+                token=token, valid_until__gte=datetime.now())
             # TODO: cronjob (celery task) to delete stale tokens
         except EmailConfirmationRequest.DoesNotExist:
             return TemplateResponse(request, 'registration/invalid_token.jade')
@@ -126,7 +127,7 @@ def confirm_email(request, token):
 def change_email(request, token):
     try:
         email_change_request = EmailChangeRequest.objects.get(
-            token=token, valid_until__gte=now())
+            token=token, valid_until__gte=datetime.now())
         # TODO: cronjob (celery task) to delete stale tokens
     except EmailChangeRequest.DoesNotExist:
         return TemplateResponse(request, 'registration/invalid_token.jade')

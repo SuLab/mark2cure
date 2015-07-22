@@ -1,10 +1,8 @@
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.contrib.auth.decorators import login_required
-from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
-from django.template import RequestContext
 from django.conf import settings
 
 from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
@@ -12,7 +10,6 @@ from mark2cure.common.models import Task
 
 from .utils import generate_results, select_best_opponent
 from .models import Document, Section, Annotation
-from .serializers import AnnotationSerializer
 from .forms import AnnotationForm
 
 from brabeion import badges
@@ -146,7 +143,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         badges.possibly_award_badge('points_awarded', user=request.user)
 
     writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
-    writer.collection.put_infon('points', str( int(round(score)) ))
+    writer.collection.put_infon('points', str(int(round(score))))
     writer.collection.put_infon('partner', str(opponent.username))
     writer.collection.put_infon('partner_level', str(opponent.userprofile.highest_level().name))
 

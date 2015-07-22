@@ -1,5 +1,5 @@
-from mark2cure.common.models import Group, Task, UserQuestRelationship
 from mark2cure.userprofile.models import UserProfile, Team
+from mark2cure.common.models import Group, Task
 
 from rest_framework import serializers
 
@@ -30,6 +30,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('user', 'name', 'score', 'quote', 'motivation')
+
 
 class TeamLeaderboardSerializer(serializers.ModelSerializer):
 

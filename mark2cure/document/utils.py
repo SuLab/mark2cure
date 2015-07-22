@@ -59,7 +59,7 @@ def select_best_opponent(task, document, player):
     # Gather users from completed documents
     # that may come from uncompleted quests
     previous_users = []
-    for quest_relationship in others_quest_relationships.exclude(user=gm_user, user__pk__in=[107,]):
+    for quest_relationship in others_quest_relationships.exclude(user=gm_user, user__pk__in=[107, ]):
         if quest_relationship.views.filter(section__document=document, completed=True).exists():
             # (TODO) Don't add option of them unless they've submitted 1+ Annotations
             view_ids = quest_relationship.views.filter(section__document=document, completed=True).values_list('pk', flat=True)

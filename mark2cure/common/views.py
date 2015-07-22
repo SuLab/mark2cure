@@ -1,21 +1,18 @@
-from django.template.response import TemplateResponse
-from django.shortcuts import get_object_or_404, redirect
-from django.conf import settings
+from django.http import HttpResponse, HttpResponseServerError
 from django.views.decorators.http import require_http_methods
-
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import get_object_or_404, redirect
+from django.template.response import TemplateResponse
 from django.contrib.messages import get_messages
+from django.contrib.auth.models import User
 from django.contrib import messages
-from django.http import HttpResponse
 
-from mark2cure.userprofile.models import UserProfile
-from mark2cure.document.models import Document
+from ..common.formatter import bioc_as_json, apply_bioc_annotations
+from ..userprofile.models import UserProfile
+from ..document.models import Document
 from .models import Group, Task, UserQuestRelationship
-from mark2cure.api.serializers import QuestSerializer
 from .forms import SupportMessageForm
-from mark2cure.common.formatter import bioc_as_json, apply_bioc_annotations
 
 from brabeion import badges
 
@@ -100,7 +97,7 @@ def quest_read_doc(request, quest_pk, doc_idx):
         return redirect('common:quest-home', quest_pk=task.pk)
 
     task_doc_pks_completed = user_quest_relationship.completed_document_ids()
-    if int(doc_idx) <= len( task_doc_pks_completed ):
+    if int(doc_idx) <= len(task_doc_pks_completed):
         return redirect('common:quest-home', quest_pk=task.pk)
 
     '''
@@ -115,10 +112,10 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
     # Fetch available documents
     task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
-    random.shuffle( task_doc_uncompleted )
+    random.shuffle(task_doc_uncompleted)
 
     document = task_doc_uncompleted[0]
-    #task.create_views(document, request.user)
+    # task.create_views(document, request.user)
 
     ctx = {'task': task,
            'completed_doc_pks': task_doc_pks_completed,
@@ -129,6 +126,7 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
 @login_required
 def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type):
+    # (TODO) remove task, why was this passed?
     task = get_object_or_404(Task, pk=quest_pk)
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
@@ -229,7 +227,7 @@ def quest_submit(request, task, bypass_post=False):
 @login_required
 def quest_feedback(request, quest_pk):
     task = get_object_or_404(Task, pk=quest_pk)
-    ctx = {'task':task}
+    ctx = {'task': task}
     return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
 
 
@@ -239,7 +237,6 @@ def quest_read(request, quest_pk):
 
     # Check if user has pre-existing relationship with Quest
     user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user)
-    #, completed=False)
 
     if user_quest_rel_queryset.exists():
 
@@ -259,12 +256,12 @@ def quest_read(request, quest_pk):
             quest_submit(request, task, True)
             return redirect('common:quest-feedback', quest_pk=task.pk)
 
-        next_doc_idx = len(task_doc_pks_completed)+1
+        next_doc_idx = len(task_doc_pks_completed) + 1
         return redirect('common:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
 
     else:
         # Create the User >> Quest relationship
-        user_quest_rel = UserQuestRelationship.objects.create(task=task, user=request.user, completed=False)
+        UserQuestRelationship.objects.create(task=task, user=request.user, completed=False)
 
         documents = list(task.documents.all())
         for document in documents:

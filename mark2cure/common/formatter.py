@@ -1,5 +1,5 @@
-from mark2cure.common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
-from mark2cure.document.models import Document, Annotation
+from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
+from ..document.models import Annotation
 
 import datetime
 import xmltodict
@@ -19,13 +19,13 @@ def pad_split(text):
     text = text.replace("\\=", " = ")
     text = text.replace("\\[", " [ ")
     text = text.replace("\\]", " ] ")
-    text = text.replace("\\;", " ; ");
-    text = text.replace("\\/", " / ");
-    text = text.replace("/", " / ");
+    text = text.replace("\\;", " ; ")
+    text = text.replace("\\/", " / ")
+    text = text.replace("/", " / ")
     text = text.replace("\\\"", " \" ")
     text = text.replace("  ", " ")
     text = text.replace("  ", " ")
-    return nltk.word_tokenize( text.encode('utf-8') )
+    return nltk.word_tokenize(text.encode('utf-8'))
 
 
 def bioc_writer(request):
@@ -64,7 +64,7 @@ def apply_bioc_annotations(writer, user=None):
             annotation.put_infon('user_name', str(ann.view.user.username))
 
             # (TODO) Map type strings back to 0,1,2
-            annotation.put_infon('type', str( approved_types.index(ann.type) ))
+            annotation.put_infon('type', str(approved_types.index(ann.type)))
 
             location = BioCLocation()
             location.offset = str(offset + ann.start)

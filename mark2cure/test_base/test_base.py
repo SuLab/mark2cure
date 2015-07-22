@@ -1,19 +1,11 @@
-from django.test import TestCase
-from rest_framework.test import APIRequestFactory
 from django.core.urlresolvers import reverse
-
-from ..document.tasks import get_pubmed_document
-from ..document.models import Document, Section, Pubtator, Annotation, View
-from ..common.models import Group, Task, UserQuestRelationship
 from django.contrib.auth.models import User
-from brabeion import badges
 
-from mark2cure.common.bioc import BioCReader
-from Bio import Entrez, Medline
-import datetime
-import random
+from ..document.models import Annotation
+
+from brabeion import badges
 from random import randint
-import json
+import random
 
 
 class TestBase(object):
@@ -37,8 +29,8 @@ class TestBase(object):
             user_annotation = []
             while user_annotation == []:
                 # 3 selected for max of annotation text
-                random_number_dif = randint(0,3)
-                random_number_end = randint(0,word_length)
+                random_number_dif = randint(0, 3)
+                random_number_end = randint(0, word_length)
                 random_number_start = random_number_end - random_number_dif
                 user_annotation = split_doc_text[random_number_start:random_number_end]
             user_annotation = " ".join(user_annotation)
@@ -52,7 +44,7 @@ class TestBase(object):
             # Each user gets a document to annotate
             self.user_annotation_list = []
             for section in doc.available_sections():
-                ann_count = random.randint(0,30)
+                ann_count = random.randint(0, 30)
                 for x in range(ann_count):
                     url = reverse('document:create',
                                   kwargs={'task_pk': self.task.pk,
@@ -60,7 +52,7 @@ class TestBase(object):
                     # user_annotations shall be from the current section text
                     user_annotation = _id_generator(section.text)
                     self.assertEqual(self.client.post(url,
-                                     {'type': random.randint(0,2),
+                                     {'type': random.randint(0, 2),
                                      'text': user_annotation,
                                      'start': random.randint(0, len(section.text))}).status_code, 200)
                     self.user_annotation_list.append(user_annotation)
@@ -80,14 +72,13 @@ class TestBase(object):
         '''
             (TODO) Maybe just better to return a logged in client instance?
         '''
-        self.create_new_user_accounts(['test_user',])
+        self.create_new_user_accounts(['test_user', ])
         return User.objects.first(), 'password'
 
     def get_document_from_response(self, user_name):
         """ If you need one document, arbitrarily use doc from user_name"""
         self.client.login(username=user_name, password='password')
-        response = self.client.get(reverse('common:quest-home',
-                                           kwargs={'quest_pk': self.task.pk}),
-                                           follow=True)
+        url = reverse('common:quest-home', kwargs={'quest_pk': self.task.pk})
+        response = self.client.get(url, follow=True)
         doc = response.context['document']
         return doc

@@ -4,5 +4,6 @@ from . import views
 
 
 urlpatterns = patterns('',
-    url(r'^(?P<teamname>[\w.@+-]+)/', views.home, name='home'),
+    url(r'^(?P<teamname>[\w.@+-]+)/',
+        views.home, name='home'),
 )

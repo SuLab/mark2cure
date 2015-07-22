@@ -1,14 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-
-from django.contrib.auth.models import User
-from mark2cure.common.models import Task, UserQuestRelationship
-
 from django.contrib.auth.decorators import login_required
-from mark2cure.common.bioc import *
-from mark2cure.document.models import Document, Annotation
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
-from mark2cure.common.models import Task
+from ..common.models import Task, UserQuestRelationship
+from ..common.bioc import *
 
 import csv
 

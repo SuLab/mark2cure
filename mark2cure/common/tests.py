@@ -2,12 +2,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from ..test_base.test_base import TestBase
-from ..document.models import Annotation
-from ..common.models import Group, Task
-
-from ..common.bioc import BioCReader
-
-import json
+from ..common.models import Group
 
 
 class CommonViews(TestCase, TestBase):
@@ -20,35 +15,35 @@ class CommonViews(TestCase, TestBase):
 
     def test_home(self):
         # Confirm non-auth'd redirect
-        response = self.client.get( reverse('common:home') )
+        response = self.client.get(reverse('common:home'))
         self.assertEqual(response.status_code, 200)
 
         # Confirm view online
         user, password = self.get_test_user()
         self.client.login(username=user.username, password=password)
-        response = self.client.get( reverse('common:home') )
+        response = self.client.get(reverse('common:home'))
         self.assertEqual(response.status_code, 302)
         self.client.logout()
 
     def test_beta(self):
         # Confirm redirect
-        response = self.client.get( reverse('common:beta') )
+        response = self.client.get(reverse('common:beta'))
         self.assertEqual(response.status_code, 302)
 
     def test_why_i_mark2cure(self):
         # Confirm view online
-        response = self.client.get( reverse('common:why-mark2cure') )
+        response = self.client.get(reverse('common:why-mark2cure'))
         self.assertEqual(response.status_code, 200)
 
     def test_dashboard(self):
         # Confirm non-auth'd redirect
-        response = self.client.get( reverse('common:dashboard') )
+        response = self.client.get(reverse('common:dashboard'))
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
         user, password = self.get_test_user()
         self.client.login(username=user.username, password=password)
-        response = self.client.get( reverse('common:dashboard') )
+        response = self.client.get(reverse('common:dashboard'))
         self.assertEqual(response.status_code, 200)
         self.client.logout()
 
@@ -56,19 +51,18 @@ class CommonViews(TestCase, TestBase):
         group = Group.objects.first()
 
         # Confirm non-auth'd redirect
-        response = self.client.get( reverse('common:group', kwargs={'group_stub': group.stub}) )
+        response = self.client.get(reverse('common:group', kwargs={'group_stub': group.stub}))
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
         user, password = self.get_test_user()
         self.client.login(username=user.username, password=password)
-        response = self.client.get( reverse('common:group', kwargs={'group_stub': group.stub}) )
+        response = self.client.get(reverse('common:group', kwargs={'group_stub': group.stub}))
         self.assertEqual(response.status_code, 200)
         self.client.logout()
 
     def test_support(self):
         pass
-
 
 
 class QuestViews(TestCase, TestBase):

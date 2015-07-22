@@ -1,11 +1,8 @@
-from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-from .models import Document, Pubtator
+from .models import Pubtator
 
-from mark2cure.document.tasks import get_pubtator_response
-
-from datetime import datetime, timedelta
 import requests
 
 

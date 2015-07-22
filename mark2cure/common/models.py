@@ -1,12 +1,10 @@
+from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Count
 
 from ..document.models import Document, View
-from django.contrib.auth.models import User
 
-from brabeion import badges
 from brabeion.base import Badge, BadgeAwarded
-
+from brabeion import badges
 from decimal import Decimal
 
 
@@ -92,17 +90,17 @@ class Group(models.Model):
         return Document.objects.filter(task__group=self)
 
     def percentage_complete(self):
-        task_queryset = self.task_set.extra(select = {
-        "completed" : """
-            SELECT COUNT(*) AS completed
-            FROM common_userquestrelationship
-            WHERE (common_userquestrelationship.completed = 1
-                AND common_userquestrelationship.task_id = common_task.id)"""
-            })
+        task_queryset = self.task_set.extra(select={
+            "completed": """
+                SELECT COUNT(*) AS completed
+                FROM common_userquestrelationship
+                WHERE (common_userquestrelationship.completed = 1
+                    AND common_userquestrelationship.task_id = common_task.id)"""
+        })
         completed = sum(task_queryset.values_list('completed', flat=True))
         required = sum(task_queryset.values_list('completions', flat=True))
         if required:
-            return (Decimal(completed) / Decimal(required))*100
+            return (Decimal(completed) / Decimal(required)) * 100
         else:
             return 0
 
@@ -217,8 +215,8 @@ class UserQuestRelationship(models.Model):
 
     def __unicode__(self):
         return u'/quest/{quest_pk}/ {username}'.format(
-                quest_pk=self.task.pk,
-                username=self.user.username)
+            quest_pk=self.task.pk,
+            username=self.user.username)
 
 
 class DocumentQuestRelationship(models.Model):

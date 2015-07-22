@@ -35,7 +35,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.client.login(username=user.username, password=password)
         group = Group.objects.first()
 
-        response = self.client.get( reverse('api:quest-group-api', kwargs={'group_pk': group.pk}) )
+        response = self.client.get(reverse('api:quest-group-api', kwargs={'group_pk': group.pk}))
 
         # Confirm API is online
         self.assertEqual(response.status_code, 200)
@@ -98,15 +98,16 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
         self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)
         '''
+        pass
 
     def test_group_list(self):
         # Confirm login required
-        response = self.client.get( reverse('api:groups-api') )
+        response = self.client.get(reverse('api:groups-api'))
         self.assertEqual(response.status_code, 302)
 
         user, password = self.get_test_user()
         self.client.login(username=user.username, password=password)
-        response = self.client.get( reverse('api:groups-api') )
+        response = self.client.get(reverse('api:groups-api'))
 
         # Confirm API is online
         self.assertEqual(response.status_code, 200)
@@ -123,7 +124,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
 
         for window in [1, 7, 30, 100]:
             # Confirm API is online
-            response = self.client.get( reverse('api:leaderboard-users', kwargs={'day_window': window}) )
+            response = self.client.get(reverse('api:leaderboard-users', kwargs={'day_window': window}))
             self.assertEqual(response.status_code, 200)
 
         self.client.logout()
@@ -134,7 +135,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
 
         for window in [1, 7, 30, 100]:
             # Confirm API is online
-            response = self.client.get( reverse('api:leaderboard-teams', kwargs={'day_window': window}) )
+            response = self.client.get(reverse('api:leaderboard-teams', kwargs={'day_window': window}))
             self.assertEqual(response.status_code, 200)
 
         self.client.logout()

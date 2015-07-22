@@ -19,7 +19,7 @@ def provider_post_save(sender, instance, **kwargs):
     }
 
     if message.user:
-        msg.cc=[message.user.email]
+        msg.cc = [message.user.email]
         msg.global_merge_vars['NAME'] = message.user.username
 
         msg.send()

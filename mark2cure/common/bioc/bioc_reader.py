@@ -33,7 +33,7 @@ class BioCReader:
         self.collection = BioCCollection()
 
         parser = etree.XMLParser(recover=True, encoding='utf-8')
-        self.xml_tree = etree.parse(StringIO( str(source) ), parser)
+        self.xml_tree = etree.parse(StringIO(str(source)), parser)
 
         if dtd_valid_file is not None:
             dtd = etree.DTD(dtd_valid_file)

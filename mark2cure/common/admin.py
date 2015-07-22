@@ -12,7 +12,6 @@ class UserQuestRelationshipAdmin(admin.ModelAdmin):
                     'completed', 'score',
                     'updated', 'created')
 
-
     readonly_fields = ('task', 'user', 'views',
                     'completed', 'score',
                     'updated', 'created')
@@ -36,9 +35,8 @@ class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
                     'group',
                     'updated', 'created')
 
-
     readonly_fields = ('task', 'document',
-                    'updated', 'created')
+                       'updated', 'created')
 
     def document_preview(self, obj):
         return truncatesmart(obj.document.title)
@@ -56,14 +54,12 @@ class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    search_fields = ('name', 'group__name' )
+    search_fields = ('name', 'group__name')
 
     list_display = ('name', 'kind', 'contributions', 'completions',
                     'points', 'experiment', 'document_count',
                     'requires_qualification', 'provides_qualification', 'meta_url',
                     'updated', 'created', 'group_preview')
-
-
 
     readonly_fields = ('kind', 'documents',
                     'users',
@@ -105,20 +101,20 @@ class GroupAdmin(admin.ModelAdmin):
 
 class SupportMessageAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__first_name', 'user__last_name',
-            'user__email', 'text')
+                     'user__email', 'text')
 
-    list_display = ( 'get_email', 'text', 'referral',
-    'created')
+    list_display = ('get_email', 'text', 'referral',
+                    'created')
 
-    readonly_fields = ( 'user', 'text', 'referral',
-    'created')
+    readonly_fields = ('user', 'text', 'referral',
+                       'created')
 
     def get_email(self, obj):
         if obj.user:
             return '{first} {last} <{email}>'.format(
-                    first=obj.user.first_name,
-                    last=obj.user.last_name,
-                    email=obj.user.email)
+                first=obj.user.first_name,
+                last=obj.user.last_name,
+                email=obj.user.email)
         else:
             return '[anon]'
 

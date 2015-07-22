@@ -12,12 +12,6 @@ from configurations.values import (
     Value,
     SecretValue,
     BooleanValue,
-    ListValue,
-    IntegerValue,
-    TupleValue,
-    DictValue,
-    URLValue,
-    BackendsValue,
     DatabaseURLValue
 )
 
@@ -100,7 +94,6 @@ class Base(Configuration):
         'gunicorn'
     )
 
-    #COMMENTS_APP = 'threadedcomments'
     SENTRY_ENABLED = BooleanValue(True)
     SENTRY_PROTOCOL = Value('http')
     SENTRY_PROJECT_DOMAIN = Value('sentry.sulab.org')
@@ -234,7 +227,6 @@ class Base(Configuration):
         'social.apps.django_app.context_processors.login_redirect',
     )
 
-
     MEDIA_URL = 'media/'
     MEDIA_ROOT = 'media/'
 
@@ -331,13 +323,12 @@ class Development(Base):
 
     if 'test' in sys.argv:
         import dj_database_url
-        DATABASES = {'default': dj_database_url.parse('sqlite://'+ Base.PROJECT_PATH + '/test_db.sqlite')}
+        DATABASES = {'default': dj_database_url.parse('sqlite://' + Base.PROJECT_PATH + '/test_db.sqlite')}
         SOUTH_TESTS_MIGRATE = False
 
     DOMAIN = 'localhost:8000'
     DEBUG_FILENAME = 'mark2cure-local-debug.log'
     VERSION = '0.1 (Local)'
-
 
 
 class Production(Base):
@@ -358,7 +349,7 @@ class Production(Base):
 
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
-    #CELERYBEAT_SCHEDULE = {
+    # CELERYBEAT_SCHEDULE = {
     #    'check-corpus': {
     #        'task': 'mark2cure.document.tasks.check_corpus_health',
     #        'schedule': timedelta(hours=12)
@@ -367,7 +358,7 @@ class Production(Base):
     #        'task': 'mark2cure.document.tasks.check_pubtator_health',
     #        'schedule': timedelta(minutes=15)
     #    },
-    #}
+    # }
     # CACHES = {
     #     'default': {
     #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

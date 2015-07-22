@@ -8,8 +8,6 @@ from Bio import Entrez, Medline
 from celery import task
 
 import requests
-from datetime import datetime, timedelta
-import time
 
 
 @task()
@@ -35,7 +33,7 @@ def check_corpus_health(group_pk=1):
         if not valid_pubtator_responses or update_padding:
             # Delete only the Pubtator models that are not currently
             # being fetched
-            #Pubtator.objects.filter(
+            # Pubtator.objects.filter(
             #    document=document,
             #    session_id='',
             #    content__isnull=True).all().delete()
@@ -94,9 +92,9 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
     # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
     for record in records:
         if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
-            #if Document.objects.pubmed_count(record.get('PMID')) is 0:
-            title = ' '.join( pad_split(record.get('TI')) )
-            abstract = ' '.join( pad_split(record.get('AB')) )
+            # if Document.objects.pubmed_count(record.get('PMID')) is 0:
+            title = ' '.join(pad_split(record.get('TI')))
+            abstract = ' '.join(pad_split(record.get('AB')))
 
             doc, doc_c = Document.objects.get_or_create(document_id=record.get('PMID'))
             doc.title = title

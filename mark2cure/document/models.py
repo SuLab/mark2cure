@@ -38,7 +38,7 @@ class Document(models.Model):
         changed = False
 
         for section in self.available_sections():
-            padded = ' '.join( pad_split( section.text ) )
+            padded = ' '.join(pad_split(section.text))
             if section.text != padded:
                 # If a change was identified:
                 # 1) Resubmit it to pubtator
@@ -52,13 +52,14 @@ class Document(models.Model):
     def valid_pubtator(self):
         # All responses that are not waiting to fetch conent b/c they already have it
         pub_query_set = Pubtator.objects.filter(
-                document=self,
-                session_id='',
-                content__isnull=False)
+            document=self,
+            session_id='',
+            content__isnull=False)
 
         for section in self.available_sections():
             for needle in ['<', '>']:
-                if needle in section.text: return False
+                if needle in section.text:
+                    return False
 
         # The Docment doesn't have a response for each type
         # (TODO) also cases grater than 3
@@ -94,8 +95,8 @@ class Document(models.Model):
                 annotation.put_infon('user_name', str(ann.get('view__user__username')))
 
                 # (TODO) Map type strings back to 0,1,2
-                annotation.put_infon('type', str( approved_types.index(ann.get('type')) ))
-                annotation.put_infon('type_name', str( ann.get('type') ))
+                annotation.put_infon('type', str(approved_types.index(ann.get('type'))))
+                annotation.put_infon('type_name', str(ann.get('type')))
 
                 location = BioCLocation()
                 location.offset = str(passage_offset + ann.get('start'))
@@ -121,9 +122,9 @@ class Document(models.Model):
         reader = self.as_writer(request)
 
         pub_query_set = Pubtator.objects.filter(
-                document=self,
-                session_id='',
-                content__isnull=False)
+            document=self,
+            session_id='',
+            content__isnull=False)
 
         # Load up our various pubtator responses
         pub_readers = []
@@ -143,7 +144,7 @@ class Document(models.Model):
 
                         if ann_type in approved_types:
                             annotation.clear_infons()
-                            annotation.put_infon('type', str( approved_types.index(ann_type) ))
+                            annotation.put_infon('type', str(approved_types.index(ann_type)))
                             annotation.put_infon('user', 'pubtator')
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
@@ -160,7 +161,7 @@ class Document(models.Model):
                     longest_ann = max(conflicting_anns, key=lambda a: int(a.locations[0].length))
 
                     for ann in conflicting_anns:
-                        if not ann is longest_ann:
+                        if ann is not longest_ann:
                             reader.collection.documents[d_idx].passages[p_idx].remove_annotation(ann)
 
                 # Remove any annoations that overlap, prefer selection for longest
@@ -240,14 +241,14 @@ class Pubtator(models.Model):
         if self.session_id != '':
             return False
 
-        if self.content == None:
+        if self.content is None:
             return False
 
         try:
             r = BioCReader(source=self.content)
             r.read()
             return r
-        except Exception as e:
+        except Exception:
             # If one of them doesn't validate leave
             return False
 
@@ -354,10 +355,8 @@ class View(models.Model):
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User)
 
-
     class Meta:
         get_latest_by = 'pk'
-
 
     def __unicode__(self):
         return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
