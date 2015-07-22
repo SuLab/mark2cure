@@ -30,6 +30,25 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
+@doc_completion_required
+def home(request, pubmed_id):
+    document = get_object_or_404(Document, document_id=pubmed_id)
+
+    disease = Counter( document.annotations().filter(type='disease').exclude(text='').values_list('text', flat=True) )
+    gene_protein = Counter( document.annotations().filter(type='gene_protein').exclude(text='').values_list('text', flat=True) )
+    drug = Counter( document.annotations().filter(type='drug').exclude(text='').values_list('text', flat=True) )
+
+    ctx = {
+        'doc': document,
+        'diseases': disease.most_common(20),
+        'gene_proteins': gene_protein.most_common(20),
+        'drugs': drug.most_common(20)
+    }
+
+    return TemplateResponse(request, 'talk/home.jade', ctx)
+
+
+@login_required
 def annotation_search(request):
     annotation = request.GET.get('q')
     completed_document_pks = request.user.profile.completed_document_pks()
@@ -84,24 +103,4 @@ def recent_discussion(request):
         'documents': documents
     }
     return TemplateResponse(request, 'talk/recent_discussion.jade', ctx)
-
-
-@login_required
-@doc_completion_required
-def home(request, pubmed_id):
-    document = get_object_or_404(Document, document_id=pubmed_id)
-
-    disease = Counter( document.annotations().filter(type='disease').exclude(text='').values_list('text', flat=True) )
-    gene_protein = Counter( document.annotations().filter(type='gene_protein').exclude(text='').values_list('text', flat=True) )
-    drug = Counter( document.annotations().filter(type='drug').exclude(text='').values_list('text', flat=True) )
-
-    ctx = {
-        'doc': document,
-        'diseases': disease.most_common(20),
-        'gene_proteins': gene_protein.most_common(20),
-        'drugs': drug.most_common(20)
-    }
-
-    return TemplateResponse(request, 'talk/home.jade', ctx)
-
 
