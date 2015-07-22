@@ -68,13 +68,20 @@ class TestBase(object):
                 total_ann_count = total_ann_count + ann_count
                 self.assertEqual(Annotation.objects.count(), total_ann_count)
 
-    def create_new_user_accounts(self, user_names, users):
+    def create_new_user_accounts(self, user_names):
         """ Input is a list of users to initiate first login"""
         for user_name in user_names:
             self.users[user_name] = User.objects.create_user(user_name, password='password')
             badges.possibly_award_badge("skill_awarded",
                                         user=self.users[user_name],
                                         level=7, force=True)
+
+    def get_test_user(self):
+        '''
+            (TODO) Maybe just better to return a logged in client instance?
+        '''
+        self.create_new_user_accounts(['test_user',])
+        return User.objects.first(), 'password'
 
     def get_document_from_response(self, user_name):
         """ If you need one document, arbitrarily use doc from user_name"""

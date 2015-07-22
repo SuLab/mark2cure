@@ -1,11 +1,13 @@
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
+from ..test_base.test_base import TestBase
 from ..document.models import Annotation
 from ..common.models import Group, Task
-from ..test_base.test_base import TestBase
 
-from mark2cure.common.bioc import BioCReader
+from ..common.bioc import BioCReader
+
+import json
 
 
 class GroupBioCAPIViews(TestCase, TestBase):
@@ -28,8 +30,24 @@ class GroupBioCAPIViews(TestCase, TestBase):
         cls.users = {}
         cls.user_annotation_list = []
 
-    def test_group_for_all_user_annotations(self):
-        self.create_new_user_accounts(self.user_names, self.users)
+    def test_quest_group_list(self):
+        user, password = self.get_test_user()
+        self.client.login(username=user.username, password=password)
+        group = Group.objects.first()
+
+        response = self.client.get( reverse('api:quest-group-api', kwargs={'group_pk': group.pk}) )
+
+        # Confirm API is online
+        self.assertEqual(response.status_code, 200)
+
+        # Confirm API provides Document PKs
+        data = json.loads(response.content)
+        self.assertTrue(len(data.get('documents')) > 1)
+
+        self.client.logout()
+
+    def test_group_users_bioc(self):
+        self.create_new_user_accounts(self.user_names)
         # Get one document only (for users to share) (here just use user 0)
         # TODO: this could be improved. Currently using client to login and
         # retrieve a document to "share". Need to know how to do this more
@@ -63,7 +81,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
                 total_bioc_annotation_int += len(bioc_passage.annotations)
         self.assertEqual(Annotation.objects.count(), total_bioc_annotation_int)
 
-    def test_group_for_all_pubtator_annotations(self):
+    def test_group_pubtator_bioc(self):
         '''
         # As Anon user, export the documents submissions
         res = self.client.get(reverse('document:read-users-bioc',
@@ -80,3 +98,44 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
         self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)
         '''
+
+    def test_group_list(self):
+        # Confirm login required
+        response = self.client.get( reverse('api:groups-api') )
+        self.assertEqual(response.status_code, 302)
+
+        user, password = self.get_test_user()
+        self.client.login(username=user.username, password=password)
+        response = self.client.get( reverse('api:groups-api') )
+
+        # Confirm API is online
+        self.assertEqual(response.status_code, 200)
+
+        # Confirm API provides correct number of groups
+        data = json.loads(response.content)
+        self.assertEqual(len(data), Group.objects.count())
+
+        self.client.logout()
+
+    def test_leaderboard_users(self):
+        user, password = self.get_test_user()
+        self.client.login(username=user.username, password=password)
+
+        for window in [1, 7, 30, 100]:
+            # Confirm API is online
+            response = self.client.get( reverse('api:leaderboard-users', kwargs={'day_window': window}) )
+            self.assertEqual(response.status_code, 200)
+
+        self.client.logout()
+
+    def test_leaderboard_teams(self):
+        user, password = self.get_test_user()
+        self.client.login(username=user.username, password=password)
+
+        for window in [1, 7, 30, 100]:
+            # Confirm API is online
+            response = self.client.get( reverse('api:leaderboard-teams', kwargs={'day_window': window}) )
+            self.assertEqual(response.status_code, 200)
+
+        self.client.logout()
+
