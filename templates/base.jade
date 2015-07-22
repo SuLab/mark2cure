@@ -157,8 +157,15 @@ head
 
             .modal-footer
               button(type="button", data-dismiss="modal").btn.btn-default Okay
+
       script.
-        if(Modernizr.touch) { $('#touch-modal').modal('show'); }
+        $('#touch-modal').on('hidden.bs.modal', function () {
+          $.post('{% url "userprofile:alert" %}', {'csrfmiddlewaretoken': '{{csrf_token}}'});
+        });
+
+      - if not request.session.block_alert
+        script.
+          if(Modernizr.touch) { $('#touch-modal').modal('show'); }
 
 
     block post-footer
