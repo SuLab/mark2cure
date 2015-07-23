@@ -42,8 +42,9 @@ class GroupBioCAPIViews(TestCase, TestBase):
 
         # Confirm API provides Document PKs
         data = json.loads(response.content)
-        self.assertTrue(len(data.get('documents')) > 1)
-
+        data_string = str(data)
+        # check that the exact pubmed IDs are in the json object
+        self.assertTrue("1817, 1816, 1815" in data_string)
         self.client.logout()
 
     def test_group_users_bioc(self):
@@ -139,4 +140,3 @@ class GroupBioCAPIViews(TestCase, TestBase):
             self.assertEqual(response.status_code, 200)
 
         self.client.logout()
-
