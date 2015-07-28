@@ -1,0 +1,22 @@
+extends base
+
+- load widget_tweaks
+- load brabeion_tags
+- load humanize
+
+block content
+
+  .container
+    .row
+
+      .col-xs-4
+        .list-group
+          - for group in groups
+            a(href='{% url "dashboard:group" pk=group.pk %}').list-group-item
+              h4.list-group-item-heading #{group.name}
+              p.list-group-item-text Tasks: #{group.task_set.count}
+              p.list-group-item-text Document Count: #{group.total_documents.count}
+
+      .col-xs-8
+        h2 Make a New Group
+

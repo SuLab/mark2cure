@@ -89,6 +89,9 @@ class Group(models.Model):
         # (TODO?) Return for __in of task_ids
         return Document.objects.filter(task__group=self)
 
+    def total_documents(self):
+        return DocumentQuestRelationship.objects.filter(task__group=self)
+
     def percentage_complete(self):
         task_queryset = self.task_set.extra(select={
             "completed": """

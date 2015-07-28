@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.template.response import TemplateResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 
-from ..common.models import Task, UserQuestRelationship
+from ..common.models import Task, UserQuestRelationship, Group
 from ..common.bioc import *
 
 import csv
@@ -25,3 +27,21 @@ def users_training(request):
         row.append(UserQuestRelationship.objects.filter(task__pk=11, user=user, completed=True).exists())
         writer.writerow(row)
     return response
+
+
+@login_required
+def group_list(request):
+    ctx = {
+        'groups': Group.objects.all()
+    }
+    return TemplateResponse(request, 'dashboard/group_list.jade', ctx)
+
+
+@login_required
+def group_read(request, pk):
+    group = get_object_or_404(Group, pk=pk)
+    ctx = {
+        'group': group
+    }
+    return TemplateResponse(request, 'dashboard/group.jade', ctx)
+

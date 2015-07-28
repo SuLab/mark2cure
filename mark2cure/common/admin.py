@@ -90,9 +90,6 @@ class GroupAdmin(admin.ModelAdmin):
     def tasks(self, obj):
         return obj.task_set.count()
 
-    def document_count(self, obj):
-        return obj.documents.count()
-
     def total_documents(self, obj):
         return DocumentQuestRelationship.objects.filter(task__group=obj).count()
 

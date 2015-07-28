@@ -11,6 +11,11 @@ import requests
 
 
 @task()
+def check_system_uptime():
+    logger.info('Celery on rabbitmq-server ran.')
+
+
+@task()
 def check_corpus_health(group_pk=1):
     group = Group.objects.get(pk=group_pk)
     documents = Document.objects.filter(task__group=group).all()

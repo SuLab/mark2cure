@@ -87,6 +87,7 @@ class Base(Configuration):
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',
+        'mark2cure.dashboard',
 
         'django.contrib.humanize',
         'widget_tweaks',
@@ -349,16 +350,20 @@ class Production(Base):
 
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
-    # CELERYBEAT_SCHEDULE = {
-    #    'check-corpus': {
-    #        'task': 'mark2cure.document.tasks.check_corpus_health',
-    #        'schedule': timedelta(hours=12)
-    #    },
-    #    'check-pubtators': {
-    #        'task': 'mark2cure.document.tasks.check_pubtator_health',
-    #        'schedule': timedelta(minutes=15)
-    #    },
-    # }
+    CELERYBEAT_SCHEDULE = {
+        'check-system-uptime': {
+            'task': 'mark2cure.document.tasks.check_system_uptime',
+            'schedule': timedelta(seconds=60)
+        },
+        #'check-corpus': {
+        #    'task': 'mark2cure.document.tasks.check_corpus_health',
+        #    'schedule': timedelta(hours=12)
+        #},
+        #'check-pubtators': {
+        #    'task': 'mark2cure.document.tasks.check_pubtator_health',
+        #    'schedule': timedelta(minutes=15)
+        #},
+    }
     # CACHES = {
     #     'default': {
     #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

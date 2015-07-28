@@ -10,6 +10,10 @@ logger = logging.getLogger(__name__)
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mark2cure.settings')
+os.environ.setdefault('DJANGO_CONFIGURATION', 'Production')
+
+from configurations import importer
+importer.install()
 
 app = Celery('mark2cure')
 
