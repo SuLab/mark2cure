@@ -9,11 +9,6 @@ class TalkViews(TestCase, TestBase):
 
     fixtures = ['tests_documents.json', 'tests_common.json']
 
-    @classmethod
-    def setUp(cls):
-        # (JK TODO) remove this required global for TestBase inheritance
-        cls.users = {}
-
     def test_home(self):
         document = Document.objects.first()
 
@@ -53,4 +48,3 @@ class TalkViews(TestCase, TestBase):
         self.client.login(username=user.username, password=password)
         response = self.client.get(reverse('talk:recent'))
         self.assertEqual(response.status_code, 200)
-

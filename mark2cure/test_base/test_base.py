@@ -42,7 +42,7 @@ class TestBase(object):
             # print user_name
             # print doc
             # Each user gets a document to annotate
-            self.user_annotation_list = []
+            user_annotation_list = []
             for section in doc.available_sections():
                 ann_count = random.randint(0, 30)
                 for x in range(ann_count):
@@ -55,7 +55,7 @@ class TestBase(object):
                                      {'type': random.randint(0, 2),
                                      'text': user_annotation,
                                      'start': random.randint(0, len(section.text))}).status_code, 200)
-                    self.user_annotation_list.append(user_annotation)
+                    user_annotation_list.append(user_annotation)
                 # print self.user_annotation_list
                 total_ann_count = total_ann_count + ann_count
                 self.assertEqual(Annotation.objects.count(), total_ann_count)
@@ -63,9 +63,9 @@ class TestBase(object):
     def create_new_user_accounts(self, user_names):
         """ Input is a list of users to initiate first login"""
         for user_name in user_names:
-            self.users[user_name] = User.objects.create_user(user_name, password='password')
+            user_name = User.objects.create_user(user_name, password='password')
             badges.possibly_award_badge("skill_awarded",
-                                        user=self.users[user_name],
+                                        user=user_name,
                                         level=7, force=True)
 
     def get_test_user(self):

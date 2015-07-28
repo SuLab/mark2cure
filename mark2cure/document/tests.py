@@ -153,7 +153,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         cls.user_annotation_list = []
 
     def test_document_as_bioc_for_pairing(self):
-        self.create_new_user_accounts(self.user_names, self.users)
+        self.create_new_user_accounts(self.user_names)
 
         # Ensure the player views the Q but can't match b/c no Anns exist
         self.client.login(username='player', password='password')
@@ -239,7 +239,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
 
     def test_document_as_bioc_with_m2c(self):
         # Submit Annotations (As User 1) so they show up when inspecting the M2C submissions
-        self.create_new_user_accounts(self.user_names, self.users)
+        self.create_new_user_accounts(self.user_names)
         self.assertEqual(Annotation.objects.count(), 0)
         self.client.login(username='player', password='password')
         response = self.client.get(reverse('common:quest-home',

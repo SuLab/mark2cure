@@ -8,11 +8,6 @@ from ..common.models import Group
 class CommonViews(TestCase, TestBase):
     fixtures = ['tests_documents.json', 'tests_common.json']
 
-    @classmethod
-    def setUp(cls):
-        # (JK TODO) remove this required global for TestBase inheritance
-        cls.users = {}
-
     def test_home(self):
         # Confirm non-auth'd redirect
         response = self.client.get(reverse('common:home'))
@@ -72,10 +67,6 @@ class QuestViews(TestCase, TestBase):
     '''
     fixtures = ['tests_documents.json', 'tests_common.json']
 
-    @classmethod
-    def setUp(cls):
-        cls.users = {}
-
     def test_quest_read_doc_results(self):
         pass
 
@@ -96,4 +87,3 @@ class QuestViews(TestCase, TestBase):
 
     def test_quest_submit(self):
         pass
-
