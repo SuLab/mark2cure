@@ -1,4 +1,5 @@
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -17,6 +18,7 @@ import csv
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def users_training(request):
     response = HttpResponse(content_type='text/html')
     writer = csv.writer(response)
@@ -36,6 +38,7 @@ def users_training(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @require_http_methods(['GET', 'POST'])
 def group_list(request):
 
@@ -65,6 +68,7 @@ def group_list(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def group_read(request, pk):
     group = get_object_or_404(Group, pk=pk)
     ctx = {
@@ -75,6 +79,7 @@ def group_read(request, pk):
 
 @login_required
 @require_http_methods(['POST'])
+@user_passes_test(lambda u: u.is_staff)
 def pubtator_actions(request, pk):
     pubtator = get_object_or_404(Pubtator, pk=pk)
     doc = pubtator.document
@@ -88,6 +93,7 @@ def pubtator_actions(request, pk):
 
 @login_required
 @require_http_methods(['POST'])
+@user_passes_test(lambda u: u.is_staff)
 def document_pubtator_actions(request, pk):
     doc = get_object_or_404(Document, pk=pk)
 
@@ -100,6 +106,7 @@ def document_pubtator_actions(request, pk):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def document_read(request, pk):
     doc = get_object_or_404(Document, pk=pk)
     ctx = {
