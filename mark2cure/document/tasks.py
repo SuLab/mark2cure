@@ -13,14 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 @task()
-def check_system_uptime():
-    '''
-        Task to run every 5minutes to make sure Celery is running
-    '''
-    logger.info('Celery on rabbitmq-server ran.')
-
-
-@task()
 def check_corpus_health():
     '''
         Task to run every 10 minutes

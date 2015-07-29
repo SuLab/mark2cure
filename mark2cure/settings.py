@@ -107,7 +107,7 @@ class Base(Configuration):
         'version': 1,
         'disable_existing_loggers': True,
         'root': {
-            'level': 'WARNING',
+            'level': 'DEBUG',
             'handlers': ['sentry'],
         },
         'formatters': {
@@ -118,7 +118,7 @@ class Base(Configuration):
         },
         'handlers': {
             'sentry': {
-                'level': 'ERROR',
+                'level': 'DEBUG',
                 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
             },
             'console': {
@@ -259,10 +259,6 @@ class Base(Configuration):
 
     GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = True
 
-    BROKER_URL = 'amqp://'
-    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-    CELERY_TIMEZONE = 'America/Los_Angeles'
-
     # Admin/Control settings
     ADMIN_PASSWORD = SecretValue(environ_prefix='MARK2CURE')
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
@@ -311,6 +307,20 @@ class Base(Configuration):
     EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
     ROBOTS_USE_SITEMAP = True
 
+    BROKER_URL = 'amqp://'
+    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+    CELERY_TIMEZONE = 'America/Los_Angeles'
+    CELERYBEAT_SCHEDULE = {
+        'check-system-uptime': {
+            'task': 'mark2cure.common.tasks.check_system_uptime',
+            'schedule': timedelta(seconds=30)
+        },
+        'check-corpus': {
+            'task': 'mark2cure.document.tasks.check_corpus_health',
+            'schedule': timedelta(minutes=10)
+        },
+    }
+
 
 class Development(Base):
     LOCAL = True
@@ -350,21 +360,3 @@ class Production(Base):
 
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
-    CELERYBEAT_SCHEDULE = {
-        'check-system-uptime': {
-            'task': 'mark2cure.document.tasks.check_system_uptime',
-            'schedule': timedelta(seconds=30)
-        },
-        'check-corpus': {
-            'task': 'mark2cure.document.tasks.check_corpus_health',
-            'schedule': timedelta(minutes=10)
-        },
-    }
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #         'LOCATION': 'unique-snowflake'
-    #     }
-    # }
-    # CACHE_MIDDLEWARE_ALIAS = 'default'
-    # CACHE_MIDDLEWARE_SECONDS = 60
