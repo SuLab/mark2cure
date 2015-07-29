@@ -9,7 +9,7 @@ from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_ann
 from mark2cure.common.models import Task
 
 from .utils import generate_results, select_best_opponent
-from .models import Document, Section, Annotation
+from .models import Document, Section, Annotation, Pubtator
 from .forms import AnnotationForm
 
 from brabeion import badges
@@ -31,6 +31,11 @@ def read_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer_json, content_type='application/json')
     else:
         return HttpResponse(writer, content_type='text/xml')
+
+
+def read_pubtator(request, pk):
+    pubtator = get_object_or_404(Pubtator, pk=pk)
+    return HttpResponse(pubtator.content, content_type='text/xml')
 
 
 def read_pubtator_bioc(request, pubmed_id, format_type):

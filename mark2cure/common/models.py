@@ -7,6 +7,8 @@ from brabeion.base import Badge, BadgeAwarded
 from brabeion import badges
 from decimal import Decimal
 
+import random
+
 
 class SkillBadge(Badge):
     slug = "skill"
@@ -106,6 +108,42 @@ class Group(models.Model):
             return (Decimal(completed) / Decimal(required)) * 100
         else:
             return 0
+
+    def assign(self, documents, smallest_bin=5, largest_bin=5, completions=15):
+        # Insert the other Documents
+        document_set = list(documents.values_list('id', flat=True))
+        random.shuffle(document_set)
+        last_task = self.task_set.last()
+
+        while len(document_set) >= 1:
+
+            quest_size = int(random.uniform(smallest_bin, largest_bin))
+            # If there was an existing Task with less than the
+            # desired number of documents
+            if last_task and last_task.documents.count() < quest_size:
+
+                # Shuffle & Remove the document_pk for use and from being selected again
+                random.shuffle(document_set)
+                doc_pk = document_set[0]
+                document_set.remove(doc_pk)
+
+                document = Document.objects.get(pk=doc_pk)
+                DocumentQuestRelationship.objects.create(task=last_task, document=document)
+
+            else:
+                if last_task:
+                    idx = last_task.pk
+                else:
+                    idx = Task.objects.last().pk
+
+                last_task, task_created = Task.objects.get_or_create(
+                    name=str(idx + 1),
+                    completions=completions,
+                    requires_qualification=7,
+                    provides_qualification=7,
+                    points=5000,
+                    group=self)
+
 
     def __unicode__(self):
         return self.name

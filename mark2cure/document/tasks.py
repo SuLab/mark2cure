@@ -8,45 +8,49 @@ from Bio import Entrez, Medline
 from celery import task
 
 import requests
+import logging
+logger = logging.getLogger(__name__)
 
 
 @task()
 def check_system_uptime():
+    '''
+        Task to run every 5minutes to make sure Celery is running
+    '''
     logger.info('Celery on rabbitmq-server ran.')
 
 
 @task()
-def check_corpus_health(group_pk=1):
-    group = Group.objects.get(pk=group_pk)
-    documents = Document.objects.filter(task__group=group).all()
+def check_corpus_health():
+    '''
+        Task to run every 10 minutes
 
-    for document in documents:
+        1) Check on document health
+            - Content is present
+            - Padding and Pubtator on new content
+
+        2) Check on the pubtator health
+            - Fetch pending sessions
+            - Make sure content pubtators are correctly assigned
+
+    '''
+    for document in Document.objects.all():
         # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
             print '  > Downloading Sections: '
             get_pubmed_document(document.document_id)
 
-        # Update any newly enforced padding rules
-        # If the document doesn't pass the validator
-        # delete all existing content and retry
-        valid_pubtator_responses = document.valid_pubtator()
-        update_padding = document.update_padding()
+            # Update any newly enforced padding rules
+            # If the document doesn't pass the validator
+            # delete all existing content and retry
+            valid_pubtator_responses = document.valid_pubtator()
+            update_padding = document.update_padding()
 
-        print '  > Valid Pub: ', valid_pubtator_responses
-        print '  > Updated Padding: ', update_padding
+            if not valid_pubtator_responses or update_padding:
+                document.init_pubtator()
 
-        if not valid_pubtator_responses or update_padding:
-            # Delete only the Pubtator models that are not currently
-            # being fetched
-            # Pubtator.objects.filter(
-            #    document=document,
-            #    session_id='',
-            #    content__isnull=True).all().delete()
+    check_pubtator_health()
 
-            document.init_pubtator()
-            print ' > New Pubtator requests for Doc #', document.pk
-
-        print 'Done checking Doc #', document.pk
 
 
 def check_pubtator_health():
@@ -97,7 +101,6 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
     # Reference to abbreviations: http://www.nlm.nih.gov/bsd/mms/medlineelements.html
     for record in records:
         if record.get('TI') and record.get('AB') and record.get('PMID') and record.get('CRDT'):
-            # if Document.objects.pubmed_count(record.get('PMID')) is 0:
             title = ' '.join(pad_split(record.get('TI')))
             abstract = ' '.join(pad_split(record.get('AB')))
 

@@ -8,29 +8,45 @@ block content
 
   .container
     .row
-      - if group.description
-        .col-md-10.col-md-offset-1.head-space
-          p.lead #{group.description}
+      .col-md-10.col-md-offset-1.head-space
+        h2.text-center
+          a(href='{% url "admin:common_group_change" group.pk %}')
+            #{group.name}
+        p.lead #{group.description}
 
       .col-md-8.col-md-offset-2
 
         table.table.table-hover.table-striped
           thead
             tr
-              th Document
-              th X
-              th Y
+              th Pubmed ID
+              th Points
+              th Added to Group
+              th Valid Pubtator
+              th Reset Pubtator
 
           tbody
-        - for doc_q_rel in group.total_documents
-              tr
-                th(scope="row") #{doc.0}
-                td
-                  - if doc.valid_pubtator
-                    i.fa.fa-check
-                  - else
-                    i.fa.fa-exclamation-triangle
+            - for doc_q_rel in group.total_documents
+                tr
+                  td
+                    a(href='{% url "dashboard:document" pk=doc_q_rel.document.pk %}')
+                      h3 #{doc_q_rel.document.document_id}
 
-                td
-                  p #{doc_q_rel.document.title}
+                  td
+                    p #{doc_q_rel.points}
+
+                  td
+                    p #{doc_q_rel.updated|naturaltime}
+
+                  td
+                    - if doc_q_rel.document.valid_pubtator
+                      i.fa.fa-3x.fa-check.text-success
+                    - else
+                      i.fa.fa-3x.fa-exclamation-triangle.text-danger
+
+                  td
+                    form(action='{% url "dashboard:document_reset_pubtator" pk=doc_q_rel.document.pk %}', method='post')
+                      - csrf_token
+                      button(type='submit').btn.btn-warning.btn-block
+                        | Reset
 

@@ -3,6 +3,8 @@ extends base
 - load widget_tweaks
 - load brabeion_tags
 - load humanize
+- load as_vertical_form from bootstrap
+- load as_horizontal_form from bootstrap
 
 block content
 
@@ -19,4 +21,19 @@ block content
 
       .col-xs-8
         h2 Make a New Group
+
+        form(action='{% url "dashboard:groups_home" %}', method='post')
+          - csrf_token
+
+          fieldset
+            #{form.name|as_vertical_form}
+            #{form.stub|as_vertical_form}
+            #{form.description|as_vertical_form}
+            #{form.order|as_vertical_form}
+            #{form.pmids|as_vertical_form}
+
+          button(type='submit').btn.btn-warning.btn-block
+            | Submit
+
+
 

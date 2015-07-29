@@ -12,6 +12,10 @@ urlpatterns = patterns('',
     url(r'^pubtator/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubtator_bioc, name='read-pubtator-bioc'),
 
+    # BioC File for Specific Pubtator
+    url(r'^pubtator/(?P<pk>\d+)/$',
+        views.read_pubtator, name='read-pubtator'),
+
     # BioC File for M2C annotations
     url(r'^m2c/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_users_bioc, name='read-users-bioc'),

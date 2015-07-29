@@ -72,6 +72,7 @@ class Document(models.Model):
             p_valid = pubtator.valid()
             if p_valid:
                 pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
+                # This updates the created field, so we know the last time it was checked
                 pubtator.save()
             else:
                 return False
@@ -229,6 +230,9 @@ class Pubtator(models.Model):
     request_count = models.IntegerField(default=0)
     validate_cache = models.BooleanField(default=False)
 
+    # Updated is also trigged during doc.valid_pubtator
+    # so it's associated with when last polled or
+    # since last time it's been known to validate
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
