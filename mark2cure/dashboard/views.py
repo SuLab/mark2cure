@@ -45,13 +45,9 @@ def group_list(request):
 
         if group_form.is_valid():
             group = group_form.save()
-
             pmids = group_form.cleaned_data.get('pmids', [])
-            get_pubmed_document(pmids, source=group_uuid)
-
-            docs = Document.objects.filter(source=group_uuid).all()
-            print docs.count()
-            group.assign(docs)
+            get_pubmed_document.delay(pmids, source=group_uuid, group_pk=group.pk)
+            return redirect(reverse('dashboard:groups_home'))
 
         ctx = {
             'groups': Group.objects.all(),

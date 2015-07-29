@@ -26,6 +26,7 @@ def check_corpus_health():
             - Make sure content pubtators are correctly assigned
 
     '''
+    logger.debug('[TASK] check_corpus_health')
     for document in Document.objects.all():
         # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
@@ -79,7 +80,7 @@ def get_pubtator_response(pk):
 
 
 @task()
-def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
+def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
     Entrez.email = settings.ENTREZ_EMAIL
 
     if type(pubmed_ids) == list:
@@ -112,14 +113,8 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True):
             if include_pubtator:
                 doc.init_pubtator()
 
-
-@task
-def get_pubmed_documents(terms=settings.ENTREZ_TERMS):
-    Entrez.email = settings.ENTREZ_EMAIL
-
-    for term in terms:
-        h = Entrez.esearch(db='pubmed', retmax=settings.ENTREZ_MAX_COUNT, term=term)
-        result = Entrez.read(h)
-        ids = result['IdList']
-        get_pubmed_document(ids)
+    if group_pk:
+        docs = Document.objects.filter(source=source).all()
+        group = Group.objects.get(pk=group_pk)
+        group.assign(docs)
 
