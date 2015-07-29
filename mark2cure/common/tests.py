@@ -12,6 +12,10 @@ class CommonViews(TestCase, TestBase):
         # Confirm non-auth'd redirect
         response = self.client.get(reverse('common:home'))
         self.assertEqual(response.status_code, 200)
+        # Ensure layout is the same
+        self.assertInHTML('<meta name="application-name" content="Mark2Cure"/>', response.content)
+        self.assertInHTML('<h2 class="modal-title">Subscribe</h2>', response.content)
+        self.assertInHTML('<li><a href="http://sulab.org/category/mark2cure/">Blog</a>', response.content)
 
         # Confirm view online
         user, password = self.get_test_user()
@@ -30,6 +34,11 @@ class CommonViews(TestCase, TestBase):
         response = self.client.get(reverse('common:why-mark2cure'))
         self.assertEqual(response.status_code, 200)
 
+        # Ensure footers appear on this webpage
+        self.assert_footers_in_html(response.content)
+        self.assertInHTML('<h2 class="text-center">Why do you Mark2Cure?</h2>',
+                          response.content)
+
     def test_dashboard(self):
         # Confirm non-auth'd redirect
         response = self.client.get(reverse('common:dashboard'))
@@ -40,6 +49,10 @@ class CommonViews(TestCase, TestBase):
         self.client.login(username=user.username, password=password)
         response = self.client.get(reverse('common:dashboard'))
         self.assertEqual(response.status_code, 200)
+        # Check for standard footers and dashboard specific features.
+        self.assert_footers_in_html(response.content)
+        self.assertInHTML('<h4 id="myModalLabel" class="modal-title">Quest Instructions</h4>', response.content)
+        self.assertInHTML('<h2 class="text-center">Community Dashboard</h2>', response.content)
         self.client.logout()
 
     def test_group_view(self):
@@ -54,6 +67,7 @@ class CommonViews(TestCase, TestBase):
         self.client.login(username=user.username, password=password)
         response = self.client.get(reverse('common:group', kwargs={'group_stub': group.stub}))
         self.assertEqual(response.status_code, 200)
+        self.assert_footers_in_html(response.content)
         self.client.logout()
 
     def test_support(self):
@@ -73,7 +87,7 @@ class QuestViews(TestCase, TestBase):
     def test_quest_read_doc_results_bioc(self):
         pass
 
-    def quest_read_doc(self):
+    def test_quest_read_doc(self):
         pass
 
     def test_document_quest_submit(self):
