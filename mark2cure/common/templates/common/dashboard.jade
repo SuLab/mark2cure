@@ -21,6 +21,10 @@ block content
 
   .container-fluid
     .row
+      .col-md-10.col-md-offset-1
+        h2.text-center
+          a(href='/relationships/') Interested in trying the new relationship identification module?
+
       .col-md-7.col-md-offset-1
         #dashboard
 
@@ -62,7 +66,6 @@ block post-footer
       var draw_dashboard = function(group, quests) {
         $('#group-'+ group.pk).html('');
         var canvas = d3.select('#group-'+ group.pk);
-
         var available_quests = _.filter(quests, function(item) { return item.enabled && !item.completed });
         var completion_size = _.map(available_quests, function(item) { return item.completions; });
 
@@ -109,7 +112,6 @@ block post-footer
         };
         var quest = canvas.selectAll('.quest').remove();
         var quest = canvas.selectAll('.quest').data(quests);
-
         quest.enter().append('div')
           .attr(attrs)
           .style(styles)
@@ -152,8 +154,6 @@ block post-footer
 
               }
             });
-
-
           });
         }
       });

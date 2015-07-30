@@ -15,6 +15,9 @@ urlpatterns = patterns('',
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),
 
+    url(r'^relationships/$',
+        views.relationships, name='relationships'),
+
     url(r'^group/(?P<group_stub>\w+)/$',
         views.group_view, name='group'),
 

@@ -1,0 +1,35 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'relationships/style.css' %}" />
+
+
+<h1 id="purple_center">Relationship Module<h1>
+
+<h3>Please help us answer questions about how previously marked
+  drugs and diseases are related (or not related).
+    Using the following abstract, please select one of the relationship questions from
+    the list below.</h3>
+
+
+<p>This is sample text that might be found on mark2cure.org.
+  Studies show that if you eat too much snickers you will become obese, and
+  that if you have meal replacements with slimfast you can prevent obesity.
+  Ibuprofen and codeine can help prevent headaches but not depression. To fight
+  depression you might try zoloft. Caffeine can help with fatigue but can cause
+  restlessness before bedtime. Only when chlorthalidone is combined with
+  atenolol, will it become effective for treating hypertension.
+</p>
+
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+        <li><a href="{% url 'relationships:detail' question.id %}">{{ question.question_text }}</a></li>
+
+    {% endfor %}
+
+    </ul>
+{% else %}
+    <p>No relationships are available.</p>
+
+{% endif %}
+</body>
