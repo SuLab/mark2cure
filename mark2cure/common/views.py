@@ -13,6 +13,7 @@ from ..userprofile.models import UserProfile
 from ..document.models import Document
 from .models import Group, Task, UserQuestRelationship
 from .forms import SupportMessageForm
+#from ..relationships.views import IndexView
 
 from brabeion import badges
 
@@ -27,7 +28,10 @@ def home(request):
         return redirect('common:dashboard')
 
     form = AuthenticationForm()
-    quotes = ["To help others.", "In memory of my daughter who had Cystic Fibrosis.", "Rare disease dad!", "curiosity.", "This is needed.", "Goofing off productively.", "Community.", "Science!"]
+    quotes = ["To help others.",
+              "In memory of my daughter who had Cystic Fibrosis.",
+              "Rare disease dad!", "curiosity.", "This is needed.",
+              "Goofing off productively.", "Community.", "Science!"]
     random.shuffle(quotes)
     return TemplateResponse(request, 'common/landing2.jade', {'form': form, 'quotes': quotes})
 
@@ -43,6 +47,7 @@ def why_mark2cure(request):
 
 @login_required
 def dashboard(request):
+    # We redirect user to the training route if their skill is not level 7
     if not request.user.profile.highest_level("skill").level == 7:
         return redirect('training:route')
 
@@ -58,6 +63,9 @@ def dashboard(request):
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
+@login_required
+def relationships(request):
+    return TemplateResponse(request,'relationships/index.html')
 
 @login_required
 def group_view(request, group_stub):
@@ -209,29 +217,6 @@ def document_quest_submit(request, quest_pk, document_pk):
 
 
 @login_required
-def quest_submit(request, task, bypass_post=False):
-    # (TODO) Add validation check here at some point
-
-    if request.POST or bypass_post:
-        user_quest_relationship = task.user_relationship(request.user, False)
-
-        if not user_quest_relationship.completed:
-            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-            badges.possibly_award_badge("points_awarded", user=request.user)
-            badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
-
-        user_quest_relationship.completed = True
-        user_quest_relationship.save()
-
-
-@login_required
-def quest_feedback(request, quest_pk):
-    task = get_object_or_404(Task, pk=quest_pk)
-    ctx = {'task': task}
-    return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
-
-
-@login_required
 def quest_read(request, quest_pk):
     task = get_object_or_404(Task, pk=quest_pk)
 
@@ -270,3 +255,23 @@ def quest_read(request, quest_pk):
         # Route the user to the right idx doc
         return redirect('common:quest-document', quest_pk=task.pk, doc_idx=1)
 
+@login_required
+def quest_feedback(request, quest_pk):
+    task = get_object_or_404(Task, pk=quest_pk)
+    ctx = {'task': task}
+    return TemplateResponse(request, 'common/quest-feedback.jade', ctx)
+
+@login_required
+def quest_submit(request, task, bypass_post=False):
+    # (TODO) Add validation check here at some point
+
+    if request.POST or bypass_post:
+        user_quest_relationship = task.user_relationship(request.user, False)
+
+        if not user_quest_relationship.completed:
+            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+            badges.possibly_award_badge("points_awarded", user=request.user)
+            badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+
+        user_quest_relationship.completed = True
+        user_quest_relationship.save()
