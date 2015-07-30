@@ -11,6 +11,7 @@ class GroupForm(forms.ModelForm):
     def clean_pmids(self):
         pmids_text = self.cleaned_data['pmids']
         # PMIDs are all 8 ints
+        # (TODO) assume list of pmid
         pmids_arr = list(set(re.findall('\d{8}', pmids_text)))
         return pmids_arr
 

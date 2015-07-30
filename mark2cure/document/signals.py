@@ -21,7 +21,11 @@ def pubtator_post_save(sender, instance, created, **kwargs):
         data = str(writer)
         url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
 
-        response = requests.post(url, data=data, params=payload)
+        try:
+            response = requests.post(url, data=data, params=payload)
+        except Exception as e:
+            raise e
+
         pubtator.session_id = response.content
         pubtator.save()
 
