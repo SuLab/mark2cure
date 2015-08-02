@@ -1,6 +1,7 @@
 import datetime
 import re
 
+# learn shortcuts
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -8,57 +9,48 @@ from django.views import generic
 from django.utils import timezone
 
 
-from .models import Choice, Question
-###jennifer
+from .models import Paper
+from .tasks import parse_input
 
+import os
+# TODO check imports
 ### add here if not completed TODO (remove from list if user already answered)
-def _create_question(question_text, days):
-    time = timezone.now() + datetime.timedelta(days=days)
-    return Question.objects.create(question_text=question_text,
-                                   pub_date=time)
+"""
+Toby's parse_input creates new Paper objects using all of the
+inputs to the Paper class.
+
+"""
+
+
+#def parse_input(location, fname, is_gold = True, return_format = "list"):
+
 
 class IndexView(generic.ListView):
     template_name = 'relationships/index.html'
-    context_object_name = 'latest_question_list'
 
-    ### Small drug list, with less combinations:
-    drug_list = ['ibuprofen','caffeine','slimfast', 'snickers bars']
-    disease_list = ['obesity','headaches','fatigue','hypertension']
+    # call the paper parsing function in tasks.py
+    #TODO
+    # make new variable for the "view" to use in a print statement TODO
+    papers = parse_input(os.getcwd(),"CDR_small.txt")
 
-    for i in drug_list:
-        for j in disease_list:
-            new_question_text = "The sentence states that %s and %s:"%(i,j)
-            if new_question_text not in str(Question.objects.all()):
-                p = _create_question(new_question_text,0)   ###TODO remove publication date... this will become
-                p.choice_set.create(choice_text="Are definitely associated (positive)")
-                p.choice_set.create(choice_text="Are speculatively associated (speculative)")
-                p.choice_set.create(choice_text="Are not associated (negative)")
-                p.choice_set.create(choice_text="No claim of association made (false)")
+    #toby_test = "HELLO"
 
     def get_queryset(self):
-
-        """
-        Return the last 100 published questions (not including those set to be
-        published in the future).
-        """
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:100]
+        return Paper.objects.all()
 
 class DetailView(generic.DetailView):
-    model = Question
+    model = Paper
     template_name = 'relationships/detail.html'
 
     def get_queryset(self):
-        """
-        Excludes any questions that aren't published yet.
-        """
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        return Paper.objects.all()
 
 class ResultsView(generic.DetailView):
-    model = Question
+    model = Paper
     template_name = 'relationships/results.html'
 
 def vote(request, question_id):
-    p = get_object_or_404(Question, pk=question_id)
+    p = get_object_or_404(Paper, pk=Paper.pmid)
     try:
         selected_choice = p.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):

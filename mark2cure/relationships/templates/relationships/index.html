@@ -20,13 +20,9 @@
   atenolol, will it become effective for treating hypertension.
 </p>
 
-{% if latest_question_list %}
+{% if papers %}
     <ul>
-    {% for question in latest_question_list %}
-        <li><a href="{% url 'relationships:detail' question.id %}">{{ question.question_text }}</a></li>
-
-    {% endfor %}
-
+        <li><a href="{% url 'relationships:detail' papers %}">{{ papers }}</a></li>
     </ul>
 {% else %}
     <p>No relationships are available.</p>
