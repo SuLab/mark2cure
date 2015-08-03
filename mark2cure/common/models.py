@@ -137,6 +137,7 @@ class Group(models.Model):
                     idx = Task.objects.last().pk
 
                 last_task, task_created = Task.objects.get_or_create(
+                    # (TODO) make sure task names start at 1
                     name=str(idx + 1),
                     completions=completions,
                     requires_qualification=7,

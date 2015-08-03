@@ -9,7 +9,7 @@ from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
 from mark2cure.document.models import Annotation, Document, View
-from mark2cure.common.models import UserQuestRelationship
+from mark2cure.common.models import Task, UserQuestRelationship
 
 from django.utils import timezone
 import datetime
@@ -145,6 +145,38 @@ class UserProfile(models.Model):
                 return True
         else:
             return False
+
+    def available_quests(self):
+        '''
+            This returns back the contept of how many quests are available for
+            the specific user.
+
+            It repects community completion in addition to user completion
+
+            Returns: Units of Quests available
+
+        '''
+        level = self.highest_level().level
+
+        # Quests which are available and uncompleted
+        # by the user, annotated by how many times the community
+        # has completed them
+        queryset = Task.objects.filter(
+            kind=Task.QUEST,
+            group__enabled=True,
+
+            userquestrelationship__user=self.user,
+            userquestrelationship__completed=False,
+
+            requires_qualification__gte=level).extra(select={
+                "current_submissions_count": """
+                    SELECT COUNT(*) AS current_submissions_count
+                    FROM common_userquestrelationship
+                    WHERE (common_userquestrelationship.completed = 1
+                        AND common_userquestrelationship.task_id = common_task.id)""",
+        }).values('id', 'current_submissions_count', 'completions',)
+        uncompleted_quests = [task for task in queryset if task['completions'] is None or task['current_submissions_count'] < task['completions']]
+        return len(uncompleted_quests)
 
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
