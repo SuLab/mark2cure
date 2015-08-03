@@ -92,12 +92,13 @@ class Sentence:
 
 
 class OnePaper:
-    def __init__(self, pmid, title, abstract, annotations, gold_relations = []):
-        self.pmid = int(pmid)
+    def __init__(self, pmid, title, abstract, annotations, relations, gold_relations = []):
+        self.pmid = pmid
         self.title = title
         self.abstract = abstract
 
         self.annotations = sorted(annotations)
+        self.relations = relations
         assert self.has_correct_annotations()
 
         self.gold_relations = gold_relations # may be empty when not parsing gold
@@ -288,7 +289,7 @@ class Relations():
     Used to compare identifier pairs against the gold.
     """
     def __init__(self, pmid, chemical_id, disease_id):
-        self.pmid = int(pmid)
+        self.pmid = pmid
         self.uid = "{0}:{1}-{2}".format(pmid, chemical_id, disease_id)
 
         assert chemical_id != "-1" and disease_id != "-1", "Relation {0} has bad ids.".format(self.uid)
@@ -372,8 +373,6 @@ def parse_input(location, fname, is_gold = True, return_format = "list"):
     """
     Reads a given file and returns a list of Paper objects.
     """
-    #location = os.getcwd()
-    print location
     assert return_format in ["list", "dict"]
     if return_format == "list":
         papers = []
@@ -387,11 +386,21 @@ def parse_input(location, fname, is_gold = True, return_format = "list"):
         if len(line) == 0:
             # time to create the paper object
             if return_format == "list":
+                print "first if"
+                print pmid, "pmid"
+                print title, "title"
+                print abstract, "abstract"
+                print annotations, "annotations"
+                print relations, "relations"
                 papers.append(OnePaper(pmid, title, abstract, annotations, relations))
-                print papers
             else:
                 papers[pmid] = OnePaper(pmid, title, abstract, annotations, relations)
-                print papers
+                print "first if"
+                print pmid, "pmid"
+                print title, "title"
+                print abstract, "abstract"
+                print annotations, "annotations"
+                print relations, "relations"
             counter = 0
             annotations = []
             relations = []
@@ -404,11 +413,11 @@ def parse_input(location, fname, is_gold = True, return_format = "list"):
 
             if counter == 0:
                 assert vals[1] == "t", i+1
-                pmid = int(vals[0])
+                pmid = vals[0]
                 title = vals[2]
             elif counter == 1:
                 assert vals[1] == "a"
-                assert int(vals[0]) == pmid
+                assert vals[0] == pmid
                 abstract = vals[2]
             elif is_gold and len(vals) == 4:
                 assert vals[1] == "CID"
@@ -426,7 +435,7 @@ papers = parse_input(os.getcwd(),"CDR_small.txt")
 
 for paper in papers:
     print paper
-    p = Paper(paper.pmid,paper.title,paper.abstract,paper.annotations)
+    p = Paper.objects.create(pmid=paper.pmid,title=paper.title,abstract=paper.abstract,annotations=paper.annotations, relations=paper.relations)
     p.save()
 
 def main():
@@ -434,5 +443,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-#main()

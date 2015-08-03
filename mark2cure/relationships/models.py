@@ -52,6 +52,7 @@ class Paper(models.Model):
     # 4
     #annotations = sorted(annotations)
     annotations = models.TextField(blank=False) # LIST TODO
+    relations = models.TextField(blank=False)
     #gold_relations = models.TextField(blank=False) # TODO check what false is here
     #assert self._has_correct_annotations() TODO add back
     # 5

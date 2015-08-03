@@ -31,7 +31,7 @@ class IndexView(generic.ListView):
     # call the paper parsing function in tasks.py
     #TODO
     # make new variable for the "view" to use in a print statement TODO
-    papers = parse_input(os.getcwd(),"CDR_small.txt")
+    #papers = parse_input(os.getcwd(),"CDR_small.txt")
 
     #toby_test = "HELLO"
 

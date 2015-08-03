@@ -22,7 +22,7 @@ class PaperAdmin(admin.ModelAdmin):
 
 class PaperAdmin(admin.ModelAdmin):
     #list_display = ('pmid', 'title', 'abstract', 'annotations', 'chemicals', 'diseases', 'gold_relations')
-    list_display = ('pmid', 'title', 'abstract', 'annotations')
+    list_display = ('pmid', 'title', 'abstract', 'annotations', 'relations')
 
     # TODO add defs here similar to max's admin models
 
