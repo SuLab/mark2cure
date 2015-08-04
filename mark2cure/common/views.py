@@ -11,9 +11,9 @@ from django.contrib import messages
 from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..userprofile.models import UserProfile
 from ..document.models import Document
+from ..relationships.models import Paper
 from .models import Group, Task, UserQuestRelationship
 from .forms import SupportMessageForm
-#from ..relationships.views import IndexView
 
 from brabeion import badges
 
@@ -63,9 +63,12 @@ def dashboard(request):
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
-@login_required
+
 def relationships(request):
-    return TemplateResponse(request,'relationships/index.html')
+    # TODO. I need paper objects! Need help
+    papers = Paper.objects.all()
+    return TemplateResponse(request,'relationships/index.html', papers)
+
 
 @login_required
 def group_view(request, group_stub):

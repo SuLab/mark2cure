@@ -3,9 +3,9 @@ from django.conf import settings
 from .models import Paper, Annotation, Sentence  # JENNIFER TODO, import all models to be populated
 
 import os
-# import subprocess
-# import re
-# import sys
+import subprocess
+import re
+import sys
 from collections import defaultdict
 
 
