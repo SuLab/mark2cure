@@ -1,11 +1,11 @@
 from django.conf import settings
 
-from .models import Paper
+from .models import Paper, Annotation, Sentence  # JENNIFER TODO, import all models to be populated
 
 import os
-import subprocess
-import re
-import sys
+# import subprocess
+# import re
+# import sys
 from collections import defaultdict
 
 
@@ -15,7 +15,7 @@ from file_util import read_file
 def is_MeSH_id(uid):
     return len(uid) == 7 and uid[0] in ["C", "D"]
 
-class Sentence:
+class SentenceTask:
     """
     A single sentence from a paper.
 
@@ -54,9 +54,8 @@ class Sentence:
         """
         return ((chemical.stop < disease.start)
             and (disease.start - chemical.stop <= 15)
-            and ("induce" in self.text[chemical.stop - self.start :
-                disease.start - self.start].lower())
-        )
+            and ("induce" in self.text[chemical.stop - self.start:disease.start
+                 - self.start].lower()))
 
     def classify_relations(self):
         """
@@ -91,7 +90,29 @@ class Sentence:
         return all_relations
 
 
-class OnePaper:
+class PaperTask:
+    """
+    A single academic publication.
+    Contains:
+    1. The PubMed identifier.
+    2. The title as a string.
+    3. The abstract as a string.
+    4. A list of all chemical and disease annotations in the title and abstract
+       sorted in increasing order of starting index.
+    5. A potentially empty list of gold standard CID relations.
+    6. A set of unique chemical identifiers.
+    7. A set of unique disease identifiers.
+    8. A list of Sentences containing both the title and body of the abstract.
+       The first sentence is the title. Each sentence contains the annotations
+       and relations constrained to that particular sentence.
+    9. A set of all the potential chemical-disease relations grouped into three
+       mutually exclusive categories:
+            - CID relations
+            - Non-CID sentence-bound relations
+            - Non-sentence bound relations
+            The sum of relations in all three groups should equal the number of
+            unique chemical IDs times the number of unique disease IDs.
+    """
     def __init__(self, pmid, title, abstract, annotations, relations, gold_relations = []):
         self.pmid = pmid
         self.title = title
@@ -113,9 +134,10 @@ class OnePaper:
         return ("<{0}>: PMID {1}. {2} annotations, {3} gold relations\n"
             "{4} unique chemical ids, {5} unique disease ids\n"
             "{6} sentences".format(self.__class__.__name__,
-            self.pmid, len(self.annotations), len(self.gold_relations),
-            len(self.chemicals), len(self.diseases), len(self.sentences))
-        )
+                                   self.pmid, len(self.annotations),
+                                   len(self.gold_relations),
+                                   len(self.chemicals), len(self.diseases),
+                                   len(self.sentences)))
 
     def has_correct_annotations(self):
         """
@@ -124,7 +146,7 @@ class OnePaper:
         """
         text = "{0} {1}".format(self.title, self.abstract)
         for annotation in self.annotations:
-            assert text[annotation.start : annotation.stop] == annotation.text, (
+            assert text[annotation.start:annotation.stop] == annotation.text, (
                 "Annotation {0} in PMID {1} does not match the text.".format(annotation, self.pmid))
 
         return True
@@ -161,11 +183,9 @@ class OnePaper:
             and M is the number of annotations.
         """
         all_sentences = [self.title] + split_abstract(self.abstract)
-
         full_text = "{0} {1}".format(self.title, self.abstract)
-
-        sent_idx = 0 # starting index of current sentence
-        annot_idx = 0 # index of annotation that is within current sentence
+        sent_idx = 0  # starting index of current sentence
+        annot_idx = 0  # index of annotation that is within current sentence
 
         res = []
         M = len(self.annotations)
@@ -177,17 +197,17 @@ class OnePaper:
             # position (since find always finds the first instance otherwise).
             """
             assert full_text.find(sentence, sent_idx) == sent_idx, (
-                "PMID {0} sentence '{1}' does not match text!".format(self.pmid, sentence))
+                "PMID {0} sentence '{1}' does not match text!".format(self.pmid,
+                                                                      sentence))
             """
             sent_stop = sent_idx + len(sentence)
-
             start_annot = annot_idx
             while annot_idx < M and self.annotations[annot_idx].stop <= sent_stop:
                 annot_idx += 1
 
             # should be one past
-            res.append(Sentence(self.pmid, i, sentence,
-                sent_idx, sent_stop, self.annotations[start_annot : annot_idx]))
+            res.append(SentenceTask(self.pmid, i, sentence,
+                sent_idx, sent_stop, self.annotations[start_annot:annot_idx]))
 
             sent_idx += len(sentence) + 1 # all sentences separated by one space
 
@@ -245,8 +265,6 @@ class OnePaper:
         return potential_relation in self.gold_relations
 
 
-
-
 class Annotations():
     """
     A single mention of a concept in a piece of text.
@@ -279,8 +297,6 @@ class Annotations():
         """
         if hasattr(other, "start"):
             return self.start.__cmp__(other.start)
-
-
 
 
 class Relations():
@@ -338,9 +354,9 @@ class Relations():
 
 def jen_split_abstract(in_fname, out_fname):
     """ Temporary abstract split until I can get LingPipe to work."""
-    out_fname = open(out_fname,"w")
-    with open (in_fname, "r") as myfile:
-        abstract=myfile.read()
+    out_fname = open(out_fname, "w")
+    with open(in_fname, "r")as myfile:
+        abstract = myfile.read()
     split_abstract = re.split(r'[.?]\s*', abstract)
     out_fname.write(str(split_abstract))
 
@@ -361,14 +377,14 @@ def split_abstract(abstract):
     with open(in_fname, "w") as in_file:
         in_file.write(abstract)
     out_fname = "temp_out_file.txt"
-    jen_split_abstract(in_fname,out_fname)
+    jen_split_abstract(in_fname, out_fname)
     sentences = [line for line in read_file(out_fname, real_dir)]
     os.chdir(orig_dir)
 
     return sentences
 
 
-def parse_input(location, fname, is_gold = True, return_format = "list"):
+def parse_input(location, fname, is_gold=True, return_format="list"):
     # TODO location is tmp fix
     """
     Reads a given file and returns a list of Paper objects.
@@ -386,21 +402,11 @@ def parse_input(location, fname, is_gold = True, return_format = "list"):
         if len(line) == 0:
             # time to create the paper object
             if return_format == "list":
-                print "first if"
-                print pmid, "pmid"
-                print title, "title"
-                print abstract, "abstract"
-                print annotations, "annotations"
-                print relations, "relations"
-                papers.append(OnePaper(pmid, title, abstract, annotations, relations))
+                papers.append(PaperTask(pmid, title, abstract, annotations,
+                                        relations))
             else:
-                papers[pmid] = OnePaper(pmid, title, abstract, annotations, relations)
-                print "first if"
-                print pmid, "pmid"
-                print title, "title"
-                print abstract, "abstract"
-                print annotations, "annotations"
-                print relations, "relations"
+                papers[pmid] = PaperTask(pmid, title, abstract, annotations,
+                                         relations)
             counter = 0
             annotations = []
             relations = []
@@ -424,19 +430,56 @@ def parse_input(location, fname, is_gold = True, return_format = "list"):
                 relations.append(Relations(pmid, vals[2], vals[3]))
             else:
                 assert 6 <= len(vals) <= 7
-                annotations.append(Annotations(vals[5], vals[4], vals[3], vals[1], vals[2]))
+                annotations.append(Annotations(vals[5], vals[4], vals[3],
+                                               vals[1], vals[2]))
 
             counter += 1
-
+    # call register_new_objects function to actually add information to DB
     return papers
 
-# calling this task
-papers = parse_input(os.getcwd(),"CDR_small.txt")
+papers = parse_input(os.getcwd(), "CDR_small.txt")
 
+# Register all the new objects into the database
 for paper in papers:
-    print paper
-    p = Paper.objects.create(pmid=paper.pmid,title=paper.title,abstract=paper.abstract,annotations=paper.annotations, relations=paper.relations)
-    p.save()
+    # if
+    try:
+        Paper.objects.get(pmid=paper.pmid)
+        continue
+    except:
+        pass
+    # create new Paper object in m2c database
+    p = Paper.objects.create(pmid=paper.pmid,
+                             title=paper.title,
+                             abstract=paper.abstract,
+                             annotations=paper.annotations,
+                             relations=paper.relations)
+    total_annotations = len(paper.annotations)
+    for i in range(0, total_annotations):
+        # create new Annotation object in m2c database
+        a = Annotation.objects.create(paper=p, uid=paper.annotations[i].uid,
+                                      stype=paper.annotations[i].stype,
+                                      text=paper.annotations[i].text,
+                                      start=paper.annotations[i].start,
+                                      stop=paper.annotations[i].stop)
+    total_sentences = len(paper.sentences)
+    for j in range(0, total_sentences):
+        s = Sentence.objects.create(paper=p, uid=paper.sentences[j].uid,
+                                    text=paper.sentences[j].text,
+                                    start=paper.sentences[j].start,
+                                    stop=paper.sentences[j].stop,
+                                    annotations=paper.sentences[j].annotations)
+
+    # TODO issue with relation table
+    """
+    total_relations = len(paper.relations)
+    for k in range(0, total_relations):
+        d_id = str(paper.relations[k].disease_id)
+        d_id = d_id[6:-3]
+        r = Relation.objects.create(paper=p, pmid=paper.relations[k].pmid,
+                                    chemical_id=paper.relations[k].chemical_id,
+                                    disease_id=d_id)
+    """
+
 
 def main():
     print split_abstract("This is a test. My sentence number 2!")

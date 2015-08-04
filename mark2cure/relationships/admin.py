@@ -2,33 +2,38 @@
 Jennifer new admin page (involved in registering changes to the database)
 '''
 from django.contrib import admin
-from django.db import models
 
 
-from mark2cure.relationships.models import Paper
+from mark2cure.relationships.models import Paper, Annotation, Sentence
 
 # TODO
 '''
 look into search_fields, list_display, readonly_fields
 '''
 
-# Overall abstract text basics ()
-"""
-class PaperAdmin(admin.ModelAdmin):
-    fields = ['pmid', 'title', 'abstract', 'annotations']
-
-"""
-
 
 class PaperAdmin(admin.ModelAdmin):
-    #list_display = ('pmid', 'title', 'abstract', 'annotations', 'chemicals', 'diseases', 'gold_relations')
     list_display = ('pmid', 'title', 'abstract', 'annotations', 'relations')
 
     # TODO add defs here similar to max's admin models
 
 
-admin.site.register(Paper, PaperAdmin)
+class AnnotationAdmin(admin.ModelAdmin):
+    list_display = ('paper', 'uid', 'stype', 'text', 'start', 'stop')
 
+
+class SentenceAdmin(admin.ModelAdmin):
+    list_display = ('paper', 'uid', 'text', 'start', 'stop', 'annotations')
+
+"""
+class RelationAdmin(admin.ModelAdmin):
+    list_display = ('paper', 'pmid', 'chemical_id', 'disease_id')
+"""
+
+admin.site.register(Paper, PaperAdmin)
+admin.site.register(Annotation, AnnotationAdmin)
+admin.site.register(Sentence, SentenceAdmin)
+# admin.site.register(Relation, RelationAdmin)
 
 """
     # TODO is there a title for the documents Toby uses?

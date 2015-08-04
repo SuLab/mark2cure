@@ -7,9 +7,7 @@ tasks.py performs much of the actions involved in populating the new documents
 (pmid) into the database.
 
 '''
-import datetime
 from django.db import models
-from django.utils import timezone
 
 
 class Paper(models.Model):
@@ -17,30 +15,8 @@ class Paper(models.Model):
     snip of the Max's document section in the database administration:
     Document id
     Title preview    Sections   Pubtator   Annotations   Completed views    Pending   views  Source
-	22206664	The Nogo receptor 2 is a novel substrate of Fbs1 .	2	True	82	12	2	group5
+    22206664	The Nogo receptor 2 is a novel substrate of Fbs1 .	2	True	82	12	2	group5
 
-    """
-    """
-    A single academic publication.
-    Contains:
-    1. The PubMed identifier.
-    2. The title as a string.
-    3. The abstract as a string.
-    4. A list of all chemical and disease annotations in the title and abstract
-       sorted in increasing order of starting index.
-    5. A potentially empty list of gold standard CID relations.
-    6. A set of unique chemical identifiers.
-    7. A set of unique disease identifiers.
-    8. A list of Sentences containing both the title and body of the abstract.
-       The first sentence is the title. Each sentence contains the annotations
-       and relations constrained to that particular sentence.
-    9. A set of all the potential chemical-disease relations grouped into three
-       mutually exclusive categories:
-            - CID relations
-            - Non-CID sentence-bound relations
-            - Non-sentence bound relations
-            The sum of relations in all three groups should equal the number of
-            unique chemical IDs times the number of unique disease IDs.
     """
     #def __init__(self, pmid, title, abstract, annotations, gold_relations = []):
     # 1
@@ -50,27 +26,26 @@ class Paper(models.Model):
     # 3
     abstract = models.TextField(blank=False)
     # 4
-    #annotations = sorted(annotations)
+    # annotations = sorted(annotations)
     annotations = models.TextField(blank=False) # LIST TODO
     relations = models.TextField(blank=False)
-    #gold_relations = models.TextField(blank=False) # TODO check what false is here
-    #assert self._has_correct_annotations() TODO add back
+    # gold_relations = models.TextField(blank=False) # TODO check what false is here
+    # assert self._has_correct_annotations() TODO add back
     # 5
-    #gold_relations = models.TextField(blank=False) # may be empty when not parsing gold # LIST TODO
+    # gold_relations = models.TextField(blank=False) # may be empty when not parsing gold # LIST TODO
     # 6 & 7
 
-    #chemicals = models.TextField(blank=False)
-    #diseases = models.TextField(blank=False)
+    # chemicals = models.TextField(blank=False)
+    # diseases = models.TextField(blank=False)
 
-
-    #chemicals, diseases = _get_unique_concepts()
+    # chemicals, diseases = _get_unique_concepts()
 
     # 8 split sentences and generate sentence-bound relations
-    #sentences = _split_sentences()
+    # sentences = _split_sentences()
     # 9
     #possible_relations = _classify_relations()
 
-    #Max's model
+    # Max's model
     """
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -93,9 +68,8 @@ class Paper(models.Model):
     # follows max's model
     def __unicode__(self):
         return self.pmid
-
-    # follows Toby's model:
     """
+    # follows Toby's model:
     def __repr__(self):
         return ("<{0}>: PMID {1}. {2} annotations, {3} gold relations\n"
             "{4} unique chemical ids, {5} unique disease ids\n"
@@ -111,7 +85,7 @@ class Paper(models.Model):
         """
         text = "{0} {1}".format(self.title, self.abstract)
         for annotation in self.annotations:
-            assert text[annotation.start : annotation.stop] == annotation.text, (
+            assert text[annotation.start:annotation.stop] == annotation.text, (
                 "Annotation {0} in PMID {1} does not match the text.".format(annotation, self.pmid))
         return True
 
@@ -149,8 +123,8 @@ class Paper(models.Model):
 
         full_text = "{0} {1}".format(self.title, self.abstract)
 
-        sent_idx = 0 # starting index of current sentence
-        annot_idx = 0 # index of annotation that is within current sentence
+        sent_idx = 0  # starting index of current sentence
+        annot_idx = 0  # index of annotation that is within current sentence
 
         res = []
         M = len(self.annotations)
@@ -174,7 +148,7 @@ class Paper(models.Model):
             res.append(Sentence(self.pmid, i, sentence,
                 sent_idx, sent_stop, self.annotations[start_annot : annot_idx]))
 
-            sent_idx += len(sentence) + 1 # all sentences separated by one space
+            sent_idx += len(sentence) + 1  # all sentences separated by one space
 
         return res
 
@@ -228,6 +202,44 @@ class Paper(models.Model):
         """
         return potential_relation in self.gold_relations
 
+
+# TODO, add which sentence it is found in annotation? maybe
+
+class Annotation(models.Model):
+    paper = models.ForeignKey(Paper)
+    uid = models.TextField(blank=False)
+    stype = models.TextField(blank=False)
+    text = models.TextField(blank=False)
+    start = models.IntegerField()
+    stop = models.IntegerField()
+
+    def __unicode__(self):
+        return self.text
+
+class Sentence(models.Model):
+    paper = models.ForeignKey(Paper)
+    idx = models.TextField(blank=False)
+    uid = models.TextField(blank=False)
+    text = models.TextField(blank=False)
+    start = models.IntegerField()
+    stop = models.IntegerField()
+    annotations = models.TextField(blank=False)
+
+    def __unicode__(self):
+        return self.text
+
+"""
+class Relation(models.Model):
+    paper = models.ForeignKey(Paper) # Paper object is the foreign key
+    pmid = models.TextField(blank=False)
+    chemical_id = models.TextField(blank=False)
+    disease_id = models.TextField(blank=False)
+
+    def __unicode__(self):
+        return self.chemical_id, self.disease_id
+"""
+
+
 """
 
 class Section(models.Model):
@@ -272,7 +284,7 @@ class Relation(models.Model):
     '''
     From Max's Annotation MODEL:
     Text Type Start Section Username Pmid Quest Group Time ago Created
-	GS28	gene_protein	672	Abstract	admin	16510524	213	622	1 day, 2 hours ago	July 29, 2015, 11:51 a.m.
+	GS28  gene_protein	672	Abstract	admin	16510524	213	622	1 day, 2 hours ago	July 29, 2015, 11:51 a.m.
     '''
 
     # if there is an automaded CID determination, then make sure this is not
