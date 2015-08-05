@@ -45,7 +45,6 @@ def check_corpus_health():
     check_pubtator_health()
 
 
-
 def check_pubtator_health():
     # Set Validate Cache to False for all to perform
     # an entire, clean sweep of new checks
@@ -138,4 +137,3 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, grou
         docs = Document.objects.filter(source=source).all()
         group = Group.objects.get(pk=group_pk)
         group.assign(docs)
-

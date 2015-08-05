@@ -14,7 +14,6 @@ from brabeion.models import BadgeAward
 from django.contrib import messages
 
 
-
 def public_profile(request, username):
     user = get_object_or_404(User, username=username)
 
@@ -66,10 +65,10 @@ def user_points(request):
         'skill_level': skill_badge.name
     })
 
+
 def alert(request):
-    if not request.is_ajax() or not request.method=='POST':
+    if not request.is_ajax() or not request.method == 'POST':
         return HttpResponseNotAllowed(['POST'])
 
     request.session['block_alert'] = True
     return HttpResponse()
-

@@ -31,8 +31,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
         cls.user_annotation_list = []
 
     def test_quest_group_list(self):
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
         group = Group.objects.first()
 
         response = self.client.get(reverse('api:quest-group-api', kwargs={'group_pk': group.pk}))
@@ -106,8 +105,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
         response = self.client.get(reverse('api:groups-api'))
         self.assertEqual(response.status_code, 302)
 
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
         response = self.client.get(reverse('api:groups-api'))
 
         # Confirm API is online
@@ -120,8 +118,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.client.logout()
 
     def test_leaderboard_users(self):
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
 
         for window in [1, 7, 30, 100]:
             # Confirm API is online
@@ -131,8 +128,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.client.logout()
 
     def test_leaderboard_teams(self):
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
 
         for window in [1, 7, 30, 100]:
             # Confirm API is online

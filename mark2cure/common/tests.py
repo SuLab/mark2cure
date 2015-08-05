@@ -18,8 +18,7 @@ class CommonViews(TestCase, TestBase):
         self.assertInHTML('<li><a href="http://sulab.org/category/mark2cure/">Blog</a>', response.content)
 
         # Confirm view online
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
         response = self.client.get(reverse('common:home'))
         self.assertEqual(response.status_code, 302)
         self.client.logout()
@@ -45,8 +44,7 @@ class CommonViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
         response = self.client.get(reverse('common:dashboard'))
         self.assertEqual(response.status_code, 200)
         # Check for standard footers and dashboard specific features.
@@ -63,8 +61,7 @@ class CommonViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('test_player')
         response = self.client.get(reverse('common:group', kwargs={'group_stub': group.stub}))
         self.assertEqual(response.status_code, 200)
         self.assert_footers_in_html(response.content)
