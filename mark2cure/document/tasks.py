@@ -47,14 +47,35 @@ def check_corpus_health():
 
 
 def check_pubtator_health():
+    # Set Validate Cache to False for all to perform
+    # an entire, clean sweep of new checks
+    Pubtator.objects.all().update(validate_cache=False)
+
     # Try to fetch all the pending pubtator requests
     for pubtator in Pubtator.objects.exclude(session_id='').all():
         get_pubtator_response(pubtator.pk)
 
-    # For all Pubtator models with content
-    # ensure it validates and cleanup the session_id and content
-    # if it does or doesn't
-    Pubtator.objects.correct_parent_relation()
+    # For all Pubtator models with content ensure it validates and cleanup the session_id and content
+    for pubtator in Pubtator.objects.filter(content__isnull=False).all():
+        # (TODO) Do robust checks for Pubtator object valid status
+        p_valid = pubtator.valid()
+
+        if p_valid:
+            # Asociation with the correct document
+            pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
+
+            # Prevents subsequent API calls
+            pubtator.session_id = ''
+
+            # Make Pubtator.validate() faster
+            pubtator.validate_cache = True
+
+        else:
+            pubtator.content = None
+
+        # Do this just so the first time valid_pubtator
+        # actually runs we know it's fresh'
+        pubtator.save()
 
 
 @task()

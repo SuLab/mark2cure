@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from mark2cure.document.managers import DocumentManager, PubtatorManager
+from mark2cure.document.managers import DocumentManager
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
@@ -50,32 +50,24 @@ class Document(models.Model):
         return changed
 
     def valid_pubtator(self):
+        # Quick check using cache
+        if Pubtator.objects.filter(document=self, validate_cache=True).count() == 3:
+            return True
+
         # All responses that are not waiting to fetch conent b/c they already have it
-        pub_query_set = Pubtator.objects.filter(
+        pubtators = Pubtator.objects.filter(
             document=self,
             session_id='',
-            content__isnull=False)
+            content__isnull=False).all()
 
-        for section in self.available_sections():
-            for needle in ['<', '>']:
-                if needle in section.text:
-                    return False
-
-        # The Docment doesn't have a response for each type
-        # (TODO) also cases grater than 3
-        if pub_query_set.count() != 3:
+        # Check if each type validates
+        if pubtators.count() != 3:
             return False
 
-        # Check if each type validates, if so save
-        for pubtator in pub_query_set.all():
-
-            p_valid = pubtator.valid()
-            if p_valid:
-                pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
-                # This updates the created field, so we know the last time it was checked
-                pubtator.save()
-            else:
+        for pubtator in pubtators:
+            if not pubtator.valid():
                 return False
+
         return True
 
     def as_bioc_with_user_annotations(self, request=None):
@@ -236,12 +228,15 @@ class Pubtator(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-    objects = PubtatorManager()
-
     def __unicode__(self):
         return 'pubtator'
 
     def valid(self):
+        # (TODO) This may return 2 different "types" check on
+        # implications of this discrepancy
+        if self.validate_cache:
+            return True
+
         if self.session_id != '':
             return False
 
@@ -257,15 +252,17 @@ class Pubtator(models.Model):
             return False
 
     def count_annotations(self):
-        reader = self.valid()
-        count = 0
-
-        if reader:
+        if self.valid():
+            count = 0
+            reader = BioCReader(source=self.content)
+            reader.read()
             for doc in reader.collection.documents:
                 for passage in doc.passages:
                     count += len(passage.annotations)
+            return count
 
-        return count
+        else:
+            return 0
 
 
 class Section(models.Model):

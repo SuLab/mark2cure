@@ -73,8 +73,11 @@ def group_list(request):
 @user_passes_test(lambda u: u.is_staff)
 def group_read(request, pk):
     group = get_object_or_404(Group, pk=pk)
+    document_quest_relationships = group.total_documents().select_related('task', 'document')
+
     ctx = {
-        'group': group
+        'group': group,
+        'document_quest_relationships': document_quest_relationships
     }
     return TemplateResponse(request, 'dashboard/group.jade', ctx)
 

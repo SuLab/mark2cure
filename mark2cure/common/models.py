@@ -92,6 +92,7 @@ class Group(models.Model):
         return Document.objects.filter(task__group=self)
 
     def total_documents(self):
+        # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
     def percentage_complete(self):
