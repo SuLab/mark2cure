@@ -20,4 +20,3 @@ class GroupForm(forms.ModelForm):
                   'order', 'enabled', 'pmids']
 
 
-

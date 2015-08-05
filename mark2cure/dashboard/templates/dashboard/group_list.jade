@@ -19,6 +19,15 @@ block content
               p.list-group-item-text Tasks: #{group.task_set.count}
               p.list-group-item-text Document Count: #{group.total_documents.count}
 
+              .row
+                .col-md-10.col-md-offset-1
+                  -with progress=group.pubtator_coverage
+                    - if progress
+                      h4.progress-label Pubtator Coverage
+                      .progress
+                        div(role='progressbar', aria-valuenow='{{ progress }}', aria-valuemin='0', aria-valuemax='100', style='width: {{progress}}%;').progress-bar.active
+                          #{progress|floatformat:"2"}%
+
       .col-xs-8
         h2 Make a New Group
 

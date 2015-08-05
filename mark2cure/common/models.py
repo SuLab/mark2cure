@@ -110,6 +110,14 @@ class Group(models.Model):
         else:
             return 0
 
+    def pubtator_coverage(self):
+        queryset = self.get_documents().prefetch_related('pubtator_set')
+        completed = sum([3 for x in queryset if x.pubtator_set.filter(validate_cache=True).count() == 3])
+        if completed:
+            return (Decimal(completed) / Decimal(queryset.count()*3)) * 100
+        else:
+            return 0
+
     def assign(self, documents, smallest_bin=5, largest_bin=5, completions=15):
         # Insert the other Documents
         document_set = list(documents.values_list('id', flat=True))
