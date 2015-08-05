@@ -8,11 +8,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .forms import GroupForm
+from ..userprofile.models import UserProfile
 from ..document.models import Document, Pubtator
 from ..document.tasks import get_pubmed_document
 from ..common.models import Task, UserQuestRelationship, Group
 from ..common.bioc import *
 
+import pandas as pd
 import uuid
 import csv
 
@@ -113,4 +115,25 @@ def document_read(request, pk):
         'doc': doc
     }
     return TemplateResponse(request, 'dashboard/doc.jade', ctx)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def home(request):
+
+    arr = []
+    users = User.objects.exclude(userprofile__isnull=True).all()
+    for u in users.values('pk', 'username'):
+        try:
+            profile = UserProfile.objects.get(pk=u['pk'])
+            arr.append((u['username'], profile.quests_count(), profile.available_quests()))
+        except Exception as e:
+            pass
+
+    df = pd.DataFrame(arr, columns=['Username', 'Quest Count', 'Available Quests'])
+
+    ctx = {
+        'dataframe': df.to_html(classes='table table-striped table-condensed')
+    }
+    return TemplateResponse(request, 'dashboard/home.jade', ctx)
 

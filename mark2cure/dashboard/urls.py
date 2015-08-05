@@ -21,6 +21,9 @@ urlpatterns = patterns('',
         views.group_read, name='group'),
 
     url(r'^group/$',
-        views.group_list, name='groups_home')
+        views.group_list, name='groups_home'),
+
+    url(r'^$',
+        views.home, name='home')
 )
 
