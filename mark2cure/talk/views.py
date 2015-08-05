@@ -54,7 +54,11 @@ def recent_discussion(request):
     doc_content_pk = ContentType.objects.get(name='document').pk
     completed_document_pks = request.user.profile.completed_document_pks()
 
-    recent_comments = Comment.objects.filter(content_type_id=doc_content_pk, object_pk__in=completed_document_pks).extra(select={
+    if request.user.groups.filter(name='Comment Moderators').exists():
+        comment_queryset = Comment.objects.filter(content_type_id=doc_content_pk)
+    else:
+        comment_queryset = Comment.objects.filter(content_type_id=doc_content_pk, object_pk__in=completed_document_pks)
+    recent_comments = comment_queryset.extra(select={
         "pmid": """
             SELECT document_document.document_id AS pmid
             FROM document_document
