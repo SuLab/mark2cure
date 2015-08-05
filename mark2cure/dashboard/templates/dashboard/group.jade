@@ -28,7 +28,7 @@ block content
               th Reset Pubtator
 
           tbody
-            - for doc_q_rel in group.total_documents
+            - for doc_q_rel in document_quest_relationships
                 tr
                   td
                     a(href='{% url "dashboard:document" pk=doc_q_rel.document.pk %}')

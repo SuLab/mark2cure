@@ -156,7 +156,7 @@ class UserProfile(models.Model):
             Returns: Units of Quests available
 
         '''
-        level = self.highest_level().level
+        #level = self.highest_level().level
 
         # Quests which are available and uncompleted
         # by the user, annotated by how many times the community
@@ -165,17 +165,23 @@ class UserProfile(models.Model):
             kind=Task.QUEST,
             group__enabled=True,
 
-            userquestrelationship__user=self.user,
-            userquestrelationship__completed=False,
-
-            requires_qualification__gte=level).extra(select={
-                "current_submissions_count": """
-                    SELECT COUNT(*) AS current_submissions_count
+            ).extra(select={
+                "community_submission_count": """
+                    SELECT COUNT(*) AS cummunity_submission_count
                     FROM common_userquestrelationship
                     WHERE (common_userquestrelationship.completed = 1
                         AND common_userquestrelationship.task_id = common_task.id)""",
-            }).values('id', 'current_submissions_count', 'completions',)
-        uncompleted_quests = [task for task in queryset if task['completions'] is None or task['current_submissions_count'] < task['completions']]
+
+                "user_completed": """
+                    SELECT COUNT(*) AS user_completed
+                    FROM common_userquestrelationship
+                    WHERE (common_userquestrelationship.completed = 1
+                        AND common_userquestrelationship.user_id = %d
+                        AND common_userquestrelationship.task_id = common_task.id)""" % (self.user.pk,)
+
+        }).values('id', 'community_submission_count', 'user_completed', 'completions',)
+
+        uncompleted_quests = [task for task in queryset if  task['user_completed'] == 0 and task['completions'] is None or task['community_submission_count'] < task['completions']  ]
         return len(uncompleted_quests)
 
 

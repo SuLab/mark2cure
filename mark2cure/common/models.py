@@ -92,6 +92,7 @@ class Group(models.Model):
         return Document.objects.filter(task__group=self)
 
     def total_documents(self):
+        # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
     def percentage_complete(self):
@@ -106,6 +107,14 @@ class Group(models.Model):
         required = sum([x for x in task_queryset.values_list('completions', flat=True) if x is not None])
         if required:
             return (Decimal(completed) / Decimal(required)) * 100
+        else:
+            return 0
+
+    def pubtator_coverage(self):
+        queryset = self.get_documents().prefetch_related('pubtator_set')
+        completed = sum([3 for x in queryset if x.pubtator_set.filter(validate_cache=True).count() == 3])
+        if completed:
+            return (Decimal(completed) / Decimal(queryset.count()*3)) * 100
         else:
             return 0
 
