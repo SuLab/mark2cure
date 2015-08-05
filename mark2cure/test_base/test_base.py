@@ -68,12 +68,11 @@ class TestBase(object):
                                         user=user_name,
                                         level=7, force=True)
 
-    def get_test_user(self):
-        '''
-            (TODO) Maybe just better to return a logged in client instance?
-        '''
-        self.create_new_user_accounts(['test_user', ])
-        return User.objects.first(), 'password'
+    def login_test_user(self, users_name):
+        self.create_new_user_accounts([users_name, ])
+        user = User.objects.first()
+        password = 'password'
+        self.client.login(username=user.username, password=password)
 
     def get_document_from_response(self, user_name):
         """ If you need one document, arbitrarily use doc from user_name"""

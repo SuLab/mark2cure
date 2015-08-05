@@ -17,8 +17,7 @@ class TalkViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 302)
 
         # Confirm view decorator protects non complete users
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
         self.assertEqual(response.status_code, 403)
 
@@ -33,8 +32,7 @@ class TalkViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:annotation-search'))
         self.assertEqual(response.status_code, 200)
 
@@ -44,7 +42,6 @@ class TalkViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 302)
 
         # Confirm view online
-        user, password = self.get_test_user()
-        self.client.login(username=user.username, password=password)
+        self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:recent'))
         self.assertEqual(response.status_code, 200)
