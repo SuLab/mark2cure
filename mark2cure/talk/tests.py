@@ -20,11 +20,11 @@ class TalkViews(TestCase, TestBase):
         self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
         self.assertEqual(response.status_code, 403)
+        self.client.logout()
 
         # Confirm view online
-        # (TODO)
-
-        self.client.logout()
+        # (TODO) ***Jennifer ask Max*** how to view online here.
+        # Confused about this behavior vs other tests.
 
     def test_annotation_search(self):
         # Confirm non-auth'd redirect
@@ -35,6 +35,13 @@ class TalkViews(TestCase, TestBase):
         self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:annotation-search'))
         self.assertEqual(response.status_code, 200)
+        self.assert_footers_in_html(response.content)
+        html_content_list = ['<th>Annotation Occurances</th>',
+                             '<th>PMID</th>',
+                             '<th>Document</th>',
+                             '<h4 id="myModalLabel" class="modal-title">Quest Instructions</h4>']
+        for item in html_content_list:
+            self.assertInHTML(item, response.content)
 
     def test_recent_discussion(self):
         # Confirm non-auth'd redirect
@@ -45,3 +52,10 @@ class TalkViews(TestCase, TestBase):
         self.login_test_user('new_test_player')
         response = self.client.get(reverse('talk:recent'))
         self.assertEqual(response.status_code, 200)
+        self.assert_footers_in_html(response.content)
+        html_content_list = ['<h2 class="text-center">Document Discussion</h2>',
+                             '<h2>Recent Annotations</h2>',
+                             '<h2>Recent Comments</h2>',
+                             '<p><a href="/talk/">Talk Page</a>']
+        for item in html_content_list:
+            self.assertInHTML(item, response.content)
