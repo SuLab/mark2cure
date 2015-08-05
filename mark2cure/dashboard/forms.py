@@ -6,7 +6,7 @@ import re
 
 
 class GroupForm(forms.ModelForm):
-    pmids = forms.CharField(widget = forms.Textarea)
+    pmids = forms.CharField(widget=forms.Textarea)
 
     def clean_pmids(self):
         pmids_text = self.cleaned_data['pmids']
@@ -19,6 +19,3 @@ class GroupForm(forms.ModelForm):
         model = Group
         fields = ['name', 'stub', 'description',
                   'order', 'enabled', 'pmids']
-
-
-

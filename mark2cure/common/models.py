@@ -145,7 +145,6 @@ class Group(models.Model):
                     points=5000,
                     group=self)
 
-
     def __unicode__(self):
         return self.name
 
@@ -197,10 +196,8 @@ class Task(models.Model):
         else:
             return []
 
-
     def user_relationship(self, user, completed=False):
         return UserQuestRelationship.objects.filter(task=self, user=user, completed=completed).first()
-
 
     def create_views(self, document, user):
         user_quest_rel = self.userquestrelationship_set.filter(user=user, completed=False).first()
@@ -253,7 +250,6 @@ class UserQuestRelationship(models.Model):
 
     class Meta:
         get_latest_by = 'updated'
-
 
     def __unicode__(self):
         return u'/quest/{quest_pk}/ {username}'.format(

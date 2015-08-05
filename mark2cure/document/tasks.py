@@ -45,7 +45,6 @@ def check_corpus_health():
     check_pubtator_health()
 
 
-
 def check_pubtator_health():
     # Try to fetch all the pending pubtator requests
     for pubtator in Pubtator.objects.exclude(session_id='').all():
@@ -117,4 +116,3 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, grou
         docs = Document.objects.filter(source=source).all()
         group = Group.objects.get(pk=group_pk)
         group.assign(docs)
-

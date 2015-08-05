@@ -174,7 +174,7 @@ class UserProfile(models.Model):
                     FROM common_userquestrelationship
                     WHERE (common_userquestrelationship.completed = 1
                         AND common_userquestrelationship.task_id = common_task.id)""",
-        }).values('id', 'current_submissions_count', 'completions',)
+            }).values('id', 'current_submissions_count', 'completions',)
         uncompleted_quests = [task for task in queryset if task['completions'] is None or task['current_submissions_count'] < task['completions']]
         return len(uncompleted_quests)
 
