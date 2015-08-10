@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from .models import Paper, Annotation, Sentence  # JENNIFER TODO, import all models to be populated
+from .models import Paper, Annotation, Sentence, Relation  # JENNIFER TODO, import all models to be populated
 
 import os
 import subprocess
@@ -437,11 +437,14 @@ def parse_input(location, fname, is_gold=True, return_format="list"):
     # call register_new_objects function to actually add information to DB
     return papers
 
+# actually do the paper parsing from the CDR_small.txt file
 papers = parse_input(os.getcwd(), "CDR_small.txt")
+
 
 # Register all the new objects into the database
 for paper in papers:
-    # if
+    # paper is the PaperTask object for parsing
+    # p is the Paper object from the Django models
     try:
         Paper.objects.get(pmid=paper.pmid)
         continue
@@ -452,33 +455,31 @@ for paper in papers:
                              title=paper.title,
                              abstract=paper.abstract,
                              annotations=paper.annotations,
-                             relations=paper.relations)
-    total_annotations = len(paper.annotations)
-    for i in range(0, total_annotations):
+                             relations=paper.relations,
+                             chemicals=paper.chemicals,
+                             diseases=paper.diseases)
+
+    for i in range(0, len(paper.annotations)):
         # create new Annotation object in m2c database
         a = Annotation.objects.create(paper=p, uid=paper.annotations[i].uid,
                                       stype=paper.annotations[i].stype,
                                       text=paper.annotations[i].text,
                                       start=paper.annotations[i].start,
                                       stop=paper.annotations[i].stop)
-    total_sentences = len(paper.sentences)
-    for j in range(0, total_sentences):
+
+    for j in range(0, len(paper.sentences)):
         s = Sentence.objects.create(paper=p, uid=paper.sentences[j].uid,
                                     text=paper.sentences[j].text,
                                     start=paper.sentences[j].start,
                                     stop=paper.sentences[j].stop,
                                     annotations=paper.sentences[j].annotations)
 
-    # TODO issue with relation table
-    """
-    total_relations = len(paper.relations)
-    for k in range(0, total_relations):
-        d_id = str(paper.relations[k].disease_id)
-        d_id = d_id[6:-3]
-        r = Relation.objects.create(paper=p, pmid=paper.relations[k].pmid,
-                                    chemical_id=paper.relations[k].chemical_id,
-                                    disease_id=d_id)
-    """
+    for i in paper.get_all_possible_relations():
+        r = Relation.objects.create(paper=p, relation=i, chemical=i[0],  # add paper.sentences.start OR foreignkey reference here TODO
+                                    disease=i[1], automated_cid=False)
+        print i
+        print i[0]
+        print i[1]
 
 
 def main():

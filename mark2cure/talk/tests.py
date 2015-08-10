@@ -22,8 +22,12 @@ class TalkViews(TestCase, TestBase):
         response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
         self.assertEqual(response.status_code, 403)
 
-        # Confirm view online
-        # (TODO)
+        # Confirm Moderator can views
+        response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
+        self.assertEqual(response.status_code, 200)
+
+        # Confirm view online for NON-MODERATOR
+        # (TODO) Complete document
 
         self.client.logout()
 

@@ -1,0 +1,14 @@
+extends base
+
+- load widget_tweaks
+- load humanize
+
+
+block content
+  .container
+    .row.head-space
+      .col-xs-12
+        .list-group
+          - for paper in papers
+            a(href='{% url "relationship:asdfsadfsdf" relationship_pk=paper.pk %}').list-group-item
+              #{paper.title}

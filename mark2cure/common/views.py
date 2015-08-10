@@ -67,19 +67,14 @@ def dashboard(request):
 def relationships(request):
     # TODO. I need paper objects! Need help
     papers = Paper.objects.all() # TODO, not good for long term!
-
     paper0 = papers[0]
-    paper1 = papers[1]
-    query = Annotation.objects.filter(paper=paper0)
-    anns = Annotation.objects.all()
+    anns = Annotation.objects.filter(paper=paper0)
 
 
-    ctx = {'papers': papers,
-           'anns': anns,
+    ctx = {'anns': anns,
            'paper0': paper0,
-           'paper1': paper1,
-           'query': query}
-    return TemplateResponse(request,'relationships/index.html', ctx)
+           }
+    return TemplateResponse(request,'relationship/index.html', ctx)
 
 
 @login_required

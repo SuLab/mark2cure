@@ -9,7 +9,6 @@ tasks.py performs much of the actions involved in populating the new documents
 '''
 from django.db import models
 
-
 class Paper(models.Model):
     """
     snip of the Max's document section in the database administration:
@@ -29,16 +28,27 @@ class Paper(models.Model):
     # annotations = sorted(annotations)
     annotations = models.TextField(blank=False) # LIST TODO
     relations = models.TextField(blank=False)
+    chemicals = models.TextField(blank=False)
+    diseases = models.TextField(blank=False)
+    """ Without having to put the "unique chemicals and unique
+    diseases" in this model, put into a function to filter, because
+    annotations are already in their own, distinct model  """
+    def get_unique_diseases(self):
+        # return a list of the unique diseases to this Paper
+        query = Annotation.objects.filter(paper=self).filter(stype='disease').values_list('uid').distinct()
+        return query
+
+    def get_unique_chemicals(self):
+        # return a list of the unique chemicals to this Paper
+        query = Annotation.objects.filter(paper=self).filter(stype='chemical').values_list('uid').distinct()
+        return query
+
     # gold_relations = models.TextField(blank=False) # TODO check what false is here
     # assert self._has_correct_annotations() TODO add back
     # 5
+    # TODO add chemicals and diseases and other items to model
     # gold_relations = models.TextField(blank=False) # may be empty when not parsing gold # LIST TODO
     # 6 & 7
-
-    # chemicals = models.TextField(blank=False)
-    # diseases = models.TextField(blank=False)
-
-    # chemicals, diseases = _get_unique_concepts()
 
     # 8 split sentences and generate sentence-bound relations
     # sentences = _split_sentences()
@@ -228,6 +238,44 @@ class Sentence(models.Model):
     def __unicode__(self):
         return self.text
 
+
+class Relation(models.Model):
+    paper = models.ForeignKey(Paper)
+    relation = models.TextField(blank=False)
+    chemical = models.TextField(blank=False)
+    disease = models.TextField(blank=False)
+
+
+    automated_cid = models.BooleanField(default=False)
+    # TODO if CID relationship automatically determined, then apply
+    # relationship choice to auto
+    if automated_cid == True:
+        relationship = "auto"
+
+    # the chemical-disease relationship
+    # RELATIONSHIP_CHOICE = (
+    #     ('dir', 'chemical directly contributes to disease')
+    #     ('ind', 'chemical indirectly contributes to disease')
+    #     ('none', 'chemical does not contribute to or cause disease')
+    #     ('err', 'reference to the chemical or disease is incorrect')
+    #     ('auto','chemical-induced-disease was automatically determined')
+    # )
+    # relationship = models.CharField(max_length=4, choices=RELATIONSHIP_CHOICE)
+
+    # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
+    # This value is used in scoring later
+    # USER_CONFIDENCE_CHOICE = (
+    #     ('C4', "Very confident")
+    #     ('C3', "Confident")
+    #     ('C2', "Not too confident")
+    #     ('C1', "Not confident at all")
+    # )
+    # user_confidence = models.CharField(max_length=1, choices=USER_CONFIDENCE_CHOICE)
+
+    # relations relate back to section, which relates back to the document
+
+
+
 """
 class Relation(models.Model):
     paper = models.ForeignKey(Paper) # Paper object is the foreign key
@@ -267,53 +315,4 @@ class Section(models.Model):
 
     # TODO add more methods (look at examples)
 
-class Entity(models.Model):
-    # Here, we are either a chemical or disease only (different than main m2c)
-    ENTITY_KIND_CHOICE = (
-        ('c', 'chemical'),
-        ('d', 'disease'),
-    )
-    kind = models.CharField(max_length=1, choice=ENTITY_KIND_CHOICE)
-    # need the span of the sentences here for reference? numbers TODO (which program?)
-    span_start = models.IntegerField()
-    span_end = models.IntegerField()
-
-# drug induces or treats? TODO ask Toby
-class Relation(models.Model):
-    # N (chemicals) * M (diseases) = number of relations there will be
-    '''
-    From Max's Annotation MODEL:
-    Text Type Start Section Username Pmid Quest Group Time ago Created
-	GS28  gene_protein	672	Abstract	admin	16510524	213	622	1 day, 2 hours ago	July 29, 2015, 11:51 a.m.
-    '''
-
-    # if there is an automaded CID determination, then make sure this is not
-    # flagged as a user annotation.
-    # TODO add user to relationships determination class in MODELS?
-    automated_cid = models.BooleanField(default=False)
-    # if CID relationship automatically determined, then apply relationship choice to auto
-    if automated_cid == True:
-        relationship = "auto"
-
-    # the chemical-disease relationship
-    RELATIONSHIP_CHOICE = (
-        ('dir', 'chemical directly contributes to disease')
-        ('ind', 'chemical indirectly contributes to disease')
-        ('none', 'chemical does not contribute to or cause disease')
-        ('auto','chemical-induced-disease was automatically determined')
-    )
-    relationship = models.CharField(max_length=4, choices=RELATIONSHIP_CHOICE)
-
-    # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
-    # This value is used in scoring later
-    USER_CONFIDENCE_CHOICE = (
-        ('C4', "Very confident")
-        ('C3', "Confident")
-        ('C2', "Not too confident")
-        ('C1', "Not confident at all")
-    )
-    user_confidence = models.CharField(max_length=1, choices=USER_CONFIDENCE_CHOICE)
-
-    # relations relate back to section, which relates back to the document
-    document = models.ForeignKey(Section)
 """

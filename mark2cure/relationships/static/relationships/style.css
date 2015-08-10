@@ -7,10 +7,9 @@ li a {
 }
 
 
-
 body {
-  padding-left: 20em;
-  padding-right: 20em;
+  padding-left: 8em;
+  padding-right: 8em;
   padding-top: 2em;
   font-family: "Lucidia Console", Geneva, Arial,
         SunSans-Regular, sans-serif
@@ -29,21 +28,20 @@ p {
   font-size: 20px;
   padding-left: 120px;
   padding-right: 200px;
-  padding-top: 30px;
-  padding-bottom: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 h1 {
   font-family: "Lucidia Console", Geneva, Arial,
         SunSans-Regular, sans-serif;
-  line-height: 1.4em;
+  line-height: 2px;
   padding-bottom: 5px;
 }
 
 #purple_center {
   color:  #8A2EE6;
   text-align: center;
-
 }
 
 h2 {

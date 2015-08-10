@@ -1,0 +1,43 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'relationships/style.css' %}" />
+
+
+<h1 id="purple_center">Relationship Module<h1>
+
+<h2 id="left_align">Using the following abstract, please answer the question about chemical/disease relationships.</h2>
+
+
+<p>
+  {{current_paper.abstract}}
+</p>
+
+<h2 id="left_align">The text explicitly says:</h2>
+
+{% csrf_token %}
+<input type="radio" name="choice" id="choice{{ relationships_question }}" value="{{ chemical }}" />
+<label for="choice{{ relationships_question }}">"{{ chemical }}" directly contributes to or causes "{{ disease }}"</label><br />
+
+
+<input type="radio" name="choice" id="choice{{ relationships_question }}" value="{{ chemical }}" />
+<label for="choice{{ relationships_question }}">"{{ chemical }}" contributes to another disease, and that other disease causes "{{ disease }}"</label><br />
+
+<input type="radio" name="choice" id="choice{{ relationships_question }}" value="{{ chemical }}" />
+<label for="choice{{ relationships_question }}">The text does not say that "{{ chemical }}" contributes to or causes "{{ disease }}"</label><br />
+
+<input type="radio" name="choice" id="choice{{ relationships_question }}" value="{{ chemical }}" />
+<label for="choice{{ relationships_question }}">In this context, "{{ chemical }}" does not refer to a chemical and/or "{{ disease }}" does not refer to a disease.</label><br />
+
+
+<h2 id="left_align">Additional information about the above relationship can be provided here (optional):</h2>
+
+</form>
+
+
+<input type="text" id="text" name="text_name" class="comment_box" />
+
+
+<input type="submit" value="Submit Contributions to Science" />
+
+
+</form>

@@ -42,6 +42,10 @@ urlpatterns = patterns('',
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
 
+    url(r'^relationship/', include('mark2cure.relationships.urls',
+        namespace='relationship')),
+
+
     url(r'^talk/', include('mark2cure.talk.urls',
         namespace='talk')),
 
