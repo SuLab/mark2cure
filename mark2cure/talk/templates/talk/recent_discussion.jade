@@ -12,6 +12,16 @@ block header
     include includes/header
 
 block content
+  .container
+    - if messages
+      - for message in messages
+        - if 'safe' in message.tags
+          .row
+            .col-xs-10.col-xs-offset-1
+              div(class='{{ message.tags }}').alert
+                {{ message|safe }}
+
+
   .container-fluid.head-space
     .row
       .col-xs-4.col-xs-offset-1

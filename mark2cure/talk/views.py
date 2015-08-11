@@ -8,6 +8,7 @@ from django_comments.models import Comment
 from .decorators import doc_completion_required
 from ..document.models import Document, Annotation
 
+from django.contrib import messages
 from django.utils import timezone
 from collections import Counter
 from datetime import timedelta
@@ -54,10 +55,37 @@ def recent_discussion(request):
     doc_content_pk = ContentType.objects.get(name='document').pk
     completed_document_pks = request.user.profile.completed_document_pks()
 
-    if request.user.groups.filter(name='Comment Moderators').exists():
-        comment_queryset = Comment.objects.filter(content_type_id=doc_content_pk)
+    is_moderator = request.user.groups.filter(name='Comment Moderators').exists()
+    last_week = timezone.now().date() - timedelta(days=7)
+
+    if is_moderator:
+        msg = '<p class="lead text-center">You\'re a moderator, showing Global View.</p>'
+        messages.info(request, msg, extra_tags='safe alert-info')
+
+        comment_queryset = Comment.objects.filter(
+            content_type_id=doc_content_pk)
+
+        annotations = Annotation.objects.filter(
+            created__gte=last_week,
+        ).exclude(text='').values_list('text', flat=True)
+
+        comment_documents_pks = Comment.objects.filter(
+            content_type_id=doc_content_pk).values_list('object_pk', flat=True)
+
     else:
-        comment_queryset = Comment.objects.filter(content_type_id=doc_content_pk, object_pk__in=completed_document_pks)
+        comment_queryset = Comment.objects.filter(
+            content_type_id=doc_content_pk,
+            object_pk__in=completed_document_pks)
+
+        annotations = Annotation.objects.filter(
+            created__gte=last_week,
+            view__section__document__pk__in=completed_document_pks
+        ).exclude(text='').values_list('text', flat=True)
+
+        comment_documents_pks = Comment.objects.filter(
+            content_type_id=doc_content_pk,
+            object_pk__in=completed_document_pks).values_list('object_pk', flat=True)
+
     recent_comments = comment_queryset.extra(select={
         "pmid": """
             SELECT document_document.document_id AS pmid
@@ -66,14 +94,8 @@ def recent_discussion(request):
             LIMIT 1"""
     }).order_by('-submit_date')
 
-    last_week = timezone.now().date() - timedelta(days=7)
-    annotations = Annotation.objects.filter(
-        created__gte=last_week,
-        view__section__document__pk__in=completed_document_pks
-    ).exclude(text='').values_list('text', flat=True)
     annotation_counter = Counter(annotations)
 
-    comment_documents_pks = Comment.objects.filter(content_type_id=doc_content_pk, object_pk__in=completed_document_pks).values_list('object_pk', flat=True)
     documents = Document.objects.filter(
         pk__in=comment_documents_pks
     ).extra(select={
@@ -89,7 +111,7 @@ def recent_discussion(request):
     ctx = {
         'comments': recent_comments,
         'annotations': annotation_counter.most_common(100),
-        'documents': documents
+        'documents': documents,
     }
     return TemplateResponse(request, 'talk/recent_discussion.jade', ctx)
 
