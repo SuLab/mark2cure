@@ -59,6 +59,7 @@ def user_training(request, format_type="html"):
     df = pd.DataFrame(arr, columns=list(columns))
     return dataframe_view(request, df, format_type)
 
+
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def user_quest_availability(request, format_type="html"):
@@ -66,7 +67,7 @@ def user_quest_availability(request, format_type="html"):
     users = User.objects.exclude(userprofile__isnull=True).all()
     for u in users.values('pk', 'username'):
         try:
-            profile = UserProfile.objects.get(pk=u['pk'])
+            profile = UserProfile.objects.get(user__pk=u['pk'])
             arr.append((u['username'], profile.quests_count(), profile.available_quests()))
         except Exception as e:
             pass
