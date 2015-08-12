@@ -87,7 +87,7 @@ class Base(Configuration):
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',
-        'mark2cure.dashboard',
+        'mark2cure.control',
         'mark2cure.analysis',
 
         'django.contrib.humanize',

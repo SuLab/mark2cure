@@ -1,0 +1,29 @@
+extends control/base
+
+- load widget_tweaks
+- load brabeion_tags
+- load humanize
+
+block content
+
+  .container-fluid
+    .row.head-space
+      .col-xs-10.col-xs-offset-1
+        ul.nav.nav-pills
+          li(role="presentation").active
+            a(href='{% url view_name format_type="html" %}') HTML
+          li(role="presentation")
+            a(href='{% url view_name format_type="csv" %}') CSV
+          li(role="presentation")
+            a(href='{% url view_name format_type="download" %}') CSV Download
+          li(role="presentation")
+            a(href='{% url view_name format_type="json" %}') JSON
+          li(role="presentation")
+            a(href='{% url view_name format_type="string" %}') STRING
+
+    .row.head-space
+      .col-xs-10.col-xs-offset-1
+        <style>table { border: none; }</style>
+        {{ dataframe_html|safe }}
+
+

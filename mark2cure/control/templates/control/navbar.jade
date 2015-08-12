@@ -1,0 +1,29 @@
+nav.navbar.navbar-default
+  .container-fluid
+    .navbar-header
+      a(href='{% url "control:home" %}').navbar-brand
+        img(alt="Mark2Cure", style="max-width:30px; margin-top:-5px;", src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png")
+
+    ul.nav.navbar-nav
+      li
+        a(href='{% url "admin:index" %}') Admin Panel
+
+      li.dropdown
+        a(href="#", data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false").dropdown-toggle
+          | User <span class="caret"></span>
+        ul.dropdown-menu
+          li
+            a(href='{% url "control:user_training" format_type="html" %}') Training
+          li(role="separator").divider
+          li
+            a(href='{% url "control:user_quest_availability" format_type="html" %}') Quest Availability
+
+      li
+        a(href="#", data-toggle="dropdown", role="button", aria-haspopup="true", aria-expanded="false").dropdown-toggle
+          | Groups <span class="caret"></span>
+        ul.dropdown-menu
+          li
+            a(href='{% url "control:group_create" %}') Create New
+          li(role="separator").divider
+          li
+            a(href='{% url "control:group_list" %}') Group List

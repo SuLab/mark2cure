@@ -32,8 +32,8 @@ urlpatterns = patterns('',
     url(r'^api/', include('mark2cure.api.urls',
         namespace='api')),
 
-    url(r'^dash/', include('mark2cure.dashboard.urls',
-        namespace='dashboard')),
+    url(r'^control/', include('mark2cure.control.urls',
+        namespace='control')),
 
     url(r'^instructions/', include('mark2cure.instructions.urls',
         namespace='instructions')),

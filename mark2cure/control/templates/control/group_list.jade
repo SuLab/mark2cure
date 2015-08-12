@@ -1,4 +1,4 @@
-extends base
+extends control/base
 
 - load widget_tweaks
 - load brabeion_tags
@@ -9,12 +9,12 @@ extends base
 block content
 
   .container
-    .row
+    .row.head-space
+      .col-xs-10.col-xs-offset-1
 
-      .col-xs-4
         .list-group
           - for group in groups
-            a(href='{% url "dashboard:group" pk=group.pk %}').list-group-item
+            a(href='{% url "control:group" pk=group.pk %}').list-group-item
               h4.list-group-item-heading #{group.name}
               p.list-group-item-text Tasks: #{group.task_set.count}
               p.list-group-item-text Document Count: #{group.total_documents.count}
@@ -27,26 +27,4 @@ block content
                       .progress
                         div(role='progressbar', aria-valuenow='{{ progress }}', aria-valuemin='0', aria-valuemax='100', style='width: {{progress}}%;').progress-bar.active
                           #{progress|floatformat:"2"}%
-
-      .col-xs-8
-        h2 Make a New Group
-
-        form(action='{% url "dashboard:groups_home" %}', method='post')
-          - csrf_token
-
-          fieldset
-            #{form.name|as_vertical_form}
-            #{form.stub|as_vertical_form}
-            #{form.description|as_vertical_form}
-
-          fieldset
-            #{form.order|as_vertical_form}
-
-          fieldset
-            #{form.pmids|as_vertical_form}
-
-          button(type='submit').btn.btn-warning.btn-block
-            | Submit
-
-
 

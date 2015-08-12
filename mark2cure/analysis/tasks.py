@@ -10,6 +10,7 @@
 
 from operator import itemgetter
 from ..common.bioc import BioCReader
+from ..api.views import group_users_bioc
 
 from nltk.metrics import scores as nltk_scoring
 import pandas as pd
@@ -20,11 +21,14 @@ import numpy
 import os
 
 
-def inter_annotator_agreement(group_id):
+def inter_annotator_agreement(group_pk):
 
     # Capture exported data
-    req = requests.get('https://mark2cure.org/api/group/'+str(group_id)+'/user_annotations.xml')
-    assert req.ok, "BioC Fetch Failed"
+    #req = requests.get('https://mark2cure.org/api/group/'+str(group_pk)+'/user_annotations.xml')
+    #assert req.ok, "BioC Fetch Failed"
+
+    req = group_users_bioc({}, group_pk, 'xml')
+
     reader = BioCReader(source=req.content)
     reader.read()
 
@@ -48,7 +52,7 @@ def inter_annotator_agreement(group_id):
     # Make user_pks unique
     userset = set(user_pks)
 
-    print "generating user pairs and calculating precision, recall, and f"
+    # print "generating user pairs and calculating precision, recall, and f"
     # Sorts the the list
     an_srtdby_user = sorted(HashedInfo)
 
@@ -131,7 +135,7 @@ def inter_annotator_agreement(group_id):
     al_user_data = numpy.sort(avg_user_f_sum.values, axis=0)
 
     # Obtaining average f-score from user-merged data.
-    print 'Obtaining average f-scores'
+    # print 'Obtaining average f-scores'
     avg_f_arr = []
     for groupByusers, rows in itertools.groupby(al_user_data, key=itemgetter(0)):
         grpd_counts, grpd_c, counter = 0, 0, 0
@@ -149,3 +153,4 @@ def inter_annotator_agreement(group_id):
 
     avg_user_f = pd.DataFrame(avg_f_arr, columns=('user', 'pairings', 'avg_f'))
     avg_user_f.to_csv('max_avg_fscore.csv', index=False)
+    return avg_user_f

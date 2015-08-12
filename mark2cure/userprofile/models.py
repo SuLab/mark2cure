@@ -180,8 +180,7 @@ class UserProfile(models.Model):
                         AND common_userquestrelationship.task_id = common_task.id)""" % (self.user.pk,)
 
         }).values('id', 'community_submission_count', 'user_completed', 'completions',)
-
-        uncompleted_quests = [task for task in queryset if  task['user_completed'] == 0 and task['completions'] is None or task['community_submission_count'] < task['completions']  ]
+        uncompleted_quests = [task for task in queryset if task['user_completed'] == 0 and (task['completions'] is None or task['community_submission_count'] < task['completions'])  ]
         return len(uncompleted_quests)
 
 

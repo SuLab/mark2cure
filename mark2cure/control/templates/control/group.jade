@@ -1,4 +1,4 @@
-extends base
+extends control/base
 
 - load widget_tweaks
 - load brabeion_tags
@@ -12,7 +12,12 @@ block content
         h2.text-center
           a(href='{% url "admin:common_group_change" group.pk %}')
             #{group.name}
-        p.lead #{group.description}
+
+        h3.text-center
+          a(href='{% url "control:group_analysis" pk=group.pk format_type="html" %}') Analysis Results
+
+        p.text-center
+          small #{group.description}
 
       .col-md-8.col-md-offset-2
 
@@ -31,7 +36,7 @@ block content
             - for doc_q_rel in document_quest_relationships
                 tr
                   td
-                    a(href='{% url "dashboard:document" pk=doc_q_rel.document.pk %}')
+                    a(href='{% url "control:document" pk=doc_q_rel.document.pk %}')
                       h3 #{doc_q_rel.document.document_id}
 
                   td
@@ -54,7 +59,7 @@ block content
                       i.fa.fa-3x.fa-exclamation-triangle.text-danger
 
                   td
-                    form(action='{% url "dashboard:document_reset_pubtator" pk=doc_q_rel.document.pk %}', method='post')
+                    form(action='{% url "control:document_reset_pubtator" pk=doc_q_rel.document.pk %}', method='post')
                       - csrf_token
                       button(type='submit').btn.btn-warning.btn-block
                         | Reset

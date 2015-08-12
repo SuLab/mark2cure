@@ -1,4 +1,4 @@
-extends base
+extends control/base
 
 - load widget_tweaks
 - load brabeion_tags
@@ -43,7 +43,7 @@ block content
                     a(href='{% url "document:read-pubtator" pk=pubtator.pk %}') BioC
 
                 .col-xs-3
-                  form(action='{% url "dashboard:pubtator" pk=pubtator.pk %}', method='post')
+                  form(action='{% url "control:pubtator" pk=pubtator.pk %}', method='post')
                     - csrf_token
                     button(type='submit').btn.btn-warning.btn-block
                       | Reset
