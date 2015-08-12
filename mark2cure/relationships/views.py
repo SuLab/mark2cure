@@ -93,5 +93,6 @@ def asdfsadfsdf(request, relationship_pk):
 #pass in relationship type pk similar to above method
 def relationship_type(request, relation_id):
     # Definitely just for testing purposes. TODO fix this
-    Answer.objects.create(relation=Relation.objects.first(), relationship_type=request.POST['relationship_type'], user_confidence='C4')
+    relation = Relation.objects.get(pk=relation_id)
+    Answer.objects.create(relation=relation, relation_pair=relation.relation, relationship_type=request.POST['relationship_type'], user_confidence=request.POST['user_confidence'])
     return HttpResponseRedirect(reverse("relationship:home"))

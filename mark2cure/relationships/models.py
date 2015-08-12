@@ -255,6 +255,7 @@ class Answer(models.Model):
     the user provide Answers to the relations!!
     """
     relation = models.ForeignKey(Relation)
+    relation_pair = models.TextField(blank=False)
     # TODO, this might get updated from Toby's code in the future
     RELATIONSHIP_CHOICE = (
         ('dir', "chemical directly contributes to disease"),
