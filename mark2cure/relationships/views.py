@@ -62,6 +62,7 @@ def home(request):
 
 @login_required
 def asdfsadfsdf(request, relationship_pk):
+    model = Answer # TODO, need this here so that the questions displayed know where to POST?
     paper = get_object_or_404(Paper, pk=relationship_pk)
 
     chemical_anns = Annotation.objects.filter(stype='chemical').filter(paper=paper)
@@ -78,11 +79,11 @@ def asdfsadfsdf(request, relationship_pk):
 
     chemical_from_relation = relationship_pair_list[0][0] # chemical from pair
     disease_from_relation = relationship_pair_list[0][1] # disease from pair
-    relation = Relation.objects.first()
+    relation = Relation.objects.first()  #TODO, make the relation here, become associated with the paper that we got.
     ctx = {'chemical': chemical_from_relation,
            'disease': disease_from_relation,
            'current_paper': paper,
-           'relation': relation    #TODO pass relation in
+           'relation': relation
            }
 
     # use the relationship_task.html template to work with above code given ctx
@@ -90,7 +91,7 @@ def asdfsadfsdf(request, relationship_pk):
 
 
 #pass in relationship type pk similar to above method
-def relationship_type(request):
-    form = AnswerForm()
-    Answer.objects.create(relation=Relation.objects.first(), relationship_type='dir', user_confidence='C4')
-    return redirect("relationship/home.jade")
+def relationship_type(request, relation_id):
+    # Definitely just for testing purposes. TODO fix this
+    Answer.objects.create(relation=Relation.objects.first(), relationship_type=request.POST['relationship_type'], user_confidence='C4')
+    return HttpResponseRedirect(reverse("relationship:home"))

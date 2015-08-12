@@ -16,19 +16,24 @@
 
 
 
-<form action="{% url 'relationship:relationship_type' %}" method='POST'>
+<form action="{% url 'relationship:relationship_type' relation.id %}" method='POST'>
 {% csrf_token %}
-<input type="radio" name="relationship_type" id="relationship_type" value="dir" />
-<label for="relationship_type">"{{ chemical }}" directly contributes to or causes "{{ disease }}"</label><br />
+<input type="radio" name="relationship_type" id="id_relationship_1" value="dir" />
+<label for="id_relationship_1">"{{ chemical }}" directly contributes to or causes "{{ disease }}"</label><br />
 
-<input type="radio" name="relationship_type" id="relationship_type" value="ind" />
-<label for="relationship_type">"{{ chemical }}" contributes to another disease, and that other disease causes "{{ disease }}"</label><br />
+<input type="radio" name="relationship_type" id="id_relationship_2" value="ind" />
+<label for="id_relationship_2">"{{ chemical }}" contributes to another disease, and that other disease causes "{{ disease }}"</label><br />
 
-<input type="radio" name="relationship_type" id="relationship_type" value="none" />
-<label for="relationship_type">The text does not say that "{{ chemical }}" contributes to or causes "{{ disease }}"</label><br />
+<input type="radio" name="relationship_type" id="id_relationship_3" value="none" />
+<label for="id_relationship_3">The text does not say that "{{ chemical }}" contributes to or causes "{{ disease }}"</label><br />
 
-<input type="radio" name="relationship_type" id="relationship_type" value="err" />
-<label for="relationship_type">In this context, "{{ chemical }}" does not refer to a chemical and/or "{{ disease }}" does not refer to a disease.</label><br />
+<input type="radio" name="relationship_type" id="id_relationship_4" value="err" />
+<label for="id_relationship_4">In this context, "{{ chemical }}" does not refer to a chemical and/or "{{ disease }}" does not refer to a disease.</label><br />
+
+
+
+
+
 
 
   <h2 id="left_align">Additional information about the above relationship can be provided here (optional):</h2>
