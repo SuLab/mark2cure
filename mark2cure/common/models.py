@@ -122,7 +122,8 @@ class Group(models.Model):
         # Insert the other Documents
         document_set = list(documents.values_list('id', flat=True))
         random.shuffle(document_set)
-        last_task = self.task_set.last()
+        last_task = None
+        name_counter = 1
 
         while len(document_set) >= 1:
 
@@ -140,19 +141,14 @@ class Group(models.Model):
                 DocumentQuestRelationship.objects.create(task=last_task, document=document)
 
             else:
-                if last_task:
-                    idx = last_task.pk
-                else:
-                    idx = Task.objects.last().pk
-
                 last_task, task_created = Task.objects.get_or_create(
-                    # (TODO) make sure task names start at 1
-                    name=str(idx + 1),
+                    name=str(name_counter),
                     completions=completions,
                     requires_qualification=7,
                     provides_qualification=7,
                     points=5000,
                     group=self)
+                name_counter += 1
 
     def __unicode__(self):
         return self.name

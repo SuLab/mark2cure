@@ -88,8 +88,7 @@ def group_create(request):
             group = group_form.save()
             pmids = group_form.cleaned_data.get('pmids', [])
             get_pubmed_document.delay(pmids, source=group_uuid, group_pk=group.pk)
-
-        return redirect(reverse('control:groups_home'))
+            return redirect(reverse('control:group_list'))
 
     if request.method == 'GET':
         group_form = GroupForm(instance=None, data=request.POST or None)
