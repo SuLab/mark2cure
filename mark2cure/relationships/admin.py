@@ -4,7 +4,7 @@ Jennifer new admin page (involved in registering changes to the database)
 from django.contrib import admin
 
 
-from mark2cure.relationships.models import Paper, Annotation, Sentence, Relation
+from mark2cure.relationships.models import Paper, Annotation, Sentence, Relation, Answer
 
 # TODO
 '''
@@ -13,7 +13,7 @@ look into search_fields, list_display, readonly_fields
 
 
 class PaperAdmin(admin.ModelAdmin):
-    list_display = ('pmid', 'title', 'abstract', 'annotations', 'relations', 'chemicals', 'diseases')
+    list_display = ('pmid', 'title', 'abstract')
 
     # TODO add defs here similar to max's admin models? or in tasks?
 
@@ -27,13 +27,21 @@ class SentenceAdmin(admin.ModelAdmin):
 
 
 class RelationAdmin(admin.ModelAdmin):
-    list_display = ('paper', 'relation', 'chemical', 'disease')
+    list_display = ('paper', 'relation', 'chemical_id', 'disease_id', 'automated_cid')
+
+
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('relation', 'relationship_type', 'user_confidence', 'username')
+
+    def username(self, obj):
+        username = "test_Answer_model_username"
 
 
 admin.site.register(Paper, PaperAdmin)
 admin.site.register(Annotation, AnnotationAdmin)
 admin.site.register(Sentence, SentenceAdmin)
 admin.site.register(Relation, RelationAdmin)
+admin.site.register(Answer, AnswerAdmin)
 # admin.site.register(Relation, RelationAdmin)
 
 """

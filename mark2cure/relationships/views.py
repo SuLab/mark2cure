@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render_to_response, RequestContext
 from django.template.response import TemplateResponse
 from django.contrib.messages import get_messages
 from django.contrib.auth.models import User
@@ -25,7 +25,8 @@ from brabeion import badges
 import datetime
 import re
 
-from .models import Paper
+from .models import Paper, Relation, Answer
+from .forms import AnswerForm
 #from .tasks import parse_input
 from django import forms
 import os
@@ -53,10 +54,9 @@ class ResultsView(generic.DetailView):
 
 @login_required
 def home(request):
-    queryset = Paper.objects.all()
-
+    queryset_papers = Paper.objects.all()
     ctx = {
-        'papers': queryset
+        'papers': queryset_papers,
     }
     return TemplateResponse(request, 'relationship/home.jade', ctx)
 
@@ -73,15 +73,24 @@ def asdfsadfsdf(request, relationship_pk):
     for chemical in chemical_anns:
         for disease in disease_anns:
             # TODO there are lots of repeats here (all start stop locations are different)
-            relationship_pair = [chemical,disease]
+            relationship_pair = [chemical, disease]
             relationship_pair_list.append(relationship_pair)
 
     chemical_from_relation = relationship_pair_list[0][0] # chemical from pair
     disease_from_relation = relationship_pair_list[0][1] # disease from pair
-
+    relation = Relation.objects.first()
     ctx = {'chemical': chemical_from_relation,
            'disease': disease_from_relation,
-           'current_paper': paper}
+           'current_paper': paper,
+           'relation': relation    #TODO pass relation in
+           }
 
-    # use the relationships_task.html template to work with above code given ctx
-    return TemplateResponse(request, 'relationship/relationships_task.html', ctx)
+    # use the relationship_task.html template to work with above code given ctx
+    return TemplateResponse(request, 'relationship/relationship_task.html', ctx)
+
+
+#pass in relationship type pk similar to above method
+def relationship_type(request):
+    form = AnswerForm()
+    Answer.objects.create(relation=Relation.objects.first(), relationship_type='dir', user_confidence='C4')
+    return redirect("relationship/home.jade")

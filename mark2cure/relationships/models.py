@@ -26,10 +26,6 @@ class Paper(models.Model):
     abstract = models.TextField(blank=False)
     # 4
     # annotations = sorted(annotations)
-    annotations = models.TextField(blank=False) # LIST TODO
-    relations = models.TextField(blank=False)
-    chemicals = models.TextField(blank=False)
-    diseases = models.TextField(blank=False)
     """ Without having to put the "unique chemicals and unique
     diseases" in this model, put into a function to filter, because
     annotations are already in their own, distinct model  """
@@ -242,9 +238,8 @@ class Sentence(models.Model):
 class Relation(models.Model):
     paper = models.ForeignKey(Paper)
     relation = models.TextField(blank=False)
-    chemical = models.TextField(blank=False)
-    disease = models.TextField(blank=False)
-
+    chemical_id = models.TextField(blank=False)
+    disease_id = models.TextField(blank=False)
 
     automated_cid = models.BooleanField(default=False)
     # TODO if CID relationship automatically determined, then apply
@@ -252,27 +247,33 @@ class Relation(models.Model):
     if automated_cid == True:
         relationship = "auto"
 
-    # the chemical-disease relationship
-    # RELATIONSHIP_CHOICE = (
-    #     ('dir', 'chemical directly contributes to disease')
-    #     ('ind', 'chemical indirectly contributes to disease')
-    #     ('none', 'chemical does not contribute to or cause disease')
-    #     ('err', 'reference to the chemical or disease is incorrect')
-    #     ('auto','chemical-induced-disease was automatically determined')
-    # )
-    # relationship = models.CharField(max_length=4, choices=RELATIONSHIP_CHOICE)
 
+class Answer(models.Model):
+    """
+    Class where the user can provide their response to whether or not chemicals
+    and diseases are related. TODO: if there is an auto CID, then don't have
+    the user provide Answers to the relations!!
+    """
+    relation = models.ForeignKey(Relation)
+    # TODO, this might get updated from Toby's code in the future
+    RELATIONSHIP_CHOICE = (
+        ('dir', "chemical directly contributes to disease"),
+        ('ind', "chemical indirectly contributes to disease"),
+        ('none', "chemical does not contribute to or cause disease"),
+        ('err', "reference to the chemical or disease is incorrect"),
+    )
+    relationship_type = models.CharField(max_length=4,
+                                         choices=RELATIONSHIP_CHOICE)
     # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
     # This value is used in scoring later
-    # USER_CONFIDENCE_CHOICE = (
-    #     ('C4', "Very confident")
-    #     ('C3', "Confident")
-    #     ('C2', "Not too confident")
-    #     ('C1', "Not confident at all")
-    # )
-    # user_confidence = models.CharField(max_length=1, choices=USER_CONFIDENCE_CHOICE)
-
-    # relations relate back to section, which relates back to the document
+    USER_CONFIDENCE_CHOICE = (
+        ('C4', "Very confident"),
+        ('C3', "Confident"),
+        ('C2', "Not too confident"),
+        ('C1', "Not confident at all"),
+    )
+    user_confidence = models.CharField(max_length=2,
+                                       choices=USER_CONFIDENCE_CHOICE)
 
 
 

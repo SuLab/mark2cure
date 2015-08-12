@@ -453,11 +453,7 @@ for paper in papers:
     # create new Paper object in m2c database
     p = Paper.objects.create(pmid=paper.pmid,
                              title=paper.title,
-                             abstract=paper.abstract,
-                             annotations=paper.annotations,
-                             relations=paper.relations,
-                             chemicals=paper.chemicals,
-                             diseases=paper.diseases)
+                             abstract=paper.abstract)
 
     for i in range(0, len(paper.annotations)):
         # create new Annotation object in m2c database
@@ -474,9 +470,14 @@ for paper in papers:
                                     stop=paper.sentences[j].stop,
                                     annotations=paper.sentences[j].annotations)
 
+
     for i in paper.get_all_possible_relations():
-        r = Relation.objects.create(paper=p, relation=i, chemical=i[0],  # add paper.sentences.start OR foreignkey reference here TODO
-                                    disease=i[1], automated_cid=False)
+        chemical_name = Annotation.objects.filter(paper=p).filter(uid=i[0])
+        disease_name = Annotation.objects.filter(paper=p).filter(uid=i[1])
+
+        r = Relation.objects.create(paper=p, relation=i, chemical_id=i[0],  # add paper.sentences.start OR foreignkey reference here TODO
+                                    disease_id=i[1],
+                                    automated_cid=False)
         print i
         print i[0]
         print i[1]
