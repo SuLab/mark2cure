@@ -31,26 +31,6 @@ from .forms import AnswerForm
 from django import forms
 import os
 
-# TODO check imports
-### add here if not completed TODO (remove from list if user already answered)
-"""
-Toby's parse_input creates new Paper objects using all of the
-inputs to the Paper class.
-"""
-# TODO, views for this handled in common?
-
-
-class DetailView(generic.DetailView):
-    model = Paper
-    template_name = 'relationship/detail.html'
-
-    def get_queryset(self):
-        return Paper.objects.all()
-
-class ResultsView(generic.DetailView):
-    model = Paper
-    template_name = 'relationship/results.html'
-
 
 @login_required
 def home(request):
@@ -61,9 +41,9 @@ def home(request):
     return TemplateResponse(request, 'relationship/home.jade', ctx)
 
 @login_required
-def asdfsadfsdf(request, relationship_pk):
+def verify_relationship(request, paper_pk):
     model = Answer # TODO, need this here so that the questions displayed know where to POST?
-    paper = get_object_or_404(Paper, pk=relationship_pk)
+    paper = get_object_or_404(Paper, pk=paper_pk)
 
     chemical_anns = Annotation.objects.filter(stype='chemical').filter(paper=paper)
     # print chemical_anns, "\n", len(chemical_anns)
@@ -86,8 +66,9 @@ def asdfsadfsdf(request, relationship_pk):
            'relation': relation
            }
 
-    # use the relationship_task.html template to work with above code given ctx
-    return TemplateResponse(request, 'relationship/relationship_task.html', ctx)
+    # use the verify_relationship.html template to work with above code given ctx
+    # TODO make these jade, not HTML.
+    return TemplateResponse(request, 'relationship/verify_relationship.html', ctx)
 
 
 #pass in relationship type pk similar to above method

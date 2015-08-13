@@ -11,7 +11,6 @@ from django.contrib import messages
 from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..userprofile.models import UserProfile
 from ..document.models import Document
-from ..relationships.models import Paper, Annotation
 from .models import Group, Task, UserQuestRelationship
 from .forms import SupportMessageForm
 
@@ -62,20 +61,6 @@ def dashboard(request):
 
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
-
-# TODO Jennifer, where to do most of this code
-def relationships(request):
-    # TODO. I need paper objects! Need help
-    papers = Paper.objects.all() # TODO, not good for long term!
-    paper0 = papers[0]
-    anns = Annotation.objects.filter(paper=paper0)
-
-
-    ctx = {'anns': anns,
-           'paper0': paper0,
-           }
-    return TemplateResponse(request,'relationship/index.html', ctx)
-
 
 @login_required
 def group_view(request, group_stub):

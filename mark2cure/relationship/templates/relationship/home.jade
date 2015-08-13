@@ -11,5 +11,5 @@ block content
         a Select one of the following papers to help define chemical/disease relationships:
           .list-group
             - for paper in papers
-              a(href='{% url "relationship:asdfsadfsdf" relationship_pk=paper.pk %}').list-group-item
+              a(href='{% url "relationship:verify_relationship" paper_pk=paper.pk %}').list-group-item
                 #{paper.title}

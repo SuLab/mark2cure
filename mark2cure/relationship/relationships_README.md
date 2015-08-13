@@ -32,4 +32,4 @@ output is **unique** chemical and disease IDs. There are many repetitive annotat
 
 
 
-NEW, working html is relationship_task.html
+NEW, working html is verify_relationship.html
