@@ -1,0 +1,22 @@
+#relinstructionsModal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button(type="button", data-dismiss="modal").close
+          span(aria-hidden="true") &times;
+          span.sr-only Close
+        h4#myModalLabel.modal-title Relationship Instructions
+
+      .modal-body
+        .panel
+          .panel-body
+            p.lead Relationship Identification Skill: the ability to identify a relationship between chemicals and diseases:
+            ol(style='margin-left: 8px;').list-unstyled
+              li <strong>Chemical</strong> – TODO
+              li <strong>Disease</strong> – TODO
+              li <strong>Relationship</strong> – TODO
+            a(href='{% url "instructions:relationship-identification" %}')
+              p.text-center Review the rules for Relationship Identification
+
+      .modal-footer
+        button(type="button", data-dismiss="modal").btn.btn-default Close

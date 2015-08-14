@@ -40,6 +40,7 @@ def home(request):
     }
     return TemplateResponse(request, 'relationship/home.jade', ctx)
 
+
 @login_required
 def verify_relationship(request, paper_pk):
     model = Answer # TODO, need this here so that the questions displayed know where to POST?
@@ -72,8 +73,11 @@ def verify_relationship(request, paper_pk):
 
 
 #pass in relationship type pk similar to above method
-def relationship_type(request, relation_id):
+def verify_relationship_results(request, relation_id):
     # Definitely just for testing purposes. TODO fix this
     relation = Relation.objects.get(pk=relation_id)
     Answer.objects.create(relation=relation, relation_pair=relation.relation, relationship_type=request.POST['relationship_type'], user_confidence=request.POST['user_confidence'])
-    return HttpResponseRedirect(reverse("relationship:home"))
+
+    ctx = {}
+    return TemplateResponse(request, 'relationship/verify_relationship_results.jade', ctx)
+    #return HttpResponseRedirect(reverse("relationship:home"))

@@ -8,8 +8,8 @@ urlpatterns = patterns('',
     url(r'^(?P<paper_pk>\d+)/$',
         views.verify_relationship, name='verify_relationship'),
 
-    url(r'^(?P<relation_id>[0-9]+)/relationship_type/$',
-        views.relationship_type, name='relationship_type'),
+    url(r'^(?P<relation_id>[0-9]+)/results/$',
+        views.verify_relationship_results, name='verify_relationship_results'),
 
     url(r'',
         views.home, name='home')
