@@ -6,10 +6,10 @@ from . import views
 
 urlpatterns = patterns('',
     url(r'^(?P<paper_pk>\d+)/$',
-        views.verify_relationship, name='verify_relationship'),
+        views.relation, name='relation'),
 
     url(r'^(?P<relation_id>[0-9]+)/results/$',
-        views.verify_relationship_results, name='verify_relationship_results'),
+        views.results, name='results'),
 
     url(r'',
         views.home, name='home')

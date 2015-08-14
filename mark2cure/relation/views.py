@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 from ..common.formatter import bioc_as_json, apply_bioc_annotations
-from ..relationship.models import Paper, Annotation
+from ..relation.models import Paper, Annotation
 from ..userprofile.models import UserProfile
 from ..document.models import Document
 
@@ -38,28 +38,33 @@ def home(request):
     ctx = {
         'papers': queryset_papers,
     }
-    return TemplateResponse(request, 'relationship/home.jade', ctx)
+    return TemplateResponse(request, 'relation/home.jade', ctx)
 
 
 @login_required
-def verify_relationship(request, paper_pk):
+def relation(request, paper_pk):
     model = Answer # TODO, need this here so that the questions displayed know where to POST?
     paper = get_object_or_404(Paper, pk=paper_pk)
+
+    print request.user
+
+    # paper = relation_task.papers().first()
+    # sentences = relatinshiop_task.get_sentences()
 
     chemical_anns = Annotation.objects.filter(stype='chemical').filter(paper=paper)
     # print chemical_anns, "\n", len(chemical_anns)
     disease_anns = Annotation.objects.filter(stype='disease').filter(paper=paper)
     # print disease_anns, "\n", len(disease_anns)
-    relationship_pair_list = []
-    relationship_pair = []
+    relation_pair_list = []
+    relation_pair = []
     for chemical in chemical_anns:
         for disease in disease_anns:
             # TODO there are lots of repeats here (all start stop locations are different)
-            relationship_pair = [chemical, disease]
-            relationship_pair_list.append(relationship_pair)
+            relation_pair = [chemical, disease]
+            relation_pair_list.append(relation_pair)
 
-    chemical_from_relation = relationship_pair_list[0][0] # chemical from pair
-    disease_from_relation = relationship_pair_list[0][1] # disease from pair
+    chemical_from_relation = relation_pair_list[0][0] # chemical from pair
+    disease_from_relation = relation_pair_list[0][1] # disease from pair
     relation = Relation.objects.first()  #TODO, make the relation here, become associated with the paper that we got.
     ctx = {'chemical': chemical_from_relation,
            'disease': disease_from_relation,
@@ -67,17 +72,17 @@ def verify_relationship(request, paper_pk):
            'relation': relation
            }
 
-    # use the verify_relationship.html template to work with above code given ctx
+    # use the relation.html template to work with above code given ctx
     # TODO make these jade, not HTML.
-    return TemplateResponse(request, 'relationship/verify_relationship.html', ctx)
+    return TemplateResponse(request, 'relation/relation.html', ctx)
 
 
-#pass in relationship type pk similar to above method
-def verify_relationship_results(request, relation_id):
+#pass in relation type pk similar to above method
+def results(request, relation_id):
     # Definitely just for testing purposes. TODO fix this
     relation = Relation.objects.get(pk=relation_id)
-    Answer.objects.create(relation=relation, relation_pair=relation.relation, relationship_type=request.POST['relationship_type'], user_confidence=request.POST['user_confidence'])
+    Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence=request.POST['user_confidence'])
 
     ctx = {}
-    return TemplateResponse(request, 'relationship/verify_relationship_results.jade', ctx)
-    #return HttpResponseRedirect(reverse("relationship:home"))
+    return TemplateResponse(request, 'relation/results.jade', ctx)
+    #return HttpResponseRedirect(reverse("relation:home"))

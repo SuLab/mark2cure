@@ -87,7 +87,7 @@ class Base(Configuration):
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',
-        'mark2cure.relationship',
+        'mark2cure.relation',
 
         'django.contrib.humanize',
         'widget_tweaks',

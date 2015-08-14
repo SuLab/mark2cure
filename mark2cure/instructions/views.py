@@ -13,5 +13,5 @@ def treatment_marking(request):
     return TemplateResponse(request, 'instructions/treatment-marking.jade')
 
 
-def relationship_identification(request):
-    return TemplateResponse(request, 'instructions/relationship-identification.jade')
+def relation_identification(request):
+    return TemplateResponse(request, 'instructions/relation-identification.jade')

@@ -6,9 +6,9 @@ from **TASKS**, which is working
 entirely yet.
 
 using python manage.py shell_plus, execute the following commands
-to work with the "relationship module features"
+to work with the "relation module features"
 
-from mark2cure.relationship.tasks import parse_input
+from mark2cure.relation.tasks import parse_input
 
 import os
 
@@ -32,4 +32,4 @@ output is **unique** chemical and disease IDs. There are many repetitive annotat
 
 
 
-NEW, working html is verify_relationship.html
+NEW, working html is verify_relation.html

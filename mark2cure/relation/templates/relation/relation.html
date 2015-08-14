@@ -1,0 +1,52 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'relation/style.css' %}" />
+
+
+<h1 id="purple_center">Relation Module<h1>
+
+<h2 id="left_align">Using the following abstract, please answer the question about chemical/disease relations.</h2>
+
+
+<p>
+  {{current_paper.abstract}}
+</p>
+
+<h2 id="left_align">The text explicitly says:</h2>
+
+
+
+<form action="{% url 'relation:results' relation.id %}" method='POST'>
+{% csrf_token %}
+<input type="radio" name="relation_type" id="id_relation_1" value="dir" />
+<label for="id_relation_1">"{{ chemical }}" directly contributes to or causes "{{ disease }}"</label><br />
+<input type="radio" name="relation_type" id="id_relation_2" value="ind" />
+<label for="id_relation_2">"{{ chemical }}" contributes to another disease, and that other disease causes "{{ disease }}"</label><br />
+<input type="radio" name="relation_type" id="id_relation_3" value="none" />
+<label for="id_relation_3">The text does not say that "{{ chemical }}" contributes to or causes "{{ disease }}"</label><br />
+<input type="radio" name="relation_type" id="id_relation_4" value="err" />
+<label for="id_relation_4">In this context, "{{ chemical }}" does not refer to a chemical and/or "{{ disease }}" does not refer to a disease.</label><br />
+
+
+<h2 id="left_align">How confident do you feel with your answer?:</h2>
+
+<input type="radio" name="user_confidence" id="id_user_confidence_1" value="C1" />
+<label for="id_user_confidence_1">Very confident</label><br />
+<input type="radio" name="user_confidence" id="id_user_confidence_2" value="C2" />
+<label for="id_user_confidence_2">Confident</label><br />
+<input type="radio" name="user_confidence" id="id_user_confidence_3" value="C3" />
+<label for="id_user_confidence_3">Not too confident</label><br />
+<input type="radio" name="user_confidence" id="id_user_confidence_4" value="C4" />
+<label for="id_user_confidence_4">Not confident at all</label><br />
+
+
+
+  <h2 id="left_align">Additional information about the above relation can be provided here (optional):</h2>
+
+  <p>
+  <input type="text" id="text" name="optional_text_box" class="comment_box" /></P>
+  <p>
+  <input type="submit" value="Submit Contributions to Science" />
+
+</form>
+</body>

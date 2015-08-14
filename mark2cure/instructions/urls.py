@@ -12,6 +12,6 @@ urlpatterns = patterns('',
     url(r'^treatment-marking/$',
         views.treatment_marking, name='treatment-marking'),
 
-    url(r'^relationship-identification/$',
-        views.relationship_identification, name='relationship-identification'),
+    url(r'^relation-identification/$',
+        views.relation_identification, name='relation-identification'),
 )

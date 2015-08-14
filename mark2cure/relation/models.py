@@ -1,5 +1,5 @@
 '''
-Sets up the models for the relationship application, modeled after Max's
+Sets up the models for the relation application, modeled after Max's
 Document/models.py file for standardization and using Toby's data_model.py
 
 Most of this code is Toby's, but reconfigured to work in the Django app, where
@@ -63,7 +63,7 @@ class Paper(models.Model):
     def count_available_sections(self):
         return self.section_set.count()
     """
-    # TODO add more methods that include objects of the below classes for relationship module
+    # TODO add more methods that include objects of the below classes for relation module
 
     """
     # TODO fix the contributors (we want to know users that contributed to this and the below CLASSES)
@@ -194,8 +194,8 @@ class Paper(models.Model):
 
     def _has_relation(self, potential_relation):
         """
-        Checks if the provided possible Relationship object matches any of the
-        gold standard relationships for this paper.
+        Checks if the provided possible relation object matches any of the
+        gold standard relations for this paper.
 
         Note:
             It is not possible to use a set to do the checking
@@ -242,10 +242,10 @@ class Relation(models.Model):
     disease_id = models.TextField(blank=False)
 
     automated_cid = models.BooleanField(default=False)
-    # TODO if CID relationship automatically determined, then apply
-    # relationship choice to auto
+    # TODO if CID relation automatically determined, then apply
+    # relation choice to auto
     if automated_cid == True:
-        relationship = "auto"
+        relation = "auto"
 
 
 class Answer(models.Model):
@@ -257,14 +257,14 @@ class Answer(models.Model):
     relation = models.ForeignKey(Relation)
     relation_pair = models.TextField(blank=False)
     # TODO, this might get updated from Toby's code in the future
-    RELATIONSHIP_CHOICE = (
+    RELATION_CHOICE = (
         ('dir', "chemical directly contributes to disease"),
         ('ind', "chemical indirectly contributes to disease"),
         ('none', "chemical does not contribute to or cause disease"),
         ('err', "reference to the chemical or disease is incorrect"),
     )
-    relationship_type = models.CharField(max_length=4,
-                                         choices=RELATIONSHIP_CHOICE)
+    relation_type = models.CharField(max_length=4,
+                                         choices=RELATION_CHOICE)
     # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
     # This value is used in scoring later
     USER_CONFIDENCE_CHOICE = (

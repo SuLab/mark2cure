@@ -19,7 +19,7 @@ class SentenceTask:
     """
     A single sentence from a paper.
 
-    Sentence-bound relationships are generated
+    Sentence-bound relations are generated
     by this object.
 
     The set of chemical-disease relations that need to
@@ -249,8 +249,8 @@ class PaperTask:
 
     def has_relation(self, potential_relation):
         """
-        Checks if the provided possible Relationship object
-        matches any of the gold standard relationships for this
+        Checks if the provided possible Relation object
+        matches any of the gold standard relations for this
         paper.
 
         Note:
@@ -301,7 +301,7 @@ class Annotations():
 
 class Relations():
     """
-    A single chemical-induced disease relationship.
+    A single chemical-induced disease relation.
     Used to compare identifier pairs against the gold.
     """
     def __init__(self, pmid, chemical_id, disease_id):

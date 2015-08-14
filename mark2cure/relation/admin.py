@@ -4,7 +4,7 @@ Jennifer new admin page (involved in registering changes to the database)
 from django.contrib import admin
 
 
-from mark2cure.relationship.models import Paper, Annotation, Sentence, Relation, Answer
+from mark2cure.relation.models import Paper, Annotation, Sentence, Relation, Answer
 
 # TODO
 '''
@@ -31,7 +31,7 @@ class RelationAdmin(admin.ModelAdmin):
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('relation', 'relation_pair', 'relationship_type', 'user_confidence', 'username')
+    list_display = ('relation', 'relation_pair', 'relation_type', 'user_confidence', 'username')
 
     def username(self, obj):
         username = "test_Answer_model_username"
@@ -42,7 +42,6 @@ admin.site.register(Annotation, AnnotationAdmin)
 admin.site.register(Sentence, SentenceAdmin)
 admin.site.register(Relation, RelationAdmin)
 admin.site.register(Answer, AnswerAdmin)
-# admin.site.register(Relation, RelationAdmin)
 
 """
     # TODO is there a title for the documents Toby uses?

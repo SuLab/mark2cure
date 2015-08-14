@@ -6,7 +6,7 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
           a(href='{% url "common:home" %}') Mark2Cure
 
       .col-sm-6
-        h2.text-center Relationship: #{headerMessage}
+        h2.text-center Relation: #{headerMessage}
 
       .col-sm-3
         #example-foo-collapse-1.collapse.navbar-collapse
@@ -18,7 +18,7 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
               .row
                 .col-xs-12
                    p
-                    a(data-toggle="modal", data-target="#relinstructionsModal") Instructions
+                    a(data-toggle="modal", data-target="#relationshipInstructionsModal") Instructions
 
 
             .col-xs-6
@@ -38,4 +38,4 @@ nav(role='navigation').navbar.navbar-default.navbar-static-top
         span.icon-bar
         span.icon-bar
 
-include instructions/relationship-instructions-modal
+include instructions/relation-instructions-modal

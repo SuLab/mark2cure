@@ -8,8 +8,8 @@ block content
   .container
     .row.head-space
       .col-xs-12
-        a Select one of the following papers to help define chemical/disease relationships:
+        a Select one of the following papers to help define chemical/disease relations:
           .list-group
             - for paper in papers
-              a(href='{% url "relationship:verify_relationship" paper_pk=paper.pk %}').list-group-item
+              a(href='{% url "relation:relation" paper_pk=paper.pk %}').list-group-item
                 #{paper.title}
