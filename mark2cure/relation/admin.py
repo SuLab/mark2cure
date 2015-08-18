@@ -33,9 +33,6 @@ class RelationAdmin(admin.ModelAdmin):
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ('relation', 'relation_pair', 'relation_type', 'user_confidence', 'username')
 
-    def username(self, obj):
-        username = "test_Answer_model_username"
-
 
 admin.site.register(Paper, PaperAdmin)
 admin.site.register(Annotation, AnnotationAdmin)

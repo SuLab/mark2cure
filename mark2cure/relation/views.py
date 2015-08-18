@@ -35,6 +35,21 @@ import os
 @login_required
 def home(request):
     queryset_papers = Paper.objects.all()
+
+    exclude_list = []
+    for i in queryset_papers:
+        user_paper_relations = Relation.objects.filter(paper=i.id)
+        flag = 0
+        for j in user_paper_relations:
+            user_paper_answers = Answer.objects.all().filter(relation_pair=j.relation).filter(username=request.user)
+            if len(user_paper_answers) == 1:
+                flag += 1
+            if flag == len(user_paper_relations):
+                exclude_list.append(i)
+
+    exclude_these = [i.id for i in exclude_list]
+    queryset_papers = Paper.objects.all().exclude(id__in=exclude_these)
+
     ctx = {
         'papers': queryset_papers,
     }
@@ -44,45 +59,54 @@ def home(request):
 @login_required
 def relation(request, paper_pk):
     model = Answer # TODO, need this here so that the questions displayed know where to POST?
-    paper = get_object_or_404(Paper, pk=paper_pk)
+    current_paper = get_object_or_404(Paper, pk=paper_pk)
+    relations = Relation.objects.filter(paper=current_paper.id)
 
-    print request.user
 
+    for i in relations:
+        relation = i
+        # relations that user has already completed
+        relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+        if not relation_specific_answers:
+            break
+
+    # TODO, this might be a "weird" chemical so take the tie breakers
+    chemical_from_relation = Annotation.objects.filter(uid=relation.chemical_id).filter(paper=current_paper.id)[0].text
+    disease_from_relation = Annotation.objects.filter(uid=relation.disease_id).filter(paper=current_paper.id)[0].text
+
+    # TODO: want something similar to this:
     # paper = relation_task.papers().first()
-    # sentences = relatinshiop_task.get_sentences()
+    # sentences = relation_task.get_sentences()
 
-    chemical_anns = Annotation.objects.filter(stype='chemical').filter(paper=paper)
-    # print chemical_anns, "\n", len(chemical_anns)
-    disease_anns = Annotation.objects.filter(stype='disease').filter(paper=paper)
-    # print disease_anns, "\n", len(disease_anns)
-    relation_pair_list = []
-    relation_pair = []
-    for chemical in chemical_anns:
-        for disease in disease_anns:
-            # TODO there are lots of repeats here (all start stop locations are different)
-            relation_pair = [chemical, disease]
-            relation_pair_list.append(relation_pair)
-
-    chemical_from_relation = relation_pair_list[0][0] # chemical from pair
-    disease_from_relation = relation_pair_list[0][1] # disease from pair
-    relation = Relation.objects.first()  #TODO, make the relation here, become associated with the paper that we got.
     ctx = {'chemical': chemical_from_relation,
            'disease': disease_from_relation,
-           'current_paper': paper,
+           'current_paper': current_paper,
            'relation': relation
            }
 
     # use the relation.html template to work with above code given ctx
-    # TODO make these jade, not HTML.
     return TemplateResponse(request, 'relation/relation.html', ctx)
 
 
-#pass in relation type pk similar to above method
+#pass in relation similar to above method
 def results(request, relation_id):
     # Definitely just for testing purposes. TODO fix this
     relation = Relation.objects.get(pk=relation_id)
-    Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence=request.POST['user_confidence'])
+    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence=request.POST['user_confidence'], username=request.user)
 
-    ctx = {}
+    #TODO dictionary for max:
+
+    user_work = {'relation': relation,
+                 'relation_pair': relation.relation,  # not really needed but nice to see for now in th DB
+                 'relation_type': request.POST['relation_type'],
+                 'user_confidence': request.POST['user_confidence'],
+                 'username': request.user
+    }
+    print user_work
+    #this is how to display the field and not the short choice abbreviation
+
+    ctx = {'relation_type': current_answer.get_relation_type_display(),
+           'user_confidence': current_answer.get_user_confidence_display()
+    }
     return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))

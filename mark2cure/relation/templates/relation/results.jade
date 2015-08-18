@@ -16,6 +16,17 @@ block content
     .row
       div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").container.document
         .paragraphs
+          p
+          p
+          p Thank you, {{request.user}}, for providing the following answers:
+          p {{ relation_type }}
+          p And you were {{ user_confidence }}, while answering that question.
+
+          p
+          .list-group
+            a(href='{% url "relation:home" %}').list-group-item
+              p Return to Relation Home
+
 
 
 block post-footer

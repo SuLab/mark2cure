@@ -268,14 +268,15 @@ class Answer(models.Model):
     # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
     # This value is used in scoring later
     USER_CONFIDENCE_CHOICE = (
-        ('C4', "Very confident"),
-        ('C3', "Confident"),
-        ('C2', "Not too confident"),
-        ('C1', "Not confident at all"),
+        ('C4', "very confident"),
+        ('C3', "confident"),
+        ('C2', "not too confident"),
+        ('C1', "not confident at all"),
     )
     user_confidence = models.CharField(max_length=2,
                                        choices=USER_CONFIDENCE_CHOICE)
 
+    username = models.TextField(blank=False)
 
 
 """
