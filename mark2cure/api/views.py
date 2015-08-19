@@ -46,7 +46,7 @@ def group_users_bioc(request, group_pk, format_type):
         annotations accross the group
     '''
     content = False
-    if len(request.keys()) != 0:
+    if request.GET:
         content = request.GET.get('content', False)
 
     # Fetch the group and all documents associated with the Group
