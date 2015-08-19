@@ -2,10 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
+from ..common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
+
 from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
 from ..common.models import Group, Task
+from ..document.models import Section, Annotation
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -36,15 +39,80 @@ def quest_group_list(request, group_pk):
     return Response(serializer.data)
 
 
+#@api_view(['GET'])
 def group_users_bioc(request, group_pk, format_type):
-    group = get_object_or_404(Group, pk=group_pk)
+    '''
+        Returns the BioC document for all user
+        annotations accross the group
+    '''
+    content = False
+    if len(request.keys()) != 0:
+        content = request.GET.get('content', False)
 
-    # When fetching via pubmed, include all user annotaitons
+    # Fetch the group and all documents associated with the Group
+    group = get_object_or_404(Group, pk=group_pk)
+    document_pmids = group.get_documents().values_list('document_id', flat=True)
+
+    # Fetch all the section pks and their text length
+    sections = Section.objects.filter(
+        document__document_id__in=document_pmids
+    ).extra(select={'section_length': 'LENGTH(text)'
+    }).values('pk', 'section_length')
+    all_section_pks = [s['pk'] for s in sections]
+
+    # Fetch all the actual annotations using
+    annotations = Annotation.objects.filter(
+            view__section__pk__in=all_section_pks
+        ).values(
+            'pk',
+            'start',
+            'text',
+            'type',
+            'view__user__pk',
+            'view__section__pk',
+            'view__section__document__document_id',
+            ).all()
+    annotations = list(annotations)
+
+    # Provide the base of the response
     writer = bioc_writer(request)
 
-    for doc in group.get_documents():
-        doc_bioc = doc.as_bioc_with_user_annotations()
-        writer.collection.add_document(doc_bioc)
+    for doc_pmid in document_pmids:
+        document_annotations = filter(lambda ann: ann['view__section__document__document_id'] == doc_pmid, annotations)
+
+        document = BioCDocument()
+        document.id = str(doc_pmid)
+
+        passage_offset = 0
+
+        section_pks = list(set([ann['view__section__pk'] for ann in document_annotations]))
+        for section_pk in section_pks:
+            # Add the Section to the Document
+            passage = BioCPassage()
+            passage.put_infon('id', str(section_pk))
+            passage.offset = str(passage_offset)
+
+            section_annotations = filter(lambda ann: ann['view__section__pk'] == section_pk, document_annotations)
+            for ann in section_annotations:
+                annotation = BioCAnnotation()
+
+                annotation.id = str(ann.get('pk'))
+                annotation.put_infon('user', str(ann.get('view__user__pk')))
+                annotation.put_infon('type', ann.get('type'))
+
+                location = BioCLocation()
+                location.offset = str(passage_offset + ann.get('start'))
+                location.length = str(len(ann.get('text')))
+                annotation.add_location(location)
+                annotation.text = ann.get('text')
+
+                passage.add_annotation(annotation)
+
+            section_results = filter(lambda section: section['pk'] == section_pk, sections)
+            passage_offset += int(section_results[0]['section_length'])
+            document.add_passage(passage)
+
+        writer.collection.add_document(document)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

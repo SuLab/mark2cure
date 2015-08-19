@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .forms import GroupForm
+from ..analysis.models import Report
 from ..userprofile.models import UserProfile
 from ..document.models import Document, Pubtator
 from ..document.tasks import get_pubmed_document
-from ..analysis.tasks import inter_annotator_agreement
 from ..common.models import Task, UserQuestRelationship, Group
 from ..common.bioc import *
 
@@ -110,11 +110,12 @@ def group_list(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
-def group_analysis(request, pk, format_type='html'):
-    group = get_object_or_404(Group, pk=pk)
-    df = inter_annotator_agreement(pk)
-    ctx = {'group': group}
-    return dataframe_view(request, df, format_type, ctx, template='control/dataframe_pk_base.jade')
+def group_report(request, pk, format_type='html'):
+    report = get_object_or_404(Report, pk=pk)
+    ctx = {
+        'model_pk': report.pk
+    }
+    return dataframe_view(request, report.dataframe, format_type, ctx, template='control/dataframe_pk_base.jade')
 
 
 @login_required

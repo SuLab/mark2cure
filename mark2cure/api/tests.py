@@ -5,6 +5,8 @@ from ..test_base.test_base import TestBase
 from ..document.models import Annotation
 from ..common.models import Group, Task
 
+from .views import group_users_bioc
+
 from ..common.bioc import BioCReader
 
 import json
@@ -136,3 +138,20 @@ class GroupBioCAPIViews(TestCase, TestBase):
             self.assertEqual(response.status_code, 200)
 
         self.client.logout()
+
+class GroupUsersBioC(TestCase, TestBase):
+    fixtures = ['large_group_3/data.json']
+
+    def test_api_online(self):
+
+        # Confirm API is online from direct access
+        req = group_users_bioc({}, group_pk, 'xml')
+        print req.content
+
+        # Confirm API is online from URL
+        response = self.client.get(reverse('api:quest-group-api',
+            kwargs={'group_pk': 3}))
+
+        self.assertEqual(response.status_code, 200)
+
+

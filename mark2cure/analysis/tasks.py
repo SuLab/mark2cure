@@ -8,84 +8,87 @@
     other user as the gold standard for each pairing.
 '''
 
-from operator import itemgetter
 from ..common.bioc import BioCReader
+from ..common.models import Group
 from ..api.views import group_users_bioc
+from ..document.models import Annotation
+from .models import Report
 
 from nltk.metrics import scores as nltk_scoring
+from celery import task
+
 import pandas as pd
-
 import itertools
-import requests
-import numpy
-import os
 
 
-def inter_annotator_agreement(group_pk):
+def hashed_annotations_df(group_pk, private_api=False,
+        compare_type=True, compare_text=False):
 
-    # Capture exported data
-    #req = requests.get('https://mark2cure.org/api/group/'+str(group_pk)+'/user_annotations.xml')
-    #assert req.ok, "BioC Fetch Failed"
+    if private_api:
+        pass
 
-    req = group_users_bioc({}, group_pk, 'xml')
+    else:
+        # Capture exported data
+        req = group_users_bioc({}, group_pk, 'xml')
+        reader = BioCReader(source=req.content)
+        reader.read()
 
-    reader = BioCReader(source=req.content)
-    reader.read()
+        hashed_annotations = [] # Creates empty list for the annotations
+        ann_types = Annotation.ANNOTATION_TYPE_CHOICE
 
-    HashedInfo = [] #Creates empty list for the annotations
-    user_pks = []
+        # Read through BioC results and convert to a list of (user, uniq_ann_identifier, document_id)
+        for document in reader.collection.documents:
+            for passage in document.passages:
+                for ann in passage.annotations:
+                    ann_loc = ann.locations[0]
 
-    # Read through BioC results and convert to a list of (user, uniq_ann_identifier, document_id)
-    for document in reader.collection.documents:
-        # print "for PMID: ",document.id
-        for passage in document.passages:
-            for ann in passage.annotations:
-                infons = ann.infons
-                user_pks.append(str(ann.infons.get('user')))
-                ann_loc = ann.locations[0]
+                    hashed_annotations.append((
+                        document.id,
+                        ann.infons.get('user'),
+                        ann_types.index( ann.infons.get('type') ),
+                        ann_loc.offset,
+                        ann_loc.length,
+                        ann.text
+                    ))
 
-                HashedInfo.append((
-                    infons.get('user'),
-                    '{0}_{1}_{2}_{3}'.format(document.id, infons.get('type'), ann_loc.offset, ann_loc.length),
-                    document.id ))
+    df = pd.DataFrame(hashed_annotations, columns=('document_id', 'user', 'type', 'offset', 'length', 'text'))
 
+    if compare_type:
+        df['hash'] = df.document_id.apply(str) +'_'+ df.type.apply(str) +'_'+ df.offset.apply(str) +'_'+ df.length.apply(str)
+    else:
+        df['hash'] = df.document_id.apply(str) +'_'+                          df.offset.apply(str) +'_'+ df.length.apply(str)
+
+    return df
+
+
+def compute_pairwise(hashed_annotations_df):
+    '''
+        Returns pairwise comparision between users (uesr_a & user_b)
+        that have completed similar documents
+    '''
     # Make user_pks unique
-    userset = set(user_pks)
+    userset = set(hashed_annotations_df.user)
 
-    # print "generating user pairs and calculating precision, recall, and f"
-    # Sorts the the list
-    an_srtdby_user = sorted(HashedInfo)
+    # (TODO) Why does this need to be sorted by User
+    # an_srtdby_user = sorted(hashed_annotations)
+    # inter_annotator_df.sort('document_id', inplace=True)
 
     inter_annotator_arr = []
     # For each unique user comparision, compute
     for user_a, user_b in itertools.combinations(userset, 2): # (TODO) Put counter in here
-        ref_set = set()  # Empties the set prior to each match
-        test_set = set()  # Empties the set prior to each match
-        user_a_set = set()  # Empties the set prior to each match
-        user_b_set = set()  # Empties the set prior to each match
-        pmid_set = set()  # Empties the set prior to each match
-
-        for user_pk, uniq_hash, pmid in an_srtdby_user:
-            if user_pk == user_a:
-                user_a_set.add(pmid)
-
-            if user_pk == user_b:
-                user_b_set.add(pmid)
+        # The list of document_ids that each user had completed
+        user_a_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_a].document_id)
+        user_b_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_b].document_id)
 
         # Only compare documents both users have completed
         pmid_set = user_a_set.intersection(user_b_set)
-        for ann_pmid in pmid_set:
-            for user_pk, uniq_hash, pmid in an_srtdby_user:
-
-                if pmid == ann_pmid:
-                    if user_pk == user_a:
-                        ref_set.add(uniq_hash)
-
-                    if user_pk == user_b:
-                        test_set.add(uniq_hash)
 
         # If user_a and user_b have completed shared PMID, compute comparisions
         if len(pmid_set) != 0:
+            pmid_df = hashed_annotations_df[hashed_annotations_df['document_id'].isin(pmid_set)]
+            ref_set  = set(pmid_df[ pmid_df['user'] == user_a ].hash)
+            test_set = set(pmid_df[ pmid_df['user'] == user_b ].hash)
+
             # Compute the precision, recall and F-measure based on
             # the unique hashes
             inter_annotator_arr.append((
@@ -97,60 +100,68 @@ def inter_annotator_agreement(group_pk):
                 nltk_scoring.f_measure(ref_set, test_set)
             ))
 
-    inter_annotator_df = pd.DataFrame(inter_annotator_arr, columns=('user_a', 'user_b', 'docs_compared', 'precision', 'recall', 'f-score'))
-    inter_annotator_df.to_csv('max_documentset_fscore.csv', index=False)
+    return pd.DataFrame(inter_annotator_arr, columns=('user_a', 'user_b', 'docs_compared', 'precision', 'recall', 'f-score'))
+
+
+def merge_pairwise_comparisons(inter_annotator_df):
+    '''
+        Merging User1 and User2 columns for the pairings since combi ensures that
+        that users are paired with each other only once (no reverse pairing)
+    '''
+    # Sort rows by best F-Score at the top
+    inter_annotator_df.sort('f-score', ascending=False, inplace=True)
 
     all_users_arr = []
-    ### Merging User1 and User2 columns for the pairings since combi ensures that
-    ### that users are paired with each other only once (no reverse pairing)
-    for groupByuser1, rows in itertools.groupby(inter_annotator_df.values, key=itemgetter(0)):
-        grpd_a, counter = 0, 0
-        for user_a, user_b, docs_compared, precision, recall, fscore in rows:
-            grpd_a += fscore
-            counter += 1
-
-        # dumps total f-score and total counts for each user
+    for group_idx, group in inter_annotator_df.groupby('user_a'):
         all_users_arr.append((
-            groupByuser1,
-            counter,
-            grpd_a
+            group_idx,
+            group.shape[0],
+            group['f-score'].sum()
         ))
 
-    for groupByuser2, rows in itertools.groupby(inter_annotator_df.values, key=itemgetter(1)):
-        grpd_b, counter = 0, 0
-        for user_a, user_b, docs_compared, precision, recall, fscore in rows:
-            grpd_b += fscore
-            counter += 1
-
-        # dumps total f-score and total counts for each user
+    for group_idx, group in inter_annotator_df.groupby('user_b'):
         all_users_arr.append((
-            groupByuser2,
-            counter,
-            grpd_a
+            group_idx,
+            group.shape[0],
+            group['f-score'].sum()
         ))
-    avg_user_f_sum = pd.DataFrame(all_users_arr, columns=('user', 'pairings', 'avg_f'))
-    avg_user_f_sum.to_csv('max_avg_fscore_sum.csv', index=False)
 
-    # Load the Avg user F-Score data and sort by F
-    al_user_data = numpy.sort(avg_user_f_sum.values, axis=0)
+    temp_df = pd.DataFrame(all_users_arr, columns=('user', 'pairings', 'total_f'))
 
     # Obtaining average f-score from user-merged data.
     # print 'Obtaining average f-scores'
     avg_f_arr = []
-    for groupByusers, rows in itertools.groupby(al_user_data, key=itemgetter(0)):
-        grpd_counts, grpd_c, counter = 0, 0, 0
-
-        for user_pk, pairings, avg_f in rows:
-            grpd_c += avg_f
-            grpd_counts += pairings
-            counter += 1
-
+    for group_idx, group in temp_df.groupby('user'):
+        pairing_counts = group['pairings'].sum()
         avg_f_arr.append((
-            groupByusers,
-            grpd_counts,
-            grpd_c/grpd_counts
+            group_idx,
+            pairing_counts,
+            group['total_f'].sum() / pairing_counts
         ))
 
-    avg_user_f = pd.DataFrame(avg_f_arr, columns=('user', 'pairings', 'avg_f'))
-    avg_user_f.to_csv('max_avg_fscore.csv', index=False)
+    avg_user_f = pd.DataFrame(avg_f_arr, columns=('user', 'pairings', 'f-score'))
+    avg_user_f.sort('f-score', ascending=False, inplace=True)
     return avg_user_f
+
+
+def generate_reports(group_pk, private_api=False,
+        compare_type=True, compare_text=False):
+    args = locals()
+
+    group = Group.objects.get(pk=group_pk)
+    hash_table_df = hashed_annotations_df(group_pk)
+
+    inter_annotator_df = compute_pairwise(hash_table_df)
+    Report.objects.create(
+            group=group, report_type=1,
+            dataframe=inter_annotator_df, args=args)
+
+    avg_user_f = merge_pairwise_comparisons(inter_annotator_df)
+    Report.objects.create(group=group, report_type=1,
+            dataframe=avg_user_f, args=args)
+
+
+@task()
+def group_analysis():
+    for group_pk in Group.objects.values_list('pk', flat=True):
+        generate_reports(group_pk)

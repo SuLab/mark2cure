@@ -1,8 +1,9 @@
+from celery.schedules import crontab
 from datetime import timedelta
+
 import djcelery
 import sys
 import os
-
 
 from configurations import (
     Configuration
@@ -319,6 +320,10 @@ class Base(Configuration):
         'check-corpus': {
             'task': 'mark2cure.document.tasks.check_corpus_health',
             'schedule': timedelta(minutes=10)
+        },
+        'group-analysis': {
+            'task': 'mark2cure.analysis.tasks.group_analysis',
+            'schedule': crontab(hour=1, minute=30)
         },
     }
 

@@ -282,12 +282,15 @@ class Section(models.Model):
 
     document = models.ForeignKey(Document)
 
-    def as_bioc(self, offset):
+    def as_bioc(self, offset, content=True):
         passage = BioCPassage()
         passage.put_infon('type', 'paragraph')
         passage.put_infon('section', self.get_kind_display().lower())
         passage.put_infon('id', str(self.pk))
-        passage.text = self.text
+        if content:
+            passage.text = self.text
+        else:
+            passage.text = ''
         passage.offset = str(offset)
         return passage
 

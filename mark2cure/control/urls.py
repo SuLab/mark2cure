@@ -18,8 +18,10 @@ urlpatterns = patterns('',
 
     url(r'^group/create/$',
         views.group_create, name='group_create'),
-    url(r'^group/(?P<pk>\d+)/analysis/(?P<format_type>\w+)/$',
-        views.group_analysis, name='group_analysis'),
+
+    url(r'^report/(?P<pk>\d+)/analysis/(?P<format_type>\w+)/$',
+        views.group_report, name='group_report'),
+
     url(r'^group/(?P<pk>\d+)/$',
         views.group_read, name='group'),
     url(r'^group/$',

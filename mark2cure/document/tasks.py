@@ -60,7 +60,7 @@ def check_pubtator_health():
         p_valid = pubtator.valid()
 
         if p_valid:
-            # Asociation with the correct document
+            # Association with the correct document
             pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
 
             # Prevents subsequent API calls

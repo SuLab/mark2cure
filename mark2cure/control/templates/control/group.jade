@@ -13,13 +13,11 @@ block content
           a(href='{% url "admin:common_group_change" group.pk %}')
             #{group.name}
 
-        h3.text-center
-          a(href='{% url "control:group_analysis" pk=group.pk format_type="html" %}') Analysis Results
-
         p.text-center
           small #{group.description}
 
-      .col-md-8.col-md-offset-2
+    .row
+      .col-md-7.col-md-offset-1
 
         table.table.table-hover.table-striped
           thead
@@ -64,3 +62,34 @@ block content
                       button(type='submit').btn.btn-warning.btn-block
                         | Reset
 
+
+      .col-md-4
+
+        table.table.table-hover.table-striped
+          thead
+            tr
+              th Report ID
+              th Type
+              th Args
+              th Admin
+              th Created
+
+          tbody
+            - for report in group.report_set.all
+                tr
+                  td
+                    a(href='{% url "control:group_report" pk=report.pk format_type="html" %}')
+                      h3 #{report.pk}
+
+                  td
+                    p {{report.get_report_type_display}}
+
+                  td
+                    small #{report.args}
+
+                  td
+                    a(href='{% url "admin:analysis_report_change" report.pk %}')
+                      p Admin
+
+                  td
+                    p #{report.created|naturaltime}
