@@ -8,9 +8,11 @@ class Report(models.Model):
     # on the entire annotations as single massive list
     group = models.ForeignKey(Group, null=True, blank=True)
 
+    PAIRWISE = 0
+    AVERAGE = 1
     REPORT_CHOICE = (
-        (0, 'pairwise'),
-        (1, 'average'),
+        (PAIRWISE, 'pairwise'),
+        (AVERAGE, 'average'),
     )
     report_type = models.CharField(max_length=1, choices=REPORT_CHOICE, blank=False)
 

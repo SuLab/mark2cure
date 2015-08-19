@@ -153,11 +153,11 @@ def generate_reports(group_pk, private_api=False,
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
-            group=group, report_type=1,
+            group=group, report_type=Report.PAIRWISE,
             dataframe=inter_annotator_df, args=args)
 
     avg_user_f = merge_pairwise_comparisons(inter_annotator_df)
-    Report.objects.create(group=group, report_type=1,
+    Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
 
 
