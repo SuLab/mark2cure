@@ -95,6 +95,13 @@ class Group(models.Model):
         # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
+    def current_avg_f(self):
+        report = self.report_set.filter(report_type=1).order_by('-created').first()
+        if report:
+            return report.dataframe['f-score'].mean()
+        else:
+            return 0.0
+
     def percentage_complete(self):
         task_queryset = self.task_set.extra(select={
             "completed": """
