@@ -9,9 +9,11 @@ from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
 from mark2cure.document.models import Annotation, Document, View
-from mark2cure.common.models import Task, UserQuestRelationship
+from mark2cure.common.models import Group, Task, UserQuestRelationship
+from mark2cure.analysis.models import Report
 
 from django.utils import timezone
+import pandas as pd
 import datetime
 import os
 
@@ -52,6 +54,28 @@ class Team(models.Model):
         userprofiles = userprofiles_with_score(days=10000)
         team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
         return sum(filter(None, userprofiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
+
+    def current_avg_f(self, weighted=True):
+        '''
+            Return back the weighted mean (pairings count) f-score
+        '''
+        reports = Report.objects.filter(report_type=1).order_by('-created')[:Group.objects.count()]
+
+        team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
+        team_user_profile_pks = [str(u) for u in team_user_profile_pks]
+
+        dataframes = [r.dataframe[r.dataframe['user'].isin(team_user_profile_pks)] for r in reports ]
+
+        try:
+            team_df = pd.concat(dataframes)
+
+            if weighted:
+                team_df['wf'] = team_df['pairings'] * team_df['f-score']
+                return team_df['wf'].sum() / team_df['pairings'].sum()
+            else:
+                return team_df['f-score'].mean()
+        except:
+            return 0.0
 
 
 def _createHash():
@@ -136,6 +160,24 @@ class UserProfile(models.Model):
 
     def completed_document_pks(self):
         return list(set(View.objects.filter(user=self.user, completed=True).values_list('section__document', flat=True)))
+
+    def current_avg_f(self, weighted=True):
+        '''
+            Return back the weighted mean (pairings count) f-score
+        '''
+        reports = Report.objects.filter(report_type=1).order_by('-created')[:Group.objects.count()]
+        dataframes = [r.dataframe[r.dataframe['user']==str(self.user.pk)] for r in reports ]
+
+        try:
+            user_df = pd.concat(dataframes)
+            if weighted:
+                user_df['wf'] = user_df['pairings'] * user_df['f-score']
+                return user_df['wf'].sum() / user_df['pairings'].sum()
+            else:
+                return user_df['f-score'].mean()
+        except:
+            return 0.0
+
 
     def online(self):
         if self.last_seen:

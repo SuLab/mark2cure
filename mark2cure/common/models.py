@@ -95,10 +95,18 @@ class Group(models.Model):
         # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
-    def current_avg_f(self):
+    def current_avg_f(self, weighted=True):
         report = self.report_set.filter(report_type=1).order_by('-created').first()
+        df = report.dataframe
+
         if report:
-            return report.dataframe['f-score'].mean()
+
+            if weighted:
+                df['wf'] = df['pairings'] * df['f-score']
+                return df['wf'].sum() / df['pairings'].sum()
+            else:
+                return df['f-score'].mean()
+
         else:
             return 0.0
 
