@@ -508,6 +508,10 @@ h3 {
   color: #7F3CFF;
 }
 
+p {
+  font-size: 18px;
+}
+
 h1 a:hover {
   text-decoration: none;
   color: #fff;
