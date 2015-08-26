@@ -4,12 +4,40 @@ extends base
 - load humanize
 
 
+
+block header
+  - with headerMessage='Community Dashboard: Relation Module'
+    include includes/header
+
 block content
   .container
     .row.head-space
-      .col-xs-12
-        a Select one of the following papers to help us further define chemical/disease relations:
+      .col-xs-11
+        h3 Select one of the following papers to help us further define chemical/disease relations:
           .list-group
             - for paper in papers
               a(href='{% url "relation:relation" paper_pk=paper.pk %}').list-group-item
                 #{paper.title}
+
+
+      .col-md-6.col-md-offset-10
+        .row
+          .col-md-8.col-md-offset-2.col-sm-12.col-sm-offset-0
+            .panel.panel-default
+              .panel-heading
+                | My Stats
+              .panel-body
+                ol.list-unstyled
+                  li
+                    p Total Quests: #{user.userprofile.quests_count|intcomma}
+                  li
+                    p Total Annotations: #{user.userprofile.annotations_count|intcomma}
+                  li
+                    p Score: #{user.userprofile.rating_score|intcomma}
+                  li
+                    p Level: #{user.userprofile.highest_level.name}
+
+                .row
+                  .col-xs-12.text-center
+                    a(href='{% url "userprofile:public-profile" username=user.username %}')
+                      |  View Profile

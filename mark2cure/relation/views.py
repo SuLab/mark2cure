@@ -85,7 +85,7 @@ def relation(request, paper_pk):
            }
 
     # use the relation.html template to work with above code given ctx
-    return TemplateResponse(request, 'relation/relation.html', ctx)
+    return TemplateResponse(request, 'relation/relation.jade', ctx)
 
 
 #pass in relation similar to above method
