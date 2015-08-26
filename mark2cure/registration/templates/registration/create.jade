@@ -11,7 +11,7 @@ block content
 
     .row.foot-space
       .col-md-12
-        h2 You have now completed the tutorial and are ready to Mark2Cure! 
+        h2 You have now completed the tutorial and are ready to Mark2Cure!
         - if not user.is_authenticated
           h4 To skip the tutorials in the future and to save your score and any points you accumulate, please register for an account.  After registering, we will teach you how to highlight important biomedical concepts like diseases, genes, and treatments. Your efforts, combined with the efforts of other citizen scientists, will help researchers better organize biomedical knowledge.
 
@@ -29,11 +29,11 @@ block content
               fieldset
                 .form-group
                   label.col-sm-4.control-label Username
-                  .col-sm-8 #{form.username|add_class:'form-control'}
+                  .col-sm-8 #{form.username|add_class:'form-control'|attr:"placeholder:displayed on public profile"}
 
                 .form-group
                   label.col-sm-4.control-label Email
-                  .col-sm-8 #{form.email|add_class:'form-control'}
+                  .col-sm-8 #{form.email|add_class:'form-control'|attr:"placeholder:will remain hidden"}
 
                 .form-group
                   label.col-sm-4.control-label Password
@@ -58,4 +58,3 @@ block content
           .row.head-space
             .col-sm-4.col-sm-offset-4
               a(href='{% url "registration:login" %}').btn.btn-block.btn-default Login
-
