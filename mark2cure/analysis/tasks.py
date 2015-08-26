@@ -11,7 +11,7 @@
 from ..common.bioc import BioCReader
 from ..common.models import Group
 from ..api.views import group_users_bioc
-from ..document.models import Annotation
+from ..document.models import Section, Annotation
 from .models import Report
 
 from nltk.metrics import scores as nltk_scoring
@@ -24,17 +24,61 @@ import itertools
 def hashed_annotations_df(group_pk, private_api=False,
         compare_type=True, compare_text=False):
 
+    hashed_annotations = [] # Creates empty list for the annotations
+    ann_types = Annotation.ANNOTATION_TYPE_CHOICE
+
     if private_api:
-        pass
+        group = Group.objects.get(pk=group_pk)
+        document_pmids = group.get_documents().values_list('document_id', flat=True)
+
+        # Fetch all the section pks and their text length
+        sections = Section.objects.filter(
+            document__document_id__in=document_pmids
+        ).extra(select={'section_length': 'LENGTH(text)'
+        }).values('pk', 'section_length')
+        all_section_pks = [s['pk'] for s in sections]
+
+        # Fetch all the actual annotations using
+        annotations = Annotation.objects.filter(
+                view__section__pk__in=all_section_pks
+            ).values(
+                'pk',
+                'start',
+                'text',
+                'type',
+                'view__user__pk',
+                'view__section__pk',
+                'view__section__document__document_id',
+                ).all()
+
+        for doc_pmid in document_pmids:
+            document_annotations = filter(lambda ann: ann['view__section__document__document_id'] == doc_pmid, annotations)
+            passage_offset = 0
+
+            section_pks = list(set([ann['view__section__pk'] for ann in document_annotations]))
+            for section_pk in section_pks:
+
+                section_annotations = filter(lambda ann: ann['view__section__pk'] == section_pk, document_annotations)
+                for ann in section_annotations:
+                    hashed_annotations.append((
+                        ann.get('view__section__document__document_id'),
+                        ann.get('view__user__pk'),
+                        ann_types.index( ann.get('type') ),
+
+                        passage_offset + ann.get('start'),
+
+                        len(ann.get('text')),
+                        ann.get('text')
+                    ))
+
+                section_results = filter(lambda section: section['pk'] == section_pk, sections)
+                passage_offset += int(section_results[0]['section_length'])
 
     else:
         # Capture exported data
         req = group_users_bioc({}, group_pk, 'xml')
         reader = BioCReader(source=req.content)
         reader.read()
-
-        hashed_annotations = [] # Creates empty list for the annotations
-        ann_types = Annotation.ANNOTATION_TYPE_CHOICE
 
         # Read through BioC results and convert to a list of (user, uniq_ann_identifier, document_id)
         for document in reader.collection.documents:
@@ -69,13 +113,9 @@ def compute_pairwise(hashed_annotations_df):
     # Make user_pks unique
     userset = set(hashed_annotations_df.user)
 
-    # (TODO) Why does this need to be sorted by User
-    # an_srtdby_user = sorted(hashed_annotations)
-    # inter_annotator_df.sort('document_id', inplace=True)
-
     inter_annotator_arr = []
     # For each unique user comparision, compute
-    for user_a, user_b in itertools.combinations(userset, 2): # (TODO) Put counter in here
+    for user_a, user_b in itertools.combinations(userset, 2):
         # The list of document_ids that each user had completed
         user_a_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_a].document_id)
         user_b_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_b].document_id)
@@ -96,7 +136,7 @@ def compute_pairwise(hashed_annotations_df):
                 user_b,
                 len(pmid_set),
                 nltk_scoring.precision(ref_set, test_set),
-                nltk_scoring.recall(ref_set, test_set),
+                nltk_scoring.recall(   ref_set, test_set),
                 nltk_scoring.f_measure(ref_set, test_set)
             ))
 
@@ -149,7 +189,7 @@ def generate_reports(group_pk, private_api=False,
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
-    hash_table_df = hashed_annotations_df(group_pk)
+    hash_table_df = hashed_annotations_df(group_pk, private_api=private_api)
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
@@ -164,4 +204,4 @@ def generate_reports(group_pk, private_api=False,
 @task()
 def group_analysis():
     for group_pk in Group.objects.values_list('pk', flat=True):
-        generate_reports(group_pk)
+        generate_reports(group_pk, private_api=True)
