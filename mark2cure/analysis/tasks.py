@@ -203,5 +203,6 @@ def generate_reports(group_pk, private_api=False,
 
 @task()
 def group_analysis():
-    for group_pk in Group.objects.values_list('pk', flat=True):
-        generate_reports(group_pk, private_api=True)
+    for group in Group.objects.all():
+        if group.percentage_complete() < 100:
+            generate_reports(group.pk, private_api=True)
