@@ -20,25 +20,17 @@ def select_best_opponent(task, document, player):
             other users
 
         2) Select users with non-empty response for this View (Document scoped to Quest)
-            * Empty checks for len() > 0
+            Explanation: This ensures we only look at users who have submitted the document
+                         so that a comparison can be shown
 
-            //-- Stop here no need to go into this complexity for Experiment 2
-            2.1) Sort by internal F score average, select top 3 (over threshold), pick 1 at random
-                * If score is not present, calcuate it for each user to be cached for next time
-                * Score is average F score on last 10 computable documents
-                  * This creates a rolling window, could do # or time based.
-                    * Bad if documents completed long time ago for # based
+            2.1) Select which available comparsion has the best F Score for this Group
+                  Explanation: A user performance varies within Groups as they require
+                               different types of skills
 
-            2.2) Save new score for current comparision
-                * Save score if compared to a Golden Master document (current pool size is limited)
-                * Save score if compared to a top ranked (1 of the 3) that was randomly selected
-                * Do not have novel annotations or comparisions to high skill badged people
+            Sort by internal F score average, select top 3 (over threshold), pick 1 at random
+                * Sort by top weighted F-Scores
 
-        Downfalls:
-            * Good user could annotate all over the place, generate
-              random noise but would pass validation as they're top ranked and len() > 0
-            * Does not account for total game play (this might be good), uses rolling window
-              of history
+        3) If no GM or no non-empty responses return None
     '''
     # Select all (**including uncompleted**) other user started quests
     # that have been completed
@@ -68,9 +60,24 @@ def select_best_opponent(task, document, player):
 
     if others_quest_relationships.exists() and len(previous_users):
         # No expert around so select a previous user at random
-        random.shuffle(previous_users)
-        selected_user = previous_users[0]
-        return selected_user
+        previous_users_pks = [str(u.pk) for u in previous_users]
+
+        df = task.group.report_set.filter(report_type=1).order_by('-created').first().dataframe
+        df = df[df['user'].isin(previous_users_pks)]
+
+        row_length = df.shape[0]
+        if row_length:
+            # Top 1/2 of the users (sorted by F)
+            df = df.iloc[:row_length/2]
+
+            # Select 1 at random
+            top_half_user_pks = list(df.user)
+            random.shuffle(top_half_user_pks)
+            selected_user_pk = top_half_user_pks[0]
+
+            for u in previous_users:
+                if u.pk == selected_user_pk:
+                    return u
 
     return None
 
