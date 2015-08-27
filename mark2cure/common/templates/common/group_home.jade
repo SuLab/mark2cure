@@ -27,7 +27,7 @@ block content
           p.lead #{group.description}
 
       .col-md-10.col-md-offset-1.head-space
-        -with progress=group.percentage_complete
+        - with progress=group.percentage_complete
           - if progress
             h4.progress-label Community progress on this set:
             .progress
