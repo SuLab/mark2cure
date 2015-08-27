@@ -18,6 +18,56 @@ import datetime
 
 @login_required
 @api_view(['GET'])
+def analysis_group_user(request, group_pk, user_pk=None):
+    group = get_object_or_404(Group, pk=group_pk)
+
+    if user_pk == None:
+        user_pk = str(request.user.pk)
+
+    response = []
+    reports = group.report_set.filter(report_type=1).order_by('-created').all()
+    for report in reports:
+        df = report.dataframe
+        df = df[df['user']==user_pk]
+        if df.shape[0] > 0:
+            row = df.iloc[0]
+            response.append({
+                'created': report.created,
+                'f-score': row['f-score'],
+                'pairings': row['pairings'] })
+
+    return Response(response)
+
+
+@login_required
+@api_view(['GET'])
+def analysis_group(request, group_pk):
+    group = get_object_or_404(Group, pk=group_pk)
+    weighted = True
+
+    response = []
+    reports = group.report_set.filter(report_type=1).order_by('-created').all()
+    for report in reports:
+        df = report.dataframe
+
+        if weighted:
+            df['wf'] = df['pairings'] * df['f-score']
+            response.append({
+                'created': report.created,
+                'f-score': df['wf'].sum() / df['pairings'].sum(),
+                'pairings': df['pairings'].sum() })
+
+        else:
+            response.append({
+                'created': report.created,
+                'f-score': df['f-score'].mean(),
+                'pairings': df['pairings'].sum() })
+
+    return Response(response)
+
+
+@login_required
+@api_view(['GET'])
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 

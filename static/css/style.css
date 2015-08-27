@@ -368,3 +368,23 @@ blockquote p {
   padding-bottom: 2px;
 }
 
+#chart { font-size: 10px;}
+
+path {
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
+}
+
+path {
+  stroke-width: 1.5;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+

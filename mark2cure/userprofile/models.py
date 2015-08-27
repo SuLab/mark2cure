@@ -161,6 +161,14 @@ class UserProfile(models.Model):
     def completed_document_pks(self):
         return list(set(View.objects.filter(user=self.user, completed=True).values_list('section__document', flat=True)))
 
+    def contributed_groups(self):
+        views = View.objects.filter(
+                user=self.user,
+                completed=True).values_list('userquestrelationship__task__group', flat=True)
+        group_pks = list(set(views))
+        group_pks = [x for x in group_pks if x is not None]
+        return Group.objects.filter(pk__in=group_pks).all()
+
     def current_avg_f(self, weighted=True):
         '''
             Return back the weighted mean (pairings count) f-score

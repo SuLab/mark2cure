@@ -2,6 +2,7 @@ extends base
 
 - load widget_tweaks
 - load humanize
+- load group
 
 block header
     - if user.is_authenticated
@@ -40,6 +41,34 @@ block content
               .panel-body
                 #{player.userprofile.quote}
 
+          - if request.user|has_group:"Comment Moderators"
+            .col-xs-12
+              .panel.panel-default
+                .panel-heading
+                  | Quest Performance
+                .panel-body
+
+                  ul(role="tablist").nav.nav-tabs
+                    - for group in contributed_groups
+                      - if forloop.counter0 == 0
+                        li(role="presentation").active
+                          a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
+                            | #{group.stub}
+
+                      - else
+                        li(role="presentation")
+                          a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
+                            | #{group.stub}
+
+                  div.tab-content
+                    - for group in contributed_groups
+                      - if forloop.counter0 == 0
+                        div(role="tabpanel", id="tab-{{group.stub}}").tab-pane
+                          #chart.text-center
+
+                      - else
+                        div(role="tabpanel", id="tab-{{group.stub}}").tab-pane.active
+                          #chart.text-center
 
       .col-xs-3
         .row
@@ -57,6 +86,10 @@ block content
                     p Total Quests: #{player.userprofile.quests_count|intcomma}
                   li
                     p Total Annotations: #{player.userprofile.annotations_count|intcomma}
+
+                  - if request.user|has_group:"Comment Moderators"
+                    li
+                      p Performance: {% widthratio player.userprofile.current_avg_f 1 100 %}%
                   li
                     p Score: #{player.userprofile.rating_score|intcomma}
                   li
@@ -68,5 +101,15 @@ block content
                           |  #{player.userprofile.team.name}
 
 
+block post-footer
+    script.
+        $('.nav-tabs a').click(function (e) {
+          e.preventDefault();
+          $(this).tab('show');
+        });
 
+
+    - for group in contributed_groups
+        script.
+            drawUserFScoreLine("#tab-{{group.stub}} #chart", "{{group.pk}}");
 

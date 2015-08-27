@@ -18,7 +18,9 @@ def public_profile(request, username):
     user = get_object_or_404(User, username=username)
 
     ctx = {'player': user,
-           'owner': True if request.user == user else False}
+           'owner': True if request.user == user else False,
+           'contributed_groups': user.profile.contributed_groups()}
+
     return TemplateResponse(request, 'userprofile/public-profile.jade', ctx)
 
 
