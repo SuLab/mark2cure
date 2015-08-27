@@ -482,5 +482,55 @@ for paper in papers:
 def main():
     print split_abstract("This is a test. My sentence number 2!")
 
+
+"""
+TODO
+
+UID111 aspirin
+UID222 headache
+UID333 gene1
+
+
+"""
+# USE different routes to make questions that are the most
+#"logical and coherent for the users"
+
+def original_questions(concept1, concept2):
+    question1 = '"%s" directly contributes to "%s"' % (concept1, concept2)
+    question2 = '"%s" contributes to another disease, and that other disease causes "%s"' % (concept1, concept2)
+    question3 = 'The text does not say that "%s" contributes to or causes "%s"' % (concept1, concept2)
+    question4 = 'In this context, "%s" does not refer to a chemical and/or "%s" does not refer to a disease' % (concept1, concept2)
+    return question1, question2, question3, question4
+
+
+
+def drug_disease_association(concept1, concept2):
+    question1 = '%s exacerbates %s' % (concept1, concept2)
+    question2 = '%s increases the risk of %s' % (concept1, concept2)
+    question3 = '%s may cause %s' % (concept1, concept2)
+    question4 = '%s prevents %s' % (concept1, concept2)
+    question5 = '%s treats %s' % (concept1, concept2)
+    # if user selects question 5:
+
+def drug_disease_association_treats(concept1, concept2):
+    question1 = '%s treats the cause of %s' % (concept1, concept2)
+    question2 = '%s treats the symptoms of %s' % (concept1, concept2)
+
+
+
+
+
+
+def drug_drug_association():
+    pass
+def gene_disease_association():
+    pass
+
+
+
+
+
+
+
 if __name__ == "__main__":
     main()

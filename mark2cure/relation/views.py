@@ -26,6 +26,7 @@ import datetime
 import re
 
 from .models import Paper, Relation, Answer
+from .tasks import * # TODO: not best practice, but many functions
 #from .forms import AnswerForm
 #from .tasks import parse_input
 from django import forms
@@ -62,7 +63,6 @@ def relation(request, paper_pk):
     current_paper = get_object_or_404(Paper, pk=paper_pk)
     relations = Relation.objects.filter(paper=current_paper.id)
 
-
     for i in relations:
         relation = i
         # relations that user has already completed
@@ -74,13 +74,22 @@ def relation(request, paper_pk):
     chemical_from_relation = Annotation.objects.filter(uid=relation.chemical_id).filter(paper=current_paper.id)[0].text
     disease_from_relation = Annotation.objects.filter(uid=relation.disease_id).filter(paper=current_paper.id)[0].text
 
+    # TODO make case insensitive
+
+    formatted_abstract = re.sub(chemical_from_relation, '<code><b>'+chemical_from_relation+'</b></code>', current_paper.abstract, flags=re.I)
+    formatted_abstract = re.sub(disease_from_relation, '<code><b>'+disease_from_relation+'</b></code>', formatted_abstract, flags=re.I)
+
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    ctx = {'chemical': chemical_from_relation,
-           'disease': disease_from_relation,
-           'current_paper': current_paper,
+    question1, question2, question3, question4 = original_questions(chemical_from_relation, disease_from_relation)
+
+    ctx = {'question1': question1,
+           'question2': question2,
+           'question3': question3,
+           'question4': question4,
+           'current_paper': formatted_abstract,
            'relation': relation
            }
 
