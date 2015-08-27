@@ -107,12 +107,10 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         # (TODO) Did the new annotations differ from pubtator?
         # it would make more sense to do that as a valid check of
         # "contribution" effort
-        if Annotation.objects.filter(view__userquestrelationship=uqr, view__section__document=document).count() > 0:
-            request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
-            badges.possibly_award_badge('points_awarded', user=request.user)
-            return HttpResponseServerError('points_awarded')
 
-        return HttpResponseServerError('no_points_awarded')
+        request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
+        badges.possibly_award_badge('points_awarded', user=request.user)
+        return HttpResponseServerError('points_awarded')
 
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
