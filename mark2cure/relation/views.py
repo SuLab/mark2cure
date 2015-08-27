@@ -26,7 +26,7 @@ import datetime
 import re
 
 from .models import Paper, Relation, Answer
-from .forms import AnswerForm
+#from .forms import AnswerForm
 #from .tasks import parse_input
 from django import forms
 import os
@@ -92,21 +92,18 @@ def relation(request, paper_pk):
 def results(request, relation_id):
     # Definitely just for testing purposes. TODO fix this
     relation = Relation.objects.get(pk=relation_id)
-    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence=request.POST['user_confidence'], username=request.user)
+    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence='C1', username=request.user)
 
     #TODO dictionary for max:
-
     user_work = {'relation': relation,
                  'relation_pair': relation.relation,  # not really needed but nice to see for now in th DB
                  'relation_type': request.POST['relation_type'],
-                 'user_confidence': request.POST['user_confidence'],
                  'username': request.user
     }
     print user_work
     #this is how to display the field and not the short choice abbreviation
 
-    ctx = {'relation_type': current_answer.get_relation_type_display(),
-           'user_confidence': current_answer.get_user_confidence_display()
+    ctx = {'relation_type': current_answer.get_relation_type_display()
     }
     return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))
