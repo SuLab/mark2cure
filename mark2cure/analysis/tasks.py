@@ -23,6 +23,14 @@ import itertools
 
 def hashed_annotations_df(group_pk, private_api=False,
         compare_type=True, compare_text=False):
+    '''
+        Users will always be represented in Analysis as their PKs as strings.
+        This is because, on occasion, we will include users that are not in the
+        DB and don't have an int to represent their PK
+
+        This standard is a must as there are many downstream cases where this
+        column is searched for users by their str(pk)
+    '''
 
     hashed_annotations = [] # Creates empty list for the annotations
     ann_types = Annotation.ANNOTATION_TYPE_CHOICE
@@ -62,7 +70,7 @@ def hashed_annotations_df(group_pk, private_api=False,
                 for ann in section_annotations:
                     hashed_annotations.append((
                         ann.get('view__section__document__document_id'),
-                        ann.get('view__user__pk'),
+                        str(ann.get('view__user__pk')),
                         ann_types.index( ann.get('type') ),
 
                         passage_offset + ann.get('start'),
@@ -88,7 +96,7 @@ def hashed_annotations_df(group_pk, private_api=False,
 
                     hashed_annotations.append((
                         document.id,
-                        ann.infons.get('user'),
+                        str(ann.infons.get('user')),
                         ann_types.index( ann.infons.get('type') ),
                         ann_loc.offset,
                         ann_loc.length,
