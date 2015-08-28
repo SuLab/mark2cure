@@ -55,7 +55,7 @@ def user_training(request, format_type="html"):
         [row.append(UserQuestRelationship.objects.filter(task=t, user=user, completed=True).exists()) for t in training]
         arr.append(row)
 
-    columns = itertools.chain(["Username", "User PK"], training.values_list('name', flat=True))
+    columns = itertools.chain(["Username", "User PK"], training.values_list('pk', flat=True))
     df = pd.DataFrame(arr, columns=list(columns))
     return dataframe_view(request, df, format_type)
 
