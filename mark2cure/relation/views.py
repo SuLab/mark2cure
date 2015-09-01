@@ -24,6 +24,8 @@ from ..document.models import Document
 from brabeion import badges
 import datetime
 import re
+import json
+import random
 
 from .models import Paper, Relation, Answer
 from .tasks import * # TODO: not best practice, but many functions
@@ -31,6 +33,40 @@ from .tasks import * # TODO: not best practice, but many functions
 #from .tasks import parse_input
 from django import forms
 import os
+
+
+json2 ={'associations': {
+            "chemical_disease": {
+                "treats": {
+                    'treats symptoms': {
+                        'treats symptoms well': [],
+                        'treats symptoms poorly': []
+                        },
+                    'treats cause': []
+                    },
+                "exacerbates": [],
+                "increases risk of": []
+                },
+            "chemical_gene": {
+                'binds to': [],
+                'changes location of': [],
+                'metabolizes': [],
+                'transports': [],
+                'not sure about relation': []
+                },
+            'gene_disease': {
+                'altered expression': [],
+                'altered regulation leads to': [],
+                'mutation association': [],
+                'post translational modification association':[],
+                'not sure about relation': []
+                }
+
+            }
+}
+
+json_string = json.dumps(json2)
+parsed_json = json.loads(json_string)
 
 
 @login_required
@@ -83,12 +119,31 @@ def relation(request, paper_pk):
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    question1, question2, question3, question4 = original_questions(chemical_from_relation, disease_from_relation)
+    question_list1 = original_questions(chemical_from_relation, disease_from_relation)
+    question_list2 = drug_disease_association(chemical_from_relation, disease_from_relation)
+    question_list3 = drug_disease_association_treats(chemical_from_relation, disease_from_relation)
 
-    ctx = {'question1': question1,
-           'question2': question2,
-           'question3': question3,
-           'question4': question4,
+
+    for key1 in parsed_json['associations']:
+        print key1, 'level1'
+        for key2 in parsed_json['associations'][key1]:
+            print key1, key2, 'level2'
+            for key3 in parsed_json['associations'][key1][key2]:
+                print key1, key2, key3, 'level3'
+                for key4 in parsed_json['associations'][key1][key2][key3]:
+                    print key1, key2, key3, key4, 'level4'
+
+    json_object = parsed_json['associations']['chemical_disease']
+
+
+    level = random.randint(3,100)
+
+    # print parsed_json['associations']['chemical_disease']['treats']['treats cause']
+
+    ctx = {'json_object': json_object,
+           'level': level,
+           'question_list': question_list1,
+           'question_list2': question_list2,
            'current_paper': formatted_abstract,
            'relation': relation
            }

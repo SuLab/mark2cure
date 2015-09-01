@@ -20,18 +20,34 @@ block content
       h4 The text explicitly says:
       form(action="{% url 'relation:results' relation.id %}", method="POST")
         | {% csrf_token %}
-        input#id_relation_1(type="radio", name="relation_type", value="dir")
-        label(for="id_relation_1") {{ question1 }}
-        br
-        input#id_relation_2(type="radio", name="relation_type", value="ind")
-        label(for="id_relation_2") {{ question2 }}
-        br
-        input#id_relation_3(type="radio", name="relation_type", value="none")
-        label(for="id_relation_3") {{ question3 }}
-        br
-        input#id_relation_4(type="radio", name="relation_type", value="err")
-        label(for="id_relation_4") {{ question4 }}
-        br
+
+        #question_set
+          {% csrf_token %}
+          {% for question in question_list %}
+          input#question(type='radio', name='choice', value='{{ question }}')
+          label(for='question') {{ question }}
+          br
+          {% endfor %}
+          p
+
+        #question_set_dynamic(style='display:none;')
+          {% csrf_token %}
+          {% for question in question_list2 %}
+          input#question(type='radio', name='choice{{ level }}', value='{{ question }}')
+          label(for='question') {{ question }}
+          br
+          {% endfor %}
+          p
+
+
+        input#button(type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
+        script.
+          function displayNewQuestionSet() {
+            document.getElementById('question_set_dynamic').style.display = "block";
+            document.getElementById('button1').style.display = "none";
+            }
+
+
         h4 Additional information about the above relation can be provided here (optional):
         p
           input#text.comment_box(type="text", name="optional_text_box")
