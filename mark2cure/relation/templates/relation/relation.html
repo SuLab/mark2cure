@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+
+<p>
+{% csrf_token %}
+{% for question in question_list %}
+    <input type="radio" name="choice" id="question" value="{{ question }}" />
+    <label for="question">{{ question }}</label><br/>
+{% endfor %}
+</p>
+
+
+<div id="question_set1"  style="display:none;" class="TODO" >
+{% csrf_token %}
+{% for question in question_list %}
+    <input type="radio" name="choice1" id="question" value="{{ question }}" />
+    <label for="question">{{ question }}</label><br/>
+{% endfor %}
+</div>
+
+<div id="question_set2"  style="display:none;" class="TODO" >
+{% csrf_token %}
+{% for question in question_list2 %}
+    <input type="radio" name="choice2" id="question" value="{{ question }}" />
+    <label for="question">{{ question }}</label><br/>
+{% endfor %}
+<p>
+</div>
+
+<div id="question_set3"  style="display:none;" class="TODO" >
+{% csrf_token %}
+{% for question in question_list3 %}
+    <input type="radio" name="choice3" id="question" value="{{ question }}" />
+    <label for="question">{{ question }}</label><br/>
+{% endfor %}
+</div>
+
+<input id="button1" type="button" name="question_list1_button" value="Submit Relation1" onclick="displayQuestionSet2()" />
+<input id="button2" type="button" name="question_list2_button" value="Submit Relation2" onclick="displayQuestionSet3()" style="display:none;" />
+<input id="button3" type="button" name="question_list3_button" value="Submit Relation3" onclick="displayNextRelationQuestionSet()" style="display:none;" />
+
+<script>
+function displayQuestionSet2() {
+   document.getElementById('question_set2').style.display = "block";
+   document.getElementById('button1').style.display = "none";
+   document.getElementById('button2').style.display = "block";
+
+}
+function displayQuestionSet3() {
+   document.getElementById('question_set3').style.display = "block";
+   document.getElementById('button1').style.display = "none";
+   document.getElementById('button2').style.display = "none";
+   document.getElementById('button3').style.display = "block";
+
+}
+</script>
+
+
+
+
+</body>
+</html>
