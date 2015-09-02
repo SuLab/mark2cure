@@ -110,10 +110,16 @@ def relation(request, paper_pk):
     chemical_from_relation = Annotation.objects.filter(uid=relation.chemical_id).filter(paper=current_paper.id)[0].text
     disease_from_relation = Annotation.objects.filter(uid=relation.disease_id).filter(paper=current_paper.id)[0].text
 
+
     # TODO make case insensitive
 
-    formatted_abstract = re.sub(chemical_from_relation, '<code><b>'+chemical_from_relation+'</b></code>', current_paper.abstract, flags=re.I)
-    formatted_abstract = re.sub(disease_from_relation, '<code><b>'+disease_from_relation+'</b></code>', formatted_abstract, flags=re.I)
+    formatted_abstract = re.sub(chemical_from_relation, '<font color="#E65CE6"><b>'+chemical_from_relation+'</b></font>', current_paper.abstract, flags=re.I)
+    formatted_abstract = re.sub(disease_from_relation, '<font color="#0099FF"><b>'+disease_from_relation+'</b></font>', formatted_abstract, flags=re.I)
+
+
+    # chemical_from_relation = '<font color="#E65CE6"><b>'+ chemical_from_relation + '</b></font>'
+    # disease_from_relation = '<font color="#0099FF"><b>'+ disease_from_relation+ '</b></font>'
+    #
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
@@ -134,13 +140,15 @@ def relation(request, paper_pk):
                     print key1, key2, key3, key4, 'level4'
 
     json_object = parsed_json['associations']['chemical_disease']
-
+    print json_object
 
     level = random.randint(3,100)
 
     # print parsed_json['associations']['chemical_disease']['treats']['treats cause']
 
-    ctx = {'json_object': json_object,
+    ctx = {'chemical' : chemical_from_relation,
+           'disease' : disease_from_relation,
+           'json_object': json_object,
            'level': level,
            'question_list': question_list1,
            'question_list2': question_list2,

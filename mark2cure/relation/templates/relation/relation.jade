@@ -32,19 +32,28 @@ block content
 
         #question_set_dynamic(style='display:none;')
           {% csrf_token %}
-          {% for question in question_list2 %}
+
+          {% for question in json_object %}
           input#question(type='radio', name='choice{{ level }}', value='{{ question }}')
-          label(for='question') {{ question }}
+          label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
           br
           {% endfor %}
           p
 
+        input#button(type='button', name='question_list 1', value='Submit Relation 1', onclick='displayNewQuestionSet()')
+        input#button_dynamic(style='display:none' type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
 
-        input#button(type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
+
         script.
           function displayNewQuestionSet() {
+            function jen() {
+              var json_object = "{{ json_object}}"['treats'];
+              return json_object;
+            }
+            json_object = jen();
             document.getElementById('question_set_dynamic').style.display = "block";
-            document.getElementById('button1').style.display = "none";
+            document.getElementById('button').style.display = "none";
+            document.getElementById('button_dynamic').style.display = "block";
             }
 
 
