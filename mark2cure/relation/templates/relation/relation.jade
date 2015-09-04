@@ -11,54 +11,108 @@ block header
 block content
   .container
     .row.head-space
-      .col-xs-20
+      .col-xs-12
+        h1#jen_results
+        #jqxWidget
 
-    h1
-      h3
-        | Using the following abstract, please answer the question about chemical/disease relations.
-      p {{current_paper|safe}}
-      h4 The text explicitly says:
-      form(action="{% url 'relation:results' relation.id %}", method="POST")
-        | {% csrf_token %}
+    .row.head-space
+      .col-xs-12
+        h3 Using the following abstract, please answer questions about chemical/disease relations.
+        p {{current_paper|safe}}
 
-        #question_set
-          {% csrf_token %}
-          {% for question in question_list %}
-          input#question(type='radio', name='choice', value='{{ question }}')
-          label(for='question') {{ question }}
-          br
-          {% endfor %}
-          p
+        form(action="{% url 'relation:results' relation.id %}", method="POST")
+          - csrf_token
 
-        #question_set_dynamic(style='display:none;')
-          {% csrf_token %}
+          #question_set
+            a Help us define this relationship:
+            - for question in question_list
+              input#question(type='radio', name='choice', value='{{ question }}')
+              label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
+              br
 
-          {% for question in json_object %}
-          input#question(type='radio', name='choice{{ level }}', value='{{ question }}')
-          label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
-          br
-          {% endfor %}
-          p
+          #question_set_dynamic(style='display:none;')
+            a Can you provide even more information?:
+            - for question in json_object
+              input#question(type='radio', name='choice{{ level }}', value='{{ question }}')
+              label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
+              br
 
-        input#button(type='button', name='question_list 1', value='Submit Relation 1', onclick='displayNewQuestionSet()')
-        input#button_dynamic(style='display:none' type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
+          input#button(type='button', name='question_list 1', value='Submit Relation 1', onclick='displayNewQuestionSet()')
+          input#button_dynamic(style='display:none' type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
 
+            a Additional information about the above relation can be provided here (optional):
+              input#text.comment_box(type="text", name="optional_text_box")
+              input(type="submit", value="Submit Contributions to Science")
 
-        script.
-          function displayNewQuestionSet() {
-            function jen() {
-              var json_object = "{{ json_object}}"['treats'];
-              return json_object;
-            }
-            json_object = jen();
-            document.getElementById('question_set_dynamic').style.display = "block";
-            document.getElementById('button').style.display = "none";
-            document.getElementById('button_dynamic').style.display = "block";
-            }
+block post-footer
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/jquery-1.11.1.min.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/demos.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxcore.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxdata.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxbuttons.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxscrollbar.js")
+  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxmenu.js")
 
+  script.
+    function displayNewQuestionSet() {
+      function jen() {
+        var json_object = "{{ json_object}}"['treats'];
+        return json_object;
+      }
 
-        h4 Additional information about the above relation can be provided here (optional):
-        p
-          input#text.comment_box(type="text", name="optional_text_box")
-        p
-          input(type="submit", value="Submit Contributions to Science")
+      json_object = jen();
+      $('#question_set_dynamic').show();
+      $('#button_dynamic').show();
+      $('#button').hide();
+    }
+
+  script.
+    $(document).ready(function () {
+
+      var data = [{
+          "id": "1",
+          "text": "Define chemical/disease relation",
+          "parentid": "-1",
+          "subMenuWidth": '250px'
+        }, {
+          "id": "1-2",
+          "text": "exacerbates",
+          "parentid": "1"
+        }, {
+          "id": "1-1",
+          "text": "treats",
+          "parentid": "1"
+        }, {
+          "id": "1-1-1",
+          "text": "treats symptoms of",
+          "parentid": "1-1"
+        }, {
+          "id": "1-1-2",
+          "text": "treats cause of",
+          "parentid": "1-1"
+        }];
+
+      var source = {
+          datatype: "json",
+          datafields: [
+            { name: 'id' },
+            { name: 'parentid' },
+            { name: 'text' },
+            { name: 'subMenuWidth' }
+            ],
+          id: 'id',
+          localdata: data
+          };
+
+      var dataAdapter = new $.jqx.dataAdapter(source);
+          dataAdapter.dataBind();
+      var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
+      $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical'});
+      $("#jqxWidget").on('itemclick', function (evt) {
+        var string_to_show = $(evt.args).text();
+        $('h1#jen_results').text( string_to_show );
+        console.log( $('h1#jen_results').text() );
+
+      });
+
+    });

@@ -28,24 +28,21 @@ import json
 import random
 
 from .models import Paper, Relation, Answer
-from .tasks import * # TODO: not best practice, but many functions
-#from .forms import AnswerForm
-#from .tasks import parse_input
 from django import forms
 import os
 
 
-json2 ={'associations': {
+# TODO (remove this, if I am going to use the JQUERY vertical menu)
+my_json ={'associations': {
             "chemical_disease": {
-                "treats": {
-                    'treats symptoms': {
-                        'treats symptoms well': [],
-                        'treats symptoms poorly': []
-                        },
-                    'treats cause': []
-                    },
                 "exacerbates": [],
-                "increases risk of": []
+                "increases risk of": [],
+                "may cause": [],
+                "prevents": [],
+                "treats": {
+                    'treats symptoms of': [],
+                    'treats cause of': []
+                    }
                 },
             "chemical_gene": {
                 'binds to': [],
@@ -65,7 +62,7 @@ json2 ={'associations': {
             }
 }
 
-json_string = json.dumps(json2)
+json_string = json.dumps(my_json)
 parsed_json = json.loads(json_string)
 
 
@@ -106,43 +103,25 @@ def relation(request, paper_pk):
         if not relation_specific_answers:
             break
 
-    # TODO, this might be a "weird" chemical so take the tie breakers
+    # TODO, this might be a "weird" chemical name so take the majority name?
     chemical_from_relation = Annotation.objects.filter(uid=relation.chemical_id).filter(paper=current_paper.id)[0].text
     disease_from_relation = Annotation.objects.filter(uid=relation.disease_id).filter(paper=current_paper.id)[0].text
-
-
-    # TODO make case insensitive
 
     formatted_abstract = re.sub(chemical_from_relation, '<font color="#E65CE6"><b>'+chemical_from_relation+'</b></font>', current_paper.abstract, flags=re.I)
     formatted_abstract = re.sub(disease_from_relation, '<font color="#0099FF"><b>'+disease_from_relation+'</b></font>', formatted_abstract, flags=re.I)
 
-
-    # chemical_from_relation = '<font color="#E65CE6"><b>'+ chemical_from_relation + '</b></font>'
-    # disease_from_relation = '<font color="#0099FF"><b>'+ disease_from_relation+ '</b></font>'
-    #
+    chemical_from_relation = '<font color="#E65CE6"><b>'+ chemical_from_relation + '</b></font>'
+    disease_from_relation = '<font color="#0099FF"><b>'+ disease_from_relation+ '</b></font>'
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    question_list1 = original_questions(chemical_from_relation, disease_from_relation)
-    question_list2 = drug_disease_association(chemical_from_relation, disease_from_relation)
-    question_list3 = drug_disease_association_treats(chemical_from_relation, disease_from_relation)
-
-
-    for key1 in parsed_json['associations']:
-        print key1, 'level1'
-        for key2 in parsed_json['associations'][key1]:
-            print key1, key2, 'level2'
-            for key3 in parsed_json['associations'][key1][key2]:
-                print key1, key2, key3, 'level3'
-                for key4 in parsed_json['associations'][key1][key2][key3]:
-                    print key1, key2, key3, key4, 'level4'
-
-    json_object = parsed_json['associations']['chemical_disease']
+    question_list1 = parsed_json['associations']['chemical_disease']
+    json_object = parsed_json['associations']['chemical_disease']['treats']
     print json_object
 
-    level = random.randint(3,100)
+    level = 2  #(TODO) remove this "level": here as the new button name, this will be removed by widget.
 
     # print parsed_json['associations']['chemical_disease']['treats']['treats cause']
 
@@ -151,7 +130,6 @@ def relation(request, paper_pk):
            'json_object': json_object,
            'level': level,
            'question_list': question_list1,
-           'question_list2': question_list2,
            'current_paper': formatted_abstract,
            'relation': relation
            }
