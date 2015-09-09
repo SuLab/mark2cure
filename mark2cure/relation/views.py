@@ -28,7 +28,8 @@ import json
 import random
 
 from .models import Paper, Relation, Answer
-from django import forms
+from .forms import AnswerForm
+# from django import forms
 import os
 
 
@@ -110,50 +111,41 @@ def relation(request, paper_pk):
     formatted_abstract = re.sub(chemical_from_relation, '<font color="#E65CE6"><b>'+chemical_from_relation+'</b></font>', current_paper.abstract, flags=re.I)
     formatted_abstract = re.sub(disease_from_relation, '<font color="#0099FF"><b>'+disease_from_relation+'</b></font>', formatted_abstract, flags=re.I)
 
-    chemical_from_relation = '<font color="#E65CE6"><b>'+ chemical_from_relation + '</b></font>'
-    disease_from_relation = '<font color="#0099FF"><b>'+ disease_from_relation+ '</b></font>'
+    chemical_from_relation_html = '<font color="#E65CE6"><b>'+ chemical_from_relation + '</b></font>'
+    disease_from_relation_html = '<font color="#0099FF"><b>'+ disease_from_relation+ '</b></font>'
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    question_list1 = parsed_json['associations']['chemical_disease']
-    json_object = parsed_json['associations']['chemical_disease']['treats']
-    print json_object
-
-    level = 2  #(TODO) remove this "level": here as the new button name, this will be removed by widget.
-
-    # print parsed_json['associations']['chemical_disease']['treats']['treats cause']
-
     ctx = {'chemical' : chemical_from_relation,
            'disease' : disease_from_relation,
-           'json_object': json_object,
-           'level': level,
-           'question_list': question_list1,
+           'chemical_html': chemical_from_relation_html,
+           'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
            'relation': relation
            }
-
-    # use the relation.html template to work with above code given ctx
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
+form = AnswerForm()
 
 #pass in relation similar to above method
 def results(request, relation_id):
-    # Definitely just for testing purposes. TODO fix this
     relation = Relation.objects.get(pk=relation_id)
-    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence='C1', username=request.user)
-
+    print request.POST
     #TODO dictionary for max:
     user_work = {'relation': relation,
-                 'relation_pair': relation.relation,  # not really needed but nice to see for now in th DB
+                 'relation_pair': relation.relation,
                  'relation_type': request.POST['relation_type'],
                  'username': request.user
     }
     print user_work
-    #this is how to display the field and not the short choice abbreviation
+    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence='C1', username=request.user)
+    relation_type = request.POST['relation_type']
 
-    ctx = {'relation_type': current_answer.get_relation_type_display()
-    }
-    return TemplateResponse(request, 'relation/results.jade', ctx)
+    if request.method == 'POST':
+        ctx = { 'form':form,
+                'relation_type':relation_type
+        }
+        return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))

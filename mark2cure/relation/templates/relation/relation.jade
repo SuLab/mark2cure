@@ -12,37 +12,23 @@ block content
   .container
     .row.head-space
       .col-xs-12
-        h1#jen_results
-        #jqxWidget
 
     .row.head-space
       .col-xs-12
         h3 Using the following abstract, please answer questions about chemical/disease relations.
-        p {{current_paper|safe}}
+        p {{ current_paper|safe }}
+        h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
+        #jqxWidget
+        h1#jen_results
 
-        form(action="{% url 'relation:results' relation.id %}", method="POST")
+        form(role='form', action="{% url 'relation:results' relation.id %}", method="POST")
           - csrf_token
-
-          #question_set
-            a Help us define this relationship:
-            - for question in question_list
-              input#question(type='radio', name='choice', value='{{ question }}')
-              label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
-              br
-
-          #question_set_dynamic(style='display:none;')
-            a Can you provide even more information?:
-            - for question in json_object
-              input#question(type='radio', name='choice{{ level }}', value='{{ question }}')
-              label(for='question') {{ chemical|safe }} {{ question }} {{ disease|safe }}
-              br
-
-          input#button(type='button', name='question_list 1', value='Submit Relation 1', onclick='displayNewQuestionSet()')
-          input#button_dynamic(style='display:none' type='button', name='question_list{{ level }}', value='Submit Relation {{ level }}', onclick='displayNewQuestionSet()')
-
-            a Additional information about the above relation can be provided here (optional):
-              input#text.comment_box(type="text", name="optional_text_box")
-              input(type="submit", value="Submit Contributions to Science")
+          {{ form.as_p }}
+          input#id_relation_1(type="hidden", name="relation_type", value="ind" )
+          input#id_relation_2(type="hidden", name="user_confidence", value="C1")
+          br
+          a
+            input(type="submit", value="Submit Contributions to Science")
 
 block post-footer
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/jquery-1.11.1.min.js")
@@ -54,24 +40,11 @@ block post-footer
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxmenu.js")
 
   script.
-    function displayNewQuestionSet() {
-      function jen() {
-        var json_object = "{{ json_object}}"['treats'];
-        return json_object;
-      }
-
-      json_object = jen();
-      $('#question_set_dynamic').show();
-      $('#button_dynamic').show();
-      $('#button').hide();
-    }
-
-  script.
     $(document).ready(function () {
 
       var data = [{
           "id": "1",
-          "text": "Define chemical/disease relation",
+          "text": "relates to",
           "parentid": "-1",
           "subMenuWidth": '250px'
         }, {
@@ -84,11 +57,11 @@ block post-footer
           "parentid": "1"
         }, {
           "id": "1-1-1",
-          "text": "treats symptoms of",
+          "text": "treats the symptoms of",
           "parentid": "1-1"
         }, {
           "id": "1-1-2",
-          "text": "treats cause of",
+          "text": "treats the cause of",
           "parentid": "1-1"
         }];
 
@@ -107,12 +80,14 @@ block post-footer
       var dataAdapter = new $.jqx.dataAdapter(source);
           dataAdapter.dataBind();
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
-      $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical'});
+      $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical', clickToOpen: true});
       $("#jqxWidget").on('itemclick', function (evt) {
+        var chemical = "{{ chemical }} ";
+        var disease = " {{ disease }} ";
         var string_to_show = $(evt.args).text();
-        $('h1#jen_results').text( string_to_show );
+        $('h1#jen_results').text( chemical + string_to_show + disease);
         console.log( $('h1#jen_results').text() );
-
+        return string_to_show;
       });
 
     });
