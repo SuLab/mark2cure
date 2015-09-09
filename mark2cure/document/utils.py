@@ -76,7 +76,7 @@ def select_best_opponent(task, document, player):
             selected_user_pk = top_half_user_pks[0]
 
             for u in previous_users:
-                if u.pk == selected_user_pk:
+                if str(u.pk) == str(selected_user_pk):
                     return u
 
     return None
