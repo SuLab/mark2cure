@@ -96,10 +96,11 @@ class Group(models.Model):
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
     def current_avg_f(self, weighted=True):
-        report = self.report_set.filter(report_type=1).order_by('-created').first()
-        df = report.dataframe
+        report_qs = self.report_set.filter(report_type=1).order_by('-created')
 
-        if report:
+        if report_qs.exists():
+            report = report_qs.first()
+            df = report.dataframe
 
             if weighted:
                 df['wf'] = df['pairings'] * df['f-score']
