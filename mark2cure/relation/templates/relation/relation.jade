@@ -19,11 +19,12 @@ block content
         p {{ current_paper|safe }}
         h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
         #jqxWidget
-        h1#jen_results
+        h3#chemical
+        h3#jen_results
+        h3#disease
 
         form(role='form', action="{% url 'relation:results' relation.id %}", method="POST")
           - csrf_token
-          {{ form.as_p }}
           input#id_relation_1(type="hidden", name="relation_type", value="ind" )
           input#id_relation_2(type="hidden", name="user_confidence", value="C1")
           br
@@ -82,12 +83,15 @@ block post-footer
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
       $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical', clickToOpen: true});
       $("#jqxWidget").on('itemclick', function (evt) {
-        var chemical = "{{ chemical }} ";
-        var disease = " {{ disease }} ";
+        var chemical_to_show = "{{ chemical }} ";
+        $('h3#chemical').text( chemical_to_show );
+
+        var disease_to_show = "{{ disease }} ";
+        $('h3#disease').text( disease_to_show );
+
         var string_to_show = $(evt.args).text();
-        $('h1#jen_results').text( chemical + string_to_show + disease);
-        console.log( $('h1#jen_results').text() );
-        return string_to_show;
+        $('h3#jen_results').text( string_to_show );
+        console.log( $('h3#jen_results').text() );
       });
 
     });

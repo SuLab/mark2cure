@@ -508,6 +508,16 @@ h3 {
   color: #7F3CFF;
 }
 
+#chemical {
+  color: #E65CE6;
+}
+
+#disease {
+  color: #0099FF;
+}
+
+
+
 p {
   font-size: 18px;
 }
