@@ -140,6 +140,8 @@ def relation(request, document_pk):
     chemical = concept2_list[0]
     disease = concept0_list[0]
 
+    relation = Relation.objects.create(document=current_document, relation="testing", chemical_id=chemical, disease_id=disease, automated_cid=True)
+
     formatted_abstract = re.sub(r'\b'+chemical+r'\b', '<font color="#E65CE6"><b>' + chemical + '</b></font>', pubtator_anns.passages[0].text +" "+ pubtator_anns.passages[1].text, flags=re.I)
     formatted_abstract = re.sub(r'\b'+disease+r'\b', '<font color="#0099FF"><b>' + disease + '</b></font>', formatted_abstract, flags=re.I)
 
@@ -158,15 +160,16 @@ def relation(request, document_pk):
            'chemical_html': chemical_from_relation_html,
            'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
-           'relation': "test"
+           'current_document': current_document,
+           'relation': relation
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
 form = AnswerForm()
 
 #pass in relation similar to above method
-def results(request): #, relation_id
-    # relation = Relation.objects.get(pk=relation_id)
+def results(request, relation_id): #, relation_id
+    relation = get_object_or_404(Relation, pk=relation_id)
     # print request.POST
     #TODO dictionary for max:
     user_work = {'relation': relation,

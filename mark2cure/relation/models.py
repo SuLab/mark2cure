@@ -8,6 +8,7 @@ tasks.py performs much of the actions involved in populating the new documents
 
 '''
 from django.db import models
+from ..document.models import Document
 
 class Paper(models.Model):
     """
@@ -236,7 +237,7 @@ class Sentence(models.Model):
 
 
 class Relation(models.Model):
-    paper = models.ForeignKey(Paper)
+    document = models.ForeignKey(Document)
     relation = models.TextField(blank=False)
     chemical_id = models.TextField(blank=False)
     disease_id = models.TextField(blank=False)

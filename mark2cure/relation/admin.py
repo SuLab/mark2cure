@@ -27,7 +27,7 @@ class SentenceAdmin(admin.ModelAdmin):
 
 
 class RelationAdmin(admin.ModelAdmin):
-    list_display = ('paper', 'relation', 'chemical_id', 'disease_id', 'automated_cid')
+    list_display = ('document', 'relation', 'chemical_id', 'disease_id', 'automated_cid')
 
 
 class AnswerAdmin(admin.ModelAdmin):
@@ -41,25 +41,7 @@ admin.site.register(Relation, RelationAdmin)
 admin.site.register(Answer, AnswerAdmin)
 
 """
-    # TODO is there a title for the documents Toby uses?
-    list_display = ('document_id', 'pmid', 'title_text', 'abstract_text')
-
 # sentences (should not be stored as entire sentences), but should be stored as
 # ingegers with information about the "span" of each sentence.
 
-"""
-"""
-class SectionAdmin(admin.ModelAdmin):
-
-
-    # TODO document should be the ForeignKey
-    list_display = ('sentence_span', 'chemicals', 'diseases')
-
-
-
-    # logic: sentence span, chemical (c) span, disease (d) span.
-    # Does c or d fall into the same span as the sentence?
-    # unique combination of chemical/disease related to the sentence, abstract,
-
-class RelationAdmin(admin.ModelAdmin):
 """
