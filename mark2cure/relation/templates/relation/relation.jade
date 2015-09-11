@@ -23,13 +23,6 @@ block content
         h3#jen_results
         h3#disease
 
-        form(role='form', action="{% url 'relation:results' relation.id %}", method="POST")
-          - csrf_token
-          input#id_relation_1(type="hidden", name="relation_type", value="ind" )
-          input#id_relation_2(type="hidden", name="user_confidence", value="C1")
-          br
-          a
-            input(type="submit", value="Submit Contributions to Science")
 
 block post-footer
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/jquery-1.11.1.min.js")

@@ -15,9 +15,9 @@ block content
       .col-xs-11
         h3 Select one of the following papers to help us further define chemical/disease relations:
           .list-group
-            - for paper in papers
-              a(href='{% url "relation:relation" paper_pk=paper.pk %}').list-group-item
-                #{paper.title}
+            - for document in documents
+              a(href='{% url "relation:relation" document_pk=document.pk %}').list-group-item
+                #{document.title}
 
 
       .col-md-6.col-md-offset-10
