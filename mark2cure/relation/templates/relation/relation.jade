@@ -18,15 +18,16 @@ block content
         h3 Using the following abstract, please answer questions about chemical/disease relations.
         p {{ current_paper|safe }}
         h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
+
         #jqxWidget
         h3#chemical
         h3#jen_results
         h3#disease
 
-        form(role='form', action="{% url 'relation:results' relation.pk  %}", method="POST")
+
+        form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
-          input#id_relation_1(type="hidden", name="relation_type", value="ind" )
-          input#id_relation_2(type="hidden", name="user_confidence", value="C1")
+          input#id_relation_1(type="text", name="relation_type" )
           br
           a
             input(type="submit", value="Submit Contributions to Science")
@@ -92,6 +93,7 @@ block post-footer
         var string_to_show = $(evt.args).text();
         $('h3#jen_results').text( string_to_show );
         console.log( $('h3#jen_results').text() );
+        $('#id_relation_1').val( string_to_show );
       });
 
     });

@@ -19,7 +19,7 @@ class PaperAdmin(admin.ModelAdmin):
 
 
 class AnnotationAdmin(admin.ModelAdmin):
-    list_display = ('paper', 'uid', 'stype', 'text', 'start', 'stop')
+    list_display = ('document', 'uid', 'stype', 'text', 'start', 'stop')
 
 
 class SentenceAdmin(admin.ModelAdmin):

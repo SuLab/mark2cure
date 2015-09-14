@@ -20,7 +20,7 @@ from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..common.bioc import BioCReader
 from ..relation.models import Paper, Annotation
 from ..userprofile.models import UserProfile
-from ..document.models import Document, Section
+from ..document.models import Document, Section, Pubtator
 
 from brabeion import badges
 import datetime
@@ -29,7 +29,6 @@ import json
 import random
 
 from .models import Answer, Relation
-from ..document.models import Document, Pubtator
 from .forms import AnswerForm
 # from django import forms
 import os
@@ -43,6 +42,10 @@ def make_annotation_lists_from_current_document(current_document):
     TODO: should be removed from views and possibly added to models or tasks?
     Input is one document. Output is three concept lists in order: disease, gene,
     chemical. Also output is the pubtator_anns.
+
+    This is SO slow*** Need to find a way to only show things if there are chemicals + diseases.
+
+    If there are no chem/dis, then no reason to show it.
     """
     concept0_list = []
     concept1_list = []
@@ -68,18 +71,20 @@ def make_annotation_lists_from_current_document(current_document):
 
 @login_required
 def home(request):
-    # how many documents to display on the home page
-    queryset_papers = Document.objects.all()[0:10]
+    # how many documents to display on the home page, sort through 30 docs and see if there are docs that have chem/diseases
+    queryset_papers = Document.objects.all()[0:30]
 
     filtered_queryset_papers = []
     for current_document in queryset_papers:
         current_document = Document.objects.get(pk=current_document.pk)
         concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
         if len(concept0_list) != 0 and len(concept2_list) != 0:
+            #TODO, not sure how to approach this.  Need unique IDs for each chemical & disease?  Or per paper?
+            for chemical in concept0_list:
+                Annotation.objects.create(document=current_document, uid="remove field later", stype="c", text=chemical, start=0, stop=0)
+            for disease in concept2_list:
+                Annotation.objects.create(document=current_document, uid="remove field later", stype="d", text=disease, start=0, stop=0)
             filtered_queryset_papers.append(current_document)
-
-    queryset_papers = filtered_queryset_papers
-
 
     # for i in queryset_papers:
     #     # print i.id
@@ -105,14 +110,13 @@ def home(request):
     # # queryset_papers = Paper.objects.all().exclude(id__in=exclude_these)
 
     ctx = {
-        'documents': queryset_papers,
+        'documents': filtered_queryset_papers,
     }
     return TemplateResponse(request, 'relation/home.jade', ctx)
 
 
 @login_required
 def relation(request, document_pk):
-    print "\n\n\n\n\n\n\n"
     model = Answer # TODO, need this here so that the questions displayed know where to POST?
     current_document = get_object_or_404(Document, pk=document_pk)
     # relations = Relation.objects.filter(paper=current_document.id)
@@ -125,17 +129,11 @@ def relation(request, document_pk):
     print concept1_list
     print concept2_list
 
-
-    #
     # for relation in relations:
     #     # relations that user has already completed
     #     relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
     #     if not relation_specific_answers:
     #         break
-
-    # # TODO, this might be a "weird" chemical name so take the majority name?
-    # chemical_from_relation = Annotation.objects.filter(uid=relation.chemical_id).filter(paper=current_paper.id)[0].text
-    # disease_from_relation = Annotation.objects.filter(uid=relation.disease_id).filter(paper=current_paper.id)[0].text
 
     chemical = concept2_list[0]
     disease = concept0_list[0]
@@ -148,8 +146,6 @@ def relation(request, document_pk):
 
     chemical_from_relation_html = '<font color="#E65CE6"><b>' + chemical + '</b></font>'
     disease_from_relation_html = '<font color="#0099FF"><b>' + disease + '</b></font>'
-
-
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
@@ -172,16 +168,19 @@ def results(request, relation_id): #, relation_id
     relation = get_object_or_404(Relation, pk=relation_id)
     # print request.POST
     #TODO dictionary for max:
-    user_work = {'relation': relation,
+    user_work = {'relation': request,
                  'relation_pair': relation.relation,
                  'relation_type': request.POST['relation_type'],
                  'username': request.user
     }
+    print user_work
+    print request.POST
     # print user_work
     current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence='C1', username=request.user)
     relation_type = request.POST['relation_type']
 
     if request.method == 'POST':
+        #####  TODO should always be this, try here not print request.POST
         ctx = { 'form':form,
                 'relation_type':relation_type
         }

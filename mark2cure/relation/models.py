@@ -213,7 +213,7 @@ class Paper(models.Model):
 # TODO, add which sentence it is found in annotation? maybe
 
 class Annotation(models.Model):
-    paper = models.ForeignKey(Paper)
+    document = models.ForeignKey(Document)
     uid = models.TextField(blank=False)
     stype = models.TextField(blank=False)
     text = models.TextField(blank=False)
