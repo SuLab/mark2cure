@@ -13,7 +13,19 @@ from ..document.models import Section, Annotation
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+
 import datetime
+from networkx.readwrite import json_graph
+import json
+
+
+def network(request):
+
+    from ..analysis.tasks import generate_network
+    G = generate_network()
+
+    d = json_graph.node_link_data(G)
+    return HttpResponse(json.dumps(d), content_type='application/json')
 
 
 @login_required

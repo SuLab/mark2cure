@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     url(r'^beta/$',
         views.beta, name='beta'),
 
+    url(r'^network/$',
+        views.network, name='network'),
+
     url(r'^why-i-mark2cure/$',
         views.why_mark2cure, name='why-mark2cure'),
 

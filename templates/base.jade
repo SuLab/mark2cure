@@ -96,6 +96,10 @@ head
       script(src='#{STATIC_URL}js/app.js')
       script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
 
+      script(src='#{STATIC_URL}js/libs/sigma.min.js')
+      script(src='#{STATIC_URL}js/libs/plugins/sigma.parsers.json.min.js')
+      script(src='#{STATIC_URL}js/libs/plugins/sigma.layout.forceAtlas2.min.js')
+
       a#support-icon(data-toggle="modal", data-target="#support-modal")
         img(src='#{STATIC_URL}images/support-icon.png')
 
@@ -165,7 +169,7 @@ head
 
       - if not request.session.block_alert
         script.
-          if(Modernizr.touch) { $('#touch-modal').modal('show');
+          if(Modernizr.touch) { $('#touch-modal').modal('show'); }
 
 
     block post-footer

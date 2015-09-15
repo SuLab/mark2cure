@@ -18,6 +18,9 @@ from nltk.metrics import scores as nltk_scoring
 from celery import task
 
 import pandas as pd
+import networkx as nx
+from networkx.readwrite import json_graph
+
 import itertools
 
 
@@ -207,6 +210,37 @@ def generate_reports(group_pk, private_api=False,
     avg_user_f = merge_pairwise_comparisons(inter_annotator_df)
     Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
+
+
+def generate_network():
+    G = nx.Graph()
+    G.add_nodes_from(range(100))
+    edges = [item for item in itertools.permutations(range(25), 2)]
+    G.add_edges_from(edges)
+
+    #df = hashed_annotations_df(2)
+    #G = nx.from_pandas_dataframe(df, 'index', 'index', ['user', 'text'])
+
+    # calculate centrality metrics
+    degree = nx.degree_centrality(G)
+    between = nx.betweenness_centrality(G)
+    close = nx.closeness_centrality(G)
+    eigen = nx.eigenvector_centrality(G)
+
+    nx.set_node_attributes(G, 'degree', degree)
+    nx.set_node_attributes(G, 'between', between)
+    nx.set_node_attributes(G, 'close', close)
+    nx.set_node_attributes(G, 'eigen', eigen)
+
+    pos = nx.spring_layout(G)
+    x_pos = pos
+
+    print { x_pos[idx]: arr[0] for idx, arr in pos.iteritems() }
+
+    #nx.set_node_attributes(G, 'x', [pos[p][0] for p in pos])
+    #print [pos[p][0] for p in pos]
+
+    return G
 
 
 @task()

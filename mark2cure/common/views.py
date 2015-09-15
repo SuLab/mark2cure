@@ -32,6 +32,10 @@ def home(request):
     return TemplateResponse(request, 'common/landing2.jade', {'form': form, 'quotes': quotes})
 
 
+def network(request):
+    return TemplateResponse(request, 'common/network.jade')
+
+
 def beta(request):
     return redirect('common:home')
 
