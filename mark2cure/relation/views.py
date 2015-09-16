@@ -70,10 +70,8 @@ def make_annotation_lists_from_current_document(current_document):
                 if concept_type == "2":
                     concept2_list.append(concept_text)
                     concept2_dict[concept_text] = pubtator_anns.passages[i].annotations[k].infons
-    print concept0_dict, concept1_dict, concept2_dict
 
-    return concept0_list, concept1_list, concept2_list, pubtator_anns
-
+    return concept0_dict, concept1_dict, concept2_dict, concept0_list, concept1_list, concept2_list, pubtator_anns
 
 
 @login_required
@@ -84,13 +82,13 @@ def home(request):
     filtered_queryset_papers = []
     for current_document in queryset_papers:
         current_document = Document.objects.get(pk=current_document.pk)
-        concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
+        concept0_dict, concept1_dict, concept2_dict, concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
         if len(concept0_list) != 0 and len(concept2_list) != 0:
             #TODO, not sure how to approach this.  Need unique IDs for each chemical & disease?  Or per paper?
-            for chemical in concept0_list:
-                Annotation.objects.create(document=current_document, uid="remove field later", stype="c", text=chemical, start=0, stop=0)
-            for disease in concept2_list:
-                Annotation.objects.create(document=current_document, uid="remove field later", stype="d", text=disease, start=0, stop=0)
+            for chemical in concept2_list:
+                Annotation.objects.create(document=current_document, uid=[concept2_dict[chemical]['MESH']], stype="c", text=chemical, start=0, stop=0)
+            for disease in concept0_list:
+                Annotation.objects.create(document=current_document, uid=[concept0_dict[disease]['MESH']], stype="d", text=disease, start=0, stop=0)
             filtered_queryset_papers.append(current_document)
 
 
@@ -130,12 +128,8 @@ def relation(request, document_pk):
 
     # relations = Relation.objects.filter(paper=current_document.id)
 
-    concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
+    concept0_dict, concept1_dict, concept2_dict, concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
     # disease, gene, chemical
-    print concept0_list, "diseases"
-    print concept2_list, "chemicals"
-    print len(concept0_list) * len(concept2_list), "\n\n"
-
     # for relation in relations:
     #     # relations that user has already completed
     #     relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
@@ -145,7 +139,7 @@ def relation(request, document_pk):
     chemical = concept2_list[0]
     disease = concept0_list[0]
 
-    relation = Relation.objects.create(document=current_document, relation="testing", chemical_id=chemical, disease_id=disease, automated_cid=True)
+    relation = Relation.objects.create(document=current_document, relation=[ concept2_dict[chemical]['MESH'], concept0_dict[disease]['MESH'] ], chemical_id=chemical, disease_id=disease, automated_cid=True)
 
     formatted_abstract = re.sub(r'\b'+chemical+r'\b', '<font color="#E65CE6"><b>' + chemical + '</b></font>', pubtator_anns.passages[0].text +" "+ pubtator_anns.passages[1].text, flags=re.I)
     formatted_abstract = re.sub(r'\b'+disease+r'\b', '<font color="#0099FF"><b>' + disease + '</b></font>', formatted_abstract, flags=re.I)

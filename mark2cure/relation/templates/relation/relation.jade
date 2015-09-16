@@ -27,7 +27,7 @@ block content
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
-          input#relation_type(type="text", name="relation_type")
+          input#relation_type(type="hidden", name="relation_type")
           input#relation_pair(type="hidden", name="relation_pair", value=relation.relation)
           input#username(type="hidden", name="username", value=request.user)
           input#relation(type="hidden", name="relation", value=relation.pk)
