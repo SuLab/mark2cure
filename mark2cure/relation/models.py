@@ -256,28 +256,13 @@ class Answer(models.Model):
     the user provide Answers to the relations!!
     """
     relation = models.ForeignKey(Relation)
-    relation_pair = models.TextField(blank=False)
+    relation_pair = models.TextField(blank=True)
     # TODO, this might get updated from Toby's code in the future
-    RELATION_CHOICE = (
-        ('dir', "chemical directly contributes to disease"),
-        ('ind', "chemical indirectly contributes to disease"),
-        ('none', "chemical does not contribute to or cause disease"),
-        ('err', "reference to the chemical or disease is incorrect"),
-    )
-    relation_type = models.CharField(max_length=4,
-                                         choices=RELATION_CHOICE)
+    relation_type = models.TextField(blank=True)
     # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
     # This value is used in scoring later
-    USER_CONFIDENCE_CHOICE = (
-        ('C4', "very confident"),
-        ('C3', "confident"),
-        ('C2', "not too confident"),
-        ('C1', "not confident at all"),
-    )
-    user_confidence = models.CharField(max_length=2,
-                                       choices=USER_CONFIDENCE_CHOICE)
 
-    username = models.TextField(blank=False)
+    username = models.TextField(blank=True)
 
 
 """

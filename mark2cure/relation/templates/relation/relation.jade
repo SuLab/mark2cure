@@ -27,7 +27,11 @@ block content
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
-          input#id_relation_1(type="text", name="relation_type" )
+          input#relation_type(type="text", name="relation_type")
+          input#relation_pair(type="hidden", name="relation_pair", value=relation.relation)
+          input#username(type="hidden", name="username", value=request.user)
+          input#relation(type="hidden", name="relation", value=relation.pk)
+
           br
           a
             input(type="submit", value="Submit Contributions to Science")
@@ -48,8 +52,14 @@ block post-footer
           "id": "1",
           "text": "relates to",
           "parentid": "-1",
-          "subMenuWidth": '250px'
+          "subMenuWidth": '200px'
         }, {
+          "id": "2",
+          "text": "no relation",
+          "parentid": "-1",
+          "subMenuWidth": '200px'
+        },
+        {
           "id": "1-2",
           "text": "exacerbates",
           "parentid": "1"
@@ -92,8 +102,11 @@ block post-footer
 
         var string_to_show = $(evt.args).text();
         $('h3#jen_results').text( string_to_show );
+
+
+
         console.log( $('h3#jen_results').text() );
-        $('#id_relation_1').val( string_to_show );
+        $('#relation_type').val( string_to_show );
       });
 
     });

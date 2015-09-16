@@ -31,7 +31,7 @@ class RelationAdmin(admin.ModelAdmin):
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('relation', 'relation_pair', 'relation_type', 'user_confidence', 'username')
+    list_display = ('relation', 'relation_pair', 'relation_type', 'username')
 
 
 admin.site.register(Paper, PaperAdmin)
