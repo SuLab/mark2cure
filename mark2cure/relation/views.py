@@ -30,13 +30,10 @@ import random
 
 from .models import Answer, Relation
 from .forms import AnswerForm
-# from django import forms
 import os
 
 
-# TODO (remove this, if I am going to use the JQUERY vertical menu)
-
-
+#TODO, needs improvement
 def make_annotation_lists_from_current_document(current_document):
     """
     TODO: should be removed from views and possibly added to models or tasks?
@@ -50,6 +47,9 @@ def make_annotation_lists_from_current_document(current_document):
     concept0_list = []
     concept1_list = []
     concept2_list = []
+    concept0_dict = {}
+    concept1_dict = {}
+    concept2_dict = {}
     pubtator_anns = ''
     if current_document.valid_pubtator():
         pubtator_anns = current_document.as_bioc_with_pubtator_annotations()
@@ -57,14 +57,21 @@ def make_annotation_lists_from_current_document(current_document):
         for i in range(0, num_passages):
             len_annotations = len(pubtator_anns.passages[i].annotations)
             for k in range(0, len_annotations):
+                print pubtator_anns.passages[i].annotations[k].infons
                 concept_text = pubtator_anns.passages[i].annotations[k].text
                 concept_type = pubtator_anns.passages[i].annotations[k].infons['type']
+                concept_MESH = pubtator_anns.passages[i].annotations[k].infons['MESH']
                 if concept_type == "0":
                     concept0_list.append(concept_text)
+                    concept0_dict[concept_text] = pubtator_anns.passages[i].annotations[k].infons
                 if concept_type == "1":
                     concept1_list.append(concept_text)
+                    concept1_dict[concept_text] = pubtator_anns.passages[i].annotations[k].infons
                 if concept_type == "2":
                     concept2_list.append(concept_text)
+                    concept2_dict[concept_text] = pubtator_anns.passages[i].annotations[k].infons
+    print concept0_dict, concept1_dict, concept2_dict
+
     return concept0_list, concept1_list, concept2_list, pubtator_anns
 
 
@@ -72,7 +79,7 @@ def make_annotation_lists_from_current_document(current_document):
 @login_required
 def home(request):
     # how many documents to display on the home page, sort through 30 docs and see if there are docs that have chem/diseases
-    queryset_papers = Document.objects.all()[0:30]
+    queryset_papers = Document.objects.all()[0:20]
 
     filtered_queryset_papers = []
     for current_document in queryset_papers:
@@ -86,6 +93,7 @@ def home(request):
                 Annotation.objects.create(document=current_document, uid="remove field later", stype="d", text=disease, start=0, stop=0)
             filtered_queryset_papers.append(current_document)
 
+
     # for i in queryset_papers:
     #     # print i.id
     #     # print i.document_id
@@ -95,8 +103,8 @@ def home(request):
 
     # exclude if user already answered
     # exclude_list = []
-    # for i in queryset_papers:
-    #     user_paper_relations = Relation.objects.filter(paper=i.id)
+    # for i in filtered_queryset_papers:
+    #     user_paper_relations = Relation.objects.filter(document=i.id)
     #     print user_paper_relations
     #     flag = 0
     #     for j in user_paper_relations:
@@ -107,7 +115,7 @@ def home(request):
     #             exclude_list.append(i)
     #
     # exclude_these = [i.id for i in exclude_list]
-    # # queryset_papers = Paper.objects.all().exclude(id__in=exclude_these)
+    # filtered_queryset_papers = queryset_papers.exclude(id__in=exclude_these)
 
     ctx = {
         'documents': filtered_queryset_papers,
@@ -117,17 +125,16 @@ def home(request):
 
 @login_required
 def relation(request, document_pk):
-    model = Answer # TODO, need this here so that the questions displayed know where to POST?
+    form = AnswerForm
     current_document = get_object_or_404(Document, pk=document_pk)
+
     # relations = Relation.objects.filter(paper=current_document.id)
-    # print title, "title\n\n"
-    # print abstract, 'abstract\n\n'
 
     concept0_list, concept1_list, concept2_list, pubtator_anns = make_annotation_lists_from_current_document(current_document)
     # disease, gene, chemical
-    print concept0_list
-    print concept1_list
-    print concept2_list
+    print concept0_list, "diseases"
+    print concept2_list, "chemicals"
+    print len(concept0_list) * len(concept2_list), "\n\n"
 
     # for relation in relations:
     #     # relations that user has already completed
@@ -161,28 +168,24 @@ def relation(request, document_pk):
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
-form = AnswerForm()
 
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
     relation = get_object_or_404(Relation, pk=relation_id)
-    # print request.POST
-    #TODO dictionary for max:
-    user_work = {'relation': request,
-                 'relation_pair': relation.relation,
-                 'relation_type': request.POST['relation_type'],
-                 'username': request.user
-    }
-    print user_work
-    print request.POST
-    # print user_work
-    current_answer = Answer.objects.create(relation=relation, relation_pair=relation.relation, relation_type=request.POST['relation_type'], user_confidence='C1', username=request.user)
+
     relation_type = request.POST['relation_type']
+
+    form = AnswerForm(request.POST or None)
+
+    # print form
+    if form.is_valid():
+        save_it = form.save(commit=False)
+        save_it = save_it.save()
 
     if request.method == 'POST':
         #####  TODO should always be this, try here not print request.POST
-        ctx = { 'form':form,
-                'relation_type':relation_type
+        ctx = {
+        'relation_type':relation_type
         }
         return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))

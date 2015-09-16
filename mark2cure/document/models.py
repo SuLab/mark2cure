@@ -141,10 +141,15 @@ class Document(models.Model):
 
                     for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
                         ann_type = annotation.infons['type']
-
+                        ann_MESH = "MESH unavailable"
+                        try:
+                            ann_MESH = annotation.infons['MESH']
+                        except:
+                            pass
                         if ann_type in approved_types:
                             annotation.clear_infons()
                             annotation.put_infon('type', str(approved_types.index(ann_type)))
+                            annotation.put_infon('MESH', str(ann_MESH) )
                             annotation.put_infon('user', 'pubtator')
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
@@ -411,4 +416,3 @@ class Annotation(models.Model):
         get_latest_by = 'updated'
         # (TODO) This is not supported by MySQL but would help prevent dups in this table
         # unique_together = ['kind', 'type', 'text', 'start', 'view']
-
