@@ -25,6 +25,7 @@ def network(request):
     G = generate_network()
 
     d = json_graph.node_link_data(G)
+    d['edges'] = d.pop('links')
     return HttpResponse(json.dumps(d), content_type='application/json')
 
 

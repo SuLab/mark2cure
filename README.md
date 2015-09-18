@@ -56,6 +56,8 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 #### Notes
 
+* Networkx talk: http://www.slideshare.net/arnicas/a-quick-and-dirty-intro-to-networkx-and-d3
+
 
 
 # **Mark2Cure** detailed installation instructions for developers

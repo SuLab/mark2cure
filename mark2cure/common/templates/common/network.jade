@@ -7,48 +7,40 @@ extends base
 block content
   .container-fluid
     div(style="background: #f5f5f5;").row
-      .col-xs-6.col-xs-offset-1
-        #chart
+      #chart(style="height:600px;").col-xs-10.col-xs-offset-1
 
 
 block post-footer
   script.
-    var g = {
-      nodes: [],
-      edges: []
-    };
+    var s = new sigma({
+      container: 'chart',
 
-    s = new sigma({
-      graph: g,
-      container: 'graph-container',
-      renderer: {
-        container: document.getElementById('chart'),
-        type: 'canvas'
-      },
       settings: {
-        minNodeSize: 8,
-        maxNodeSize: 16
+
+        defaultLabelColor: '#fff',
+        defaultLabelSize: 14,
+        defaultLabelBGColor: '#fff',
+        defaultLabelHoverColor: '#000',
+        labelThreshold: 6,
+
+        defaultEdgeType: 'curve',
+
+        minNodeSize: 0.5,
+        maxNodeSize: 5,
+        minEdgeSize: .1,
+        maxEdgeSize: .1,
+
+        search: true,
+
+        maxRatio: 320,
       }
     });
 
+    console.log('[SIGMA LOG] Loading...');
     sigma.parsers.json('/api/network/', s, function() {
-      var i,
-      nodes = s.graph.nodes(),
-      len = nodes.length;
-
-      for (i = 0; i < len; i++) {
-        nodes[i].x = Math.random();
-        nodes[i].y = Math.random();
-        nodes[i].size = s.graph.degree(nodes[i].id);
-        nodes[i].color = nodes[i].center ? '#333' : '#666';
-      }
-
+      console.log('[SIGMA LOG] Loaded');
       s.refresh();
-      s.startForceAtlas2();
     });
-
-    var greyColor = '#666';
-    s.draw();
 
     /*
     sigInst.bind('overnodes',function(event){

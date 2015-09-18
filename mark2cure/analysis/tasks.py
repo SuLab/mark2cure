@@ -14,6 +14,8 @@ from ..api.views import group_users_bioc
 from ..document.models import Section, Annotation
 from .models import Report
 
+from django.contrib.auth.models import User
+
 from nltk.metrics import scores as nltk_scoring
 from celery import task
 
@@ -22,6 +24,7 @@ import networkx as nx
 from networkx.readwrite import json_graph
 
 import itertools
+import random
 
 
 def hashed_annotations_df(group_pk, private_api=False,
@@ -211,11 +214,54 @@ def generate_reports(group_pk, private_api=False,
     Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
 
+def user_ann_count(a,b, count_tuples):
+    print a, b
+    return count_tuples.get( (df['document_id'], df['user']), 0 )
+
+
+def hashed_annotations_graph_process(clean_syns=False):
+    df = hashed_annotations_df(2, private_api=True)
+
+    #min_thresh = int(input("Enter the minimum # of user agreements per annotation (1-15): "))
+
+    # (TODO) This can be wayyy faster and better
+    # Add a username column
+    user_lookup = User.objects.all().values('pk', 'username')
+    res = {}
+    for u_dict in user_lookup:
+        res[u_dict['pk']] = u_dict['username']
+    df['username'] = df['user'].map(lambda user: res[int(user)])
+
+    # (TODO) synonym cleaner. Add cleaned column
+
+    # Add field to deterine if hash meets minimum count
+    hash_count_series = df['hash'].value_counts()
+    df['hash_count'] = df['hash'].map(lambda hash_str: hash_count_series[hash_str])
+
+    # Count the unique usage of that text string
+    text_count_series = df['text'].value_counts()
+    df['text_count'] = df['text'].map(lambda text_str: text_count_series[text_str])
+
+    # User Annotation count per PMID
+    res = {}
+    for tup, g_df in df.groupby(['document_id', 'user']):
+        res[tup] = g_df.shape[0]
+    df['user_pmid_count'] = df.apply(user_ann_count, count_tuples=res)
+
+
+    return df
+
 
 def generate_network():
     G = nx.Graph()
-    G.add_nodes_from(range(100))
-    edges = [item for item in itertools.permutations(range(25), 2)]
+
+    edge_ids = range(1000)
+    G.add_nodes_from(edge_ids)
+    random.shuffle(edge_ids)
+
+    edges = []
+    for item in edge_ids*3:
+        edges.append( (random.choice(edge_ids), random.choice(edge_ids)) )
     G.add_edges_from(edges)
 
     #df = hashed_annotations_df(2)
@@ -223,22 +269,33 @@ def generate_network():
 
     # calculate centrality metrics
     degree = nx.degree_centrality(G)
-    between = nx.betweenness_centrality(G)
-    close = nx.closeness_centrality(G)
-    eigen = nx.eigenvector_centrality(G)
+    #between = nx.betweenness_centrality(G)
+    #close = nx.closeness_centrality(G)
+    #eigen = nx.eigenvector_centrality(G)
 
     nx.set_node_attributes(G, 'degree', degree)
-    nx.set_node_attributes(G, 'between', between)
-    nx.set_node_attributes(G, 'close', close)
-    nx.set_node_attributes(G, 'eigen', eigen)
+    #nx.set_node_attributes(G, 'between', between)
+    #nx.set_node_attributes(G, 'close', close)
+    #nx.set_node_attributes(G, 'eigen', eigen)
 
     pos = nx.spring_layout(G)
-    x_pos = pos
 
-    print { x_pos[idx]: arr[0] for idx, arr in pos.iteritems() }
+    x_pos, y_pos, size = {}, {}, {}
+    for idx, val in pos.iteritems():
+        x_pos[idx], y_pos[idx] = val
+        size[idx] = 1
+    nx.set_node_attributes(G, 'x', x_pos)
+    nx.set_node_attributes(G, 'y', y_pos)
+    nx.set_node_attributes(G, 'size', size)
 
-    #nx.set_node_attributes(G, 'x', [pos[p][0] for p in pos])
-    #print [pos[p][0] for p in pos]
+    # Edges need unique ID
+    edge_ids = {}
+    for idx, edge in enumerate(G.edges_iter()):
+        edge_ids[edge] = idx
+    nx.set_edge_attributes(G, 'id', edge_ids)
+
+    #bb = nx.edge_betweenness_centrality(G, normalized=False)
+    #nx.set_edge_attributes(G, 'betweenness', bb)
 
     return G
 
