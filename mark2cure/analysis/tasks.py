@@ -214,15 +214,9 @@ def generate_reports(group_pk, private_api=False,
     Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
 
-def user_ann_count(a,b, count_tuples):
-    print a, b
-    return count_tuples.get( (df['document_id'], df['user']), 0 )
-
 
 def hashed_annotations_graph_process(clean_syns=False):
     df = hashed_annotations_df(2, private_api=True)
-
-    #min_thresh = int(input("Enter the minimum # of user agreements per annotation (1-15): "))
 
     # (TODO) This can be wayyy faster and better
     # Add a username column
@@ -232,7 +226,11 @@ def hashed_annotations_graph_process(clean_syns=False):
         res[u_dict['pk']] = u_dict['username']
     df['username'] = df['user'].map(lambda user: res[int(user)])
 
-    # (TODO) synonym cleaner. Add cleaned column
+    # Capitalize all annotation text
+    df['text'] = df['text'].map(lambda x: x.upper())
+    # Hard coded synonym cleaner
+    synonyms_dict = pd.read_csv('assets/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
+    df['clean_text'] = df['text'].map(lambda text_str: synonyms_dict.get(text_str, df['text']) )
 
     # Add field to deterine if hash meets minimum count
     hash_count_series = df['hash'].value_counts()
@@ -241,15 +239,16 @@ def hashed_annotations_graph_process(clean_syns=False):
     # Count the unique usage of that text string
     text_count_series = df['text'].value_counts()
     df['text_count'] = df['text'].map(lambda text_str: text_count_series[text_str])
+    # clean_text_count_series = df['clean_text'].value_counts()
+    # df['clean_text_count'] = df['clean_text'].map(lambda text_str: clean_text_count_series[text_str])
 
     # User Annotation count per PMID
-    res = {}
-    for tup, g_df in df.groupby(['document_id', 'user']):
-        res[tup] = g_df.shape[0]
-    df['user_pmid_count'] = df.apply(user_ann_count, count_tuples=res)
+    df['user_pmid_hash'] = df.document_id.apply(str) +'_'+ df.user.apply(str)
+    user_pmid_hash_count_series = df['user_pmid_hash'].value_counts()
+    df['user_pmid_count'] = df['user_pmid_hash'].map(lambda hash_str: user_pmid_hash_count_series[hash_str])
 
-
-    return df
+    min_thresh = 15
+    return df[ df['hash_count'] >= min_thresh ]
 
 
 def generate_network():
