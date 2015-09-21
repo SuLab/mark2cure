@@ -27,7 +27,7 @@ class SentenceAdmin(admin.ModelAdmin):
 
 
 class RelationAdmin(admin.ModelAdmin):
-    list_display = ('document', 'relation', 'chemical_id', 'disease_id', 'automated_cid')
+    list_display = ('document', 'relation', 'concept1_id', 'concept2_id', 'automated_cid')
 
 
 class AnswerAdmin(admin.ModelAdmin):

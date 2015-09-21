@@ -239,8 +239,8 @@ class Sentence(models.Model):
 class Relation(models.Model):
     document = models.ForeignKey(Document)
     relation = models.TextField(blank=False)
-    chemical_id = models.TextField(blank=False)
-    disease_id = models.TextField(blank=False)
+    concept1_id = models.TextField(blank=False)
+    concept2_id = models.TextField(blank=False)
 
     automated_cid = models.BooleanField(default=False)
     # TODO if CID relation automatically determined, then apply

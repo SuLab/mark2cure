@@ -20,9 +20,9 @@ block content
         h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
 
         #jqxWidget
-        h3#chemical
+        h3#concept1
         h3#jen_results
-        h3#disease
+        h3#concept2
 
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
@@ -94,11 +94,11 @@ block post-footer
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
       $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical', clickToOpen: true});
       $("#jqxWidget").on('itemclick', function (evt) {
-        var chemical_to_show = "{{ chemical }} ";
-        $('h3#chemical').text( chemical_to_show );
+        var chemical_to_show = "{{ concept1 }} ";
+        $('h3#concept1').text( chemical_to_show );
 
-        var disease_to_show = "{{ disease }} ";
-        $('h3#disease').text( disease_to_show );
+        var disease_to_show = "{{ concept2 }} ";
+        $('h3#concept2').text( disease_to_show );
 
         var string_to_show = $(evt.args).text();
         $('h3#jen_results').text( string_to_show );

@@ -27,6 +27,7 @@ import datetime
 import re
 import json
 import random
+import itertools
 
 from .models import Answer, Relation
 from .forms import AnswerForm
@@ -47,23 +48,29 @@ def make_annotation_lists_from_current_document(current_document):
     disease_dict = {}
     gene_dict = {}
     chemical_dict = {}
-    pubtator_anns = ''
+    pubtator_bioc = ""  # need this here for now to return back an empty pubtator_bioc for docs that don't have valid pubtators.
+
     if current_document.valid_pubtator():
-        pubtator_anns = current_document.as_bioc_with_pubtator_annotations_jf()
-        num_passages = len(pubtator_anns.passages)
-        for i in range(0, num_passages):
-            len_annotations = len(pubtator_anns.passages[i].annotations)
-            for k in range(0, len_annotations):
-                concept_type = pubtator_anns.passages[i].annotations[k].infons['type']
-                concept_UID = pubtator_anns.passages[i].annotations[k].infons['UID']
+        pubtator_bioc = current_document.as_bioc_with_pubtator_annotations()
+
+        for passage in pubtator_bioc.passages:
+
+            for annotation in passage.annotations:
+                concept_type = annotation.infons['type']
+                concept_UID = annotation.infons['UID']
+
                 if concept_UID != "None":
+
                     if concept_type == "0":
-                        disease_dict[concept_UID] = pubtator_anns.passages[i].annotations[k].infons
+                        disease_dict[concept_UID] = annotation.infons
+
                     if concept_type == "1":
-                        gene_dict[concept_UID] = pubtator_anns.passages[i].annotations[k].infons
+                        gene_dict[concept_UID] = annotation.infons
+
                     if concept_type == "2":
-                        chemical_dict[concept_UID] = pubtator_anns.passages[i].annotations[k].infons
-    return disease_dict, gene_dict, chemical_dict, pubtator_anns
+                        chemical_dict[concept_UID] = annotation.infons
+
+    return disease_dict, gene_dict, chemical_dict, pubtator_bioc
 
 
 @login_required
@@ -91,7 +98,7 @@ def home(request):
         exclude_list = []
         for i in queryset_papers:
             current_document = Document.objects.get(pk=i.pk)
-            disease_dict, gene_dict, chemical_dict, pubtator_anns = make_annotation_lists_from_current_document(current_document)
+            disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
             num_non_empty_dicts = 0
             if not len(disease_dict) == 0:
                 num_non_empty_dicts += 1
@@ -120,61 +127,91 @@ def relation(request, document_pk):
     form = AnswerForm
     current_document = get_object_or_404(Document, pk=document_pk)
 
-    #relations = Relation.objects.filter(document=current_document.id)
+    disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
 
-    disease_dict, gene_dict, chemical_dict, pubtator_anns = make_annotation_lists_from_current_document(current_document)
-    # for relation in relations:
-    #     # relations that user has already completed
-    #     relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
-    #     if not relation_specific_answers:
-    #         break
-
-    try:
-        chemical_UID = chemical_dict.keys()[0]
-    except:
-        pass
-    try:
-        disease_UID = disease_dict.keys()[0]
-    except:
-        pass
-    try:
-        gene_UID = gene_dict.keys()[0]
-    except:
-        pass
-
-    #print disease_UID, gene_UID, chemical_UID, "hello"
 
     def make_cgd_annotations(current_document):
-        for chemical in chemical_dict:
-            Annotation.objects.create(document=current_document, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
-        for gene in gene_dict:
-            Annotation.objects.create(document=current_document, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
-        for disease in disease_dict:
-            Annotation.objects.create(document=current_document, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
+        """ This method takes a current document and makes annotations as needed.
+        If annotations already exist for this document, then no annotations will be made.
+        """
+        #TODO this code can be reduced
+
+        if not Annotation.objects.filter(document=current_document).exists():
+            if chemical_dict:
+                for chemical in chemical_dict:
+                    Annotation.objects.create(document=current_document, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
+            if gene_dict:
+                for gene in gene_dict:
+                    Annotation.objects.create(document=current_document, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
+            if disease_dict:
+                for disease in disease_dict:
+                    Annotation.objects.create(document=current_document, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
+            return
+
+        else:
+            return
 
     make_cgd_annotations(current_document)
 
-    relation = Relation.objects.create(document=current_document, relation=[ chemical_dict[chemical_UID]['UID'], disease_dict[disease_UID]['UID'] ], chemical_id=chemical_dict[chemical_UID]['UID'], disease_id=disease_dict[disease_UID]['UID'], automated_cid=True)
-    relation = Relation.objects.filter(document=current_document)[0]
+    def add_relation_pairs_to_database(concept_dict_list, current_document):
+        if not Relation.objects.filter(document=current_document).exists():
+            relation_pair_list = []
+            # itertools.combinations finds all possible pairs (pairs or 2 here) of relations in any number of lists.
+            for tuple_item in list(itertools.combinations(concept_dict_list, 2)):
+                concept1_dict = tuple_item[0]
+                concept2_dict = tuple_item[1]
+                if concept1_dict and concept2_dict:
+                    for concept1 in concept1_dict:
+                        for concept2 in concept2_dict:
+                            relation_pair_list.append([concept1, concept2])
+                            Relation.objects.create(document=current_document, relation=[ concept1, concept2 ], concept1_id=concept1, concept2_id=concept2, automated_cid=True)
+            return
+        else:
+            return
 
 
-    chemical = chemical_dict[chemical_UID]['text']
-    disease = disease_dict[disease_UID]['text']
+    concept_dict_list = [gene_dict, chemical_dict, disease_dict]
+    add_relation_pairs_to_database(concept_dict_list, current_document)
+
+    # TODO use code above to get the next relation
+    relations = Relation.objects.filter(document=current_document)
+
+    for relation in relations:
+
+        relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+        if not relation_specific_answers:
+            break
+
+    # TODO return the relation pair that makes sense... this is mocked up for now.
+
+    print relation.concept1_id, "chem ID"
+    print relation.concept2_id, "dis ID"
+
+    if chemical_dict:
+        chemical_UID = chemical_dict.keys()[0]
+    if disease_dict:
+        disease_UID = disease_dict.keys()[0]
+    if gene_dict:
+        gene_UID = gene_dict.keys()[0]
 
 
-    formatted_abstract = re.sub(r'\b'+chemical+r'\b', '<font color="#E65CE6"><b>' + chemical + '</b></font>', pubtator_anns.passages[0].text +" "+ pubtator_anns.passages[1].text, flags=re.I)
-    formatted_abstract = re.sub(r'\b'+disease+r'\b', '<font color="#0099FF"><b>' + disease + '</b></font>', formatted_abstract, flags=re.I)
+    concept1 = chemical_dict[chemical_UID]['text']
+    concept2 = disease_dict[disease_UID]['text']
 
 
-    chemical_from_relation_html = '<font color="#E65CE6"><b>' + chemical + '</b></font>'
-    disease_from_relation_html = '<font color="#0099FF"><b>' + disease + '</b></font>'
+    formatted_abstract = re.sub(r'\b'+concept1+r'\b', '<font color="#E65CE6"><b>' + concept1 + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
+    formatted_abstract = re.sub(r'\b'+concept2+r'\b', '<font color="#0099FF"><b>' + concept2 + '</b></font>', formatted_abstract, flags=re.I)
+
+
+    chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1 + '</b></font>'
+    disease_from_relation_html = '<font color="#0099FF"><b>' + concept2 + '</b></font>'
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    ctx = {'chemical' : chemical,
-           'disease' : disease,
+    ctx = {'concept1' : concept1,
+           'concept2' : concept2,
            'chemical_html': chemical_from_relation_html,
            'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
