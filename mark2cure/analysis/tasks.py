@@ -215,8 +215,8 @@ def generate_reports(group_pk, private_api=False,
             dataframe=avg_user_f, args=args)
 
 
-def hashed_annotations_graph_process(clean_syns=False):
-    df = hashed_annotations_df(2, private_api=True)
+def hashed_annotations_graph_process(group_pk):
+    df = hashed_annotations_df(group_pk, private_api=True)
 
     # (TODO) This can be wayyy faster and better
     # Add a username column
@@ -224,13 +224,13 @@ def hashed_annotations_graph_process(clean_syns=False):
     res = {}
     for u_dict in user_lookup:
         res[u_dict['pk']] = u_dict['username']
-    df['username'] = df['user'].map(lambda user: res[int(user)])
+    df['username'] = df['user'].map(lambda user: res[int(user)]).apply(str)
 
     # Capitalize all annotation text
     df['text'] = df['text'].map(lambda x: x.upper())
     # Hard coded synonym cleaner
     synonyms_dict = pd.read_csv('assets/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
-    df['clean_text'] = df['text'].map(lambda text_str: synonyms_dict.get(text_str, df['text']) )
+    df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str)) ).apply(str)
 
     # Add field to deterine if hash meets minimum count
     hash_count_series = df['hash'].value_counts()
@@ -251,8 +251,25 @@ def hashed_annotations_graph_process(clean_syns=False):
     return df[ df['hash_count'] >= min_thresh ]
 
 
+def network_from_hash_df(df, graph):
+    # Adding edges auto adds Nodes
+    # Adding edges multiple times doesn't add new edges by default
+
+    for pmid in df['document_id'].unique():
+        pmid_df = df[ df['document_id']==pmid ]
+        pmid_annotations = pmid_df.clean_text.unique()
+
+        for text1, text2 in itertools.combinations(pmid_annotations, 2):
+            graph.add_edge(text1, text2)
+
+    return graph
+
+
 def generate_network():
-    G = nx.Graph()
+    df = hashed_annotations_graph_process(2)
+    G = network_from_hash_df(df, nx.Graph())
+
+    return G
 
     edge_ids = range(1000)
     G.add_nodes_from(edge_ids)
