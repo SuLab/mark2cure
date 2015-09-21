@@ -155,7 +155,6 @@ def relation(request, document_pk):
 
     def add_relation_pairs_to_database(concept_dict_list, current_document):
         if not Relation.objects.filter(document=current_document).exists():
-            relation_pair_list = []
             # itertools.combinations finds all possible pairs (pairs or 2 here) of relations in any number of lists.
             for tuple_item in list(itertools.combinations(concept_dict_list, 2)):
                 concept1_dict = tuple_item[0]
@@ -163,8 +162,9 @@ def relation(request, document_pk):
                 if concept1_dict and concept2_dict:
                     for concept1 in concept1_dict:
                         for concept2 in concept2_dict:
-                            relation_pair_list.append([concept1, concept2])
-                            Relation.objects.create(document=current_document, relation=[ concept1, concept2 ], concept1_id=concept1, concept2_id=concept2, automated_cid=True)
+                            concept1_final = Annotation.objects.get(document=current_document, uid=concept1)
+                            concept2_final = Annotation.objects.get(document=current_document, uid=concept2)
+                            Relation.objects.create(document=current_document, relation=[ concept1, concept2 ], concept1_id=concept1_final, concept2_id=concept2_final, automated_cid=True)
             return
         else:
             return
@@ -182,22 +182,10 @@ def relation(request, document_pk):
         if not relation_specific_answers:
             break
 
-    # TODO return the relation pair that makes sense... this is mocked up for now.
+    concept1 = str(Annotation.objects.get(document=current_document, uid=relation.concept1_id).text)
+    concept2 = str(Annotation.objects.get(document=current_document, uid=relation.concept2_id).text)
 
-    print relation.concept1_id, "chem ID"
-    print relation.concept2_id, "dis ID"
-
-    if chemical_dict:
-        chemical_UID = chemical_dict.keys()[0]
-    if disease_dict:
-        disease_UID = disease_dict.keys()[0]
-    if gene_dict:
-        gene_UID = gene_dict.keys()[0]
-
-
-    concept1 = chemical_dict[chemical_UID]['text']
-    concept2 = disease_dict[disease_UID]['text']
-
+    # TODO if concept1 and concept2 are stype .... USE different JSON objects for jquery menu....   TODO TODO
 
     formatted_abstract = re.sub(r'\b'+concept1+r'\b', '<font color="#E65CE6"><b>' + concept1 + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
     formatted_abstract = re.sub(r'\b'+concept2+r'\b', '<font color="#0099FF"><b>' + concept2 + '</b></font>', formatted_abstract, flags=re.I)

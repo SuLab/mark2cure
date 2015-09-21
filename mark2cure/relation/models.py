@@ -221,7 +221,7 @@ class Annotation(models.Model):
     stop = models.IntegerField()
 
     def __unicode__(self):
-        return self.text
+        return self.uid
 
 class Sentence(models.Model):
     paper = models.ForeignKey(Paper)
@@ -247,6 +247,9 @@ class Relation(models.Model):
     # relation choice to auto
     if automated_cid == True:
         relation = "auto"
+
+    def __unicode__(self):
+        return self.relation
 
 
 class Answer(models.Model):
