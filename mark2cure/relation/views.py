@@ -99,14 +99,9 @@ def home(request):
         for i in queryset_papers:
             current_document = Document.objects.get(pk=i.pk)
             disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
-            num_non_empty_dicts = 0
-            if not len(disease_dict) == 0:
-                num_non_empty_dicts += 1
-            if not len(gene_dict) == 0:
-                num_non_empty_dicts += 1
-            if not len(chemical_dict) == 0:
-                num_non_empty_dicts += 1
-            if num_non_empty_dicts < 2:
+            total_full_dicts = 0
+            total_full_dicts = len(disease_dict) + len(gene_dict) + len(chemical_dict)
+            if total_full_dicts < 2:
                 exclude_list.append(i)
 
         return exclude_list
@@ -114,7 +109,7 @@ def home(request):
     exclude_list = exclude_empty_concept_lists(queryset_papers) + exclude_user_answered_relations(queryset_papers)
 
     exclude_these_list = [exclude_this.id for exclude_this in exclude_list]
-    filtered_queryset_papers = Document.objects.all().exclude(id__in=exclude_these_list)[:30]
+    filtered_queryset_papers = Document.objects.all().exclude(id__in=exclude_these_list)[:10]
 
     ctx = {
         'documents': filtered_queryset_papers,
@@ -128,7 +123,6 @@ def relation(request, document_pk):
     current_document = get_object_or_404(Document, pk=document_pk)
 
     disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
-
 
     def make_cgd_annotations(current_document):
         """ This method takes a current document and makes annotations as needed.
@@ -169,41 +163,53 @@ def relation(request, document_pk):
         else:
             return
 
-
     concept_dict_list = [gene_dict, chemical_dict, disease_dict]
     add_relation_pairs_to_database(concept_dict_list, current_document)
 
-    # TODO use code above to get the next relation
-    relations = Relation.objects.filter(document=current_document)
+    # TODO look for annotations instead of relations FASTER TODO TODO
 
-    for relation in relations:
+    def find_unanswered_relation(current_document):
+        relations = Relation.objects.filter(document=current_document)
 
-        relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
-        if not relation_specific_answers:
-            break
+        for relation in relations:
 
-    concept1 = str(Annotation.objects.get(document=current_document, uid=relation.concept1_id).text)
-    concept2 = str(Annotation.objects.get(document=current_document, uid=relation.concept2_id).text)
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+            if not relation_specific_answers:
+                return relation
 
+    relation = Relation.objects.filter(document=current_document)[0]
+
+
+    concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
+    concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
+
+    concept1_text = str(concept1.text)
+    concept2_text = str(concept2.text)
+
+    concept1_type = concept1.stype
+    concept2_type = concept2.stype
+
+    relation_type = concept1_type + "_" + concept2_type
     # TODO if concept1 and concept2 are stype .... USE different JSON objects for jquery menu....   TODO TODO
 
-    formatted_abstract = re.sub(r'\b'+concept1+r'\b', '<font color="#E65CE6"><b>' + concept1 + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
-    formatted_abstract = re.sub(r'\b'+concept2+r'\b', '<font color="#0099FF"><b>' + concept2 + '</b></font>', formatted_abstract, flags=re.I)
+    formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
+    formatted_abstract = re.sub(r'\b' + concept2_text + r'\b', '<font color="#0099FF"><b>' + concept2_text + '</b></font>', formatted_abstract, flags=re.I)
 
 
-    chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1 + '</b></font>'
-    disease_from_relation_html = '<font color="#0099FF"><b>' + concept2 + '</b></font>'
+    chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1_text + '</b></font>'
+    disease_from_relation_html = '<font color="#0099FF"><b>' + concept2_text + '</b></font>'
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    ctx = {'concept1' : concept1,
-           'concept2' : concept2,
+    ctx = {'concept1' : concept1_text,
+           'concept2' : concept2_text,
            'chemical_html': chemical_from_relation_html,
            'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
            'current_document': current_document,
+           'relation_type': relation_type,
            'relation': relation
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)

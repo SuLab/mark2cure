@@ -44,13 +44,14 @@ block post-footer
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxbuttons.js")
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxscrollbar.js")
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxmenu.js")
+  script(type="text/javascript", src="gene_disease_menu.json")
 
   script.
     $(document).ready(function () {
 
-      var data = [{
+      var chemical_disease_relation_menu = [{
           "id": "1",
-          "text": "relates to",
+          "text": "CHEMICAL relates DISEASE",
           "parentid": "-1",
           "subMenuWidth": '200px'
         }, {
@@ -77,6 +78,75 @@ block post-footer
           "parentid": "1-1"
         }];
 
+
+      var gene_disease_relation_menu = [{
+          "id": "1",
+          "text": "GENE relates to DISEASE",
+          "parentid": "-1",
+          "subMenuWidth": '200px'
+        }, {
+          "id": "2",
+          "text": "no relation",
+          "parentid": "-1",
+          "subMenuWidth": '200px'
+        },
+        {
+          "id": "1-2",
+          "text": "exacerbates",
+          "parentid": "1"
+        }, {
+          "id": "1-1",
+          "text": "treats",
+          "parentid": "1"
+        }, {
+          "id": "1-1-1",
+          "text": "treats the symptoms of",
+          "parentid": "1-1"
+        }, {
+          "id": "1-1-2",
+          "text": "treats the cause of",
+          "parentid": "1-1"
+        }];
+
+        var gene_chemical_relation_menu = [{
+            "id": "1",
+            "text": "GENE relates to CHEMICAL",
+            "parentid": "-1",
+            "subMenuWidth": '200px'
+          }, {
+            "id": "2",
+            "text": "no relation",
+            "parentid": "-1",
+            "subMenuWidth": '200px'
+          },
+          {
+            "id": "1-2",
+            "text": "exacerbates",
+            "parentid": "1"
+          }, {
+            "id": "1-1",
+            "text": "treats",
+            "parentid": "1"
+          }, {
+            "id": "1-1-1",
+            "text": "treats the symptoms of",
+            "parentid": "1-1"
+          }, {
+            "id": "1-1-2",
+            "text": "treats the cause of",
+            "parentid": "1-1"
+          }];
+
+
+      if ("{{ relation_type }}" === 'g_d')
+        data = gene_disease_relation_menu;
+
+      if ("{{ relation_type }}" === 'c_d')
+        data = chemical_disease_relation_menu;
+
+      if ("{{ relation_type }}" === 'g_c')
+        data = gene_chemical_relation_menu;
+
       var source = {
           datatype: "json",
           datafields: [
@@ -92,7 +162,7 @@ block post-footer
       var dataAdapter = new $.jqx.dataAdapter(source);
           dataAdapter.dataBind();
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
-      $('#jqxWidget').jqxMenu({ source: records, height: 50,  width: '250', mode: 'vertical', clickToOpen: true});
+      $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
       $("#jqxWidget").on('itemclick', function (evt) {
         var chemical_to_show = "{{ concept1 }} ";
         $('h3#concept1').text( chemical_to_show );
