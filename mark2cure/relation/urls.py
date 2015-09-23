@@ -11,6 +11,11 @@ urlpatterns = patterns('',
     url(r'^(?P<relation_id>[0-9]+)/results/$',
         views.results, name='results'),
 
+    url(r'^test/results/$',
+        views.create_post, name='create_post'),
+
     url(r'',
         views.home, name='home')
+
+
 )

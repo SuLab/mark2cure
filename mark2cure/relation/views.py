@@ -234,3 +234,14 @@ def results(request, relation_id): #, relation_id
         }
         return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))
+
+
+
+@login_required
+@require_http_methods(['POST'])
+def create_post(request):
+    print request.POST['foo']
+
+    form = AnswerForm(data=request.POST or None)
+
+    return HttpResponse(200)
