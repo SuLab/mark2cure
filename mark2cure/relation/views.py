@@ -177,8 +177,8 @@ def relation(request, document_pk):
             if not relation_specific_answers:
                 return relation
 
-    relation = Relation.objects.filter(document=current_document)[0]
-
+    #relation = Relation.objects.filter(document=current_document)[0]
+    relation = find_unanswered_relation(current_document)
 
     concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
     concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
