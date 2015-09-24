@@ -260,42 +260,24 @@ def network_from_hash_df(df, graph):
         pmid_annotations = pmid_df.clean_text.unique()
 
         for text1, text2 in itertools.combinations(pmid_annotations, 2):
-            graph.add_edge(text1, text2)
+            graph.add_edge(text1, text2, attributes={'foo': 'bar'})
 
     return graph
 
 
-def generate_network():
-    df = hashed_annotations_graph_process(2)
+def generate_network(group_pk):
+    '''
+        1) Generate the DF needed to compute the Graph
+        2) Compute the graph (aggregate, compare text / pmid)
+        3) Compute graph metadata and attributes
+    '''
+
+    df = hashed_annotations_graph_process(group_pk)
     G = network_from_hash_df(df, nx.Graph())
+    #G = network_from_hash_df(df, nx.MultiGraph())
 
-    return G
-
-    edge_ids = range(1000)
-    G.add_nodes_from(edge_ids)
-    random.shuffle(edge_ids)
-
-    edges = []
-    for item in edge_ids*3:
-        edges.append( (random.choice(edge_ids), random.choice(edge_ids)) )
-    G.add_edges_from(edges)
-
-    #df = hashed_annotations_df(2)
-    #G = nx.from_pandas_dataframe(df, 'index', 'index', ['user', 'text'])
-
-    # calculate centrality metrics
-    degree = nx.degree_centrality(G)
-    #between = nx.betweenness_centrality(G)
-    #close = nx.closeness_centrality(G)
-    #eigen = nx.eigenvector_centrality(G)
-
-    nx.set_node_attributes(G, 'degree', degree)
-    #nx.set_node_attributes(G, 'between', between)
-    #nx.set_node_attributes(G, 'close', close)
-    #nx.set_node_attributes(G, 'eigen', eigen)
-
+    # Compute Node Values
     pos = nx.spring_layout(G)
-
     x_pos, y_pos, size = {}, {}, {}
     for idx, val in pos.iteritems():
         x_pos[idx], y_pos[idx] = val
@@ -304,14 +286,21 @@ def generate_network():
     nx.set_node_attributes(G, 'y', y_pos)
     nx.set_node_attributes(G, 'size', size)
 
+    # Compute Node Attributes
+    # calculate centrality metrics
+    degree = nx.degree_centrality(G)
+
+    attributes = {}
+    for key, value in degree.iteritems():
+        attributes[key] = {}
+        attributes[key]['degree'] = value
+    nx.set_node_attributes(G, 'attributes', attributes)
+
     # Edges need unique ID
     edge_ids = {}
     for idx, edge in enumerate(G.edges_iter()):
-        edge_ids[edge] = idx
+        edge_ids[edge] = idx+1
     nx.set_edge_attributes(G, 'id', edge_ids)
-
-    #bb = nx.edge_betweenness_centrality(G, normalized=False)
-    #nx.set_edge_attributes(G, 'betweenness', bb)
 
     return G
 

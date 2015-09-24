@@ -32,10 +32,6 @@ def home(request):
     return TemplateResponse(request, 'common/landing2.jade', {'form': form, 'quotes': quotes})
 
 
-def network(request):
-    return TemplateResponse(request, 'common/network.jade')
-
-
 def beta(request):
     return redirect('common:home')
 
@@ -68,6 +64,13 @@ def group_view(request, group_stub):
     group = get_object_or_404(Group, stub=group_stub)
     ctx = {'group': group}
     return TemplateResponse(request, 'common/group_home.jade', ctx)
+
+
+@login_required
+def group_network(request, group_stub):
+    group = get_object_or_404(Group, stub=group_stub)
+    ctx = {'group': group}
+    return TemplateResponse(request, 'common/group_network.jade', ctx)
 
 
 @require_http_methods(['POST'])

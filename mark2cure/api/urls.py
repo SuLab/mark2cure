@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = patterns('',
     # Analysis App
-    url(r'^network/$',
-        views.network, name='network'),
+    url(r'^network/(?P<group_pk>\d+)/$',
+        views.group_network, name='group-network'),
 
     # Longitudinal user F in Group
     url(r'^analysis/group/(?P<group_pk>\d+)/user/(?P<user_pk>\d+)/$',

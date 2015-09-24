@@ -19,10 +19,12 @@ from networkx.readwrite import json_graph
 import json
 
 
-def network(request):
+@login_required
+def group_network(request, group_pk):
+    group = get_object_or_404(Group, pk=group_pk)
 
     from ..analysis.tasks import generate_network
-    G = generate_network()
+    G = generate_network(group.pk)
 
     d = json_graph.node_link_data(G)
     d['edges'] = d.pop('links')
