@@ -86,13 +86,13 @@ html
                     p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
 
                 .row.push30
-                  .col-xs-8.col-xs-offset-2.col-md-2.col-md-offset-2
+                  div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-2.col-md-offset-2
                     a(href='https://www.ngly1.org/', target='_blank').btn.btn-block.btn-white.btn-outline About NGLY1
 
                   .col-xs-10.col-xs-offset-1.col-sm-8.col-sm-offset-2.col-md-4.col-md-offset-0
-                    a(href='{% url "training:introduction" step_num=1 %}').btn.btn-block.btn-white Get Started
+                    a(href='{% url "training:introduction" step_num=1 %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
 
-                  .col-xs-8.col-xs-offset-2.col-md-2.col-md-offset-0
+                  div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-2.col-md-offset-0
                     a(href="#learnMore").hidden-xs.hidden-sm
                       button.btn.btn-block.btn-white.btn-outline
                         <i class="fa fa-play"></i> Watch Video
