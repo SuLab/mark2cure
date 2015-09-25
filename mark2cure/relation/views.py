@@ -180,6 +180,21 @@ def relation(request, document_pk):
     #relation = Relation.objects.filter(document=current_document)[0]
     relation = find_unanswered_relation(current_document)
 
+
+    def find_unanswered_relations(current_document):
+        relations = Relation.objects.filter(document=current_document)
+        relation_list = []
+        for relation in relations:
+
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+            relation_list.append(relation)
+
+        return relation_list
+
+
+
+    unanswered_relations_for_user = find_unanswered_relations(current_document)
+
     concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
     concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
 
@@ -189,12 +204,43 @@ def relation(request, document_pk):
     concept1_type = concept1.stype
     concept2_type = concept2.stype
 
+    # TODO add this to the model (relation.stype)
     relation_type = concept1_type + "_" + concept2_type
     # TODO if concept1 and concept2 are stype .... USE different JSON objects for jquery menu....   TODO TODO
 
+
+    def make_relation_dict(unanswered_relations_for_user):
+        relation_list = []
+
+        for relation in unanswered_relations_for_user:
+
+            concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
+            concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
+
+            concept1_text = str(concept1.text)
+            concept2_text = str(concept2.text)
+
+            concept1_type = concept1.stype
+            concept2_type = concept2.stype
+
+            relation_type = concept1_type + "_" + concept2_type
+
+
+            relation_list.append({relation: {'concept1': concept1,
+                                       'concept2': concept2,
+                                       'concept1_text': concept1_text,
+                                       'concept2_text': concept2_text,
+                                       'concept1_type': concept1_type,
+                                       'concept2_type': concept2_type,
+                                       'relation_type': relation_type} })
+        return relation_list
+
+
+    relation_list = make_relation_dict(unanswered_relations_for_user)
+    # print relation_list
+
     formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
     formatted_abstract = re.sub(r'\b' + concept2_text + r'\b', '<font color="#0099FF"><b>' + concept2_text + '</b></font>', formatted_abstract, flags=re.I)
-
 
     chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1_text + '</b></font>'
     disease_from_relation_html = '<font color="#0099FF"><b>' + concept2_text + '</b></font>'
@@ -210,7 +256,8 @@ def relation(request, document_pk):
            'current_paper': formatted_abstract,
            'current_document': current_document,
            'relation_type': relation_type,
-           'relation': relation
+           'relation': relation,
+           'relation_list': relation_list
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 

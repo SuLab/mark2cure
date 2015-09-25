@@ -24,7 +24,6 @@ block content
         h3#jen_results
         h3#concept2
 
-
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
           input#relation_type(type="hidden", name="relation_type")
@@ -44,7 +43,6 @@ block post-footer
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxbuttons.js")
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxscrollbar.js")
   script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxmenu.js")
-  script(type="text/javascript", src="gene_disease_menu.json")
 
   script.
     $(document).ready(function () {
@@ -56,7 +54,7 @@ block post-footer
           "subMenuWidth": '200px'
         }, {
           "id": "2",
-          "text": "no relation",
+          "text": "has no relation to",
           "parentid": "-1",
           "subMenuWidth": '200px'
         },
@@ -83,30 +81,64 @@ block post-footer
           "id": "1",
           "text": "GENE relates to DISEASE",
           "parentid": "-1",
-          "subMenuWidth": '200px'
+          "subMenuWidth": '300px'
         }, {
           "id": "2",
-          "text": "no relation",
+          "text": "has no relation to",
           "parentid": "-1",
-          "subMenuWidth": '200px'
+          "subMenuWidth": '300px'
         },
         {
-          "id": "1-2",
-          "text": "exacerbates",
-          "parentid": "1"
-        }, {
           "id": "1-1",
-          "text": "treats",
+          "text": "altered expression is associated with",
+          "parentid": "1",
+          "subMenuWidth": '300px'
+        }, {
+          "id": "1-2",
+          "text": "altered regulation leads to",
+          "parentid": "1"
+        },
+        {
+          "id": "1-3",
+          "text": "mutation is associated with",
+          "parentid": "1",
+          "subMenuWidth": '300px'
+        }, {
+          "id": "1-4",
+          "text": "and post-translational modifications are associated with",
           "parentid": "1"
         }, {
           "id": "1-1-1",
-          "text": "treats the symptoms of",
+          "text": "decreased expression leads to",
           "parentid": "1-1"
         }, {
           "id": "1-1-2",
-          "text": "treats the cause of",
+          "text": "increased expression leads to",
           "parentid": "1-1"
+        }
+        , {
+          "id": "1-3-1",
+          "text": "deletion mutation is associated with",
+          "parentid": "1-3"
+        }, {
+          "id": "1-3-2",
+          "text": "duplication mutation is associated with",
+          "parentid": "1-3"
+        }, {
+          "id": "1-3-3",
+          "text": "insertion mutation is associated with",
+          "parentid": "1-3"
+        }, {
+          "id": "1-3-4",
+          "text": "inversion mutation is associated with",
+          "parentid": "1-3"
+        }, {
+          "id": "1-3-5",
+          "text": "substitution mutation is associated with",
+          "parentid": "1-3"
         }];
+
+
 
         var gene_chemical_relation_menu = [{
             "id": "1",
@@ -115,26 +147,34 @@ block post-footer
             "subMenuWidth": '200px'
           }, {
             "id": "2",
-            "text": "no relation",
+            "text": "has no relation to",
             "parentid": "-1",
             "subMenuWidth": '200px'
           },
           {
             "id": "1-2",
-            "text": "exacerbates",
+            "text": "activity is changed by",
             "parentid": "1"
           }, {
             "id": "1-1",
-            "text": "treats",
+            "text": "amount is changed by",
             "parentid": "1"
           }, {
             "id": "1-1-1",
-            "text": "treats the symptoms of",
+            "text": "expression is decreased by",
             "parentid": "1-1"
           }, {
             "id": "1-1-2",
-            "text": "treats the cause of",
+            "text": "expression is increased by",
             "parentid": "1-1"
+          }, {
+            "id": "1-2-1",
+            "text": "activity is inhibited by",
+            "parentid": "1-2"
+          }, {
+            "id": "1-2-2",
+            "text": "activity is activated by",
+            "parentid": "1-2"
           }];
 
 
