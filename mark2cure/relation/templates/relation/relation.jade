@@ -20,9 +20,10 @@ block content
         h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
 
         #jqxWidget
-        h3#concept1
-        h3#jen_results
-        h3#concept2
+        h3
+          span#concept1
+          span#jen_results
+          span#concept2
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
@@ -49,7 +50,7 @@ block post-footer
 
       var chemical_disease_relation_menu = [{
           "id": "1",
-          "text": "CHEMICAL relates DISEASE",
+          "text": "(chemical) relates to disease",
           "parentid": "-1",
           "subMenuWidth": '200px'
         }, {
@@ -79,7 +80,7 @@ block post-footer
 
       var gene_disease_relation_menu = [{
           "id": "1",
-          "text": "GENE relates to DISEASE",
+          "text": "(gene) relates to the disease",
           "parentid": "-1",
           "subMenuWidth": '300px'
         }, {
@@ -142,7 +143,7 @@ block post-footer
 
         var gene_chemical_relation_menu = [{
             "id": "1",
-            "text": "GENE relates to CHEMICAL",
+            "text": "(gene) relates to the chemical",
             "parentid": "-1",
             "subMenuWidth": '200px'
           }, {
@@ -178,14 +179,16 @@ block post-footer
           }];
 
 
+
       if ("{{ relation_type }}" === 'g_d')
-        data = gene_disease_relation_menu;
+        var data = gene_disease_relation_menu;
 
       if ("{{ relation_type }}" === 'c_d')
-        data = chemical_disease_relation_menu;
+        var data = chemical_disease_relation_menu;
 
       if ("{{ relation_type }}" === 'g_c')
-        data = gene_chemical_relation_menu;
+        var data = gene_chemical_relation_menu;
+
 
       var source = {
           datatype: "json",
@@ -204,15 +207,20 @@ block post-footer
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
       $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
       $("#jqxWidget").on('itemclick', function (evt) {
-        var chemical_to_show = "{{ concept1 }} ";
-        $('h3#concept1').text( chemical_to_show );
 
-        var disease_to_show = "{{ concept2 }} ";
-        $('h3#concept2').text( disease_to_show );
+        var chemical_color = '#E65CE6';
+        var disease_color = '#0099FF';
+        var gene_color = '#00cc00';
+
+
+        var chemical_to_show = " {{ concept1 }} ";
+        $('#concept1').text( chemical_to_show ).css({'color': chemical_color });
 
         var string_to_show = $(evt.args).text();
-        $('h3#jen_results').text( string_to_show );
+        $('#jen_results').text( string_to_show ).css({'color': '#000000'});
 
+        var disease_to_show = " {{ concept2 }} ";
+        $('#concept2').text( disease_to_show ).css({'color': disease_color });
 
         $.ajax({
           type: 'POST',
