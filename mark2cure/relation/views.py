@@ -18,7 +18,7 @@ from django.contrib import messages
 
 from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..common.bioc import BioCReader
-from ..relation.models import Paper, Annotation
+from ..relation.models import Paper, Concept
 from ..userprofile.models import UserProfile
 from ..document.models import Document, Section, Pubtator
 
@@ -35,42 +35,7 @@ import os
 
 
 #TODO, needs improvement
-def make_annotation_lists_from_current_document(current_document):
-    """
-    TODO: should be removed from views and possibly added to models or tasks?
-    Input is one document. Output is three concept lists in order: disease, gene,
-    chemical. Also output is the pubtator_anns.
 
-    This is SO slow*** Need to find a way to only show things if there are chemicals + diseases.
-
-    If there are no chem/dis, then no reason to show it.
-    """
-    disease_dict = {}
-    gene_dict = {}
-    chemical_dict = {}
-    pubtator_bioc = ""  # need this here for now to return back an empty pubtator_bioc for docs that don't have valid pubtators.
-
-    if current_document.valid_pubtator():
-        pubtator_bioc = current_document.as_bioc_with_pubtator_annotations()
-
-        for passage in pubtator_bioc.passages:
-
-            for annotation in passage.annotations:
-                concept_type = annotation.infons['type']
-                concept_UID = annotation.infons['UID']
-
-                if concept_UID != "None":
-
-                    if concept_type == "0":
-                        disease_dict[concept_UID] = annotation.infons
-
-                    if concept_type == "1":
-                        gene_dict[concept_UID] = annotation.infons
-
-                    if concept_type == "2":
-                        chemical_dict[concept_UID] = annotation.infons
-
-    return disease_dict, gene_dict, chemical_dict, pubtator_bioc
 
 
 @login_required
@@ -98,7 +63,7 @@ def home(request):
         exclude_list = []
         for i in queryset_papers:
             current_document = Document.objects.get(pk=i.pk)
-            disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
+            disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists_from_current_document()
             total_full_dicts = 0
             total_full_dicts = len(disease_dict) + len(gene_dict) + len(chemical_dict)
             if total_full_dicts < 2:
@@ -122,30 +87,30 @@ def relation(request, document_pk):
     form = AnswerForm
     current_document = get_object_or_404(Document, pk=document_pk)
 
-    disease_dict, gene_dict, chemical_dict, pubtator_bioc = make_annotation_lists_from_current_document(current_document)
+    disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists_from_current_document()
 
-    def make_cgd_annotations(current_document):
+    def make_cgd_concepts(current_document):
         """ This method takes a current document and makes annotations as needed.
         If annotations already exist for this document, then no annotations will be made.
         """
         #TODO this code can be reduced
 
-        if not Annotation.objects.filter(document=current_document).exists():
+        if not Concept.objects.filter(document=current_document).exists():
             if chemical_dict:
                 for chemical in chemical_dict:
-                    Annotation.objects.create(document=current_document, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
+                    Concept.objects.create(document=current_document, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
             if gene_dict:
                 for gene in gene_dict:
-                    Annotation.objects.create(document=current_document, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
+                    Concept.objects.create(document=current_document, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
             if disease_dict:
                 for disease in disease_dict:
-                    Annotation.objects.create(document=current_document, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
+                    Concept.objects.create(document=current_document, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
             return
 
         else:
             return
 
-    make_cgd_annotations(current_document)
+    make_cgd_concepts(current_document)
 
     def add_relation_pairs_to_database(concept_dict_list, current_document):
         if not Relation.objects.filter(document=current_document).exists():
@@ -156,8 +121,8 @@ def relation(request, document_pk):
                 if concept1_dict and concept2_dict:
                     for concept1 in concept1_dict:
                         for concept2 in concept2_dict:
-                            concept1_final = Annotation.objects.get(document=current_document, uid=concept1)
-                            concept2_final = Annotation.objects.get(document=current_document, uid=concept2)
+                            concept1_final = Concept.objects.get(document=current_document, uid=concept1)
+                            concept2_final = Concept.objects.get(document=current_document, uid=concept2)
                             Relation.objects.create(document=current_document, relation=[ concept1, concept2 ], concept1_id=concept1_final, concept2_id=concept2_final, automated_cid=True)
             return
         else:
@@ -166,8 +131,9 @@ def relation(request, document_pk):
     concept_dict_list = [gene_dict, chemical_dict, disease_dict]
     add_relation_pairs_to_database(concept_dict_list, current_document)
 
-    # TODO look for annotations instead of relations FASTER TODO TODO
+    # TODO look for Concepts instead of relations FASTER TODO TODO
 
+    #TODO cannot move because of import errors with models in Document & Relation App
     def find_unanswered_relation(current_document):
         relations = Relation.objects.filter(document=current_document)
 
@@ -180,8 +146,8 @@ def relation(request, document_pk):
     #relation = Relation.objects.filter(document=current_document)[0]
     relation = find_unanswered_relation(current_document)
 
-
-    def find_unanswered_relations(current_document):
+    #TODO cannot move because of import errors with models in Document & Relation App
+    def find_unanswered_relation_list(current_document):
         relations = Relation.objects.filter(document=current_document)
         relation_list = []
         for relation in relations:
@@ -192,11 +158,10 @@ def relation(request, document_pk):
         return relation_list
 
 
+    unanswered_relations_for_user = find_unanswered_relation_list(current_document)
 
-    unanswered_relations_for_user = find_unanswered_relations(current_document)
-
-    concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
-    concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
+    concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
+    concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
 
     concept1_text = str(concept1.text)
     concept2_text = str(concept2.text)
@@ -214,8 +179,8 @@ def relation(request, document_pk):
 
         for relation in unanswered_relations_for_user:
 
-            concept1 = Annotation.objects.get(document=current_document, uid=relation.concept1_id)
-            concept2 = Annotation.objects.get(document=current_document, uid=relation.concept2_id)
+            concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
+            concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
 
             concept1_text = str(concept1.text)
             concept2_text = str(concept2.text)

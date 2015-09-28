@@ -4,7 +4,7 @@ Jennifer new admin page (involved in registering changes to the database)
 from django.contrib import admin
 
 
-from mark2cure.relation.models import Paper, Annotation, Sentence, Relation, Answer
+from mark2cure.relation.models import Paper, Concept, Sentence, Relation, Answer
 
 # TODO
 '''
@@ -18,7 +18,7 @@ class PaperAdmin(admin.ModelAdmin):
     # TODO add defs here similar to max's admin models? or in tasks?
 
 
-class AnnotationAdmin(admin.ModelAdmin):
+class ConceptAdmin(admin.ModelAdmin):
     list_display = ('document', 'uid', 'stype', 'text', 'start', 'stop')
 
 
@@ -35,7 +35,7 @@ class AnswerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Paper, PaperAdmin)
-admin.site.register(Annotation, AnnotationAdmin)
+admin.site.register(Concept, ConceptAdmin)
 admin.site.register(Sentence, SentenceAdmin)
 admin.site.register(Relation, RelationAdmin)
 admin.site.register(Answer, AnswerAdmin)

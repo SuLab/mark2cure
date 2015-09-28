@@ -32,12 +32,12 @@ class Paper(models.Model):
     annotations are already in their own, distinct model  """
     def get_unique_diseases(self):
         # return a list of the unique diseases to this Paper
-        query = Annotation.objects.filter(paper=self).filter(stype='disease').values_list('uid').distinct()
+        query = Concept.objects.filter(paper=self).filter(stype='disease').values_list('uid').distinct()
         return query
 
     def get_unique_chemicals(self):
         # return a list of the unique chemicals to this Paper
-        query = Annotation.objects.filter(paper=self).filter(stype='chemical').values_list('uid').distinct()
+        query = Concept.objects.filter(paper=self).filter(stype='chemical').values_list('uid').distinct()
         return query
 
     # gold_relations = models.TextField(blank=False) # TODO check what false is here
@@ -212,7 +212,7 @@ class Paper(models.Model):
 
 # TODO, add which sentence it is found in annotation? maybe
 
-class Annotation(models.Model):
+class Concept(models.Model):
     document = models.ForeignKey(Document)
     uid = models.TextField(blank=False)
     stype = models.TextField(blank=False)
@@ -239,8 +239,8 @@ class Sentence(models.Model):
 class Relation(models.Model):
     document = models.ForeignKey(Document)
     relation = models.TextField(blank=False)
-    concept1_id = models.TextField(blank=False)
-    concept2_id = models.TextField(blank=False)
+    concept1_id = models.ForeignKey(Concept, related_name='concept1')
+    concept2_id = models.ForeignKey(Concept, related_name='concept2')
 
     automated_cid = models.BooleanField(default=False)
     # TODO if CID relation automatically determined, then apply

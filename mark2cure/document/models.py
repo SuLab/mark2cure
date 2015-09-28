@@ -229,6 +229,44 @@ class Document(models.Model):
         user_ids = list(set(View.objects.filter(section__document=self, completed=True).values_list('user', flat=True)))
         return user_ids
 
+    # Jennifer's method
+    def make_concept_lists_from_current_document(self):
+        """
+        TODO: should be removed from views and possibly added to models or tasks?
+        Input is one document. Output is three concept lists in order: disease, gene,
+        chemical. Also output is the pubtator_anns.
+
+        This is SO slow*** Need to find a way to only show things if there are chemicals + diseases.
+
+        If there are no chem/dis, then no reason to show it.
+        """
+        disease_dict = {}
+        gene_dict = {}
+        chemical_dict = {}
+        pubtator_bioc = ""  # need this here for now to return back an empty pubtator_bioc for docs that don't have valid pubtators.
+
+        if self.valid_pubtator():
+            pubtator_bioc = self.as_bioc_with_pubtator_annotations()
+
+            for passage in pubtator_bioc.passages:
+
+                for annotation in passage.annotations:
+                    concept_type = annotation.infons['type']
+                    concept_UID = annotation.infons['UID']
+
+                    if concept_UID != "None":
+
+                        if concept_type == "0":
+                            disease_dict[concept_UID] = annotation.infons
+
+                        if concept_type == "1":
+                            gene_dict[concept_UID] = annotation.infons
+
+                        if concept_type == "2":
+                            chemical_dict[concept_UID] = annotation.infons
+
+        return disease_dict, gene_dict, chemical_dict, pubtator_bioc
+
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
