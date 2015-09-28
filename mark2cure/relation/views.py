@@ -85,7 +85,7 @@ def home(request):
             user_paper_relations = Relation.objects.filter(document=i.id)
             flag = 0
             for j in user_paper_relations:
-                user_paper_answers = Answer.objects.all().filter(relation_pair=j.relation).filter(username=request.user)
+                user_paper_answers = Answer.objects.all().filter(relation=j.pk).filter(username=request.user)
                 if len(user_paper_answers) == 1:
                     flag += 1
                 if flag == len(user_paper_relations):
@@ -173,7 +173,7 @@ def relation(request, document_pk):
 
         for relation in relations:
 
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
             if not relation_specific_answers:
                 return relation
 
@@ -186,7 +186,7 @@ def relation(request, document_pk):
         relation_list = []
         for relation in relations:
 
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation_pair=relation.relation)
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
             relation_list.append(relation)
 
         return relation_list
@@ -265,9 +265,7 @@ def relation(request, document_pk):
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
     relation = get_object_or_404(Relation, pk=relation_id)
-
     relation_type = request.POST['relation_type']
-
     form = AnswerForm(request.POST or None)
 
     # print form
@@ -287,8 +285,13 @@ def results(request, relation_id): #, relation_id
 @login_required
 @require_http_methods(['POST'])
 def create_post(request):
-    print request.POST['foo']
+    relation_type = request.POST['relation_type']
+    relation = request.POST['relation']
+    username = request.POST['username']
+    form = AnswerForm(request.POST or None)
+    if form.is_valid():
+        save_it = form.save(commit=False)
+        save_it = save_it.save()
 
-    form = AnswerForm(data=request.POST or None)
 
     return HttpResponse(200)

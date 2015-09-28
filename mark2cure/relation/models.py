@@ -259,7 +259,6 @@ class Answer(models.Model):
     the user provide Answers to the relations!!
     """
     relation = models.ForeignKey(Relation)
-    relation_pair = models.TextField(blank=True)
     # TODO, this might get updated from Toby's code in the future
     relation_type = models.TextField(blank=True)
     # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)

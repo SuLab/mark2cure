@@ -28,7 +28,6 @@ block content
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
           input#relation_type(type="hidden", name="relation_type")
-          input#relation_pair(type="hidden", name="relation_pair", value=relation.relation)
           input#username(type="hidden", name="username", value=request.user)
           input#relation(type="hidden", name="relation", value=relation.pk)
 
@@ -225,7 +224,7 @@ block post-footer
         $.ajax({
           type: 'POST',
           url: '/relation/test/results/',
-          data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, {'foo': string_to_show}),
+          data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, {'relation_type': string_to_show}, {'relation': "{{ relation.pk }}"}, {'username': "{{request.user}}" }),
           cache: false,
           async: false,
 
