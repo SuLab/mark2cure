@@ -8,7 +8,6 @@ tasks.py performs much of the actions involved in populating the new documents
 
 '''
 from django.db import models
-from ..document.models import Document
 
 class Paper(models.Model):
     """
@@ -213,7 +212,7 @@ class Paper(models.Model):
 # TODO, add which sentence it is found in annotation? maybe
 
 class Concept(models.Model):
-    document = models.ForeignKey(Document)
+    document = models.ForeignKey('document.Document')
     uid = models.TextField(blank=False)
     stype = models.TextField(blank=False)
     text = models.TextField(blank=False)
@@ -237,7 +236,7 @@ class Sentence(models.Model):
 
 
 class Relation(models.Model):
-    document = models.ForeignKey(Document)
+    document = models.ForeignKey('document.Document')
     relation = models.TextField(blank=False)
     concept1_id = models.ForeignKey(Concept, related_name='concept1')
     concept2_id = models.ForeignKey(Concept, related_name='concept2')

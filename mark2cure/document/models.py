@@ -7,6 +7,11 @@ from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from django.forms.models import model_to_dict
 
+from ..relation.models import Concept, Relation, Answer
+
+import itertools
+
+
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -230,7 +235,7 @@ class Document(models.Model):
         return user_ids
 
     # Jennifer's method
-    def make_concept_lists_from_current_document(self):
+    def make_concept_lists(self):
         """
         TODO: should be removed from views and possibly added to models or tasks?
         Input is one document. Output is three concept lists in order: disease, gene,
@@ -266,6 +271,59 @@ class Document(models.Model):
                             chemical_dict[concept_UID] = annotation.infons
 
         return disease_dict, gene_dict, chemical_dict, pubtator_bioc
+
+    # Jennifer's method
+    def make_cgd_concepts(self, chemical_dict, gene_dict, disease_dict):
+        """ This method takes a current document and makes annotations as needed.
+        If annotations already exist for this document, then no annotations will be made.
+        """
+        if not Concept.objects.filter(document=self).exists():
+            # TODO: customize this so that it takes a list of ** concept dictionaries instead of three dicts
+            if chemical_dict:
+                for chemical in chemical_dict:
+                    Concept.objects.create(document=self, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
+            if gene_dict:
+                for gene in gene_dict:
+                    Concept.objects.create(document=self, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
+            if disease_dict:
+                for disease in disease_dict:
+                    Concept.objects.create(document=self, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
+
+    # Jennifer's method
+    def add_relation_pairs_to_database(self, concept_dict_list):
+        if not Relation.objects.filter(document=self).exists():
+            # itertools.combinations finds all possible pairs (pairs or 2 here) of relations in any number of lists.
+            for tuple_item in list(itertools.combinations(concept_dict_list, 2)):
+                concept1_dict = tuple_item[0]
+                concept2_dict = tuple_item[1]
+                if concept1_dict and concept2_dict:
+                    for concept1 in concept1_dict:
+                        for concept2 in concept2_dict:
+                            concept1_final = Concept.objects.get(document=self, uid=concept1)
+                            concept2_final = Concept.objects.get(document=self, uid=concept2)
+                            Relation.objects.create(document=self, relation=[ concept1, concept2 ], concept1_id=concept1_final, concept2_id=concept2_final, automated_cid=True)
+
+    def unanswered_relation(self, request):
+        relations = Relation.objects.filter(document=self)
+
+        for relation in relations:
+
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
+            if not relation_specific_answers:
+                return relation
+
+    def unanswered_relation_list(self, request):
+        relations = Relation.objects.filter(document=self)
+        relation_list = []
+        for relation in relations:
+
+            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
+            relation_list.append(relation)
+
+        return relation_list
+
+
+
 
     class Meta:
         ordering = ('-created',)

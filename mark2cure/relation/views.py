@@ -18,7 +18,6 @@ from django.contrib import messages
 
 from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..common.bioc import BioCReader
-from ..relation.models import Paper, Concept
 from ..userprofile.models import UserProfile
 from ..document.models import Document, Section, Pubtator
 
@@ -27,9 +26,8 @@ import datetime
 import re
 import json
 import random
-import itertools
 
-from .models import Answer, Relation
+from .models import Answer, Relation, Concept
 from .forms import AnswerForm
 import os
 
@@ -63,7 +61,7 @@ def home(request):
         exclude_list = []
         for i in queryset_papers:
             current_document = Document.objects.get(pk=i.pk)
-            disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists_from_current_document()
+            disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists()
             total_full_dicts = 0
             total_full_dicts = len(disease_dict) + len(gene_dict) + len(chemical_dict)
             if total_full_dicts < 2:
@@ -87,78 +85,15 @@ def relation(request, document_pk):
     form = AnswerForm
     current_document = get_object_or_404(Document, pk=document_pk)
 
-    disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists_from_current_document()
-
-    def make_cgd_concepts(current_document):
-        """ This method takes a current document and makes annotations as needed.
-        If annotations already exist for this document, then no annotations will be made.
-        """
-        #TODO this code can be reduced
-
-        if not Concept.objects.filter(document=current_document).exists():
-            if chemical_dict:
-                for chemical in chemical_dict:
-                    Concept.objects.create(document=current_document, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
-            if gene_dict:
-                for gene in gene_dict:
-                    Concept.objects.create(document=current_document, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
-            if disease_dict:
-                for disease in disease_dict:
-                    Concept.objects.create(document=current_document, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
-            return
-
-        else:
-            return
-
-    make_cgd_concepts(current_document)
-
-    def add_relation_pairs_to_database(concept_dict_list, current_document):
-        if not Relation.objects.filter(document=current_document).exists():
-            # itertools.combinations finds all possible pairs (pairs or 2 here) of relations in any number of lists.
-            for tuple_item in list(itertools.combinations(concept_dict_list, 2)):
-                concept1_dict = tuple_item[0]
-                concept2_dict = tuple_item[1]
-                if concept1_dict and concept2_dict:
-                    for concept1 in concept1_dict:
-                        for concept2 in concept2_dict:
-                            concept1_final = Concept.objects.get(document=current_document, uid=concept1)
-                            concept2_final = Concept.objects.get(document=current_document, uid=concept2)
-                            Relation.objects.create(document=current_document, relation=[ concept1, concept2 ], concept1_id=concept1_final, concept2_id=concept2_final, automated_cid=True)
-            return
-        else:
-            return
-
+    disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists()
     concept_dict_list = [gene_dict, chemical_dict, disease_dict]
-    add_relation_pairs_to_database(concept_dict_list, current_document)
+    current_document.make_cgd_concepts(disease_dict, gene_dict, chemical_dict)
 
-    # TODO look for Concepts instead of relations FASTER TODO TODO
+    current_document.add_relation_pairs_to_database(concept_dict_list)
 
-    #TODO cannot move because of import errors with models in Document & Relation App
-    def find_unanswered_relation(current_document):
-        relations = Relation.objects.filter(document=current_document)
+    relation = current_document.unanswered_relation(request)
 
-        for relation in relations:
-
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            if not relation_specific_answers:
-                return relation
-
-    #relation = Relation.objects.filter(document=current_document)[0]
-    relation = find_unanswered_relation(current_document)
-
-    #TODO cannot move because of import errors with models in Document & Relation App
-    def find_unanswered_relation_list(current_document):
-        relations = Relation.objects.filter(document=current_document)
-        relation_list = []
-        for relation in relations:
-
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            relation_list.append(relation)
-
-        return relation_list
-
-
-    unanswered_relations_for_user = find_unanswered_relation_list(current_document)
+    unanswered_relations_for_user = current_document.unanswered_relation_list(request)
 
     concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
     concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
@@ -202,7 +137,6 @@ def relation(request, document_pk):
 
 
     relation_list = make_relation_dict(unanswered_relations_for_user)
-    # print relation_list
 
     formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
     formatted_abstract = re.sub(r'\b' + concept2_text + r'\b', '<font color="#0099FF"><b>' + concept2_text + '</b></font>', formatted_abstract, flags=re.I)
@@ -226,17 +160,14 @@ def relation(request, document_pk):
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
-
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
     relation = get_object_or_404(Relation, pk=relation_id)
     relation_type = request.POST['relation_type']
     form = AnswerForm(request.POST or None)
 
-    # print form
     if form.is_valid():
-        save_it = form.save(commit=False)
-        save_it = save_it.save()
+        form.save()
 
     if request.method == 'POST':
         ctx = {
@@ -245,18 +176,11 @@ def results(request, relation_id): #, relation_id
         return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))
 
-
-
 @login_required
 @require_http_methods(['POST'])
 def create_post(request):
-    relation_type = request.POST['relation_type']
-    relation = request.POST['relation']
-    username = request.POST['username']
     form = AnswerForm(request.POST or None)
     if form.is_valid():
-        save_it = form.save(commit=False)
-        save_it = save_it.save()
-
+        form.save()
 
     return HttpResponse(200)
