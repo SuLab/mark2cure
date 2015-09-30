@@ -15,7 +15,11 @@ urlpatterns = patterns('',
         views.create_post, name='create_post'),
 
     url(r'',
-        views.home, name='home')
+        views.home, name='home'),
+
+    url(r'^jen_bioc/$',
+        views.jen_bioc, name='jen_bioc'),
+
 
 
 )

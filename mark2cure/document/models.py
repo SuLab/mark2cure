@@ -270,7 +270,7 @@ class Document(models.Model):
                         if concept_type == "2":
                             chemical_dict[concept_UID] = annotation.infons
 
-        return disease_dict, gene_dict, chemical_dict, pubtator_bioc
+        return chemical_dict, gene_dict, disease_dict, pubtator_bioc
 
     # Jennifer's method
     def make_cgd_concepts(self, chemical_dict, gene_dict, disease_dict):

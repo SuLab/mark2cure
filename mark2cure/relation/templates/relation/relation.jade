@@ -25,6 +25,10 @@ block content
           span#jen_results
           span#concept2
 
+        #relation-submit.row
+          .col-xs-5.col-xs-offset
+            p.button.btn.btn-default.btn-block.done Submit
+
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
           input#relation_type(type="hidden", name="relation_type")
@@ -205,6 +209,8 @@ block post-footer
           dataAdapter.dataBind();
       var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
       $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
+
+
       $("#jqxWidget").on('itemclick', function (evt) {
 
         var chemical_color = '#E65CE6';
@@ -230,6 +236,7 @@ block post-footer
 
           success: function() {
             console.log('win');
+
           },
           error: function() { console.log('fail'); },
         });
@@ -237,5 +244,76 @@ block post-footer
         console.log( $('h3#jen_results').text() );
         $('#relation_type').val( string_to_show );
       });
+      var pk_list = "{{ pk_list }}";
+      pk_list = JSON.parse(pk_list.replace(/&quot;/g,'"'));
+
+      $("#relation-submit").on('click', function(evt) {
+        var pop_next_relation_item = pk_list.pop();
+        console.log(pop_next_relation_item);
+        var relation_list = "{{relation_list}}";
+        relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
+        console.log(relation_list);
+
+        if (relation_list[0][pop_next_relation_item])
+          var current_relation = relation_list[0][pop_next_relation_item];
+        else if (relation_list[1][pop_next_relation_item])
+          var current_relation = relation_list[1][pop_next_relation_item];
+        else if (relation_list[2][pop_next_relation_item])
+          var current_relation = relation_list[2][pop_next_relation_item];
+        else if (relation_list[3][pop_next_relation_item])
+          var current_relation = relation_list[3][pop_next_relation_item];
+        else if (relation_list[4][pop_next_relation_item])
+          var current_relation = relation_list[4][pop_next_relation_item];
+        else if (relation_list[5][pop_next_relation_item])
+          var current_relation = relation_list[5][pop_next_relation_item];
+
+        console.log(current_relation);
+
+
+        console.log(current_relation.relation_type);
+
+        if (current_relation.relation_type === 'g_d')
+          var data = gene_disease_relation_menu;
+        else if (current_relation.relation_type === 'c_d')
+          var data = chemical_disease_relation_menu;
+        else if (current_relation.relation_type === 'g_c')
+          var data = gene_chemical_relation_menu;
+
+
+        var chemical_color = '#E65CE6';
+        var disease_color = '#0099FF';
+
+        var concept1_to_show = current_relation.concept1_text;
+        $('#concept1').text( concept1_to_show ).css({'color': chemical_color });
+
+        var string_to_show = $(evt.args).text();
+        $('#jen_results').text( string_to_show ).css({'color': '#000000'});
+
+        var concept2_to_show = current_relation.concept2_text;
+        $('#concept2').text( concept2_to_show ).css({'color': disease_color });
+
+
+
+
+        var source = {
+            datatype: "json",
+            datafields: [
+              { name: 'id' },
+              { name: 'parentid' },
+              { name: 'text' },
+              { name: 'subMenuWidth' }
+              ],
+            id: 'id',
+            localdata: data
+            };
+
+        var dataAdapter = new $.jqx.dataAdapter(source);
+            dataAdapter.dataBind();
+        var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
+        $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
+
+
+      });
+
 
     });
