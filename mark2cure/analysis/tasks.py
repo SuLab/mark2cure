@@ -229,7 +229,7 @@ def hashed_annotations_graph_process(group_pk):
     # Capitalize all annotation text
     df['text'] = df['text'].map(lambda x: x.upper())
     # Hard coded synonym cleaner
-    synonyms_dict = pd.read_csv('assets/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
+    synonyms_dict = pd.read_csv('scripts/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
     df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str)) ).apply(str)
 
     #del df['text']
