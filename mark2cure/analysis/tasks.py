@@ -232,6 +232,13 @@ def hashed_annotations_graph_process(group_pk):
     synonyms_dict = pd.read_csv('assets/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
     df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str)) ).apply(str)
 
+    #del df['text']
+
+    # Other deletions
+    #del df['offset']
+    #del df['length']
+    #del df['user']
+
     # Add field to deterine if hash meets minimum count
     hash_count_series = df['hash'].value_counts()
     df['hash_count'] = df['hash'].map(lambda hash_str: hash_count_series[hash_str])
@@ -251,20 +258,6 @@ def hashed_annotations_graph_process(group_pk):
     return df[ df['hash_count'] >= min_thresh ]
 
 
-def network_from_hash_df(df, graph):
-    # Adding edges auto adds Nodes
-    # Adding edges multiple times doesn't add new edges by default
-
-    for pmid in df['document_id'].unique():
-        pmid_df = df[ df['document_id']==pmid ]
-        pmid_annotations = pmid_df.clean_text.unique()
-
-        for text1, text2 in itertools.combinations(pmid_annotations, 2):
-            graph.add_edge(text1, text2, attributes={'foo': 'bar'})
-
-    return graph
-
-
 def generate_network(group_pk):
     '''
         1) Generate the DF needed to compute the Graph
@@ -272,19 +265,58 @@ def generate_network(group_pk):
         3) Compute graph metadata and attributes
     '''
 
+    # Generate the required base DataFrame from raw Annotations
     df = hashed_annotations_graph_process(group_pk)
-    G = network_from_hash_df(df, nx.Graph())
-    #G = network_from_hash_df(df, nx.MultiGraph())
+
+    # Numpy Arr of Unique Annotations via sanitized text
+    nd_arr = df.clean_text.unique()
+    # Unique Node labels (not using text as Identifier)
+    names = ['n'+str(x+1) for x in range(len(nd_arr))]
+    # ID >> Cleantext lookup dictionary
+    nodes = pd.Series(names, index=nd_arr).to_dict()
+
+    # Start the Network off by adding all the unique Nodes (text annotations)
+    G = nx.MultiGraph()
+    G.add_nodes_from(names)
+
+    anns = []
+    for (doc,text,user), g_df in df.groupby(['document_id', 'clean_text', 'username']):
+        anns.append({
+            'node': nodes[text],
+            'doc': doc,
+            'text': text,
+            'user': user
+        })
+    new_df = pd.DataFrame(anns)
+
+    edge_idx = 1
+    for (doc,user), g_df in new_df.groupby(['doc', 'user']):
+        for node1, node2 in itertools.combinations(list(g_df.node), 2):
+            G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc, 'user': user})
+            edge_idx += 1
 
     # Compute Node Values
-    pos = nx.spring_layout(G)
-    x_pos, y_pos, size = {}, {}, {}
+    pos = nx.spring_layout(G, iterations=20)
+
+    x_pos, y_pos = {}, {}
     for idx, val in pos.iteritems():
         x_pos[idx], y_pos[idx] = val
-        size[idx] = 1
     nx.set_node_attributes(G, 'x', x_pos)
     nx.set_node_attributes(G, 'y', y_pos)
-    nx.set_node_attributes(G, 'size', size)
+
+    nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
+    nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
+
+    type_to_color = {
+        0: '#d1f3ff',
+        1: '#B1FFA8',
+        2: '#ffd1dc'
+    }
+
+    df['color'] = df['type'].map(type_to_color)
+    df['nodes'] = df['clean_text'].map(nodes)
+    color_df = df[['nodes', 'color']]
+    color_df.groupby('nodes')['color'].value_counts()
 
     # Compute Node Attributes
     # calculate centrality metrics
@@ -295,12 +327,6 @@ def generate_network(group_pk):
         attributes[key] = {}
         attributes[key]['degree'] = value
     nx.set_node_attributes(G, 'attributes', attributes)
-
-    # Edges need unique ID
-    edge_ids = {}
-    for idx, edge in enumerate(G.edges_iter()):
-        edge_ids[edge] = idx+1
-    nx.set_edge_attributes(G, 'id', edge_ids)
 
     return G
 

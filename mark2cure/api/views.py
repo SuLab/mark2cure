@@ -13,10 +13,40 @@ from ..document.models import Section, Annotation
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-
+from itertools import chain, count
 import datetime
-from networkx.readwrite import json_graph
 import json
+
+
+_attrs = dict(id='id', source='source', target='target', key='key')
+
+def node_link_data(G, attrs=_attrs):
+    multigraph = G.is_multigraph()
+    id_ = attrs['id']
+
+    source = attrs['source']
+    target = attrs['target']
+
+    # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
+    key = None if not multigraph else attrs['key']
+
+    if len(set([source, target, key])) < 3:
+        raise nx.NetworkXError('Attribute names are not unique.')
+
+    mapping = dict(zip(G, count()))
+    data = {}
+    data['directed'] = G.is_directed()
+    data['multigraph'] = multigraph
+    data['graph'] = list(G.graph.items())
+    data['nodes'] = [dict(chain(G.node[n].items(), [(id_, n)])) for n in G]
+
+    data['edges'] = [
+        dict(chain(
+            d.items(), [(source, u), (target, v), ('id', k)]
+        ))
+        for u, v, k, d in G.edges_iter(keys=True, data=True)
+    ]
+    return data
 
 
 @login_required
@@ -25,9 +55,8 @@ def group_network(request, group_pk):
 
     from ..analysis.tasks import generate_network
     G = generate_network(group.pk)
+    d = node_link_data(G)
 
-    d = json_graph.node_link_data(G)
-    d['edges'] = d.pop('links')
     return HttpResponse(json.dumps(d), content_type='application/json')
 
 

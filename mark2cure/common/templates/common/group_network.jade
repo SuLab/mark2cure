@@ -15,35 +15,62 @@ block content
     .row
       #chart(style="height:800px;").col-xs-10.col-xs-offset-1
 
+    .row
+      .col-xs-6
+
+        #control-pane
+          h2.underline filters
+
+          div
+            h3 min degree <span id="min-degree-val">0</span>
+            input(id="min-degree", type="range", min="0", max="0", value="0")
+
+          div
+            button#reset-btn Reset filters
+
+
 
 block post-footer
   script.
+
     var s = new sigma({
       container: 'chart',
-
       settings: {
-        "labelThreshold": 6,
-        "hoverFontStyle": "bold",
 
-        "defaultEdgeType": "curve",
-        "defaultLabelColor": "#000",
-        "defaultLabelHoverColor": "#fff",
-        "defaultLabelSize": 14,
+        defaultLabelColor: "#000",
+        defaultLabelSize: 14,
+        defaultLabelBGColor: "#ddd",
+        defaultHoverLabelBGColor: "#002147",
+        defaultLabelHoverColor: "#fff",
 
-        "activeFontStyle": "bold",
-        "fontStyle": "bold",
-        "defaultHoverLabelBGColor": "#002147",
-        "defaultLabelBGColor": "#ddd",
+        edgeColor: 'default',
+        defaultEdgeColor: '#ccc',
 
-        "minRatio": 0.75,
-        "maxRatio": 20,
+        labelThreshold: 10,
+        defaultEdgeType: "curvedArrow",
 
-        "minEdgeSize": 0.2,
-        "maxNodeSize": 7,
-        "maxEdgeSize": 0.5,
-        "minNodeSize": 1
+        hoverFontStyle: "bold",
+        fontStyle: "bold",
+        activeFontStyle: "bold",
+
+        minNodeSize: 1,
+        maxNodeSize: 7,
+        minEdgeSize: 0.1,
+        maxEdgeSize: 0.5,
+
+        minRatio: 0.75,
+        maxRatio: 20,
       }
     });
+    var filter = new sigma.plugins.filter(s);
+
+    function updatePane (graph, filter) {
+      var maxDegree = 0;
+      graph.nodes().forEach(function(n) {
+        maxDegree = Math.max(maxDegree, graph.degree(n.id));
+      });
+      console.log(maxDegree);
+    };
 
     console.log('[SIGMA LOG] Loading...');
     sigma.parsers.json('/api/network/{{group.pk}}/', s, function() {
@@ -51,6 +78,47 @@ block post-footer
       s.refresh();
     });
     s.refresh();
+
+    updatePane(s.graph, filter);
+    function applyMinDegreeFilter(num) {
+      console.log(num);
+      $('min-degree-val').textContent = num;
+
+      filter
+        .undo('min-degree')
+        .nodesBy(function(n) {
+          return this.degree(n.id) >= num;
+        }, 'min-degree').apply();
+    };
+
+    function applyUserFilter(username) {
+      console.log(username);
+      filter
+        .undo('edge-contributor')
+        .edgesBy(function(edge) {
+          return edge.attributes.user == username;
+        }, 'edge-contributor').apply();
+    };
+
+
+    /*
+    var dragListener = sigma.plugins.dragNodes(s, s.renderers[0]);
+    dragListener.bind('startdrag', function(event) {
+      console.log(event);
+    });
+
+    dragListener.bind('drag', function(event) {
+      console.log(event);
+    });
+
+    dragListener.bind('drop', function(event) {
+      console.log(event);
+    });
+
+    dragListener.bind('dragend', function(event) {
+      console.log(event);
+    });
+    */
 
     /*
     sigInst.bind('overnodes',function(event){
