@@ -296,7 +296,20 @@ def generate_network(group_pk):
             edge_idx += 1
 
     # Compute Node Values
-    pos = nx.spring_layout(G, iterations=20)
+    pos = nx.spring_layout(G, iterations=10)
+
+    # Santize the node colors
+    type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
+    df['color'] = df['type'].map(type_to_color)
+    df['nodes'] = df['clean_text'].map(nodes)
+    #def color_freq(df, a, b):
+    #    most_freq_color = df['color'].value_counts().idxmax()
+    #    df['color'] = most_freq_color
+    #    return df
+    colors = {}
+    for node, g_df in df.groupby('nodes'):
+        colors[node] = g_df['color'].value_counts().idxmax()
+    nx.set_node_attributes(G, 'color', colors)
 
     x_pos, y_pos = {}, {}
     for idx, val in pos.iteritems():
@@ -306,17 +319,6 @@ def generate_network(group_pk):
 
     nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
     nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
-
-    type_to_color = {
-        0: '#d1f3ff',
-        1: '#B1FFA8',
-        2: '#ffd1dc'
-    }
-
-    df['color'] = df['type'].map(type_to_color)
-    df['nodes'] = df['clean_text'].map(nodes)
-    color_df = df[['nodes', 'color']]
-    color_df.groupby('nodes')['color'].value_counts()
 
     # Compute Node Attributes
     # calculate centrality metrics
