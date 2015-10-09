@@ -33,50 +33,43 @@ from .forms import AnswerForm
 import os
 
 
-#TODO, needs improvement
-
-
-
 @login_required
 def home(request):
     # how many documents to display on the home page, sort through 30 docs and see if there are docs that have chem/diseases
-    queryset_papers = Document.objects.all()[:30]
+    # TODO test
+    concepts_available = Concept.objects.all()
 
-    # exclude if user already answered
-    def exclude_user_answered_relations(queryset_papers):
+    queryset_documents = []
+    for concept in concepts_available:
+        if concept.document not in queryset_documents:
+            queryset_documents.append(concept.document)
+
+    # TODO exclude documents that do not contain unanswered user relation pairs
+    def exclude_user_answered_relations(queryset_documents):
         exclude_list = []
-        for i in queryset_papers:
-            user_paper_relations = Relation.objects.filter(document=i.id)
+        for document in queryset_documents:
+            user_paper_relations = Relation.objects.filter(document=document.id)
             flag = 0
-            for j in user_paper_relations:
-                user_paper_answers = Answer.objects.all().filter(relation=j.pk).filter(username=request.user)
+            for relation in user_paper_relations:
+                user_paper_answers = Answer.objects.all().filter(relation=relation.pk).filter(username=request.user)
                 if len(user_paper_answers) == 1:
                     flag += 1
                 if flag == len(user_paper_relations):
-                    exclude_list.append(i)
+                    exclude_list.append(document)
 
         return exclude_list # returns a query_set
 
-    ### exclude if 2 or 3 lists are empty
-    def exclude_empty_concept_lists(queryset_papers):
-        exclude_list = []
-        for i in queryset_papers:
-            current_document = Document.objects.get(pk=i.pk)
-            disease_dict, gene_dict, chemical_dict, pubtator_bioc = current_document.make_concept_lists()
-            total_full_dicts = 0
-            total_full_dicts = len(disease_dict) + len(gene_dict) + len(chemical_dict)
-            if total_full_dicts < 2:
-                exclude_list.append(i)
+    exclude_list = exclude_user_answered_relations(queryset_documents)
 
-        return exclude_list
+    for doc in exclude_list:
+        if doc in queryset_documents:
+            queryset_documents.remove(doc)
 
-    exclude_list = exclude_empty_concept_lists(queryset_papers) + exclude_user_answered_relations(queryset_papers)
-
-    exclude_these_list = [exclude_this.id for exclude_this in exclude_list]
-    filtered_queryset_papers = Document.objects.all().exclude(id__in=exclude_these_list)[:10]
+    # Just show a few
+    queryset_documents = queryset_documents[:10]
 
     ctx = {
-        'documents': filtered_queryset_papers,
+        'documents': queryset_documents,
     }
     return TemplateResponse(request, 'relation/home.jade', ctx)
 
@@ -84,16 +77,13 @@ def home(request):
 @login_required
 def relation(request, document_pk):
     form = AnswerForm
+    # the document instance
     current_document = get_object_or_404(Document, pk=document_pk)
-
-    chemical_dict, gene_dict, disease_dict, pubtator_bioc = current_document.make_concept_lists()
-    concept_dict_list = [chemical_dict, gene_dict, disease_dict]
-    current_document.make_cgd_concepts(chemical_dict, gene_dict, disease_dict)
-
-    current_document.add_relation_pairs_to_database(concept_dict_list)
+    # the section instances
+    section_title = Section.objects.get(document=current_document, kind="t")
+    section_abstract = Section.objects.get(document=current_document, kind="a")
 
     relation = current_document.unanswered_relation(request)
-
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
 
     concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
@@ -126,7 +116,6 @@ def relation(request, document_pk):
             print concept2_text, concept2_type
             print concept1_text, concept1_type
 
-
             relation_list.append({relation.pk: {
                                        'concept1_text': concept1_text,
                                        'concept2_text': concept2_text,
@@ -134,9 +123,6 @@ def relation(request, document_pk):
                                        'concept2_type': concept2_type,
                                        'relation_type': relation_type} })
         return relation_list
-
-
-
 
     relation_list = make_relation_dict(unanswered_relations_for_user)
 
@@ -148,12 +134,9 @@ def relation(request, document_pk):
     pk_list = list(itertools.chain(*pk_list))
     pk_list = json.dumps(pk_list)
 
-
-
     relation_list = json.dumps(relation_list)
-    print relation_list
 
-    formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', pubtator_bioc.passages[0].text +" "+ pubtator_bioc.passages[1].text, flags=re.I)
+    formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', str(section_title) +" "+ str(section_abstract), flags=re.I)
     formatted_abstract = re.sub(r'\b' + concept2_text + r'\b', '<font color="#0099FF"><b>' + concept2_text + '</b></font>', formatted_abstract, flags=re.I)
 
     chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1_text + '</b></font>'
@@ -200,7 +183,6 @@ def create_post(request):
         form.save()
 
     return HttpResponse(200)
-
 
 @login_required
 @require_http_methods(['POST'])
