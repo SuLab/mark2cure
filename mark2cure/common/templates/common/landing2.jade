@@ -23,21 +23,10 @@ html
     meta(name="twitter:image", content="/static/images/landing/mark2cure-flatbox-logo.jpg")
 
     title Mark2Cure
-
-    link(rel="stylesheet", href="#{STATIC_URL}css/bootstrap.min.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/selectize.bootstrap3.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/introjs.min.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/introjs-nassim.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/odometer-theme-minimal.css")
-    link(rel="stylesheet", href="#{STATIC_URL}fonts/equity_text_b_regular/equity.css")
-    link(rel="stylesheet", href="#{STATIC_URL}fonts/px-grotesk/PxGrotesk-font.css")
-    link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/bootstrap-theme.css")
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
     link(rel="stylesheet", href="#{STATIC_URL}css/style.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/document-style.css")
-    link(rel="stylesheet", href="#{STATIC_URL}css/landing-style.css")
 
-  body
+  body#landing-2
     include registration/login-modal
     include registration/subscribe-modal
 
@@ -45,15 +34,11 @@ html
       nav.navbar.navbar-default
         div.container
           div.navbar-header
-            button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target="#navbar", aria-expanded="false", aria-controls="navbar")
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
             a.navbar-brand(href="/")
               img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
 
-          div(id="navbar").collapse.navbar-collapse
-            ul.nav.navbar-nav.pull-right-sm
+          div(id="navbar")
+            ul.list-inline.nav.navbar-nav.pull-right
               li.active
                 a(href="/about/") About
               li
@@ -65,13 +50,13 @@ html
               li
                 a(href='{% url "registration:login" %}') Login
 
-              li.social.hidden-xs
+              li.social.hidden-xs-down
                 a(href="http://sulab.org/category/mark2cure/feed")
                   <i class="fa fa-rss-square"></i>
-              li.social.hidden-xs
+              li.social.hidden-xs-down
                 a(href="https://www.facebook.com/pages/Mark2Cure/586806781439862")
                   <i class="fa fa-facebook-square"></i>
-              li.social.hidden-xs
+              li.social.hidden-xs-down
                 a(href="https://twitter.com/Mark2Cure")
                   <i class="fa fa-twitter-square"></i>
 
@@ -80,7 +65,7 @@ html
           .row
             .col-xs-12
               .cta.text-center
-                h1 Bertrand  was the first case of <br class="hidden-xs"> NGLY1, but he is not alone.
+                h1 Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.
                 .row
                   .col-sm-8.col-sm-offset-2
                     p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
@@ -93,10 +78,10 @@ html
                     a(href='{% url "training:introduction" step_num=1 %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
 
                   div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-2.col-md-offset-0
-                    a(href="#learnMore").hidden-xs.hidden-sm
+                    a(href="#learnMore").hidden-sm-down
                       button.btn.btn-block.btn-white.btn-outline
                         <i class="fa fa-play"></i> Watch Video
-                    a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md.hidden-lg
+                    a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md-up
                       button.btn.btn-block.btn-white.btn-outline
                         <i class="fa fa-play"></i> Watch Video
 
@@ -162,7 +147,7 @@ html
       .container.push100
         <hr style="font-size:3px;">
 
-    footer#footer
+    footer#landing-footer
       .container
         .row.text-center(style="padding-bottom:30px;")
           .col-sm-12

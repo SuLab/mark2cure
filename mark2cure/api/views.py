@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+
 
 from ..common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 
@@ -49,7 +51,8 @@ def node_link_data(G, attrs=_attrs):
     return data
 
 
-@login_required
+#@login_required
+@cache_page(60 * 60 * 24)
 def group_network(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 

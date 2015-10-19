@@ -1,0 +1,43 @@
+@include font-face(
+  'equity',
+    font-files(
+      'equity_text_b_regular/equity_text_b_regular.woff',
+      'equity_text_b_regular/equity_text_b_regular.ttf',
+      'equity_text_b_regular/equity_text_b_regular.svg#equity_text_bregular'),
+        'equity_text_b_regular/equity_text_b_regular.eot');
+
+@include font-face(
+  'Px Grotesk Light',
+    font-files(
+      'px-grotesk/PxGrotesk-Light.woff',
+      'px-grotesk/PxGrotesk-Light.ttf',
+      'px-grotesk/PxGrotesk-Light.svg#1a4c10eeacc188c4a18294755cd99f20'),
+       'px-grotesk/PxGrotesk-Light.eot', 200, 'normal');
+
+@include font-face(
+  'Px Grotesk Light Italic',
+    font-files(
+      'px-grotesk/PxGrotesk-LightIta.woff',
+      'px-grotesk/PxGrotesk-LightIta.ttf',
+      'px-grotesk/PxGrotesk-LightIta.svg#00b34757bd765fe995b4f20b31f7333a'),
+        'px-grotesk/PxGrotesk-LightIta.eot', 200, 'normal');
+
+$font-stack: Helvetica, sans-serif;
+$font_equity: 'equity';
+$font_px_light: 'Px Grotesk Light';
+$font_px_light_italic: 'Px Grotesk Light Italic';
+$font_avenir_light: 'avenir35_light';
+$font_helvetica: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+
+.better-helvetica {
+  font-family: $font_helvetica;
+  font-weight: 300;
+}
+
+.paragraph-text {
+  font-family: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
+  line-height: 1.8em;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+}

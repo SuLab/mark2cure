@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.views.decorators.cache import cache_page
 from django.contrib.messages import get_messages
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -22,6 +23,7 @@ import os
 logger = logging.getLogger(__name__)
 
 
+#@cache_page(62 * 60)
 def home(request):
     if request.user.is_authenticated():
         return redirect('common:dashboard')

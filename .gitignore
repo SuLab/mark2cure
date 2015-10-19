@@ -74,3 +74,4 @@ docs/_build/
 env_vars
 mark2cure/*/migrations
 force.json
+static/node_modules

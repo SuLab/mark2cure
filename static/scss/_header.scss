@@ -1,0 +1,16 @@
+#header {
+  p {
+    padding-top: 4px;
+  }
+
+  p a {
+    color: $color_purple;
+  }
+
+  p a:hover {
+    text-decoration: none;
+    color: $color_white;
+    background-color: $color_purple;
+  }
+
+}

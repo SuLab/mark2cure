@@ -1,0 +1,58 @@
+#dashboard {
+
+  .quest {
+    height: 90px;
+    border-bottom: 1px solid #f0f0ed;
+    border-right: 1px solid #f0f0ed;
+  }
+
+  .quest:hover {
+    background-color: rgba(127,60,255, .8);
+    cursor: pointer;
+  }
+
+  .quest .progress {
+    border-radius: 0px;
+    box-shadow: none;
+  }
+
+  .quest a,
+  .quest a:hover {
+    text-decoration: none;
+  }
+
+  .quest a p {
+    margin-top: 8px;
+    margin-bottom: -2px;
+
+    font-family: 'Px Grotesk Light';
+    color: #7F3CFF;
+    text-decoration: none;
+  }
+
+  .quest:hover a p {
+    color: #fff;
+  }
+
+  span.glyphicon {
+    font-size: 32px;
+  }
+
+  .muted,
+  span.glyphicon-ban-circle {
+    color: #f0f0ed;
+    margin-top: 26px;
+  }
+
+  .muted,
+  span.glyphicon-certificate {
+    color: $color_red;
+    margin-top: 16px;
+  }
+
+  span.glyphicon.glyphicon-ok {
+    margin-top: 16px;
+    color: #4AFF5A;
+  }
+
+}

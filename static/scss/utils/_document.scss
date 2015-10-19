@@ -1,0 +1,97 @@
+p.paragraph {
+  @extend .paragraph-text;
+
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  @user-select(none);
+
+  padding: 10px 30px;
+
+  span:hover {
+    cursor: pointer;
+    color: steelblue;
+  }
+
+  .golden {
+    border-bottom: 6px solid #E85997;
+  }
+
+  .neighbor_gm,
+  .neighbor_u {
+    margin-right: 5px !important;
+  }
+
+  span.user_annotated {
+    background-color: #d1f3ff;
+    color: $color_light_gray;
+  }
+
+  span.user_annotated_green {
+    background-color: $color_gene;
+  }
+
+  span.user_annotated_pink {
+    background-color: $color_treatment;
+  }
+
+  span.focused {
+    /* Word span when bringing attention to it via table hover */
+    font-weight: bold;
+  }
+
+}
+
+.micro p.paragraph {
+  line-height: 1.2em;
+  font-size: 1.2em;
+  padding: 10px;
+  margin: 0px;
+}
+
+.talk .pagination {
+  margin: 0px;
+}
+
+.talk .pagination>li>a {
+  width: 60px;
+  padding: 2px;
+  text-align: center;
+  color: #ddd;
+  border: none;
+}
+
+.paragraph-box,
+.alert-paragraph-box {
+  border: 16px solid $color_border_gray;
+}
+
+.micro .paragraph-box {
+  border: 6px solid $color_border_gray;
+}
+
+
+
+/*
+ *
+ * Community Consensus & Results page paragraph classes
+ *
+ */
+
+span.putty-rect {
+  position: absolute;
+
+  width: 5px;
+  background-color: #0cf;
+}
+
+span.user_annotated {
+  background-color: #d1f3ff;
+  color: #333;
+}
+span.user_annotated_green {
+  background-color: #B1FFA8;
+}
+
+span.user_annotated_pink {
+  background-color: #ffd1dc;
+}
