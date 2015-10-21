@@ -38,7 +38,7 @@ block content
         #chart.col-md-10.col-md-offset-1.head-space.text-center
 
       .col-md-10.col-md-offset-1
-        #dashboard
+        #group-selection
 
 
 block post-footer
@@ -60,13 +60,13 @@ block post-footer
         <div class='row'>
           <div class='col-xs-12 text-center'>
             <% if(d.progress.completed) { %>
-              <span class='glyphicon glyphicon-certificate muted' title='The community has completed this Quest.'></span>
+              <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
 
             <% } else if (d.user.completed) { %>
-              <span class='glyphicon glyphicon-ok' title='You have completed this Quest.'></span>
+              <span class='fa fa-check' title='You have completed this Quest.'></span>
 
             <% } else if (!d.user.enabled) { %>
-              <span class='glyphicon glyphicon-ban-circle muted' title='This quest is not enabled.'></span>
+              <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
 
             <% } else { %>
               <a href='/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
@@ -89,7 +89,7 @@ block post-footer
           ");
 
         var attrs = {
-          'class': 'quest col-xs-4 col-sm-2 col-md-1',
+          'class': 'quest col-xs-4 col-sm-3 col-md-3 col-lg-2',
         };
         var styles = {
         };
@@ -119,7 +119,7 @@ block post-footer
             <h2 class='quest-loading'>Loading...</h2>
           </div>
         </div>");
-      $('#dashboard').append(template({'pk': pk}));
+      $('#group-selection').append(template({'pk': pk}));
 
       $.ajax({
         'type': 'GET',
@@ -127,7 +127,7 @@ block post-footer
         'success': function(data) {
           draw_dashboard({'pk': pk}, data);
 
-          $('#dashboard .quest').click(function(evt) {
+          $('#group-selection .quest').click(function(evt) {
             var link = $(this).find('a');
             if(link.length) { location.href=link.attr('href'); }
           });

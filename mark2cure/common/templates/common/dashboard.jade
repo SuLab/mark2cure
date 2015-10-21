@@ -19,27 +19,24 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
-  .container-fluid
+  #dashboard.container-fluid
     .row
-      .col-md-7.col-md-offset-1
-        #dashboard
+      .col-sm-8.col-sm-offset-0.col-lg-7.col-lg-offset-1
+        #group-selection
 
-      .col-md-3.col-md-offset-0
+      .col-sm-4.col-sm-offset-0.col-lg-3.col-lg-offset-0
         .row
-          .col-md-8.col-md-offset-2.col-sm-12.col-sm-offset-0
+
+          .col-xs-12.col-xs-offset-0
             .panel.panel-default
               .panel-heading
                 | My Stats
               .panel-body
                 ol.list-unstyled
-                  li
-                    p Total Quests: #{user.userprofile.quests_count|intcomma}
-                  li
-                    p Total Annotations: #{user.userprofile.annotations_count|intcomma}
-                  li
-                    p Score: #{user.userprofile.rating_score|intcomma}
-                  li
-                    p Level: #{user.userprofile.highest_level.name}
+                  li Total Quests: #{user.userprofile.quests_count|intcomma}
+                  li Total Annotations: #{user.userprofile.annotations_count|intcomma}
+                  li Score: #{user.userprofile.rating_score|intcomma}
+                  li Level: #{user.userprofile.highest_level.name}
 
                 .row
                   .col-xs-12.text-center
@@ -47,7 +44,7 @@ block content
                       |  View Profile
 
         .row
-          .col-md-8.col-md-offset-2.col-sm-12.col-sm-offset-0
+          .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
             #leaderboard
 
   include document/includes/welcome-modal
@@ -74,13 +71,13 @@ block post-footer
         <div class='row'>
           <div class='col-xs-12 text-center'>
             <% if(d.progress.completed) { %>
-              <span class='glyphicon glyphicon-certificate muted' title='The community has completed this Quest.'></span>
+              <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
 
             <% } else if (d.user.completed) { %>
-              <span class='glyphicon glyphicon-ok' title='You have completed this Quest.'></span>
+              <span class='fa fa-check' title='You have completed this Quest.'></span>
 
             <% } else if (!d.user.enabled) { %>
-              <span class='glyphicon glyphicon-ban-circle muted' title='This quest is not enabled.'></span>
+              <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
 
             <% } else { %>
               <a href='/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
@@ -103,7 +100,7 @@ block post-footer
           ");
 
         var attrs = {
-          'class': 'quest col-xs-4 col-sm-2 col-md-1',
+          'class': 'quest col-xs-4 col-sm-3 col-md-3 col-lg-2',
         };
         var styles = {
         };
@@ -137,7 +134,7 @@ block post-footer
                   <h2 class='quest-loading'>Loading...</h2>
                 </div>
               </div>");
-            $('#dashboard').append(template(v));
+            $('#group-selection').append(template(v));
 
             $.ajax({
               'type': 'GET',
@@ -145,7 +142,7 @@ block post-footer
               'success': function(data) {
                 draw_dashboard(v, data);
 
-                $('#dashboard .quest').click(function(evt) {
+                $('#group-selection .quest').click(function(evt) {
                   var link = $(this).find('a');
                   if(link.length) { location.href=link.attr('href'); }
                 });

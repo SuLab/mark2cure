@@ -47,6 +47,9 @@ $color_nav_dark_gray: #262728;
 $color_background_gray: #F5F6F7;
 $color_background_dark: #0E1726;
 
+$color_green: #4AFF5A;
+$color_blue: #428bca;
+
 $header-baseline: 220px;
 
 @import 'fonts';
@@ -58,11 +61,9 @@ $header-baseline: 220px;
 @import 'pages/landing';
 @import 'pages/network';
 
-@import 'pages/sections/dashboard';
-@import 'pages/sections/leaderboard';
+@import 'pages/dashboard';
 @import 'pages/svg/shared';
 
-@import 'bootstrap-theme';
 @import 'utils/selectize_bootstrap3';
 @import 'utils/introjs';
 @import 'utils/introjs-nassim';
