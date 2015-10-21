@@ -6795,6 +6795,38 @@ a:hover {
   background-color: #e7e7e7;
 }
 
+#group-network {
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#group-network > .row {
+  margin-top: 20px;
+}
+#group-network #network-row {
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#group-network #network-row i {
+  font-size: 4em;
+  color: #e7e7e7;
+  margin-top: 20px;
+}
+#group-network #network-row i:hover {
+  cursor: pointer;
+  color: #7F3CFF;
+}
+#group-network #network-row #network {
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: move;
+}
+
 .quest {
   height: 90px;
   border-bottom: 1px solid #F5f5f5;

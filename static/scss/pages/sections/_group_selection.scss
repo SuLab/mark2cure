@@ -1,10 +1,33 @@
 #group-selection {
 
+}
 
+#group-network {
+  @include user-select(none);
 
+  > .row {
+    margin-top: 20px;
+  }
 
+  #network-row {
+    @include user-select(none);
+    i {
+      font-size: 4em;
+      color: $color_lighter_gray;
+      margin-top: 20px;
+    }
 
+    i:hover {
+      cursor: pointer;
+      color: $color_purple;
+    }
 
+    #network {
+      @include user-select(none);
+      cursor: move;
+    }
+
+  }
 }
 
 .quest {

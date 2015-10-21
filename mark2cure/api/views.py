@@ -3,6 +3,8 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
+
+from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
@@ -52,12 +54,12 @@ def node_link_data(G, attrs=_attrs):
 
 
 @login_required
-@cache_page(60 * 60 * 24)
+@cache_page(60 * 60 * 2)
 def group_network(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
-    from ..analysis.tasks import generate_unparallel_network
-    G = generate_unparallel_network(group.pk)
+    from ..analysis.tasks import generate_network
+    G = generate_network(group.pk, spring_force=8)
     d = node_link_data(G)
 
     return HttpResponse(json.dumps(d), content_type='application/json')
@@ -68,20 +70,20 @@ def group_network(request, group_pk):
 def analysis_group_user(request, group_pk, user_pk=None):
     group = get_object_or_404(Group, pk=group_pk)
 
-    if user_pk == None:
+    if user_pk is None:
         user_pk = str(request.user.pk)
 
     response = []
     reports = group.report_set.filter(report_type=1).order_by('-created').all()
     for report in reports:
         df = report.dataframe
-        df = df[df['user']==user_pk]
+        df = df[df['user'] == user_pk]
         if df.shape[0] > 0:
             row = df.iloc[0]
             response.append({
                 'created': report.created,
                 'f-score': row['f-score'],
-                'pairings': row['pairings'] })
+                'pairings': row['pairings']})
 
     return Response(response)
 
@@ -102,13 +104,13 @@ def analysis_group(request, group_pk):
             response.append({
                 'created': report.created,
                 'f-score': df['wf'].sum() / df['pairings'].sum(),
-                'pairings': df['pairings'].sum() })
+                'pairings': df['pairings'].sum()})
 
         else:
             response.append({
                 'created': report.created,
                 'f-score': df['f-score'].mean(),
-                'pairings': df['pairings'].sum() })
+                'pairings': df['pairings'].sum()})
 
     return Response(response)
 
@@ -136,7 +138,7 @@ def quest_group_list(request, group_pk):
     return Response(serializer.data)
 
 
-#@api_view(['GET'])
+# @api_view(['GET'])
 def group_users_bioc(request, group_pk, format_type):
     '''
         Returns the BioC document for all user
@@ -159,16 +161,16 @@ def group_users_bioc(request, group_pk, format_type):
 
     # Fetch all the actual annotations using
     annotations = Annotation.objects.filter(
-            view__section__pk__in=all_section_pks
-        ).values(
-            'pk',
-            'start',
-            'text',
-            'type',
-            'view__user__pk',
-            'view__section__pk',
-            'view__section__document__document_id',
-            ).all()
+        view__section__pk__in=all_section_pks
+    ).values(
+        'pk',
+        'start',
+        'text',
+        'type',
+        'view__user__pk',
+        'view__section__pk',
+        'view__section__document__document_id',
+    ).all()
     annotations = list(annotations)
 
     # Provide the base of the response

@@ -179,7 +179,6 @@ def merge_pairwise_comparisons(inter_annotator_df):
     temp_df = pd.DataFrame(all_users_arr, columns=('user', 'pairings', 'total_f'))
 
     # Obtaining average f-score from user-merged data.
-    # print 'Obtaining average f-scores'
     avg_f_arr = []
     for group_idx, group in temp_df.groupby('user'):
         pairing_counts = group['pairings'].sum()
@@ -246,7 +245,7 @@ def hashed_annotations_graph_process(group_pk, min_thresh=15):
     return df[df['hash_count'] >= min_thresh]
 
 
-def generate_unparallel_network(group_pk):
+def generate_network(group_pk, parallel=False, spring_force=10, include_degree=False):
     '''
         1) Generate the DF needed to compute the Graph
         2) Compute the graph (aggregate, compare text / pmid)
@@ -277,28 +276,35 @@ def generate_unparallel_network(group_pk):
         })
     new_df = pd.DataFrame(anns)
 
-    edge_idx = 1
-    for doc_id, group_df in new_df[['doc', 'node']].groupby('doc'):
-        node_weight = group_df['node'].value_counts().T.to_dict()
+    if parallel:
+        edge_idx = 1
+        for (doc, user), g_df in new_df.groupby(['doc', 'user']):
+            for node1, node2 in itertools.combinations(list(g_df.node), 2):
+                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc, 'user': user})
+                edge_idx += 1
 
-        for node1, node2 in itertools.combinations(node_weight.keys(), 2):
-            print node1, node2
-            G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc_id})
-            edge_idx += 1
+    else:
+        edge_idx = 1
+        for doc_id, group_df in new_df[['doc', 'node']].groupby('doc'):
+            node_weight = group_df['node'].value_counts().T.to_dict()
+
+            for node1, node2 in itertools.combinations(node_weight.keys(), 2):
+                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc_id})
+                edge_idx += 1
 
     # Compute Node Values
-    pos = nx.spring_layout(G, iterations=10)
+    pos = nx.spring_layout(G, iterations=spring_force)
 
     # Santize the node colors
     type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
     df['color'] = df['type'].map(type_to_color)
     df['nodes'] = df['clean_text'].map(nodes)
-
     colors = {}
     for node, g_df in df.groupby('nodes'):
         colors[node] = g_df['color'].value_counts().idxmax()
     nx.set_node_attributes(G, 'color', colors)
 
+    # Calcuate position and size
     x_pos, y_pos = {}, {}
     for idx, val in pos.iteritems():
         x_pos[idx], y_pos[idx] = val
@@ -308,89 +314,14 @@ def generate_unparallel_network(group_pk):
     nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
     nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
 
-    # Calculate centrality metrics
-    degree = nx.degree_centrality(G)
-
-    attributes = {}
-    for key, value in degree.iteritems():
-        attributes[key] = {}
-        attributes[key]['degree'] = value
-    nx.set_node_attributes(G, 'attributes', attributes)
-
-    return G
-
-
-def generate_network(group_pk):
-    '''
-        1) Generate the DF needed to compute the Graph
-        2) Compute the graph (aggregate, compare text / pmid)
-        3) Compute graph metadata and attributes
-    '''
-
-    # Generate the required base DataFrame from raw Annotations
-    df = hashed_annotations_graph_process(group_pk)
-
-    # Numpy Arr of Unique Annotations via sanitized text
-    nd_arr = df.clean_text.unique()
-    # Unique Node labels (not using text as Identifier)
-    names = ['n'+str(x+1) for x in range(len(nd_arr))]
-    # ID >> Cleantext lookup dictionary
-    nodes = pd.Series(names, index=nd_arr).to_dict()
-
-    # Start the Network off by adding all the unique Nodes (text annotations)
-    G = nx.MultiGraph()
-    G.add_nodes_from(names)
-
-    anns = []
-    for (doc,text,user), g_df in df.groupby(['document_id', 'clean_text', 'username']):
-        anns.append({
-            'node': nodes[text],
-            'doc': doc,
-            'text': text,
-            'user': user
-        })
-    new_df = pd.DataFrame(anns)
-
-    edge_idx = 1
-    for (doc,user), g_df in new_df.groupby(['doc', 'user']):
-        for node1, node2 in itertools.combinations(list(g_df.node), 2):
-            G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc, 'user': user})
-            edge_idx += 1
-
-    # Compute Node Values
-    pos = nx.spring_layout(G, iterations=10)
-
-    # Santize the node colors
-    type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
-    df['color'] = df['type'].map(type_to_color)
-    df['nodes'] = df['clean_text'].map(nodes)
-    #def color_freq(df, a, b):
-    #    most_freq_color = df['color'].value_counts().idxmax()
-    #    df['color'] = most_freq_color
-    #    return df
-    colors = {}
-    for node, g_df in df.groupby('nodes'):
-        colors[node] = g_df['color'].value_counts().idxmax()
-    nx.set_node_attributes(G, 'color', colors)
-
-    x_pos, y_pos = {}, {}
-    for idx, val in pos.iteritems():
-        x_pos[idx], y_pos[idx] = val
-    nx.set_node_attributes(G, 'x', x_pos)
-    nx.set_node_attributes(G, 'y', y_pos)
-
-    nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
-    nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
-
-    # Compute Node Attributes
-    # calculate centrality metrics
-    degree = nx.degree_centrality(G)
-
-    attributes = {}
-    for key, value in degree.iteritems():
-        attributes[key] = {}
-        attributes[key]['degree'] = value
-    nx.set_node_attributes(G, 'attributes', attributes)
+    if include_degree:
+        # Calculate centrality metrics
+        degree = nx.degree_centrality(G)
+        attributes = {}
+        for key, value in degree.iteritems():
+            attributes[key] = {}
+            attributes[key]['degree'] = value
+        nx.set_node_attributes(G, 'attributes', attributes)
 
     return G
 
