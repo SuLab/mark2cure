@@ -41,8 +41,134 @@ block content
         #group-selection
 
 
+  #group-network.container-fluid
+    .row
+      #network(style="height:800px;").col-xs-12
+
+
+
+
 block post-footer
     #fb-root
+
+    script.
+      var username = "{{user.username}}";
+      var s = new sigma({
+        container: 'network',
+        settings: {
+
+          defaultLabelColor: "#000",
+          defaultLabelSize: 12,
+          defaultLabelBGColor: "#ddd",
+          defaultHoverLabelBGColor: "#002147",
+          defaultLabelHoverColor: "#fff",
+
+          edgeColor: 'default',
+          defaultEdgeColor: '#e7e7e7',
+
+          labelThreshold: 10,
+          defaultEdgeType: "curve",
+
+          hoverFontStyle: "bold",
+          fontStyle: "regular",
+          activeFontStyle: "regular",
+
+          minNodeSize: 2,
+          maxNodeSize: 5,
+          minEdgeSize: 1,
+          maxEdgeSize: 1,
+
+          zoomMin: .00001,
+          zoomMax: 1,
+        }
+      });
+
+      s.drawingProperties({
+        defaultLabelColor: '#222',
+        defaultLabelSize: 14,
+        defaultLabelHoverColor: '#000',
+        labelThreshold: 6,
+        font: 'Arial',
+        edgeColor: 'source',
+        defaultEdgeType: 'curve',
+        defaultEdgeArrow: 'target'
+      }).graphProperties({
+        minNodeSize: 10,
+        maxNodeSize: 20,
+        minEdgeSize: 5,
+        maxEdgeSize: 5
+      }).mouseProperties({
+        maxRatio: 450,
+        minRatio: .1,
+        marginRatio: 1,
+        zoomDelta: 0.1,
+        dragDelta: 0.3,
+        zoomMultiply: 1.5,
+        inertia: 1.1
+      });
+
+
+      var filter = new sigma.plugins.filter(s);
+
+      sigma.parsers.json('/static/data/network_cdg.json', s, function() {
+        s.refresh();
+
+        maxDegree = 0;
+        s.graph.nodes().forEach(function(n) {
+          maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
+        });
+        $('#min-degree').attr('max', maxDegree/3)
+
+      });
+      s.refresh();
+      s.bind('clickNode', function(e) {
+        console.log(e.type, e.data.node.label, e.data.captor);
+        if(e.type == 'clickNode') {
+          window.open('https://www.google.com/#safe=off&q='+e.data.node.label,'_blank');
+        }
+      });
+
+      $('#min-degree').on('change', function() {
+        var min_degree_num = $(this).val();
+
+        $('#min-degree-val').html(min_degree_num);
+        filter
+          .undo('min-degree')
+          .nodesBy(function(n) {
+            return this.degree(n.id) >= min_degree_num;
+          }, 'min-degree').apply();
+      });
+
+      $('#personal-contributions').on('click', function() {
+        var checked = $(this).is(':checked');
+        s.graph.edges().forEach(function(e) {
+          if(e.attributes.user == username) {
+            e.color = checked ? 'black' : '#e7e7e7';
+          }
+        });
+        s.refresh();
+      });
+
+      $('#username-search').on('keyup', function() {
+        var term = $(this).val();
+        if(term) {
+          filter
+            .undo('edge-contributor')
+            .edgesBy(function(edge) {
+              return edge.attributes.user.indexOf(term) > -1
+            }, 'edge-contributor').apply();
+        } else {
+          filter.undo('edge-contributor').apply();
+        }
+      });
+
+      $('#reset-btn').on('click', function() {
+        $('#personal-contributions').removeProp('checked');
+        $('#username-search').val('');
+        filter.undo().apply();
+      });
+
+
 
     script.
       var draw_dashboard = function(group, quests) {
@@ -136,6 +262,7 @@ block post-footer
       });
 
     script
+        /*
         var margin = {top: 30, right: 40, bottom: 30, left: 50},
             width = 600 - margin.left - margin.right,
             height = 270 - margin.top - margin.bottom;
@@ -206,6 +333,7 @@ block post-footer
             .style("fill", "#E85997")
             .call(yAxisRight);
         });
+        */
 
 
 

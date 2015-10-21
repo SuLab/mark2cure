@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 from django.contrib.auth.models import User
 
 from django.shortcuts import get_object_or_404, redirect
@@ -14,6 +15,7 @@ from brabeion.models import BadgeAward
 from django.contrib import messages
 
 
+@cache_page(60 * 15)
 def public_profile(request, username):
     user = get_object_or_404(User, username=username)
 

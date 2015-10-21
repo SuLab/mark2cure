@@ -11,156 +11,124 @@ block header
 
 
 block content
-  .container-fluid
+  #group-network.container-fluid
     .row
-      #chart(style="height:800px;").col-xs-10.col-xs-offset-1
 
-    .row
-      .col-xs-6
+      #control-pane.col-xs-2
+        .row
+          .col-xs-12
+            h3 Min Degree <span id="min-degree-val">0</span>
+            input(id="min-degree", type="range", min="0", max="100", value="0").control-group
+            hr
 
-        #control-pane
-          h2.underline filters
+          .col-xs-12
+            .checkbox
+              label
+                input#personal-contributions(type="checkbox", value="")
+                option Highlight Personal Contributions
+            hr
 
-          div
-            h3 min degree <span id="min-degree-val">0</span>
-            input(id="min-degree", type="range", min="0", max="0", value="0")
+          .col-xs-12
+            h3 Username search
+            input#username-search(type="text", placeholder="username").form-control
+            hr
 
-          div
-            button#reset-btn Reset filters
+          .col-xs-12
+            a#reset-btn.btn.btn-default Reset filters
+
+      #chart(style="height:800px;").col-xs-10
 
 
 
 block post-footer
   script.
-
+    var username = "{{user.username}}";
     var s = new sigma({
       container: 'chart',
       settings: {
 
         defaultLabelColor: "#000",
-        defaultLabelSize: 14,
+        defaultLabelSize: 12,
         defaultLabelBGColor: "#ddd",
         defaultHoverLabelBGColor: "#002147",
         defaultLabelHoverColor: "#fff",
 
         edgeColor: 'default',
-        defaultEdgeColor: '#ccc',
+        defaultEdgeColor: '#e7e7e7',
 
         labelThreshold: 10,
-        defaultEdgeType: "curvedArrow",
+        defaultEdgeType: "curve",
 
         hoverFontStyle: "bold",
-        fontStyle: "bold",
-        activeFontStyle: "bold",
+        fontStyle: "regular",
+        activeFontStyle: "regular",
 
-        minNodeSize: 1,
-        maxNodeSize: 7,
-        minEdgeSize: 0.1,
-        maxEdgeSize: 0.5,
+        minNodeSize: 2,
+        maxNodeSize: 5,
+        minEdgeSize: 0.0001,
+        maxEdgeSize: 0.1,
 
-        minRatio: 0.75,
-        maxRatio: 20,
+        zoomMin: .00001,
+        zoomMax: 1,
       }
     });
     var filter = new sigma.plugins.filter(s);
 
-    function updatePane (graph, filter) {
-      var maxDegree = 0;
-      graph.nodes().forEach(function(n) {
-        maxDegree = Math.max(maxDegree, graph.degree(n.id));
-      });
-      console.log(maxDegree);
-    };
-
-    console.log('[SIGMA LOG] Loading...');
-    sigma.parsers.json('/api/network/{{group.pk}}/', s, function() {
-      console.log('[SIGMA LOG] Loaded');
+    sigma.parsers.json('/static/data/network_cdg.json', s, function() {
       s.refresh();
+
+      maxDegree = 0;
+      s.graph.nodes().forEach(function(n) {
+        maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
+      });
+      $('#min-degree').attr('max', maxDegree/3)
+
     });
     s.refresh();
+    s.bind('clickNode', function(e) {
+      console.log(e.type, e.data.node.label, e.data.captor);
+      if(e.type == 'clickNode') {
+        window.open('https://www.google.com/#safe=off&q='+e.data.node.label,'_blank');
+      }
+    });
 
-    updatePane(s.graph, filter);
-    function applyMinDegreeFilter(num) {
-      console.log(num);
-      $('min-degree-val').textContent = num;
+    $('#min-degree').on('change', function() {
+      var min_degree_num = $(this).val();
 
+      $('#min-degree-val').html(min_degree_num);
       filter
         .undo('min-degree')
         .nodesBy(function(n) {
-          return this.degree(n.id) >= num;
+          return this.degree(n.id) >= min_degree_num;
         }, 'min-degree').apply();
-    };
-
-    function applyUserFilter(username) {
-      console.log(username);
-      filter
-        .undo('edge-contributor')
-        .edgesBy(function(edge) {
-          return edge.attributes.user == username;
-        }, 'edge-contributor').apply();
-    };
-
-
-    /*
-    var dragListener = sigma.plugins.dragNodes(s, s.renderers[0]);
-    dragListener.bind('startdrag', function(event) {
-      console.log(event);
     });
 
-    dragListener.bind('drag', function(event) {
-      console.log(event);
-    });
-
-    dragListener.bind('drop', function(event) {
-      console.log(event);
-    });
-
-    dragListener.bind('dragend', function(event) {
-      console.log(event);
-    });
-    */
-
-    /*
-    sigInst.bind('overnodes',function(event){
-      var nodes = event.content;
-      var neighbors = {};
-
-      sigInst.iterEdges(function(e){
-        if(nodes.indexOf(e.source)<0 && nodes.indexOf(e.target)<0){
-          if(!e.attr['grey']){
-            e.attr['true_color'] = e.color;
-            e.color = greyColor;
-            e.attr['grey'] = 1;
-          }
-        } else {
-          e.color = e.attr['grey'] ? e.attr['true_color'] : e.color;
-          e.attr['grey'] = 0;
-
-          neighbors[e.source] = 1;
-          neighbors[e.target] = 1;
+    $('#personal-contributions').on('click', function() {
+      var checked = $(this).is(':checked');
+      s.graph.edges().forEach(function(e) {
+        if(e.attributes.user == username) {
+          e.color = checked ? 'black' : '#e7e7e7';
         }
-      }).iterNodes(function(n){
-        if(!neighbors[n.id]){
-          if(!n.attr['grey']){
-            n.attr['true_color'] = n.color;
-            n.color = greyColor;
-            n.attr['grey'] = 1;
-          }
-        } else {
-          n.color = n.attr['grey'] ? n.attr['true_color'] : n.color;
-          n.attr['grey'] = 0;
-        }
-      }).draw(2,2,2);
-
-    }).bind('outnodes',function(){
-      sigInst.iterEdges(function(e){
-        e.color = e.attr['grey'] ? e.attr['true_color'] : e.color;
-        e.attr['grey'] = 0;
-      }).iterNodes(function(n){
-        n.color = n.attr['grey'] ? n.attr['true_color'] : n.color;
-        n.attr['grey'] = 0;
-      }).draw(2,2,2);
+      });
+      s.refresh();
     });
 
-    sigInst.draw();
-    */
+    $('#username-search').on('keyup', function() {
+      var term = $(this).val();
+      if(term) {
+        filter
+          .undo('edge-contributor')
+          .edgesBy(function(edge) {
+            return edge.attributes.user.indexOf(term) > -1
+          }, 'edge-contributor').apply();
+      } else {
+        filter.undo('edge-contributor').apply();
+      }
+    });
+
+    $('#reset-btn').on('click', function() {
+      $('#personal-contributions').removeProp('checked');
+      $('#username-search').val('');
+      filter.undo().apply();
+    });
+

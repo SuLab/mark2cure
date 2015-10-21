@@ -3,9 +3,6 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-
-from ..common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-
 from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
@@ -15,12 +12,15 @@ from ..document.models import Section, Annotation
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from itertools import chain, count
+from itertools import chain
+# from itertools import count
+import networkx as nx
 import datetime
 import json
 
 
 _attrs = dict(id='id', source='source', target='target', key='key')
+
 
 def node_link_data(G, attrs=_attrs):
     multigraph = G.is_multigraph()
@@ -35,7 +35,7 @@ def node_link_data(G, attrs=_attrs):
     if len(set([source, target, key])) < 3:
         raise nx.NetworkXError('Attribute names are not unique.')
 
-    mapping = dict(zip(G, count()))
+    # mapping = dict(zip(G, count()))
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
@@ -51,13 +51,13 @@ def node_link_data(G, attrs=_attrs):
     return data
 
 
-#@login_required
+@login_required
 @cache_page(60 * 60 * 24)
 def group_network(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
-    from ..analysis.tasks import generate_network
-    G = generate_network(group.pk)
+    from ..analysis.tasks import generate_unparallel_network
+    G = generate_unparallel_network(group.pk)
     d = node_link_data(G)
 
     return HttpResponse(json.dumps(d), content_type='application/json')

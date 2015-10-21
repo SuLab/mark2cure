@@ -21,10 +21,8 @@ from celery import task
 
 import pandas as pd
 import networkx as nx
-from networkx.readwrite import json_graph
 
 import itertools
-import random
 
 
 def hashed_annotations_df(group_pk, private_api=False,
@@ -38,7 +36,7 @@ def hashed_annotations_df(group_pk, private_api=False,
         column is searched for users by their str(pk)
     '''
 
-    hashed_annotations = [] # Creates empty list for the annotations
+    hashed_annotations = []  # Creates empty list for the annotations
     ann_types = Annotation.ANNOTATION_TYPE_CHOICE
 
     if private_api:
@@ -48,22 +46,20 @@ def hashed_annotations_df(group_pk, private_api=False,
         # Fetch all the section pks and their text length
         sections = Section.objects.filter(
             document__document_id__in=document_pmids
-        ).extra(select={'section_length': 'LENGTH(text)'
-        }).values('pk', 'section_length')
+        ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
         all_section_pks = [s['pk'] for s in sections]
 
         # Fetch all the actual annotations using
         annotations = Annotation.objects.filter(
-                view__section__pk__in=all_section_pks
-            ).values(
-                'pk',
-                'start',
-                'text',
-                'type',
-                'view__user__pk',
-                'view__section__pk',
-                'view__section__document__document_id',
-                ).all()
+            view__section__pk__in=all_section_pks
+        ).values(
+            'pk',
+            'start',
+            'text',
+            'type',
+            'view__user__pk',
+            'view__section__pk',
+            'view__section__document__document_id').all()
 
         for doc_pmid in document_pmids:
             document_annotations = filter(lambda ann: ann['view__section__document__document_id'] == doc_pmid, annotations)
@@ -77,7 +73,7 @@ def hashed_annotations_df(group_pk, private_api=False,
                     hashed_annotations.append((
                         ann.get('view__section__document__document_id'),
                         str(ann.get('view__user__pk')),
-                        ann_types.index( ann.get('type') ),
+                        ann_types.index(ann.get('type')),
 
                         passage_offset + ann.get('start'),
 
@@ -103,7 +99,7 @@ def hashed_annotations_df(group_pk, private_api=False,
                     hashed_annotations.append((
                         document.id,
                         str(ann.infons.get('user')),
-                        ann_types.index( ann.infons.get('type') ),
+                        ann_types.index(ann.infons.get('type')),
                         ann_loc.offset,
                         ann_loc.length,
                         ann.text
@@ -112,9 +108,9 @@ def hashed_annotations_df(group_pk, private_api=False,
     df = pd.DataFrame(hashed_annotations, columns=('document_id', 'user', 'type', 'offset', 'length', 'text'))
 
     if compare_type:
-        df['hash'] = df.document_id.apply(str) +'_'+ df.type.apply(str) +'_'+ df.offset.apply(str) +'_'+ df.length.apply(str)
+        df['hash'] = df.document_id.apply(str) + '_' + df.type.apply(str) + '_' + df.offset.apply(str) + '_' + df.length.apply(str)
     else:
-        df['hash'] = df.document_id.apply(str) +'_'+                          df.offset.apply(str) +'_'+ df.length.apply(str)
+        df['hash'] = df.document_id.apply(str) + '_' + df.offset.apply(str) + '_' + df.length.apply(str)
 
     return df
 
@@ -140,8 +136,8 @@ def compute_pairwise(hashed_annotations_df):
         # If user_a and user_b have completed shared PMID, compute comparisions
         if len(pmid_set) != 0:
             pmid_df = hashed_annotations_df[hashed_annotations_df['document_id'].isin(pmid_set)]
-            ref_set  = set(pmid_df[ pmid_df['user'] == user_a ].hash)
-            test_set = set(pmid_df[ pmid_df['user'] == user_b ].hash)
+            ref_set = set(pmid_df[pmid_df['user'] == user_a].hash)
+            test_set = set(pmid_df[pmid_df['user'] == user_b].hash)
 
             # Compute the precision, recall and F-measure based on
             # the unique hashes
@@ -150,7 +146,7 @@ def compute_pairwise(hashed_annotations_df):
                 user_b,
                 len(pmid_set),
                 nltk_scoring.precision(ref_set, test_set),
-                nltk_scoring.recall(   ref_set, test_set),
+                nltk_scoring.recall(ref_set, test_set),
                 nltk_scoring.f_measure(ref_set, test_set)
             ))
 
@@ -207,15 +203,15 @@ def generate_reports(group_pk, private_api=False,
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
-            group=group, report_type=Report.PAIRWISE,
-            dataframe=inter_annotator_df, args=args)
+        group=group, report_type=Report.PAIRWISE,
+        dataframe=inter_annotator_df, args=args)
 
     avg_user_f = merge_pairwise_comparisons(inter_annotator_df)
     Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
 
 
-def hashed_annotations_graph_process(group_pk):
+def hashed_annotations_graph_process(group_pk, min_thresh=15):
     df = hashed_annotations_df(group_pk, private_api=True)
 
     # (TODO) This can be wayyy faster and better
@@ -230,14 +226,7 @@ def hashed_annotations_graph_process(group_pk):
     df['text'] = df['text'].map(lambda x: x.upper())
     # Hard coded synonym cleaner
     synonyms_dict = pd.read_csv('scripts/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
-    df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str)) ).apply(str)
-
-    #del df['text']
-
-    # Other deletions
-    #del df['offset']
-    #del df['length']
-    #del df['user']
+    df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str))).apply(str)
 
     # Add field to deterine if hash meets minimum count
     hash_count_series = df['hash'].value_counts()
@@ -250,12 +239,85 @@ def hashed_annotations_graph_process(group_pk):
     # df['clean_text_count'] = df['clean_text'].map(lambda text_str: clean_text_count_series[text_str])
 
     # User Annotation count per PMID
-    df['user_pmid_hash'] = df.document_id.apply(str) +'_'+ df.user.apply(str)
+    df['user_pmid_hash'] = df.document_id.apply(str) + '_' + df.user.apply(str)
     user_pmid_hash_count_series = df['user_pmid_hash'].value_counts()
     df['user_pmid_count'] = df['user_pmid_hash'].map(lambda hash_str: user_pmid_hash_count_series[hash_str])
 
-    min_thresh = 15
-    return df[ df['hash_count'] >= min_thresh ]
+    return df[df['hash_count'] >= min_thresh]
+
+
+def generate_unparallel_network(group_pk):
+    '''
+        1) Generate the DF needed to compute the Graph
+        2) Compute the graph (aggregate, compare text / pmid)
+        3) Compute graph metadata and attributes
+    '''
+
+    # Generate the required base DataFrame from raw Annotations
+    df = hashed_annotations_graph_process(group_pk)
+
+    # Numpy Arr of Unique Annotations via sanitized text
+    nd_arr = df.clean_text.unique()
+    # Unique Node labels (not using text as Identifier)
+    names = ['n' + str(x + 1) for x in range(len(nd_arr))]
+    # ID >> Cleantext lookup dictionary
+    nodes = pd.Series(names, index=nd_arr).to_dict()
+
+    # Start the Network off by adding all the unique Nodes (text annotations)
+    G = nx.MultiGraph()
+    G.add_nodes_from(names)
+
+    anns = []
+    for (doc, text, user), g_df in df.groupby(['document_id', 'clean_text', 'username']):
+        anns.append({
+            'node': nodes[text],
+            'doc': doc,
+            'text': text,
+            'user': user
+        })
+    new_df = pd.DataFrame(anns)
+
+    edge_idx = 1
+    for doc_id, group_df in new_df[['doc', 'node']].groupby('doc'):
+        node_weight = group_df['node'].value_counts().T.to_dict()
+
+        for node1, node2 in itertools.combinations(node_weight.keys(), 2):
+            print node1, node2
+            G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc_id})
+            edge_idx += 1
+
+    # Compute Node Values
+    pos = nx.spring_layout(G, iterations=10)
+
+    # Santize the node colors
+    type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
+    df['color'] = df['type'].map(type_to_color)
+    df['nodes'] = df['clean_text'].map(nodes)
+
+    colors = {}
+    for node, g_df in df.groupby('nodes'):
+        colors[node] = g_df['color'].value_counts().idxmax()
+    nx.set_node_attributes(G, 'color', colors)
+
+    x_pos, y_pos = {}, {}
+    for idx, val in pos.iteritems():
+        x_pos[idx], y_pos[idx] = val
+    nx.set_node_attributes(G, 'x', x_pos)
+    nx.set_node_attributes(G, 'y', y_pos)
+
+    nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
+    nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
+
+    # Calculate centrality metrics
+    degree = nx.degree_centrality(G)
+
+    attributes = {}
+    for key, value in degree.iteritems():
+        attributes[key] = {}
+        attributes[key]['degree'] = value
+    nx.set_node_attributes(G, 'attributes', attributes)
+
+    return G
 
 
 def generate_network(group_pk):

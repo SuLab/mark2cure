@@ -175,17 +175,19 @@ class Base(Configuration):
     )
 
     MIDDLEWARE_CLASSES = (
-        # 'django.middleware.cache.UpdateCacheMiddleware',
+        'django.middleware.cache.UpdateCacheMiddleware',
+
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',
-        # 'django.middleware.cache.FetchFromCacheMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'mark2cure.userprofile.activeuser_middleware.ActiveUserMiddleware',
         'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+
+        'django.middleware.cache.FetchFromCacheMiddleware',
     )
 
     ROOT_URLCONF = 'mark2cure.urls'
@@ -347,6 +349,12 @@ class Development(Base):
     DEBUG_FILENAME = 'mark2cure-local-debug.log'
     VERSION = '0.1 (Local)'
 
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+
 
 class Production(Base):
     LOCAL = False
@@ -361,6 +369,13 @@ class Production(Base):
     DOMAIN = 'mark2cure.org'
     DEBUG_FILENAME = 'mark2cure-debug.log'
     VERSION = '0.1 (Production)'
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+        }
+    }
 
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
