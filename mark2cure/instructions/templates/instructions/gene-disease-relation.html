@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: 0.7;
+  stroke: #333;
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 22px sans-serif;
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  /*stroke: #333;*/
+  stroke-width: 2px;
+}
+div.tooltip {
+  position: absolute;
+  text-align: left;
+  width: 500px;
+  /*height: 120px;*/
+  padding: 20px;
+  font: 20px sans-serif;
+  background: #ddd;
+  border: solid 4px #aaa;
+  border-radius: 8px;
+  pointer-events: none;
+}
+p.paragraph span.user_annotated_green,
+span.user_annotated_green {
+  background-color: #B1FFA8;
+}
+
+</style>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+
+// var test_width = 0;
+//
+// $(document).ready(function(){
+//   test_width = $(document).width();
+//     $(window).resize(function(){
+//         console.log("hello");
+//         console.log($(document).width());
+//         console.log($(window).width());
+//         test_width = $(document).width();
+//         update(root);
+//     return test_width;
+//     });
+// });
+
+var margin = {top: 50, right: 20, bottom: 20, left: 20},
+    width = 1400 - margin.left - margin.right,
+    barHeight = 60,
+    barWidth = width * .45;
+
+var i = 0,
+    duration = 550,
+    root;
+
+var tree = d3.layout.tree()
+    .nodeSize([0, 20]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("body").append("svg:svg")
+    .attr("width", width + margin.left + margin.right)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+root = {
+  "id": "1-1-1-1-1-1",
+  "text": "Gene + disease relationship",
+  "desc": "Gene + disease relationship definitions",
+  "example": "Hover over items for more information.",
+  "children": [{
+    "id": "1",
+    "text": "(gene) relates to the disease",
+    "desc": "The gene is related to the disease in some manner.",
+    "example": "The gene responsible for Triple A syndrome, AAAS, has recently been identified.",
+    "children": [{
+      "id": "1-1",
+      "text": "Altered expression is associated with",
+      "desc": "Gene expression is the process by which information from a gene is used in the synthesis of a functional gene product (mRNA, protein, or microRNAs). When gene expression is altered, gene expression is either increased or decreased.",
+      "example": "Several studies revealed significantly higher EPHB4 expression in malignancies such as prostate cancer.",
+      }, {
+      "id": "1-3",
+      "text": "Mutation is associated with",
+      "desc": "Gene mutations or aberrations are permanent changes in the gene DNA sequence, differing from the sequence found in most people. Mutations range in size; they can affect anywhere from a single DNA base pair to a large piece of a chromosome that includes multiple genes.",
+      "example": "Mutations in the COL5A or COL3A genes are only a few of the genetic causes of Ehlers-Danlos syndrome.",
+      }, {
+        "id": "1-4",
+        "text": "And post-translational modifications are associated with",
+        "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
+        "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in post-translational processing of wild-type thyroglobulin.",
+    }]}, {
+    "id": "2",
+    "text": "Has no relation to",
+    "desc": "The gene does not relate to the disease.",
+    "example": "The precise role of Ngly1 in the ERAD process remains unclear in mammals."
+  }]
+}
+
+
+function update(source) {
+
+  // Compute the flattened node list. TODO use d3.layout.hierarchy.
+  var nodes = tree.nodes(root);
+
+  var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
+
+  d3.select("svg").transition()
+      .duration(duration)
+      .attr("height", height * 1.5);
+
+  d3.select(self.frameElement).transition()
+      .duration(duration)
+      .style("height", height + "px");
+
+  // Compute the "layout".
+  nodes.forEach(function(n, i) {
+    n.x = i * (barHeight * 1.3);
+  });
+
+  // Update the nodes…
+  var node = svg.selectAll("g.node")
+      .data(nodes, function(d) { return d.pid || (d.pid = ++i); });
+
+
+  var nodeEnter = node.enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .style("opacity", 1e-6);
+
+
+
+  // COPIED from http://bl.ocks.org/mbostock/1087001
+  var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 1e-6);
+
+  nodeEnter.append("rect")
+      .attr("y", -barHeight / 2)
+      .attr("x", indent_of)
+      .attr("height", barHeight)
+      .attr("width", barWidth)
+      .style("fill", color)
+      // .on("click", click)
+      .on("mouseover", function() {
+      div.attr("class", "tooltip").transition()
+          .duration(0)
+          .style("opacity", 1);
+        }
+    )
+      .on("mousemove", function(d) {
+        div
+            .style("left", (d3.event.pageX + 10) + "px")
+            .style("top", (d3.event.pageY - 12) + "px")
+            .html("<h3>Definition:</h3>" + d.desc + "<h3>Example:</h3>" + d.example);
+      })
+      .on("mouseout", function() {
+      div.attr("class", "tooltip")
+          .transition()
+          .duration(500)
+          .style("opacity", 1e-6);
+        }
+    );
+
+  nodeEnter.append("text")
+      .attr("dy", -3)
+      .attr("dx", function(obj) { return indent_of(obj)+20; })
+      .text(function(d) {
+        var my_text = "   " + d.text;
+        return my_text;
+      });
+
+  // Transition nodes to their new position.
+  nodeEnter.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+      .style("opacity", 1);
+
+  node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+      .style("opacity", 1)
+      .select("rect")
+      .style("fill", color);
+
+  // Transition exiting nodes to the parent's new position.
+  node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .style("opacity", 1e-6)
+      .remove();
+
+  // Update the links…
+  var link = svg.selectAll("path.link")
+      .data(tree.links(nodes), function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        return diagonal({source: o, target: o});
+      })
+    .transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+  // Transition links to their new position.
+  link.transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: source.y};
+        return diagonal({source: o, target: o});
+      })
+      .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+
+
+update(root);
+
+
+
+// Toggle children on click.
+function click(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update(d);
+}
+
+function indent_of(d) {
+  var my_string = d.id;
+  if (my_string.length === 1) {
+    indent = 100;
+  } else if (my_string.length === 3) {
+    indent = 150;
+  } else if (my_string.length === 5) {
+    indent = 200;
+  } else {
+    indent = 0;
+}
+return indent;
+};
+
+function color(d) {
+  var my_string = d.id;
+  if (my_string.length === 1) {
+    return "#9e9ac8";
+  } else if (my_string.length === 3) {
+      return "#6a51a3";
+  } else if (my_string.length === 5) {
+      return "#3f007d";
+  } else {
+    return "#dadaeb";
+  }
+};
+
+
+
+</script>
+</body>

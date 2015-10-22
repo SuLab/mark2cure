@@ -10,13 +10,15 @@
       .modal-body
         .panel
           .panel-body
-            p.lead Relation Identification Skill: the ability to identify a relation between chemicals and diseases:
-            ol(style='margin-left: 8px;').list-unstyled
-              li <strong>Chemical</strong> – TODO
-              li <strong>Disease</strong> – TODO
-              li <strong>Relation</strong> – TODO
-            a(href='{% url "instructions:relation-identification" %}')
-              p.text-center Review the rules for Relation Identification
+            p.lead Relation Identification Skill: the ability to identify a relation between two scientific concepts:
+
+            p.lead Review the relation rules for:
+
+            a(href='{% url "instructions:gene-disease-relation" %}')
+              p.text-center Gene + Disease
+            a(href='{% url "instructions:chemical-disease-relation" %}')
+              p.text-center Chemical + Disease
+
 
       .modal-footer
         button(type="button", data-dismiss="modal").btn.btn-default Close
