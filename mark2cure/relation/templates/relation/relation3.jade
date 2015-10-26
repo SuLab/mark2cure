@@ -1,0 +1,94 @@
+extends base
+
+- load widget_tweaks
+- load humanize
+
+
+block header
+  - with headerMessage=task.name
+    include includes/header-relation
+  <meta charset="utf-8">
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Mark2Cure</title>
+
+
+  <link rel="stylesheet" href="https://mark2cure.org/static/css/style.css">
+  <link rel="stylesheet" href="https://mark2cure.org/static/css/document-style.css">
+
+  <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='http://www.puff.me.uk/scripps/Tree/main.css'>
+
+
+
+block content
+  .container
+    .row.head-space
+      .col-xs-12
+
+    .row.head-space
+      .col-xs-12
+
+        .container#tree-insert
+
+        .row
+          .col-xs-12
+            p.doc {{ current_paper|safe }}
+
+
+        //keep below for now. TODO why is text not showing up.
+        h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
+
+        h3
+          span#concept1
+          span#jen_results
+          span#concept2
+
+
+        form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
+          - csrf_token
+          input#relation_type(type="hidden", name="relation_type")
+          input#username(type="hidden", name="username", value=request.user)
+          input#relation(type="hidden", name="relation", value=relation.pk)
+
+          .row(style="padding-top:20px;" class="col-xs-4 col-xs-offset-4")
+            button.btn.btn-default.btn-block(type="submit") Submit
+
+
+block post-footer
+
+  script(type="text/javascript", src="/static/js/libs/jquery-1.11.1.min.js")
+  script(type="text/javascript", src="/static/js/libs/bootstrap.min.js")
+  script(type="text/javascript", src="/static/js/libs/underscore-min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone-min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone-relational.js")
+  script(type="text/javascript", src="http://www.puff.me.uk/scripps/Tree/src/libs/backbone.radio.min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone.marionette.min.js")
+
+  <script type="html/template" id="tree-template">
+  <div id="tree" class="row text-center">
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1"><h3><%= c1.text %></h3></div>
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6">
+  <h3 id="relation" class="disabled">Select a Relationship below...</h3>
+  <ul class="list-group"></ul>
+  </div>
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2"><h3><%= c2.text %></h3></div>
+  </div>
+  </script>
+
+  script.
+    var jen = "{{ pk_list }}";
+    console.log("testing");
+    console.log(jen);
+    concepts = { 'c1': {'text': "{{ concept1.text }}", 'type': 'chemical'}, 'c2': {'text': "{{ concept2.text }}", 'type': 'disease'},};
+    if ("{{ relation_type }}" == 'g_d' | "{{ relation_type }}" == 'd_g')
+      file_key = 'gene_disease_relation_menu';
+
+    else if ("{{ relation_type }}" == 'c_d' | "{{ relation_type }}" == 'd_c' )
+      file_key = 'chemical_disease_relation_menu';
+
+    else if ("{{ relation_type }}" === 'g_c' | "{{ relation_type }}" === 'c_g' )
+      file_key = 'gene_chemical_relation_menu';
+
+
+  script(src="/static/js/libs/tree.js")
+  script(src="/static/js/libs/demo.js")

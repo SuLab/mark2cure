@@ -89,14 +89,7 @@ def relation(request, document_pk):
     concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
     concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
 
-    concept1_text = str(concept1.text)
-    concept2_text = str(concept2.text)
-    concept1_type = concept1.stype
-    concept2_type = concept2.stype
-    # TODO add this to the model (relation.stype)
-    relation_type = concept1_type + "_" + concept2_type
-    # TODO if concept1 and concept2 are stype .... USE different JSON objects for jquery menu....   TODO TODO
-
+    relation_type = concept1.stype + "_" + concept2.stype
 
     def make_relation_dict(unanswered_relations_for_user):
         relation_list = []
@@ -106,27 +99,17 @@ def relation(request, document_pk):
             concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
             concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
 
-            concept1_text = str(concept1.text)
-            concept2_text = str(concept2.text)
+            relation_type = concept1.stype + "_" + concept2.stype
 
-            concept1_type = concept1.stype
-            concept2_type = concept2.stype
-
-            relation_type = concept1_type + "_" + concept2_type
-            print concept2_text, concept2_type
-            print concept1_text, concept1_type
-
-            relation_list.append({relation.pk: {
-                                       'concept1_text': concept1_text,
-                                       'concept2_text': concept2_text,
-                                       'concept1_type': concept1_type,
-                                       'concept2_type': concept2_type,
-                                       'relation_type': relation_type} })
+            relation_list.append({relation.pk: { 'concept1': concept1,
+                                                 'concept2': concept2,
+                                                 'relation_type': relation_type} })
         return relation_list
 
     relation_list = make_relation_dict(unanswered_relations_for_user)
 
     # TODO make my own api for this view
+
     pk_list = []
     for dict_item in relation_list:
         pk_list.append(dict_item.keys())
@@ -134,20 +117,25 @@ def relation(request, document_pk):
     pk_list = list(itertools.chain(*pk_list))
     pk_list = json.dumps(pk_list)
 
-    relation_list = json.dumps(relation_list)
+    formatted_abstract = re.sub(r'\b' + str(concept1.text) + r'\b', '<font color="#E65CE6"><b>' + str(concept1.text) + '</b></font>', str(section_title) +" "+ str(section_abstract), flags=re.I)
+    formatted_abstract = re.sub(r'\b' + str(concept2.text) + r'\b', '<font color="#0099FF"><b>' + str(concept2.text) + '</b></font>', formatted_abstract, flags=re.I)
 
-    formatted_abstract = re.sub(r'\b' + concept1_text + r'\b', '<font color="#E65CE6"><b>' + concept1_text + '</b></font>', str(section_title) +" "+ str(section_abstract), flags=re.I)
-    formatted_abstract = re.sub(r'\b' + concept2_text + r'\b', '<font color="#0099FF"><b>' + concept2_text + '</b></font>', formatted_abstract, flags=re.I)
-
-    chemical_from_relation_html = '<font color="#E65CE6"><b>' + concept1_text + '</b></font>'
-    disease_from_relation_html = '<font color="#0099FF"><b>' + concept2_text + '</b></font>'
+    chemical_from_relation_html = '<font color="#E65CE6"><b>' + str(concept1.text) + '</b></font>'
+    disease_from_relation_html = '<font color="#0099FF"><b>' + str(concept2.text) + '</b></font>'
 
     # TODO: want something similar to this:
     # paper = relation_task.papers().first()
     # sentences = relation_task.get_sentences()
 
-    ctx = {'concept1' : concept1_text,
-           'concept2' : concept2_text,
+    print concept1
+    print concept2
+    print chemical_from_relation_html
+    print disease_from_relation_html
+    print relation_type
+    print relation_list
+
+    ctx = {'concept1' : concept1,
+           'concept2' : concept2,
            'chemical_html': chemical_from_relation_html,
            'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
@@ -157,7 +145,7 @@ def relation(request, document_pk):
            'relation_list': relation_list,
            'pk_list': pk_list
            }
-    return TemplateResponse(request, 'relation/relation.jade', ctx)
+    return TemplateResponse(request, 'relation/relation3.jade', ctx)
 
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
@@ -187,9 +175,9 @@ def create_post(request):
 @login_required
 @require_http_methods(['POST'])
 def jen_bioc(request):
-    print request
-    print "HELLO"
+    # print request
+    # print "HELLO"
     relation_list = request.POST['relation_list']
-    print relation_list
+    # print relation_list
     writer_json = bioc_as_json(relation_list)
     return HttpResponse(200)
