@@ -75,18 +75,23 @@ block post-footer
   </div>
   </script>
 
-  script.
-    var jen = "{{ pk_list }}";
+  script(type="text/javascript").
     console.log("testing");
-    console.log(jen);
-    concepts = { 'c1': {'text': "{{ concept1.text }}", 'type': 'chemical'}, 'c2': {'text': "{{ concept2.text }}", 'type': 'disease'},};
-    if ("{{ relation_type }}" == 'g_d' | "{{ relation_type }}" == 'd_g')
+    var relation_list = "{{ relation_list }}";
+    relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
+    var current_relation_number = 0;
+    var reln_type = relation_list[current_relation_number].relation_type;
+    console.log(reln_type);
+    console.log(relation_list);
+
+    concepts = { 'c1': {'text': "{{ concept1 }}", 'type': 'chemical'}, 'c2': {'text': "{{ concept2 }}", 'type': 'disease'},};
+    if (reln_type == 'g_d' | reln_type == 'd_g')
       file_key = 'gene_disease_relation_menu';
 
-    else if ("{{ relation_type }}" == 'c_d' | "{{ relation_type }}" == 'd_c' )
+    else if (reln_type == 'c_d' | reln_type == 'd_c' )
       file_key = 'chemical_disease_relation_menu';
 
-    else if ("{{ relation_type }}" === 'g_c' | "{{ relation_type }}" === 'c_g' )
+    else if (reln_type === 'g_c' | reln_type === 'c_g' )
       file_key = 'gene_chemical_relation_menu';
 
 

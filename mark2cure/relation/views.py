@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.views import generic
 from django.utils import timezone
 
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -95,28 +95,33 @@ def relation(request, document_pk):
         relation_list = []
 
         for relation in unanswered_relations_for_user:
-
+            relation_dict = {}
             concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
             concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
 
             relation_type = concept1.stype + "_" + concept2.stype
 
-            relation_list.append({relation.pk: { 'concept1': concept1,
-                                                 'concept2': concept2,
-                                                 'relation_type': relation_type} })
+            relation_dict['c1_id']= str(concept1.id)
+            relation_dict['c1_text']= str(concept1.text)
+            relation_dict['c1_correct'] = True
+            relation_dict['c2_id']= str(concept2.id)
+            relation_dict['c2_text']= str(concept2.text)
+            relation_dict['c2_correct'] = True
+            relation_dict['relation_type'] = str(relation_type)
+
+            relation_list.append(relation_dict)
+
         return relation_list
 
     relation_list = make_relation_dict(unanswered_relations_for_user)
 
     # TODO make my own api for this view
 
-    pk_list = []
-    for dict_item in relation_list:
-        pk_list.append(dict_item.keys())
-
-    pk_list = list(itertools.chain(*pk_list))
-    pk_list = json.dumps(pk_list)
-
+    print relation_list
+    relation_list_object = relation_list
+    relation_list = json.dumps(relation_list)
+    # relation_list = json.loads(relation_list)
+    print type(relation_list), "TYPE OF RELATION_LIST"
     formatted_abstract = re.sub(r'\b' + str(concept1.text) + r'\b', '<font color="#E65CE6"><b>' + str(concept1.text) + '</b></font>', str(section_title) +" "+ str(section_abstract), flags=re.I)
     formatted_abstract = re.sub(r'\b' + str(concept2.text) + r'\b', '<font color="#0099FF"><b>' + str(concept2.text) + '</b></font>', formatted_abstract, flags=re.I)
 
@@ -131,19 +136,16 @@ def relation(request, document_pk):
     print concept2
     print chemical_from_relation_html
     print disease_from_relation_html
-    print relation_type
-    print relation_list
 
-    ctx = {'concept1' : concept1,
-           'concept2' : concept2,
+    ctx = {'concept1' : relation_list_object[0]["c1_text"],
+           'concept2' : relation_list_object[0]["c2_text"],
            'chemical_html': chemical_from_relation_html,
            'disease_html': disease_from_relation_html,
            'current_paper': formatted_abstract,
            'current_document': current_document,
            'relation_type': relation_type,
            'relation': relation,
-           'relation_list': relation_list,
-           'pk_list': pk_list
+           'relation_list': relation_list
            }
     return TemplateResponse(request, 'relation/relation3.jade', ctx)
 

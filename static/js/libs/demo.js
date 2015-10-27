@@ -109,7 +109,6 @@ Tree.addInitializer(function(options) {
   */
     Tree.addRegions({'start': '#tree-insert'});
     console.log("testing inside demo.js");
-    console.log(jen);
     /* When the app is first loaded */
     var coll = new RelationList(data[file_key]);
 
