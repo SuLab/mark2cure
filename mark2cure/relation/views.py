@@ -86,11 +86,6 @@ def relation(request, document_pk):
     relation = current_document.unanswered_relation(request)
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
 
-    concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
-    concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
-
-    relation_type = concept1.stype + "_" + concept2.stype
-
     def make_relation_dict(unanswered_relations_for_user):
         relation_list = []
 
@@ -101,11 +96,15 @@ def relation(request, document_pk):
 
             relation_type = concept1.stype + "_" + concept2.stype
 
+            # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
+            # so I put them in different properties
             relation_dict['c1_id']= str(concept1.id)
             relation_dict['c1_text']= str(concept1.text)
+            relation_dict['c1_stype']= str(concept1.stype)
             relation_dict['c1_correct'] = True
             relation_dict['c2_id']= str(concept2.id)
             relation_dict['c2_text']= str(concept2.text)
+            relation_dict['c2_stype']= str(concept2.stype)
             relation_dict['c2_correct'] = True
             relation_dict['relation_type'] = str(relation_type)
 
@@ -115,35 +114,11 @@ def relation(request, document_pk):
 
     relation_list = make_relation_dict(unanswered_relations_for_user)
 
-    # TODO make my own api for this view
-
-    print relation_list
+    # print relation_list
     relation_list_object = relation_list
     relation_list = json.dumps(relation_list)
-    # relation_list = json.loads(relation_list)
-    print type(relation_list), "TYPE OF RELATION_LIST"
-    formatted_abstract = re.sub(r'\b' + str(concept1.text) + r'\b', '<font color="#E65CE6"><b>' + str(concept1.text) + '</b></font>', str(section_title) +" "+ str(section_abstract), flags=re.I)
-    formatted_abstract = re.sub(r'\b' + str(concept2.text) + r'\b', '<font color="#0099FF"><b>' + str(concept2.text) + '</b></font>', formatted_abstract, flags=re.I)
 
-    chemical_from_relation_html = '<font color="#E65CE6"><b>' + str(concept1.text) + '</b></font>'
-    disease_from_relation_html = '<font color="#0099FF"><b>' + str(concept2.text) + '</b></font>'
-
-    # TODO: want something similar to this:
-    # paper = relation_task.papers().first()
-    # sentences = relation_task.get_sentences()
-
-    print concept1
-    print concept2
-    print chemical_from_relation_html
-    print disease_from_relation_html
-
-    ctx = {'concept1' : relation_list_object[0]["c1_text"],
-           'concept2' : relation_list_object[0]["c2_text"],
-           'chemical_html': chemical_from_relation_html,
-           'disease_html': disease_from_relation_html,
-           'current_paper': formatted_abstract,
-           'current_document': current_document,
-           'relation_type': relation_type,
+    ctx = {'current_paper': str(section_title) + " " + str(section_abstract),
            'relation': relation,
            'relation_list': relation_list
            }

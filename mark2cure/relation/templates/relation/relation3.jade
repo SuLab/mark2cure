@@ -32,16 +32,7 @@ block content
 
         .row
           .col-xs-12
-            p.doc {{ current_paper|safe }}
-
-
-        //keep below for now. TODO why is text not showing up.
-        h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
-
-        h3
-          span#concept1
-          span#jen_results
-          span#concept2
+            p.doc#paper
 
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
@@ -76,15 +67,53 @@ block post-footer
   </script>
 
   script(type="text/javascript").
-    console.log("testing");
+    /* The current relationship pair we are working on in the array*/
+    var current_relation_number = 0;
+
+
     var relation_list = "{{ relation_list }}";
     relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
-    var current_relation_number = 0;
+
+    var reln = relation_list[current_relation_number];
+
     var reln_type = relation_list[current_relation_number].relation_type;
+    var paper = "{{ current_paper }}";
+
+
+    /* replace all instances of c1 and c2 */
+    var re1 = new RegExp("\\b" + reln.c1_text + "\\b", 'g');
+    var re2 = new RegExp("\\b" + reln.c2_text + "\\b", 'g');
+
+    /* vary the color: see Max about reformatting this so that it's CSS */
+
+    /* disease is on right and gene is on left add to RULES */
+
+    function color_find(relationship_type) {
+      if (relationship_type === "g") {
+        var color = "#94d58c";
+      };
+
+      if (relationship_type === "d") {
+        var color = "#aecbd5";
+      };
+
+      if (relationship_type === "c") {
+        var color = "#d5aeb8";
+      };
+    return color;
+    };
+
+    c1_reformat = "<font color=" + color_find(reln.c1_stype) + "><b>" + reln.c1_text + "</b></font>";
+    c2_reformat = "<font color=" + color_find(reln.c2_stype) + "><b>" + reln.c2_text + "</b></font>";
+
+    str = paper.replace(re1, c1_reformat);
+    str = str.replace(re2, c2_reformat);
+    $('#paper').html( str );
+
     console.log(reln_type);
     console.log(relation_list);
 
-    concepts = { 'c1': {'text': "{{ concept1 }}", 'type': 'chemical'}, 'c2': {'text': "{{ concept2 }}", 'type': 'disease'},};
+    concepts = { 'c1': {'text': reln.c1_text, 'type': 'chemical'}, 'c2': {'text': reln.c2_text, 'type': 'disease'},};
     if (reln_type == 'g_d' | reln_type == 'd_g')
       file_key = 'gene_disease_relation_menu';
 
@@ -93,7 +122,6 @@ block post-footer
 
     else if (reln_type === 'g_c' | reln_type === 'c_g' )
       file_key = 'gene_chemical_relation_menu';
-
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/libs/demo.js")
