@@ -75,6 +75,52 @@ def home(request):
 
 
 @login_required
+def relation_api(request, document_pk):
+    from django.http import JsonResponse
+
+    # the document instance
+    current_document = get_object_or_404(Document, pk=document_pk)
+    # the section instances
+    section_title = Section.objects.get(document=current_document, kind="t")
+    section_abstract = Section.objects.get(document=current_document, kind="a")
+
+    relation = current_document.unanswered_relation(request)
+    unanswered_relations_for_user = current_document.unanswered_relation_list(request)
+    # ^^^^^^ no dry
+
+    relation_list = []
+    for relation in unanswered_relations_for_user:
+        relation_dict = {}
+        concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
+        concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
+        relation_type = concept1.stype + "_" + concept2.stype
+
+        if (relation_type == 'g_d' or relation_type == 'd_g'):
+            file_key = 'gene_disease_relation_menu';
+
+        if (relation_type == 'c_d' or relation_type == 'd_c' ):
+            file_key = 'chemical_disease_relation_menu';
+
+        if (relation_type == 'g_c' or relation_type == 'c_g' ):
+            file_key = 'gene_chemical_relation_menu';
+
+        # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
+        # so I put them in different properties
+        relation_dict['c1_id']= str(concept1.id)
+        relation_dict['c1_text']= str(concept1.text)
+        relation_dict['c1_stype']= str(concept1.stype)
+        relation_dict['c1_correct'] = True
+        relation_dict['c2_id']= str(concept2.id)
+        relation_dict['c2_text']= str(concept2.text)
+        relation_dict['c2_stype']= str(concept2.stype)
+        relation_dict['c2_correct'] = True
+        relation_dict['relation_type'] = file_key
+
+        relation_list.append(relation_dict)
+
+    return JsonResponse(relation_list, safe=False)
+
+@login_required
 def relation(request, document_pk):
     form = AnswerForm
     # the document instance
@@ -86,41 +132,9 @@ def relation(request, document_pk):
     relation = current_document.unanswered_relation(request)
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
 
-    def make_relation_dict(unanswered_relations_for_user):
-        relation_list = []
-
-        for relation in unanswered_relations_for_user:
-            relation_dict = {}
-            concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
-            concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
-
-            relation_type = concept1.stype + "_" + concept2.stype
-
-            # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
-            # so I put them in different properties
-            relation_dict['c1_id']= str(concept1.id)
-            relation_dict['c1_text']= str(concept1.text)
-            relation_dict['c1_stype']= str(concept1.stype)
-            relation_dict['c1_correct'] = True
-            relation_dict['c2_id']= str(concept2.id)
-            relation_dict['c2_text']= str(concept2.text)
-            relation_dict['c2_stype']= str(concept2.stype)
-            relation_dict['c2_correct'] = True
-            relation_dict['relation_type'] = str(relation_type)
-
-            relation_list.append(relation_dict)
-
-        return relation_list
-
-    relation_list = make_relation_dict(unanswered_relations_for_user)
-
-    # print relation_list
-    relation_list_object = relation_list
-    relation_list = json.dumps(relation_list)
-
-    ctx = {'current_paper': str(section_title) + " " + str(section_abstract),
+    ctx = {'sections': Section.objects.filter(document=current_document),
            'relation': relation,
-           'relation_list': relation_list
+           'document_pk': document_pk,
            }
     return TemplateResponse(request, 'relation/relation3.jade', ctx)
 
@@ -135,7 +149,7 @@ def results(request, relation_id): #, relation_id
 
     if request.method == 'POST':
         ctx = {
-        'relation_type':relation_type
+        'relation_type':relation_type,
         }
         return TemplateResponse(request, 'relation/results.jade', ctx)
     #return HttpResponseRedirect(reverse("relation:home"))

@@ -32,7 +32,8 @@ block content
 
         .row
           .col-xs-12
-            p.doc#paper
+            - for section in sections
+              p.section #{section.text}
 
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
@@ -66,75 +67,8 @@ block post-footer
   </div>
   </script>
 
-
-  script(type="text/javascript").
-
-    /* The current relationship pair we are working on in the array
-    At document start, we should work with first item, then "ON SUBMIT" we should
-    move through the relation_list array and bring up new concept pairs.
-
-    If a concept was flagged as incorrect, **do not** pull up that concept again,
-    so iterate through the array until a new concept is found for the user.
-    */
-
-    var relation_list = "{{ relation_list }}";
-
-    /* Make JSON object and not string */
-    relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
-
-
-
-    var current_relation_number = 0;
-
-
-    function make_new_page() {
-      var reln = relation_list[current_relation_number];
-
-      var paper = "{{ current_paper }}";
-
-      /* replace all instances of c1 and c2 */
-      var re1 = new RegExp("\\b" + reln.c1_text + "\\b", 'g');
-      var re2 = new RegExp("\\b" + reln.c2_text + "\\b", 'g');
-
-      /* disease is on right and gene is on left add to RULES */
-
-      function color_find(relationship_type) {
-        if (relationship_type === "g") {
-          var color = "#94d58c";
-        };
-        if (relationship_type === "d") {
-          var color = "#aecbd5";
-        };
-        if (relationship_type === "c") {
-          var color = "#d5aeb8";
-        };
-      return color;
-      };
-
-      c1_reformat = "<font color=" + color_find(reln.c1_stype) + "><b>" + reln.c1_text + "</b></font>";
-      c2_reformat = "<font color=" + color_find(reln.c2_stype) + "><b>" + reln.c2_text + "</b></font>";
-
-      str = paper.replace(re1, c1_reformat);
-      str = str.replace(re2, c2_reformat);
-      $('#paper').html( str );
-
-      console.log(relation_list);
-      current_relation_number += 1;
-      console.log(current_relation_number, "CURRENT RELN NUMBER");
-      return file_key, reln;
-    };
-
-    var file_key, reln = make_new_page();
-
-    concepts = { 'c1': {'text': reln.c1_text, 'type': 'chemical'}, 'c2': {'text': reln.c2_text, 'type': 'disease'},};
-    if (reln.relation_type == 'g_d' | reln.relation_type == 'd_g')
-      file_key = 'gene_disease_relation_menu';
-
-    else if (reln.relation_type == 'c_d' | reln.relation_type == 'd_c' )
-      file_key = 'chemical_disease_relation_menu';
-
-    else if (reln.relation_type === 'g_c' | reln.relation_type === 'c_g' )
-      file_key = 'gene_chemical_relation_menu';
-
+  script.
+    var jen_pk = "{{ document_pk }}";
+    console.log(jen_pk);
   script(src="/static/js/libs/tree.js")
-  script(src="/static/js/libs/demo.js")
+  script(src="/static/js/tasks/relation.js")

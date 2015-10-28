@@ -101,63 +101,54 @@ var data = {
 
 };
 
-
 Tree.addInitializer(function(options) {
 
-  /* data fetches the original document and annotations
-  $.getJSON('http://localhost:12345/data/relationships.json', function( data ) {
-  */
-    Tree.addRegions({'start': '#tree-insert'});
-    console.log("testing inside demo.js");
-    /* When the app is first loaded */
-    var coll = new RelationList(data[file_key]);
+  Tree.addRegions({'start': '#tree-insert'});
+  /* When the app is first loaded */
+  var coll = new RelationList(data[file_key]);
 
+  Tree['start'].show( new RelationCompositeView({
+    collection: coll,
+    concepts: concepts,
+    choice: false
+  }));
+
+  Backbone.Radio.DEBUG = true;
+  Tree['convoChannel'] = Backbone.Radio.channel('convo');
+
+  /* When an item is selected */
+  Tree['convoChannel'].on('click', function(obj) {
+    Tree['start'].show( new RelationCompositeView({
+      collection: obj['collection'],
+      concepts: concepts,
+      choice: obj['choice']
+    }));
+    console.log(obj['choice'].id);
+  });
+
+  /* When the back toggle is selected */
+  Tree['convoChannel'].on('back', function(opts) {
+    var collection;
+
+    var parentRel = opts['choice'].get('parentRelation');
+    if(parentRel) { collection = parentRel.get('children'); }
+
+    if(opts['collection']) { collection = opts['collection']; }
+
+    /* Backup: Go to the top of the stack */
+    collection = coll;
+
+    /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
       collection: coll,
       concepts: concepts,
       choice: false
     }));
 
-    Backbone.Radio.DEBUG = true;
-    Tree['convoChannel'] = Backbone.Radio.channel('convo');
-
-    /* When an item is selected */
-    Tree['convoChannel'].on('click', function(obj) {
-      Tree['start'].show( new RelationCompositeView({
-        collection: obj['collection'],
-        concepts: concepts,
-        choice: obj['choice']
-      }));
-      console.log(obj['choice'].id);
-    });
-
-    /* When the back toggle is selected */
-    Tree['convoChannel'].on('back', function(opts) {
-      var collection;
-
-      var parentRel = opts['choice'].get('parentRelation');
-      if(parentRel) { collection = parentRel.get('children'); }
-
-      if(opts['collection']) { collection = opts['collection']; }
-
-      /* Backup: Go to the top of the stack */
-      collection = coll;
-
-      /* Call the View Redraw */
-      Tree['start'].show( new RelationCompositeView({
-        collection: coll,
-        concepts: concepts,
-        choice: false
-      }));
-
-    });
-
-  /*
   });
-  */
+
 });
 
-Tree.start();
 
 /* Other stuff for Rel demo */
 $('.entity').on('mouseover', function(evt) {
@@ -168,4 +159,78 @@ $('.entity').on('mouseover', function(evt) {
 $('.entity').on('mouseout', function(evt) {
   $(this).find('.text').show();
   $(this).find('.message').hide();
+});
+
+
+/* The current relationship pair we are working on in the array
+At document start, we should work with first item, then "ON SUBMIT" we should
+move through the relation_list array and bring up new concept pairs.
+
+If a concept was flagged as incorrect, **do not** pull up that concept again,
+so iterate through the array until a new concept is found for the user.
+*/
+function format_text_colors(section_text, relationship_obj, concept_idx) {
+  /* (TODO) Clear text of potentially old colors */
+  var reg_ex = new RegExp("\\b" + relationship_obj['c'+concept_idx+'_text'] + "\\b", 'g');
+
+  function color_find(relationship_type) {
+    var color;
+    if (relationship_type === "g") { color = "#94d58c"; };
+    if (relationship_type === "d") { color = "#aecbd5"; };
+    if (relationship_type === "c") { color = "#d5aeb8"; };
+    return color;
+  };
+
+  var reformated_concept_html = '<strong style="color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong>';
+  return section_text.replace(reg_ex, reformated_concept_html);
+};
+
+var global_data;
+/* (TODO) Get this doc pk from template */
+$.getJSON('/relation/1866/api/', function(data) {
+  global_data = data;
+
+  var relationship_obj = data[0];
+  $('.section').each(function(el_idx, el) {
+    var section_text = $(this).html();
+    section_text = format_text_colors(section_text, relationship_obj, 1);
+    section_text = format_text_colors(section_text, relationship_obj, 2);
+    $(this).html(section_text);
+  });
+
+  file_key = relationship_obj.relation_type;
+  concepts = {
+    'c1': {'text': relationship_obj.c1_text, 'type': 'chemical'},
+    'c2': {'text': relationship_obj.c2_text, 'type': 'disease'}
+  };
+  Tree.start();
+
+});
+
+var counter = 1;
+$('#jen_button').on('click', function(evt) {
+  evt.preventDefault();
+
+  var relationship_obj = global_data[counter];
+  counter += 1;
+  $('.section').each(function(el_idx, el) {
+    var section_text = $(this).html();
+    section_text = format_text_colors(section_text, relationship_obj, 1);
+    section_text = format_text_colors(section_text, relationship_obj, 2);
+    $(this).html(section_text);
+  });
+
+  file_key = relationship_obj.relation_type;
+  concepts = {
+    'c1': {'text': relationship_obj.c1_text, 'type': 'chemical'},
+    'c2': {'text': relationship_obj.c2_text, 'type': 'disease'}
+  };
+
+  var coll = new RelationList(data[file_key]);
+  Tree['start'].show( new RelationCompositeView({
+    collection: coll,
+    concepts: concepts,
+    choice: false
+  }));
+
 });

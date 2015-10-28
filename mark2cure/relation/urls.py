@@ -5,6 +5,9 @@ from . import views
 # TODO, these are not used currently
 
 urlpatterns = patterns('',
+    url(r'^(?P<document_pk>\d+)/api/$',
+        views.relation_api, name='relation-api'),
+
     url(r'^(?P<document_pk>\d+)/$',
         views.relation, name='relation'),
 
