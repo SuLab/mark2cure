@@ -42,7 +42,7 @@ block content
           input#relation(type="hidden", name="relation", value=relation.pk)
 
           .row(style="padding-top:20px;" class="col-xs-4 col-xs-offset-4")
-            button.btn.btn-default.btn-block(type="submit") Submit
+            button.btn.btn-default.btn-block(type="submit")#jen_button Submit
 
 
 block post-footer
@@ -66,61 +66,74 @@ block post-footer
   </div>
   </script>
 
+
   script(type="text/javascript").
-    /* The current relationship pair we are working on in the array*/
+
+    /* The current relationship pair we are working on in the array
+    At document start, we should work with first item, then "ON SUBMIT" we should
+    move through the relation_list array and bring up new concept pairs.
+
+    If a concept was flagged as incorrect, **do not** pull up that concept again,
+    so iterate through the array until a new concept is found for the user.
+    */
+
+    var relation_list = "{{ relation_list }}";
+
+    /* Make JSON object and not string */
+    relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
+
+
+
     var current_relation_number = 0;
 
 
-    var relation_list = "{{ relation_list }}";
-    relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
+    function make_new_page() {
+      var reln = relation_list[current_relation_number];
 
-    var reln = relation_list[current_relation_number];
+      var paper = "{{ current_paper }}";
 
-    var reln_type = relation_list[current_relation_number].relation_type;
-    var paper = "{{ current_paper }}";
+      /* replace all instances of c1 and c2 */
+      var re1 = new RegExp("\\b" + reln.c1_text + "\\b", 'g');
+      var re2 = new RegExp("\\b" + reln.c2_text + "\\b", 'g');
 
+      /* disease is on right and gene is on left add to RULES */
 
-    /* replace all instances of c1 and c2 */
-    var re1 = new RegExp("\\b" + reln.c1_text + "\\b", 'g');
-    var re2 = new RegExp("\\b" + reln.c2_text + "\\b", 'g');
-
-    /* vary the color: see Max about reformatting this so that it's CSS */
-
-    /* disease is on right and gene is on left add to RULES */
-
-    function color_find(relationship_type) {
-      if (relationship_type === "g") {
-        var color = "#94d58c";
+      function color_find(relationship_type) {
+        if (relationship_type === "g") {
+          var color = "#94d58c";
+        };
+        if (relationship_type === "d") {
+          var color = "#aecbd5";
+        };
+        if (relationship_type === "c") {
+          var color = "#d5aeb8";
+        };
+      return color;
       };
 
-      if (relationship_type === "d") {
-        var color = "#aecbd5";
-      };
+      c1_reformat = "<font color=" + color_find(reln.c1_stype) + "><b>" + reln.c1_text + "</b></font>";
+      c2_reformat = "<font color=" + color_find(reln.c2_stype) + "><b>" + reln.c2_text + "</b></font>";
 
-      if (relationship_type === "c") {
-        var color = "#d5aeb8";
-      };
-    return color;
+      str = paper.replace(re1, c1_reformat);
+      str = str.replace(re2, c2_reformat);
+      $('#paper').html( str );
+
+      console.log(relation_list);
+      current_relation_number += 1;
+      console.log(current_relation_number, "CURRENT RELN NUMBER");
+      return file_key, reln;
     };
 
-    c1_reformat = "<font color=" + color_find(reln.c1_stype) + "><b>" + reln.c1_text + "</b></font>";
-    c2_reformat = "<font color=" + color_find(reln.c2_stype) + "><b>" + reln.c2_text + "</b></font>";
-
-    str = paper.replace(re1, c1_reformat);
-    str = str.replace(re2, c2_reformat);
-    $('#paper').html( str );
-
-    console.log(reln_type);
-    console.log(relation_list);
+    var file_key, reln = make_new_page();
 
     concepts = { 'c1': {'text': reln.c1_text, 'type': 'chemical'}, 'c2': {'text': reln.c2_text, 'type': 'disease'},};
-    if (reln_type == 'g_d' | reln_type == 'd_g')
+    if (reln.relation_type == 'g_d' | reln.relation_type == 'd_g')
       file_key = 'gene_disease_relation_menu';
 
-    else if (reln_type == 'c_d' | reln_type == 'd_c' )
+    else if (reln.relation_type == 'c_d' | reln.relation_type == 'd_c' )
       file_key = 'chemical_disease_relation_menu';
 
-    else if (reln_type === 'g_c' | reln_type === 'c_g' )
+    else if (reln.relation_type === 'g_c' | reln.relation_type === 'c_g' )
       file_key = 'gene_chemical_relation_menu';
 
   script(src="/static/js/libs/tree.js")
