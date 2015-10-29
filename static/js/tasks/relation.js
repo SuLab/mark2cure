@@ -181,27 +181,29 @@ function format_text_colors(section_text, relationship_obj, concept_idx) {
     return color;
   };
 
-  var reformated_concept_html = '<strong style="color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong>';
+  var reformated_concept_html = '<u><strong style="color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong></u>';
   return section_text.replace(reg_ex, reformated_concept_html);
 };
 
 var global_data;
 var concept_pairs_remaining;
 var concept_pairs_total;
+var clean_section_text;
 
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
+  console.log(data);
   concept_pairs_remaining = data.length;
   concept_pairs_total = concept_pairs_remaining;
 
 
   var relationship_obj = data[0];
   $('.section').each(function(el_idx, el) {
-    var section_text = $(this).html();
+    var section_text = $(this).text();
     section_text = format_text_colors(section_text, relationship_obj, 1);
     section_text = format_text_colors(section_text, relationship_obj, 2);
     $(this).html(section_text);
-  }).fadeIn(10000);
+  });
 
   file_key = relationship_obj.relation_type;
   concepts = {
@@ -214,14 +216,14 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
 
 
 function yays_selection() {
-  yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!'];
+  yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!', 'Woohoo!', 'Hooray!', 'Yeaahh!', 'Look at you!'];
   yay_word = yays[Math.floor(Math.random()*yays.length)];
   return yay_word;
 }
 
 function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
-  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you." ];
-  if (concept_pairs_total >= 4 && concept_pairs_remaining <= 3 )
+  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you.", "Don't stop now." ];
+  if (concept_pairs_total >= 5 && concept_pairs_remaining <= 3 )
     carry_on = ["You're a trooper.", 'Most impressive.', "We know you're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
   carry_on_word = carry_on[Math.floor(Math.random()*carry_on.length)];
   return carry_on_word;
@@ -241,20 +243,25 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 };
 
 
-
-
 var counter = 1;
+
+
 $('#submit_button').on('click', function(evt) {
-  evt.preventDefault();
+  concept_pairs_remaining -= 1;
+  if (concept_pairs_remaining == 0)
+    pass;
+  else {
+    evt.preventDefault();
+  };
   $('#praise_after_completion').hide();
   var relationship_obj = global_data[counter];
   counter += 1;
-  concept_pairs_remaining -= 1;
+
   console.log(concept_pairs_remaining);
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
-  $('#praise_after_completion').html( html_display ).fadeIn(600);
+  $('#praise_after_completion').html( html_display ).fadeIn(900);
   $('.section').each(function(el_idx, el) {
-    var section_text = $(this).html();
+    var section_text = $(this).text();
     section_text = format_text_colors(section_text, relationship_obj, 1);
     section_text = format_text_colors(section_text, relationship_obj, 2);
     $(this).html(section_text);
