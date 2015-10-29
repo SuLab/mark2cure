@@ -219,10 +219,10 @@ function yays_selection() {
   yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!', 'Woohoo!', 'Hooray!', 'Yeaahh!', 'Look at you!'];
   yay_word = yays[Math.floor(Math.random()*yays.length)];
   return yay_word;
-}
+};
 
 function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
-  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you.", "Don't stop now." ];
+  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you.", "Don't stop now.", "", "", "" ];
   if (concept_pairs_total >= 5 && concept_pairs_remaining <= 3 )
     carry_on = ["You're a trooper.", 'Most impressive.', "We know you're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
   carry_on_word = carry_on[Math.floor(Math.random()*carry_on.length)];
@@ -245,11 +245,11 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 
 var counter = 1;
 
-
 $('#submit_button').on('click', function(evt) {
   concept_pairs_remaining -= 1;
-  if (concept_pairs_remaining == 0)
+  if (concept_pairs_remaining == 0) {
     pass;
+  }
   else {
     evt.preventDefault();
   };

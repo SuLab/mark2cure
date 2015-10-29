@@ -104,8 +104,20 @@ def relation_api(request, document_pk):
         if (relation_type == 'g_c' or relation_type == 'c_g' ):
             file_key = 'gene_chemical_relation_menu';
 
+
+        # always have gene on the left and disease on the right for sentence structure
+        if relation_type == 'c_g' or relation_type == 'd_g' or relation_type == 'd_c':
+            concept1_new = concept2
+            concept2_new = concept1
+            concept1 = concept1_new
+            concept2 = concept2_new
+
+
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
+        # relation_dict['test'] = concept1
+
+        
         relation_dict['c1_id']= str(concept1.id)
         relation_dict['c1_text']= str(concept1.text)
         relation_dict['c1_stype']= str(concept1.stype)
@@ -115,6 +127,7 @@ def relation_api(request, document_pk):
         relation_dict['c2_stype']= str(concept2.stype)
         relation_dict['c2_correct'] = True
         relation_dict['relation_type'] = file_key
+        relation_dict['pk'] = relation.pk
 
         relation_list.append(relation_dict)
 
@@ -140,6 +153,7 @@ def relation(request, document_pk):
 
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
+    print request, "JEN RESULTS REQUEST"
     relation = get_object_or_404(Relation, pk=relation_id)
     relation_type = request.POST['relation_type']
     form = AnswerForm(request.POST or None)
@@ -158,6 +172,7 @@ def results(request, relation_id): #, relation_id
 @require_http_methods(['POST'])
 def create_post(request):
     form = AnswerForm(request.POST or None)
+    print form
     if form.is_valid():
         form.save()
 
@@ -167,7 +182,7 @@ def create_post(request):
 @require_http_methods(['POST'])
 def jen_bioc(request):
     # print request
-    # print "HELLO"
+    print "JEN JEN BIOC"
     relation_list = request.POST['relation_list']
     # print relation_list
     writer_json = bioc_as_json(relation_list)
