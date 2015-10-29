@@ -186,9 +186,14 @@ function format_text_colors(section_text, relationship_obj, concept_idx) {
 };
 
 var global_data;
-/* (TODO) Get this doc pk from template */
-$.getJSON('/relation/1866/api/', function(data) {
+var concept_pairs_remaining;
+var concept_pairs_total;
+
+$.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
+  concept_pairs_remaining = data.length;
+  concept_pairs_total = concept_pairs_remaining;
+
 
   var relationship_obj = data[0];
   $('.section').each(function(el_idx, el) {
@@ -196,23 +201,58 @@ $.getJSON('/relation/1866/api/', function(data) {
     section_text = format_text_colors(section_text, relationship_obj, 1);
     section_text = format_text_colors(section_text, relationship_obj, 2);
     $(this).html(section_text);
-  });
+  }).fadeIn(10000);
 
   file_key = relationship_obj.relation_type;
   concepts = {
-    'c1': {'text': relationship_obj.c1_text, 'type': 'chemical'},
-    'c2': {'text': relationship_obj.c2_text, 'type': 'disease'}
+    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype },
+    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
   };
   Tree.start();
-
 });
 
-var counter = 1;
-$('#jen_button').on('click', function(evt) {
-  evt.preventDefault();
 
+
+function yays_selection() {
+  yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!'];
+  yay_word = yays[Math.floor(Math.random()*yays.length)];
+  return yay_word;
+}
+
+function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
+  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you." ];
+  if (concept_pairs_total >= 4 && concept_pairs_remaining <= 3 )
+    carry_on = ["You're a trooper.", 'Most impressive.', "We know you're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
+  carry_on_word = carry_on[Math.floor(Math.random()*carry_on.length)];
+  return carry_on_word;
+};
+
+
+function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
+  console.log(concept_pairs_total);
+  console.log(concept_pairs_remaining);
+  if (concept_pairs_remaining == 1) {
+    html_display = "<em>" + yays_selection() + " This is the last one in this text!</em>";
+  }
+  else {
+    html_display = "<em>" + yays_selection() + " Only " + concept_pairs_remaining + " concept pairs left. " + carry_on_selection(concept_pairs_total, concept_pairs_remaining) +"</em>";
+  }
+  return html_display;
+};
+
+
+
+
+var counter = 1;
+$('#submit_button').on('click', function(evt) {
+  evt.preventDefault();
+  $('#praise_after_completion').hide();
   var relationship_obj = global_data[counter];
   counter += 1;
+  concept_pairs_remaining -= 1;
+  console.log(concept_pairs_remaining);
+  html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
+  $('#praise_after_completion').html( html_display ).fadeIn(600);
   $('.section').each(function(el_idx, el) {
     var section_text = $(this).html();
     section_text = format_text_colors(section_text, relationship_obj, 1);
@@ -222,8 +262,8 @@ $('#jen_button').on('click', function(evt) {
 
   file_key = relationship_obj.relation_type;
   concepts = {
-    'c1': {'text': relationship_obj.c1_text, 'type': 'chemical'},
-    'c2': {'text': relationship_obj.c2_text, 'type': 'disease'}
+    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
+    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
 
   var coll = new RelationList(data[file_key]);

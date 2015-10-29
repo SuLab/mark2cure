@@ -34,6 +34,7 @@ block content
           .col-xs-12
             - for section in sections
               p.section #{section.text}
+            h3#praise_after_completion
 
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
@@ -43,7 +44,8 @@ block content
           input#relation(type="hidden", name="relation", value=relation.pk)
 
           .row(style="padding-top:20px;" class="col-xs-4 col-xs-offset-4")
-            button.btn.btn-default.btn-block(type="submit")#jen_button Submit
+            button.btn.btn-default.btn-block(type="submit")#submit_button Submit
+
 
 
 block post-footer
@@ -68,7 +70,7 @@ block post-footer
   </script>
 
   script.
-    var jen_pk = "{{ document_pk }}";
-    console.log(jen_pk);
+    var document_pk = "{{ document_pk }}";
+    console.log(document_pk);
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation.js")

@@ -133,13 +133,24 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
       self.ui.relation.addClass('relation-go-back');
     }
 
+    function get_stype_word(stype) {
+      if (stype === 'g')
+        stype_word = "gene";
+      else if (stype === "d")
+        stype_word = "disease";
+      else if (stype === "c")
+        stype_word = "chemical";
+    return stype_word;
+    };
+
     var c1TimeoutId;
     this.ui.c1.hover(function() {
+      stype_word = get_stype_word(concepts['c1'].type);
       if (!c1TimeoutId) {
         c1TimeoutId = window.setTimeout(function() {
           c1TimeoutId = null;
           self.ui['c1'].addClass('not-correct-concept');
-          self.ui['c1'].html('<h3>Is '+ concepts['c1'].text + ' not a '+ concepts['c1'].type +'?</h3>');
+          self.ui['c1'].html('<h3>Is '+ concepts['c1'].text + ' not a '+ stype_word +'?</h3>');
         }, 500);
       }
     }, function() {
@@ -155,11 +166,12 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     var c2TimeoutId;
     this.ui.c2.hover(function() {
+      stype_word = get_stype_word(concepts['c2'].type);
       if (!c2TimeoutId) {
         c2TimeoutId = window.setTimeout(function() {
           c2TimeoutId = null;
           self.ui['c2'].addClass('not-correct-concept');
-          self.ui['c2'].html('<h3>Is '+ concepts['c2'].text + ' not a '+ concepts['c2'].type +'?</h3>');
+          self.ui['c2'].html('<h3>Is '+ concepts['c2'].text + ' not a '+ stype_word +'?</h3>');
         }, 750);
       }
     }, function() {
