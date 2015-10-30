@@ -37,19 +37,12 @@ def node_link_data(G, attrs=_attrs):
     if len(set([source, target, key])) < 3:
         raise nx.NetworkXError('Attribute names are not unique.')
 
-    # mapping = dict(zip(G, count()))
     data = {}
     data['directed'] = G.is_directed()
     data['multigraph'] = multigraph
     data['graph'] = list(G.graph.items())
     data['nodes'] = [dict(chain(G.node[n].items(), [(id_, n)])) for n in G]
-
-    data['edges'] = [
-        dict(chain(
-            d.items(), [(source, u), (target, v), ('id', k)]
-        ))
-        for u, v, k, d in G.edges_iter(keys=True, data=True)
-    ]
+    data['edges'] = [dict(chain(d.items(), [(source, u), (target, v), ('id', k)])) for u, v, k, d in G.edges_iter(keys=True, data=True)]  # N1, N2, IDX, ATTRS
     return data
 
 

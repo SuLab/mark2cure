@@ -58,6 +58,7 @@ head
       include includes/footer
 
       script(src="#{STATIC_URL}js/libs/jquery-2.1.4.min.js")
+      script(src="#{STATIC_URL}js/libs/tether.min.js")
       script(src="#{STATIC_URL}js/libs/bootstrap.min.js")
       script(src="#{STATIC_URL}js/libs/underscore-min.js")
       script(src="#{STATIC_URL}js/libs/backbone-min.js")
@@ -76,7 +77,7 @@ head
       script(src='#{STATIC_URL}js/ypet.js')
       script(src='#{STATIC_URL}js/leaderboard.js')
       script(src='#{STATIC_URL}js/app.js')
-      script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
+      // script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
 
       script(src='#{STATIC_URL}js/libs/sigma.min.js')
       script(src='#{STATIC_URL}js/libs/plugins/sigma.parsers.json.min.js')
@@ -110,17 +111,17 @@ head
               button(type="button").btn.btn-primary.modal-form-submit Submit
 
       script.
-        var raven_options = {
-          logger: 'js-logger',
-          whitelistUrls: [/mark2cure\.org/, /localhost/],
-          fetchContext: true,
-          linesOfContext: 30
-        };
-        Raven.config('http://9ad160c7d8394f4e96c0da30f9d50a14@sentry.sulab.org/3', raven_options).install();
-        Raven.setUser({
-          email: "{{ request.user.email }}",
-          id: "{{ request.user.pk }}"
-        });
+        // var raven_options = {
+        //   logger: 'js-logger',
+        //   whitelistUrls: [/mark2cure\.org/, /localhost/],
+        //   fetchContext: true,
+        //   linesOfContext: 30
+        // };
+        // Raven.config('http://9ad160c7d8394f4e96c0da30f9d50a14@sentry.sulab.org/3', raven_options).install();
+        // Raven.setUser({
+        //   email: "{{ request.user.email }}",
+        //   id: "{{ request.user.pk }}"
+        // });
 
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-43341013-1']);

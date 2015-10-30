@@ -1,12 +1,4 @@
 @include font-face(
-  'equity',
-    font-files(
-      'equity_text_b_regular/equity_text_b_regular.woff',
-      'equity_text_b_regular/equity_text_b_regular.ttf',
-      'equity_text_b_regular/equity_text_b_regular.svg#equity_text_bregular'),
-        'equity_text_b_regular/equity_text_b_regular.eot');
-
-@include font-face(
   'Px Grotesk Light',
     font-files(
       'px-grotesk/PxGrotesk-Light.woff',
