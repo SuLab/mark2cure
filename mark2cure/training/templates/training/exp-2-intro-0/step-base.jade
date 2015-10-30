@@ -21,11 +21,12 @@ block content
                 li Signs/Diagnostic Signs
         .modal-footer
           button(type="button", data-dismiss="modal").btn.btn-default Close
+
   .container
-    .row.foot-space
-      .col-md-12
+    .row.head-space
+      .col-xs-10.col-xs-offset-1
         block step-instructions
-          h2 A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
+          h2.text-center A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
           p In the box below, mark every instance of the disease (rule #1)
 
     #partner(style='display: none;').row.head-space
@@ -34,15 +35,15 @@ block content
           .alert.alert-success
             h2.text-center Good job!
 
-    .row
-      #quest-alerts.col-md-10.col-md-offset-1
+    .row.head-space
+      #quest-alerts
       #quest.col-md-10.col-md-offset-1.paragraph-box
         block paragraph
 
-    .row.head-space-xl
+    .row.head-space
       .col-md-8.col-md-offset-2
-        .progress
-          block progress-bar
+        block progress
+
       .col-md-8.col-md-offset-2
         #next-container.pull-right
           block next-link

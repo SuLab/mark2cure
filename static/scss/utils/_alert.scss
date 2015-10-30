@@ -1,0 +1,9 @@
+.alert-paragraph-box h2 {
+  margin-top: 0px;
+}
+
+.alert p { font-size: 1em; }
+@include media-breakpoint-down(sm) {
+  .alert p { font-size: .75em; }
+}
+

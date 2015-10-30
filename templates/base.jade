@@ -57,15 +57,22 @@ head
     block footer
       include includes/footer
 
-      script(src="#{STATIC_URL}js/libs/jquery-2.1.4.min.js")
+      // Generic Requirements
+      script(src="#{STATIC_URL}js/libs/jquery-1.11.2.min.js")
+
+      // Bootstrap JS Requirements (we use tooltips)
       script(src="#{STATIC_URL}js/libs/tether.min.js")
       script(src="#{STATIC_URL}js/libs/bootstrap.min.js")
+
+      // Marionette Requirements (YPet & Tree Applications)
       script(src="#{STATIC_URL}js/libs/underscore-min.js")
-      script(src="#{STATIC_URL}js/libs/backbone-min.js")
-      script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
+      script(src="#{STATIC_URL}js/libs/backbone.min.js")
       script(src='#{STATIC_URL}js/libs/backbone-relational.js')
+      script(src='#{STATIC_URL}js/libs/backbone.radio.min.js')
       script(src='#{STATIC_URL}js/libs/backbone.marionette.min.js')
 
+      // Other Various JS libs
+      script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
       script(src='#{STATIC_URL}js/libs/d3.v3.js')
       script(src='#{STATIC_URL}js/libs/md5.js')
       script(src='#{STATIC_URL}js/libs/moment.js')
@@ -73,15 +80,18 @@ head
       script(src='#{STATIC_URL}js/libs/intro.min.js')
       script(src='#{STATIC_URL}js/libs/odometer.min.js')
       script(src='#{STATIC_URL}js/libs/modernizr.custom.js')
-
-      script(src='#{STATIC_URL}js/ypet.js')
-      script(src='#{STATIC_URL}js/leaderboard.js')
-      script(src='#{STATIC_URL}js/app.js')
       // script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
 
+      // Network Requirements
       script(src='#{STATIC_URL}js/libs/sigma.min.js')
       script(src='#{STATIC_URL}js/libs/plugins/sigma.parsers.json.min.js')
       script(src='#{STATIC_URL}js/libs/plugins/sigma.plugins.filter.min.js')
+
+      // Custom Application JS Requirements
+      script(src='#{STATIC_URL}js/ypet.js')
+      script(src='#{STATIC_URL}js/leaderboard.js')
+      script(src='#{STATIC_URL}js/app.js')
+
 
       a#support-icon(data-toggle="modal", data-target="#support-modal")
         img(src='#{STATIC_URL}images/support-icon.png')

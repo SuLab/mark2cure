@@ -1,10 +1,13 @@
 <script id="alert-template" type="text/template">
-<div class="alert alert-warning alert-training" role="alert">
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p></div></div>
+<div class="alert alert-warning alert-training col-md-10 col-md-offset-1" role="alert">
+<p class='lead text-center'>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p>
+
 <% if (help_message) { %>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= help_message %></p></div></div>
+<p class='lead text-center'><%= help_message %></p>
+
 <% }; if (instructions_link) { %>
-<div class="row"><div class="col-xs-10 col-xs-offset-1 text-center"><p class='lead'><%= instructions_link %></p></div></div>
+<p class='lead text-center'><%= instructions_link %></p>
+
 <% } %>
 </div>
 </script>
@@ -30,15 +33,6 @@ script.
     container: "body"
   });
 
-  $('#quest-alerts').affix({
-    offset: {
-      top: function() { return $('#quest').position().top-60 },
-      bottom: function () {
-        return (this.bottom = $('.footer').outerHeight(true))
-      }
-    },
-  });
-
   YPet.addInitializer(function(options) {
     var p = new Paragraph({'text': $('p.paragraph').text().trim()});
     YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
@@ -47,10 +41,12 @@ script.
   });
   YPet.start();
 
+  $('.disabled').on('click', function(evt) { evt.preventDefault(); });
+
   var correct = function() {
     $('#partner').slideDown();
     $('#next-container').popover('disable');
-    $('#next').attr('disabled', false);
+    $('#next').attr('disabled', false).removeClass('disabled');
     window.scrollTo(0,document.body.scrollHeight);
   };
 

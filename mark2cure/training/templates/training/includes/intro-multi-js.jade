@@ -20,19 +20,10 @@ script.
     container: "body"
   });
 
-  $('#quest-alerts').affix({
-    offset: {
-      top: function() { return $('#quest').position().top-60 },
-      bottom: function () {
-        return (this.bottom = $('.footer').outerHeight(true))
-      }
-    },
-  });
-
   var correct = function() {
     $('#partner').slideDown();
     $('#next-container').popover('disable');
-    $('#next').attr('disabled', false);
+    $('#next').attr('disabled', false).removeClass('disabled');
     window.scrollTo(0,document.body.scrollHeight);
   };
 
