@@ -30,9 +30,10 @@ block content
         - with progress=group.percentage_complete
           - if progress
             h4.progress-label Community progress on this set:
-            .progress
-              div(role='progressbar', aria-valuenow='{{ progress }}', aria-valuemin='0', aria-valuemax='100', style='width: {{progress}}%;').progress-bar.active
-                #{progress|floatformat:"2"}%
+
+            progress(value="{{ progress }}" max="100").progress
+              .progress
+                span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
 
   #group-network.container-fluid
     .row
@@ -223,11 +224,9 @@ block post-footer
         <% if(d.user.enabled) { %>
           <div class='row'>
             <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
-              <div class='progress'>
-                <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
-                  <span><%- d.progress.current %> Completions</span>
-                </div>
-              </div>
+              <progress value='<%- progress %>' max='100' class='progress'>
+                <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
+              </progress>
             </div>
           </div>
         <% } %>

@@ -1,69 +1,46 @@
+// Mark2Cure Color Branding
+$color_gray_dark:       #333 !default;
+$color_gray:            #666 !default;
+$color_gray_light:      #818a91 !default;
+$color_gray_lighter:    #eceeef !default;
+$color_gray_lightest:   #f7f7f9 !default;
+
+$color_white:           #ffffff;
+$color_black:           #000000;
+
+$color_purple:          #7F3CFF;
+$color_green:           #b2f270;
+$color_picton_blue:     #5dbcf6;
+$color_red:             #E85997;
+$color_error_red:       #E64C66;
+$color_yellow:          #FEFF02;
+
+$color_disease:         blue;
+$color_gene:            #B1FFA8;
+$color_treatment:       #FFD1DC;
+
+
 @import "compass/css3";
 @import "compass/utilities";
 @import "compass";
 
+@import "font-awesome";
+@import 'fonts';
+
 @import "bootstrap/bootstrap";
 
-$easeInOutCubic: cubic-bezier(0.645, 0.045, 0.355, 1);
-$easeOutCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
-$easeOutSine: cubic-bezier(0.39, 0.575, 0.565, 1);
-$easeOutQuint: cubic-bezier(0.230, 1.000, 0.320, 1.000);
-
-$color_patterns_blue: #E0F4FD;
-$color_light_gray: #a6a6a6;
-$color_lighter_gray: #d6d6d6;
-$color_fluorescent_pink: #ed3590;
-$color_wewak: #eb8b9b;
-$color_lime: #1cdc00;
-$color_yellow: #FEFF02;
-$color_inch_worm: #b2f270;
-$color_purple_heart: #7127aa;
-$color_logan: #aea5d1;
-$color_crayon_blue: #0059e6;
-$color_picton_blue: #5dbcf6;
-$color_white: #ffffff;
-$color_black: #000000;
-
-$color_red: #E85997;
-$color_purple: #7F3CFF;
-
-$color_lighter_gray: #e7e7e7;
-$color_light_gray: #333;
-$color_medium_gray: #666;
-$color_dark_gray: #999;
-$color_border_gray: #F5f5f5;
-
-$color_disease: blue;
-$color_gene: #B1FFA8;
-$color_treatment: #FFD1DC;
-
-/*
-  Yellow: E8DB47
-  Green: 4AFF5A
-  Teal: 41FFD8
-*/
-
-$color_nav_dark_gray: #262728;
-$color_background_gray: #F5F6F7;
-$color_background_dark: #0E1726;
-
-$color_green: #4AFF5A;
-$color_blue: #428bca;
-
-$header-baseline: 220px;
-
-@import 'fonts';
-@import 'theme';
-
-@import 'header';
-@import 'footer';
+@import 'includes/header';
+@import 'includes/footer';
 
 @import 'pages/landing';
 @import 'pages/network';
-
+@import 'pages/talk';
+@import 'pages/quest';
 @import 'pages/dashboard';
 @import 'pages/svg/shared';
 
+@import 'utils/modal';
+@import 'utils/alert';
 @import 'utils/selectize_bootstrap3';
 @import 'utils/introjs';
 @import 'utils/introjs-nassim';
@@ -71,115 +48,4 @@ $header-baseline: 220px;
 @import 'utils/odometer';
 @import 'utils/support';
 
-
-/* =========================
-        Utilities
-========================= */
-.head-space-sm { margin-top: 10px; }
-.head-space { margin-top: 20px; }
-.head-space-xl { margin-top: 60px; }
-.head-space-xl-xl { margin-top: 100px; }
-.foot-space { margin-bottom: 20px; }
-.foot-space-xl { margin-bottom: 60px; }
-.foot-space-xl-xl { margin-bottom: 200px; }
-
-
-.tooltip {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 13px;
-}
-
-#quest-alerts.affix {
-  top: 0;
-  z-index: 999;
-  left: 0;
-}
-
-a.close-btn {
-  display: block;
-  position: absolute;
-  top: 0; right: 4px;
-  border-radius: 0 6px 0 6px;
-  height: 22px;
-  width: 22px;
-  text-align: center;
-  font-size: 22px;
-}
-
-.modal-body img.logo {
-  width: 200px;
-  margin: 0 auto;
-  display: block;
-  padding: 20px;
-}
-
-.line {
-  background: #e7e7e7;
-  height: 1px;
-}
-
-.line-text {
-  font-family: 'Px Grotesk Light';
-  position: relative;
-  background: #ffffff;
-  color: #777777;
-  display: inline;
-  top: -.7em;
-  font-size: 1.6em;
-  padding: 0px 6px;
-}
-
-.alert-paragraph-box h2 {
-  margin-top: 0px;
-}
-
-.no-annotations,
-.f-score h2 {
-  font-size: 52px;
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-
-.font-purple {
-  color: $color_purple;
-}
-
-.quest-guide .doc-item-col {
-  height: 40px;
-}
-
-.quest-guide .doc-item-col h4 {
-  font-size: 30px;
-  line-height: 22px;
-}
-
-.quest-guide .doc-item-col.active h4 {
-  color: #7F3CFF;
-  border-bottom: 4px solid #7F3CFF;
-}
-.quest-guide .doc-item-col.muted h4 {
-  color: #000;
-}
-
-
-
-.modal-dialog {
-  z-index: 1041;
-}
-
-#partner-info > h3 {
-  color: #333;
-  display: inline-block;
-}
-
-#partner-info > h3 a {
-  color: #333;
-}
-
-blockquote p {
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-#chart { font-size: 10px;}
+.head-space { margin-top: 1.5em; }

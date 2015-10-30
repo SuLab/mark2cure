@@ -1,0 +1,52 @@
+#header {
+  border-bottom: 8px solid $color_gray_lightest;
+
+  h2 {
+    color: $color_gray_dark;
+    margin-top: .5em;
+  }
+
+  @include media-breakpoint-down(sm) {
+    h1{
+      text-align: center;
+      font-size: 4em;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2em;
+      margin-top: 0em;
+    }
+    ul li {
+      text-align: center;
+    }
+  }
+
+  #site-nav {
+    .user-info { text-align: right; }
+    .site-links { text-align: left; }
+    ul { margin-bottom: 0px; }
+    li {
+      white-space: nowrap;
+      a:hover p {
+        color: $color_white;
+        background-color: $color_purple;
+      }
+      a:active { text-decoration: none; }
+      p {
+        padding: 2px;
+        margin: 0px;
+      }
+    }
+  }
+
+  #expand-content {
+    h4 {
+      text-align: center;
+      padding: 0px;
+      margin: 0px;
+      letter-spacing: 4px;
+    }
+  }
+
+}

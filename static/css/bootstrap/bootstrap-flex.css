@@ -1,18 +1,60 @@
 /*
-Sass::SyntaxError: ".col-xs-1" failed to @extend "%grid-column-float-xs".
-The selector "%grid-column-float-xs" was not found.
-Use "@extend %grid-column-float-xs !optional" if the extend should be able to fail.
-
+Error: Undefined variable: "$color_gray_dark".
+        on line 29 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss
+        from line 2 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap.scss
+        from line 8 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-flex.scss
 
 Backtrace:
-/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/mixins/_grid-framework.scss:33
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/extend.rb:61:in `block in check_extends_fired!'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/util/subset_map.rb:106:in `block in each_value'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/util/subset_map.rb:106:in `each'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/util/subset_map.rb:106:in `each_value'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/extend.rb:50:in `check_extends_fired!'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/extend.rb:16:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/root_node.rb:39:in `css_tree'
+/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss:29
+/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap.scss:2
+/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-flex.scss:8
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/script/tree/variable.rb:49:in `_perform'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/script/tree/node.rb:50:in `perform'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:469:in `visit_variable'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block (2 levels) in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `map'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `block in with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:323:in `visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block (2 levels) in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `map'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `block in with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:323:in `visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `map'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:167:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:166:in `visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:186:in `visit_root'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:157:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:8:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/root_node.rb:36:in `css_tree'
 /usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/root_node.rb:20:in `render'
 /usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/engine.rb:278:in `render'
 /usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/plugin/compiler.rb:492:in `update_stylesheet'
@@ -34,4 +76,4 @@ Backtrace:
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Sass::SyntaxError: \".col-xs-1\" failed to @extend \"%grid-column-float-xs\".\A The selector \"%grid-column-float-xs\" was not found.\A Use \"@extend %grid-column-float-xs !optional\" if the extend should be able to fail.\A "; }
+  content: "Error: Undefined variable: \"$color_gray_dark\".\A         on line 29 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss\A         from line 2 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap.scss\A         from line 8 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-flex.scss"; }

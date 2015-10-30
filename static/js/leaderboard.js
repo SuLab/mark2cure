@@ -43,8 +43,8 @@ UserList = Backbone.Collection.extend({
  * Views
  */
 UserView = Backbone.Marionette.ItemView.extend({
-  template: _.template('<p><a <% if(user){ %>href="/u/<%- name %>/"<% } else { %>href="/team/<%- name %>/"<% } %> class="text-muted"><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></a></p>'),
-  tagName: 'li',
+  template: _.template('<p><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></p>'),
+  tagName: 'a',
   className: 'list-group-item',
 
   /* These events are only triggered when over
@@ -53,7 +53,7 @@ UserView = Backbone.Marionette.ItemView.extend({
     'mouseover': function() {
       var model = this.model;
       model.set('hover', true);
-      setTimeout(function(){ model.set('hover', false); }, 1000); },
+      setTimeout(function(){ model.set('hover', false); }, 5000); },
   },
 
   /* Setup event listeners for word spans */
@@ -68,8 +68,14 @@ UserView = Backbone.Marionette.ItemView.extend({
   },
 
   onRender : function() {
+    if(this.model.get('user')) {
+      this.$el.attr('href', '/u/'+this.model.get('name')+'/');
+    } else {
+      this.$el.attr('href', '/team/'+this.model.get('name')+'/');
+    }
+
     if(this.model.get('hover')) {
-      var $el = this.$el.find('a');
+      var $el = this.$el.find('p');
       $el.text(this.numberWithCommas($el.text()));
     }
   },
@@ -77,7 +83,7 @@ UserView = Backbone.Marionette.ItemView.extend({
 });
 
 UserCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<h2 class="text-center">Top <%- api %> <strong class="font-purple">></strong></h2><h4 class="text-center"><%- text %> <strong class="font-purple">></strong></h4><ol class="list-unstyled list-group"></ol>'),
+  template: _.template('<h2 class="text-center">Top <%- api %> <span>></span></h2><h4 class="text-center"><%- text %> <span>></span></h4><ol class="list-unstyled list-group"></ol>'),
   childView  : UserView,
   childViewContainer: "ol",
 

@@ -1,22 +1,11 @@
-nav#header(role='navigation').navbar.navbar-default.navbar-static-top
-  .container-fluid
-    .row
-      .col-sm-3
-        h1
-          a(href='{% url "common:home" %}') Mark2Cure
+- load humanize
 
-      .col-sm-6
-        h2.text-center #{headerMessage}
+nav#header(role='navigation').navbar.navbar-default
+  .row
+    .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0
+      a(href='{% url "common:home" %}')
+        h1 Mark2Cure
 
-      .col-sm-3
-        #example-foo-collapse-1.collapse.navbar-collapse
-          .row.head-space
-            .col-xs-6
-            .col-xs-6
+    .col-xs-10.col-xs-offset-1.col-md-6.col-md-offset-0
+      h2.text-center #{headerMessage}
 
-    .row
-      button(type='button', data-toggle='collapse', data-target='#example-foo-collapse-1').navbar-toggle
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar

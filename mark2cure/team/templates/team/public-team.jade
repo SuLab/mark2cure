@@ -5,33 +5,31 @@ extends base
 
 block header
     - if user.is_authenticated
-      include includes/header-anon
+      include includes/header
     - else
       include includes/header-anon
 
 
 block content
   .container
-    .row.head-space
-      .col-xs-12
+    .row
+      .col-xs-6.col-xs-offset-3
         h1.text-center Team #{team.name}
-
-    hr
 
     .row
       .col-xs-10.col-xs-offset-1
-        .panel.panel-default
-          .panel-heading
+        .card
+          .card-header
             | Description
-          .panel-body
+          .card-block
             #{team.description}
 
     .row
       .col-xs-6.col-xs-offset-1
-        .panel.panel-info
-          .panel-heading
+        .card
+          .card-header
             | Quick Stats
-          .panel-body
+          .card-block
             .row
               .col-xs-6
                 ol.list-unstyled
@@ -55,10 +53,10 @@ block content
       .col-xs-4
         .row
           .col-xs-12
-            .panel.panel-default
-              .panel-heading
+            .card
+              .card-header
                 | About
-              .panel-body
+              .card-block
                 ol.list-unstyled
                   li
                     p Created: #{team.created|naturaltime}
@@ -79,10 +77,10 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1
-        .panel.panel-info
-          .panel-heading
+        .card
+          .card-header
             | Members
-          .panel-body
+          .card-block
             .row
               - for member_profile in members
                 .col-xs-4

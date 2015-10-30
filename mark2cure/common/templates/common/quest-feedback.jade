@@ -2,10 +2,14 @@ extends base
 
 - load humanize
 
+block header
+  - with headerMessage=task.name
+    include includes/header-quest
+
 block content
   .container
     .row
-      .col-xs-8.col-xs-offset-2
+      .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
         .row.alert.alert-info.alert-sticky.text-center
           h2 Congratulations you completed Quest #{task.name}
 

@@ -24,14 +24,16 @@ block content
       .col-sm-6.col-xs-10.col-xs-offset-1
         form.form-horizontal
           .form-group
-            label(for='id_username').control-label.col-md-4 Username
-            .col-md-8
-              input(type='text', value='{{user.username}}', disabled).form-control
+            fieldset
+              label(for='id_username').control-label.col-md-4 Username
+              .col-md-8
+                input(type='text', value='{{user.username}}', disabled).form-control
 
           .form-group
-            label(for='id_email').control-label.col-md-4 Email
-            .col-md-8
-              input(type='text', value='{{user.email}}', disabled).form-control
+            fieldset
+              label(for='id_email').control-label.col-md-4 Email
+              .col-md-8
+                input(type='text', value='{{user.email}}', disabled).form-control
 
     hr
     form(method='post').form-horizontal
@@ -69,6 +71,6 @@ block content
             .col-md-9.col-md-offset-1
               #{user_profile_form.quote|as_vertical_form}
 
-          .row.head-space
+          .row
             .col-sm-3.col-sm-offset-7
-              button(type='submit').btn.btn-default.btn-block.pull-right Update
+              button(type='submit').btn.btn-primary.btn-block.pull-right Update

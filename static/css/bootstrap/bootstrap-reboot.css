@@ -1,394 +1,64 @@
-/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
-html {
-  font-family: sans-serif;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
-}
-
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-main,
-menu,
-nav,
-section,
-summary {
-  display: block;
-}
-
-audio,
-canvas,
-progress,
-video {
-  display: inline-block;
-  vertical-align: baseline;
-}
-
-audio:not([controls]) {
-  display: none;
-  height: 0;
-}
-
-[hidden],
-template {
-  display: none;
-}
-
-a {
-  background-color: transparent;
-}
-
-a:active {
-  outline: 0;
-}
-a:hover {
-  outline: 0;
-}
-
-abbr[title] {
-  border-bottom: 1px dotted;
-}
-
-b,
-strong {
-  font-weight: bold;
-}
-
-dfn {
-  font-style: italic;
-}
-
-h1 {
-  font-size: 2em;
-  margin: 0.67em 0;
-}
-
-mark {
-  background: #ff0;
-  color: #000;
-}
-
-small {
-  font-size: 80%;
-}
-
-sub,
-sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-
-sup {
-  top: -0.5em;
-}
-
-sub {
-  bottom: -0.25em;
-}
-
-img {
-  border: 0;
-}
-
-svg:not(:root) {
-  overflow: hidden;
-}
-
-figure {
-  margin: 1em 40px;
-}
-
-hr {
-  box-sizing: content-box;
-  height: 0;
-}
-
-pre {
-  overflow: auto;
-}
-
-code,
-kbd,
-pre,
-samp {
-  font-family: monospace, monospace;
-  font-size: 1em;
-}
-
-button,
-input,
-optgroup,
-select,
-textarea {
-  color: inherit;
-  font: inherit;
-  margin: 0;
-}
-
-button {
-  overflow: visible;
-}
-
-button,
-select {
-  text-transform: none;
-}
-
-button,
-html input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-  -webkit-appearance: button;
-  cursor: pointer;
-}
-
-button[disabled],
-html input[disabled] {
-  cursor: default;
-}
-
-button::-moz-focus-inner,
-input::-moz-focus-inner {
-  border: 0;
-  padding: 0;
-}
-
-input {
-  line-height: normal;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-  box-sizing: border-box;
-  padding: 0;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  height: auto;
-}
-
-input[type="search"] {
-  -webkit-appearance: textfield;
-  box-sizing: content-box;
-}
-
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-fieldset {
-  border: 1px solid #c0c0c0;
-  margin: 0 2px;
-  padding: 0.35em 0.625em 0.75em;
-}
-
-legend {
-  border: 0;
-  padding: 0;
-}
-
-textarea {
-  overflow: auto;
-}
-
-optgroup {
-  font-weight: bold;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-td,
-th {
-  padding: 0;
-}
-
-html {
-  box-sizing: border-box;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-@-moz-viewport {
-  width: device-width;
-}
-@-ms-viewport {
-  width: device-width;
-}
-@-o-viewport {
-  width: device-width;
-}
-@-webkit-viewport {
-  width: device-width;
-}
-@viewport {
-  width: device-width;
-}
-html {
-  font-size: 16px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #373a3c;
-  background-color: #fff;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  margin-bottom: .5rem;
-}
-
-p {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-abbr[title],
-abbr[data-original-title] {
-  cursor: help;
-  border-bottom: 1px dotted #818a91;
-}
-
-address {
-  margin-bottom: 1rem;
-  font-style: normal;
-  line-height: inherit;
-}
-
-ol,
-ul,
-dl {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-ol ol,
-ul ul,
-ol ul,
-ul ol {
-  margin-bottom: 0;
-}
-
-dt {
-  font-weight: bold;
-}
-
-dd {
-  margin-bottom: .5rem;
-  margin-left: 0;
-}
-
-blockquote {
-  margin: 0 0 1rem;
-}
-
-a {
-  color: #0275d8;
-  text-decoration: none;
-}
-a:focus, a:hover {
-  color: #014c8c;
-  text-decoration: underline;
-}
-a:focus {
-  outline: thin dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
-pre {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-figure {
-  margin: 0 0 1rem;
-}
-
-img {
-  vertical-align: middle;
-}
-
-[role="button"] {
-  cursor: pointer;
-}
-
-table {
-  background-color: transparent;
-}
-
-caption {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  color: #818a91;
-  text-align: left;
-  caption-side: bottom;
-}
-
-th {
-  text-align: left;
-}
-
-label {
-  display: inline-block;
-  margin-bottom: .5rem;
-}
-
-input,
-button,
-select,
-textarea {
-  margin: 0;
-  line-height: inherit;
-}
-
-textarea {
-  resize: vertical;
-}
-
-fieldset {
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
-
-legend {
-  display: block;
-  width: 100%;
-  padding: 0;
-  margin-bottom: .5rem;
-  font-size: 1.5rem;
-  line-height: inherit;
-}
-
-input[type="search"] {
-  -webkit-appearance: none;
-}
-
-output {
-  display: inline-block;
-}
+/*
+Error: Undefined variable: "$color_gray_dark".
+        on line 29 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss
+        from line 5 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-reboot.scss
+
+Backtrace:
+/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss:29
+/Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-reboot.scss:5
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/script/tree/variable.rb:49:in `_perform'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/script/tree/node.rb:50:in `perform'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:469:in `visit_variable'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block (2 levels) in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `map'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:326:in `block in visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `block in with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:88:in `with_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:323:in `visit_import'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `block in with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:115:in `with_frame'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/stack.rb:79:in `with_base'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:158:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `map'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:167:in `block in visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:166:in `visit_children'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:186:in `visit_root'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/base.rb:36:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:157:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/visitors/perform.rb:8:in `visit'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/root_node.rb:36:in `css_tree'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/tree/root_node.rb:20:in `render'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/engine.rb:278:in `render'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/plugin/compiler.rb:492:in `update_stylesheet'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/plugin/compiler.rb:215:in `block in update_stylesheets'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/plugin/compiler.rb:209:in `each'
+/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.18/lib/sass/plugin/compiler.rb:209:in `update_stylesheets'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/sass_compiler.rb:40:in `compile!'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/commands/update_project.rb:49:in `perform'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/commands/base.rb:18:in `execute'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/commands/project_base.rb:19:in `execute'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/lib/compass/exec/sub_command_ui.rb:15:in `run!'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/bin/compass:30:in `block in <top (required)>'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/bin/compass:44:in `call'
+/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.3/bin/compass:44:in `<top (required)>'
+/usr/local/bin/compass:23:in `load'
+/usr/local/bin/compass:23:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Undefined variable: \"$color_gray_dark\".\A         on line 29 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/_variables.scss\A         from line 5 of /Users/nanis/Documents/repos/sulab/mark2cure/static/scss/bootstrap/bootstrap-reboot.scss"; }

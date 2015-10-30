@@ -40,7 +40,7 @@ module.exports = function( grunt ) {
       },
       development: {
         options: {
-          outputStyle: 'expanded', //nested, expanded, compact, compressed
+          outputStyle: 'compressed', //nested, expanded, compact, compressed
           environment: 'development',
         }
       },

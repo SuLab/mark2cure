@@ -1,0 +1,26 @@
+#footer {
+  margin-top: 60px;
+
+  .line {
+    background: $color_gray_light;
+    height: 1px;
+  }
+
+  .line-text {
+    font-family: $font_px_light;
+    background: $color_white;
+    color: $color_gray_light;
+    font-size: 1.6em;
+
+    position: relative;
+    display: inline;
+    top: -.7em;
+    padding: 0px 6px;
+  }
+
+  a p {
+    font-family: $font_px_light;
+    color: $color_red;
+  }
+
+}

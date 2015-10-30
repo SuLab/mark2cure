@@ -15,7 +15,7 @@ block content
       - for message in messages
         - if 'safe' in message.tags
           .row
-            .col-xs-10.col-xs-offset-1
+            .col-sm-10.col-sm-offset-1
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
@@ -26,22 +26,18 @@ block content
 
       .col-sm-4.col-sm-offset-0.col-lg-3.col-lg-offset-0
         .row
-
           .col-xs-12.col-xs-offset-0
-            .panel.panel-default
-              .panel-heading
+            .card
+              .card-header
                 | My Stats
-              .panel-body
+              .card-block
                 ol.list-unstyled
                   li Total Quests: #{user.userprofile.quests_count|intcomma}
                   li Total Annotations: #{user.userprofile.annotations_count|intcomma}
                   li Score: #{user.userprofile.rating_score|intcomma}
                   li Level: #{user.userprofile.highest_level.name}
-
-                .row
-                  .col-xs-12.text-center
-                    a(href='{% url "userprofile:public-profile" username=user.username %}')
-                      |  View Profile
+              .card-footer.text-center
+                a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile
 
         .row
           .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
@@ -89,11 +85,9 @@ block post-footer
         <% if(d.user.enabled) { %>
           <div class='row'>
             <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
-              <div class='progress'>
-                <div class='progress-bar' role='progressbar' aria-valuenow='<%- progress %>' aria-valuemin='0' aria-valuemax='100' style='width: <%- progress %>%;'>
-                  <span><%- d.progress.current %> Completions</span>
-                </div>
-              </div>
+              <progress value='<%- progress %>' max='100' class='progress'>
+                <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
+              </progress>
             </div>
           </div>
         <% } %>
@@ -127,11 +121,13 @@ block post-footer
         'success': function(data) {
           _.each(data, function(v) {
             var template = _.template("
-              <h3><a href='/group/<%- stub %>/'><%- name %></a></h3>
-              <a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a>
-              <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-                <div class='col-xs-12 text-center'>
-                  <h2 class='quest-loading'>Loading...</h2>
+              <div class='row head-space'>
+                <div class='col-xs-12'>
+                  <h3><a href='/group/<%- stub %>/'><%- name %></a></h3>
+                  <a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a>
+                </div>
+                <div id='group-<%- pk %>' class='col-xs-12 paragraph-box'>
+                  <h2 class='quest-loading text-cente'>Loading...</h2>
                 </div>
               </div>");
             $('#group-selection').append(template(v));

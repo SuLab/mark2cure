@@ -6,99 +6,96 @@ extends base
 
 block header
     - if user.is_authenticated
-      include includes/header-anon
+      include includes/header
     - else
       include includes/header-anon
 
 
 block content
   .container
-    .row.head-space
-      .col-xs-12
+    .row
+      .col-xs-6.col-xs-offset-3
         h1.text-center
           a(href='{% url "profile:public-profile" username=player.username %}') #{player.username}
       - if owner
-        .col-xs-12
+        .col-xs-6.col-xs-offset-3
           p.text-center.text-muted
             a(href='{% url "profile:settings" %}') Settings
 
-    hr
 
     .row
-      .col-xs-offset-1.col-xs-7
+      .col-xs-8
         .row
           .col-xs-12
-            .panel.panel-default
-              .panel-heading
+            .card
+              .card-header
                 | Motivation
-              .panel-body
+              .card-block
                 #{player.userprofile.motivation}
 
           .col-xs-12
-            .panel.panel-default
-              .panel-heading
+            .card
+              .card-header
                 | Quote
-              .panel-body
+              .card-block
                 #{player.userprofile.quote}
 
           - if request.user|has_group:"Comment Moderators"
             .col-xs-12
-              .panel.panel-default
-                .panel-heading
-                  | Quest Performance
-                .panel-body
-
+              .card
+                .card-header
+                  h4 Quest Performance
+                .card-block
                   ul(role="tablist").nav.nav-tabs
-                    - for group in contributed_groups
-                      - if forloop.counter0 == 0
-                        li(role="presentation").active
-                          a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
-                            | #{group.stub}
+                      - for group in contributed_groups
+                        - if forloop.counter0 == 0
+                          li(role="presentation").active
+                            a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
+                              | #{group.stub}
 
-                      - else
-                        li(role="presentation")
-                          a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
-                            | #{group.stub}
+                        - else
+                          li(role="presentation")
+                            a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
+                              | #{group.stub}
 
-                  div.tab-content
-                    - for group in contributed_groups
-                      - if forloop.counter0 == 0
-                        div(role="tabpanel", id="tab-{{group.stub}}").tab-pane
-                          #chart.text-center
+                    div.tab-content
+                      - for group in contributed_groups
+                        - if forloop.counter0 == 0
+                          div(role="tabpanel", id="tab-{{group.stub}}").tab-pane
+                            #chart.text-center
 
-                      - else
-                        div(role="tabpanel", id="tab-{{group.stub}}").tab-pane.active
-                          #chart.text-center
+                        - else
+                          div(role="tabpanel", id="tab-{{group.stub}}").tab-pane.active
+                            #chart.text-center
 
-      .col-xs-3
-        .row
-          .col-xs-12
-            .panel.panel-default
-              .panel-heading
-                | Statistics
-              .panel-body
-                ol.list-unstyled
-                  li
-                    p Joined: #{player.date_joined|naturaltime}
-                  li
-                    p Last Seen: #{player.userprofile.last_seen|naturaltime}
-                  li
-                    p Total Quests: #{player.userprofile.quests_count|intcomma}
-                  li
-                    p Total Annotations: #{player.userprofile.annotations_count|intcomma}
+      .col-xs-4
+        .card
+          .card-header
+            | Statistics
 
-                  - if request.user|has_group:"Comment Moderators"
-                    li
-                      p Performance: {% widthratio player.userprofile.current_avg_f 1 100 %}%
-                  li
-                    p Score: #{player.userprofile.rating_score|intcomma}
-                  li
-                    p Level: #{player.userprofile.highest_level.name}
-                  - if player.userprofile.team
-                    li
-                      p Team:
-                        a(href='{% url "team:home" teamname=player.userprofile.team.name %}')
-                          |  #{player.userprofile.team.name}
+          .card-block
+            ol.list-unstyled
+              li
+                p Joined: #{player.date_joined|naturaltime}
+              li
+                p Last Seen: #{player.userprofile.last_seen|naturaltime}
+              li
+                p Total Quests: #{player.userprofile.quests_count|intcomma}
+              li
+                p Total Annotations: #{player.userprofile.annotations_count|intcomma}
+
+              - if request.user|has_group:"Comment Moderators"
+                li
+                  p Performance: {% widthratio player.userprofile.current_avg_f 1 100 %}%
+              li
+                p Score: #{player.userprofile.rating_score|intcomma}
+              li
+                p Level: #{player.userprofile.highest_level.name}
+              - if player.userprofile.team
+                li
+                  p Team:
+                    a(href='{% url "team:home" teamname=player.userprofile.team.name %}')
+                      |  #{player.userprofile.team.name}
 
 
 block post-footer

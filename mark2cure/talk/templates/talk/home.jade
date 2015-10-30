@@ -23,7 +23,7 @@ block content
         .row
           .col-xs-12.foot-space
             h2.pull-left #{doc}
-            a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{doc.document_id}}', target='_blank', style='background-color: #f5f5f5; margin-top: 10px; margin-left: 10px;').btn.btn-info
+            a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{doc.document_id}}', target='_blank', style='margin-top: 10px; margin-left: 10px;').btn.btn-info
               | PUBMED  <i class="fa fa-external-link fa-lg"></i>
 
         .row
@@ -118,7 +118,7 @@ block content
                     input(type="hidden", name="next", value="{% url 'talk:home' doc.document_id %}")
 
                   fieldset
-                    input(type="submit", name="submit", value="Post").btn.btn-default
+                    input(type="submit", name="submit", value="Post").btn.btn-primary.pull-right
 
 block post-footer
   script.

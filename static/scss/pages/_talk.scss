@@ -1,0 +1,11 @@
+.talk .pagination {
+  margin: 0px;
+}
+
+.talk .pagination>li>a {
+  width: 60px;
+  padding: 2px;
+  text-align: center;
+  color: $color_gray_light;
+  border: none;
+}

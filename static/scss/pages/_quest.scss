@@ -1,0 +1,41 @@
+#quest-guide {
+  background-color: $color_gray_lightest;
+
+  ol { margin: 0px; }
+  li {
+    font-size: 3em;
+    line-height: .75em;
+  }
+  @include media-breakpoint-down(md) {
+    ol { text-align: center; }
+  }
+  li.completed { color: $color_gray_light; }
+  li.active { color: $color_purple; }
+  li.uncompleted { color: $color_gray; }
+
+  p {
+    color: $color_gray;
+    text-transform: uppercase;
+    font-size: 1em;
+    margin-bottom: 0px;
+    padding: 5px 0px;
+  }
+
+}
+
+#partner-results {
+  h4 {
+    color: $color_gray_dark;
+    text-transform: uppercase;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  #google_annotation {
+    margin-top: 20px;
+  }
+}
+
+.btn-group-vertical a {
+  color: $color_gray_dark;
+}

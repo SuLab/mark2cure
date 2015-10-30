@@ -2,18 +2,18 @@
   font-family: 'FontAwesome';
 }
 .font-blue { color: #00ccff; }
-.font-purple { color: #7f3cff; }
-.font-black { color: #000000; }
+.font-purple { color: $color_purple; }
+.font-black { color: $color_black; }
 .font-red { color: #e64c66; }
 
 
 .u-redanimate {
   position: relative;
   text-decoration: none;
-  color: #000000;
+  color: $color_black;
 }
 .u-redanimate:hover {
-  color: #000000;
+  color: $color_black;
 }
 .u-redanimate:before {
   content: "";
@@ -39,21 +39,21 @@
 }
 
 .bg-redanimate {
-  color: #ffffff;
+  color: $color_white;
   background-color: #7f3cff;
   padding: 0 10px 10px;
 }
 .bg-purple {
-  background: #7f3cff;
-  color: #ffffff;
+  background: $color_purple;
+  color: $color_white;
 }
 .bg-green {
   background: #6fde89;
-  color: #ffffff;
+  color: $color_white;
 }
 .bg-purple-fade {
-  background: #7f3cff;
-  color: #ffffff;
+  background: $color_purple;
+  color: $color_white;
   width: 1px;
   background: red;
   transition: width 2s;
@@ -62,18 +62,18 @@
 }
 
 #landing-2 {
-  background: #ffffff;
-  color: #000000;
+  background: $color_white;
+  color: $color_black;
   font-size: 16px;
 
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     color: inherit;
-    font-family: 'Px Grotesk Light', Helvetica, sans-serif;
+    font-family: $font_px_light;
   }
 
   a,
   #footer p a {
-    color: #7f3cff;
+    color: $color_purple;
   }
   .btn,
   .button {
@@ -85,33 +85,33 @@
     border-radius: 0;
   }
   .btn-outline {
-    background: #ffffff;
+    background: $color_white;
   }
   .btn-white {
-    color: #7f3cff;
-    background-color: #ffffff;
-    border: 2px solid #ffffff;
+    color: $color_purple;
+    background-color: $color_white;
+    border: 2px solid $color_white;
   }
   .btn-primary {
-    color: #ffffff;
+    color: $color_white;
     border-radius: 0px;
     border: none;
     background: none;
     background-color: $color_purple;
   }
   .btn-outline.btn-primary {
-    color: #7f3cff;
+    color: $color_purple;
   }
   .btn-outline.btn-primary:hover {
-    color: #ffffff;
+    color: $color_white;
   }
   .btn-outline.btn-white {
     background-color: #7f3cff;
-    color: #ffffff;
-    border: 2px solid #ffffff;
+    color: $color_white;
+    border: 2px solid $color_white;
   }
   .btn-outline.btn-white:hover {
-    color: #ffffff;
+    color: $color_white;
   }
   .btn-large {
     padding-right: 20px;
@@ -139,7 +139,7 @@
 
   .navbar {
     min-height: 120px;
-    font-family: Helvetica, sans-serif;
+    font-family: $font_helvetica;
     font-size: 16px;
     z-index: 1000;
   }
@@ -168,12 +168,12 @@
     border-color: transparent;
   }
   .navbar-default .navbar-toggle .icon-bar {
-    background-color: #ffffff;
+    background-color: $color_white;
   }
   .navbar-default .navbar-nav > .active > a,
   .navbar-default .navbar-nav > .active > a:hover,
   .navbar-default .navbar-nav > .active > a:focus {
-    color: #7f3cff;
+    color: $color_purple;
     background-color: transparent;
   }
   .nav > li.social > a {
@@ -184,14 +184,14 @@
   .case-study .navbar-default .navbar-nav > .active > a:hover,
   .case-study .navbar-default .navbar-nav > .active > a:focus,
   .case-study .navbar-default .navbar-nav > li > a {
-    color: #ffffff;
+    color: $color_white;
     background-color: transparent;
   }
   .modal-content {
     border-radius: 0;
   }
   .modal-backdrop {
-    background-color: #7f3cff;
+    background-color: $color_purple;
     opacity: 0.9 !important;
   }
   #bg-case-study .container,
@@ -213,7 +213,7 @@
     padding-bottom: 5px;
   }
   .cta-bar p a {
-    color: #ffffff;
+    color: $color_white;
   }
   p .fa-chevron-right,
   p .fa-chevron-left {
@@ -228,13 +228,13 @@
     left: 0;
     height: 600px;
     width: 100%;
-    background-color: #7f3cff;
+    background-color: $color_purple;
     background-image: url('/static/images/landing/bg-case-study.png');
     background-image: url('/static/images/landing/bg-case-study-flip.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
-    color: #ffffff;
+    color: $color_white;
 
     .wrap {
       height: 100%;
@@ -245,7 +245,7 @@
       left: 0;
       width: 100%;
       background: rgba(0, 204, 255, 0.5);
-      color: #ffffff;
+      color: $color_white;
     }
   }
 
@@ -304,26 +304,26 @@
     width: 100%;
   }
   .navbar-collapse {
-    background: #ffffff;
+    background: $color_white;
     min-height: 100vh;
   }
   .navbar-header {
     padding-bottom: 15px;
   }
   .case-study .navbar-default .navbar-nav > li > a {
-    color: #7f3cff;
+    color: $color_purple;
   }
   .light .navbar-collapse {
-    background: #7f3cff;
+    background: $color_purple;
   }
   .light .navbar-default .navbar-toggle .icon-bar {
-    background-color: #7f3cff;
+    background-color: $color_purple;
   }
   .light .navbar-default .navbar-toggle {
-    border-color: #7f3cff;
+    border-color: $color_purple;
   }
   .light .navbar-default .navbar-nav > li > a {
-    color: #ffffff;
+    color: $color_white;
   }
   .container > .navbar-collapse,
   .container > .navbar-header {

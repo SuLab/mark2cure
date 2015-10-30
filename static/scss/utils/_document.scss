@@ -1,19 +1,23 @@
 p.paragraph {
-  @extend .paragraph-text;
+  font-family: $font_paragraph;
+  line-height: 1.8em;
+  font-size: 20px;
+
+  padding: 10px 30px;
+  margin-bottom: 0px;
+
+  color: $color_black;
 
   cursor: pointer;
   -webkit-touch-callout: none;
-  @user-select(none);
-
-  padding: 10px 30px;
+  @include user-select(none);
 
   span:hover {
-    cursor: pointer;
-    color: steelblue;
+    color: $color_picton_blue;
   }
 
   .golden {
-    border-bottom: 6px solid #E85997;
+    border-bottom: 6px solid $color_red;
   }
 
   .neighbor_gm,
@@ -22,8 +26,8 @@ p.paragraph {
   }
 
   span.user_annotated {
-    background-color: #d1f3ff;
-    color: $color_light_gray;
+    background-color: $color_picton_blue;
+    color: $color_gray_light;
   }
 
   span.user_annotated_green {
@@ -32,11 +36,6 @@ p.paragraph {
 
   span.user_annotated_pink {
     background-color: $color_treatment;
-  }
-
-  span.focused {
-    /* Word span when bringing attention to it via table hover */
-    font-weight: bold;
   }
 
 }
@@ -48,27 +47,14 @@ p.paragraph {
   margin: 0px;
 }
 
-.talk .pagination {
-  margin: 0px;
-}
-
-.talk .pagination>li>a {
-  width: 60px;
-  padding: 2px;
-  text-align: center;
-  color: #ddd;
-  border: none;
-}
-
 .paragraph-box,
 .alert-paragraph-box {
-  border: 16px solid $color_border_gray;
+  border: 16px solid $color_gray_lightest;
 }
 
 .micro .paragraph-box {
-  border: 6px solid $color_border_gray;
+  border: 6px solid $color_gray_lightest;
 }
-
 
 
 /*
@@ -76,13 +62,6 @@ p.paragraph {
  * Community Consensus & Results page paragraph classes
  *
  */
-
-span.putty-rect {
-  position: absolute;
-
-  width: 5px;
-  background-color: #0cf;
-}
 
 span.user_annotated {
   background-color: #d1f3ff;
@@ -94,4 +73,34 @@ span.user_annotated_green {
 
 span.user_annotated_pink {
   background-color: #ffd1dc;
+}
+
+#quest-alerts.affix {
+  top: 0;
+  z-index: 999;
+  left: 0;
+}
+
+.no-annotations,
+.f-score h2 {
+  font-size: 52px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.quest-guide .doc-item-col {
+  height: 40px;
+}
+
+.quest-guide .doc-item-col h4 {
+  font-size: 30px;
+  line-height: 22px;
+}
+
+.quest-guide .doc-item-col.active h4 {
+  color: $color_purple;
+  border-bottom: 4px solid $color_purple;
+}
+.quest-guide .doc-item-col.muted h4 {
+  color: $color_white;
 }

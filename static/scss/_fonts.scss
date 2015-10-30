@@ -22,22 +22,14 @@
       'px-grotesk/PxGrotesk-LightIta.svg#00b34757bd765fe995b4f20b31f7333a'),
         'px-grotesk/PxGrotesk-LightIta.eot', 200, 'normal');
 
-$font-stack: Helvetica, sans-serif;
-$font_equity: 'equity';
+$font_paragraph: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
 $font_px_light: 'Px Grotesk Light';
 $font_px_light_italic: 'Px Grotesk Light Italic';
-$font_avenir_light: 'avenir35_light';
-$font_helvetica: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+$font_helvetica: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 
 .better-helvetica {
   font-family: $font_helvetica;
   font-weight: 300;
 }
 
-.paragraph-text {
-  font-family: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
-  line-height: 1.8em;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 20px;
-}
+
