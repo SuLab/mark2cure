@@ -171,17 +171,18 @@ so iterate through the array until a new concept is found for the user.
 */
 function format_text_colors(section_text, relationship_obj, concept_idx) {
   /* (TODO) Clear text of potentially old colors */
+
   var reg_ex = new RegExp("\\b" + relationship_obj['c'+concept_idx+'_text'] + "\\b", 'g');
 
   function color_find(relationship_type) {
     var color;
-    if (relationship_type === "g") { color = "#94d58c"; };
-    if (relationship_type === "d") { color = "#aecbd5"; };
-    if (relationship_type === "c") { color = "#d5aeb8"; };
+    if (relationship_type === "g") { color = "#B1FFA8"; };
+    if (relationship_type === "d") { color = "#d1f3ff"; };
+    if (relationship_type === "c") { color = "#ffd1dc"; };
     return color;
   };
 
-  var reformated_concept_html = '<u><strong style="color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong></u>';
+  var reformated_concept_html = '<strong style="background-color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong>';
   return section_text.replace(reg_ex, reformated_concept_html);
 };
 
