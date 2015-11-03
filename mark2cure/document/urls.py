@@ -8,6 +8,10 @@ urlpatterns = patterns('',
     url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_bioc, name='read-bioc'),
 
+    # BioC File for Specific Pubtator Response
+    url(r'^pubtator/specific/(?P<pub_pk>\d+).(?P<format_type>\w+)$',
+        views.read_specific_pubtator_bioc, name='read-specific-pubtator-bioc'),
+
     # BioC File for Pubtator by PMID
     url(r'^pubtator/(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_pubtator_bioc, name='read-pubtator-bioc'),

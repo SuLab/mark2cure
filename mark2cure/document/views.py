@@ -7,10 +7,12 @@ from django.conf import settings
 
 from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
 from mark2cure.common.models import Task
+from mark2cure.common.bioc import BioCReader, BioCWriter
 
 from .utils import generate_results, select_best_opponent
-from .models import Document, Section, Annotation
+from .models import Document, Section, Annotation, Pubtator
 from .forms import AnnotationForm
+
 
 from brabeion import badges
 import random
@@ -25,6 +27,29 @@ def read_bioc(request, pubmed_id, format_type):
     writer = bioc_writer(request)
     bioc_document = doc.as_bioc_with_passages()
     writer.collection.add_document(bioc_document)
+
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
+
+
+def read_specific_pubtator_bioc(request, pub_pk, format_type):
+    # When fetching via pubmed, include no annotaitons
+    pubtator = get_object_or_404(Pubtator, pk=pub_pk)
+
+    r = BioCReader(source=pubtator.content)
+    r.read()
+
+
+    writer = BioCWriter()
+    writer.collection = r.collection
+
+    # writer = bioc_writer(request)
+    # bioc_document = doc.as_bioc_with_pubtator_annotations()
+    #writer.collection.add_document(bioc_document)
+    #return HttpResponse(200);
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -177,4 +202,3 @@ def identify_annotations_submit(request, task_pk, section_pk):
             return HttpResponse(200)
 
     return HttpResponseServerError()
-
