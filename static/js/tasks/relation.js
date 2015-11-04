@@ -169,10 +169,9 @@ move through the relation_list array and bring up new concept pairs.
 If a concept was flagged as incorrect, **do not** pull up that concept again,
 so iterate through the array until a new concept is found for the user.
 */
-function format_text_colors(section_text, relationship_obj, concept_idx) {
-  /* (TODO) Clear text of potentially old colors */
+function format_text_colors(section_text, section1_length, section2_length, relationship_obj, concept_idx, highlight_dict, section_count) {
 
-  var reg_ex = new RegExp("\\b" + relationship_obj['c'+concept_idx+'_text'] + "\\b", 'g');
+  // var reg_ex = new RegExp("\\b" + relationship_obj['c'+concept_idx+'_text'] + "\\b", 'g');
 
   function color_find(relationship_type) {
     var color;
@@ -181,38 +180,131 @@ function format_text_colors(section_text, relationship_obj, concept_idx) {
     if (relationship_type === "c") { color = "#ffd1dc"; };
     return color;
   };
-
   var reformated_concept_html = '<strong style="background-color:' + color_find(relationship_obj['c'+concept_idx+'_stype']) + '">' + relationship_obj['c'+concept_idx+'_text'] + '</strong>';
-  return section_text.replace(reg_ex, reformated_concept_html);
+
+  str = section_text;
+  color_dict = highlight_dict;
+  console.log(highlight_dict, "highlight_dict");
+  console.log(section1_length, "section1_length");
+  console.log(section2_length, "section2_length");
+  console.log(section_text, "section_text");
+  console.log(section_text.length, ".length");
+
+  offset = 0;
+
+  keys = Object.keys(color_dict).sort(function(a, b) {return a - b;});
+
+  // process keys in reverse order
+  for (i = keys.length - 1; i > -1; i--) {
+    console.log(section_count, "section_count", typeof(section_count), "section_count_type");
+    key = keys[i];
+    console.log(key, "key");
+    key_offset = key;
+    if (section_count == 0 && key > section1_length) {  // Passed the end of section 1
+      console.log("continue")
+      continue;
+    }
+    else if (section_count == 1 && key < section1_length) {  // In section 2 but key is in section 1
+      console.log("continue")
+      continue;
+    }
+    else if (section_count == 1 && key > section1_length) {  // In section 2 and need to shift left by section1_length
+      key_offset = key - section1_length - 1;
+    }
+    else {  // Within section 1
+      key_offset = key;
+    };
+    console.log(key_offset, "key_offset");
+    console.log(color_dict[key], "color_dict[key]");
+    str = str.replace(new RegExp("^(.{" + key_offset + "})(.{" + color_dict[key] + "})"),   "$1<strong style='background-color:" + color_find(relationship_obj['c'+concept_idx+'_stype']) + "'>$2</strong>");
+  }
+
+  return str;
+
+  //return section_text.replace(reg_ex, reformated_concept_html);
 };
+
+
 
 var global_data;
 var concept_pairs_remaining;
 var concept_pairs_total;
 var clean_section_text;
+var section_text1_offset;
+var section_text2_offset;
+
 
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
-  console.log(data);
+  c1_highlight_dict = {};
+  c2_highlight_dict = {};
+
+  // console.log(data);
   concept_pairs_remaining = data.length;
   concept_pairs_total = concept_pairs_remaining;
-
-
   var relationship_obj = data[0];
-  $('.section').each(function(el_idx, el) {
-    var section_text = $(this).text();
-    section_text = format_text_colors(section_text, relationship_obj, 1);
-    section_text = format_text_colors(section_text, relationship_obj, 2);
-    $(this).html(section_text);
+
+  $.getJSON('/document/pubtator/specific/'+ '9888' +'.json', function( data_pubtator_tmchem ) {
+    pubtator_data = data_pubtator_tmchem;
+    // console.log(relationship_obj);
+    passage1 = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2 = pubtator_data.collection.document.passage[1]['annotation'];
+    section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
+    section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
+
+    // pass in c1 or c2, passage 1, passage 2, and correct highlight_dict
+    function get_annotation_spans(relationship_obj_text, passage1, passage2, highlight_dict) {
+      for (ann in passage1) {
+        if (passage1[ann]['text'] == relationship_obj_text) {
+          // highlight_dict['index'] = passage1[ann]['location']['@offset'];
+          // highlight_dict['length'] = passage1[ann]['location']['@length'];
+          // highlight_dict['text'] = passage1[ann]['text'];
+          highlight_dict[passage1[ann]['location']['@offset']] = passage1[ann]['location']['@length'];
+        };
+      };
+
+      for (ann in passage2) {
+        if (passage2[ann]['text'] == relationship_obj_text) {
+          // highlight_dict['index'] = passage2[ann]['location']['@offset'];
+          // highlight_dict['length'] = passage2[ann]['location']['@length'];
+          // highlight_dict['text'] = passage2[ann]['text'];
+          highlight_dict[passage2[ann]['location']['@offset']] = passage2[ann]['location']['@length'];
+        };
+      };
+      return highlight_dict;
+    };
+
+    c1_highlight_dict = get_annotation_spans(relationship_obj.c1_text, passage1, passage2, c1_highlight_dict);
+    c2_highlight_dict = get_annotation_spans(relationship_obj.c2_text, passage1, passage2, c2_highlight_dict);
+
+    // reformat each section
+    var section_count = 0;
+    $('.section').each(function(el_idx, el) {
+      var section_text = $(this).text();
+      // console.log(section_text);
+      // console.log(section_text, "inside section text");
+      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, 1, c1_highlight_dict, section_count);
+      console.log(section_text, 'JENN');
+      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, 2, c2_highlight_dict, section_count);
+      $(this).html(section_text);
+      section_count++;
+    });
   });
 
+
+  // Start the tree
   file_key = relationship_obj.relation_type;
   concepts = {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype },
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
   };
   Tree.start();
+
+
 });
+
+
+
 
 
 
