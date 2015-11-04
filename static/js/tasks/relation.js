@@ -1,32 +1,32 @@
 var data = {
   "chemical_disease_relation_menu": [{
     "id": "1",
-    "text": "(chemical) relates to disease",
+    "text": "relates to disease",
     "desc": "The chemical has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
         "id": "1-2",
-        "text": "Exacerbates",
+        "text": "exacerbates",
         "desc": "The chemical worsens or exacerbates the disease in any manner.",
         "example": "St. John's Wort has been known to worsen symptoms of Parkinson's disease.",
       }, {
         "id": "1-1",
-        "text": "Treats",
+        "text": "treats",
         "desc": "The chemical improves or treats the disease in any manner.",
         "example": "Treatment with gingerol may provide a novel therapeutic strategy for prion-mediated neurotoxicity",
       }, {
         "id": "1-3",
-        "text": "Increases risk of disease",
+        "text": "increases risk of disease",
         "desc": "Administration of the drug increases chances of getting the disease. Considered an 'adverse side effect' of the drug.",
         "example": "Parkinson's disease risk factors include ageing, exposure to toxins and genetic defects.",
       }, {
         "id": "1-4",
-        "text": "May cause",
+        "text": "may cause",
         "desc": "Administration of the chemical may cause or lead to the disease.",
         "example": "43% of mice given the chemical NVP-BHG712 developed pulmonary metastases.",
       }, {
         "id": "1-5",
-        "text": "Prevents",
+        "text": "prevents",
         "desc": "Administration of the chemical prevents the disease",
         "example": "Malarone is taken daily by travelers wanting to prevent malaria.",
       }]
@@ -39,7 +39,7 @@ var data = {
 
   "gene_disease_relation_menu": [{
     "id": "1",
-    "text": "(gene) relates to the disease",
+    "text": "relates to the disease",
     "desc": "The gene is related to the disease in some manner.",
     "example": "The gene responsible for Triple A syndrome, AAAS, has recently been identified.",
     "children": [{
@@ -66,31 +66,14 @@ var data = {
 
   "gene_chemical_relation_menu": [{
     "id": "1",
-    "text": "(gene) relates to the chemical",
+    "text": "relates to the chemical",
 
     "children": [{
       "id": "1-1",
       "text": "amount is changed by",
-
-      "children": [{
-        "id": "1-1-1",
-        "text": "expression is decreased by"
-      }, {
-        "id": "1-1-2",
-        "text": "expression is increased by"
-      }]
-
     }, {
       "id": "1-2",
       "text": "activity is changed by",
-
-      "children": [{
-        "id": "1-2-1",
-        "text": "activity is inhibited by"
-      }, {
-        "id": "1-2-2",
-        "text": "activity is activated by"
-      }]
     }]
 
     }, {
@@ -235,9 +218,10 @@ var section_text1_offset;
 var section_text2_offset;
 
 
+
+// Makes object containing text locations
 function get_annotation_spans(relationship_obj, passage1, passage2) {
   highlight_dict_LARGE = {};
-
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
   console.log(concepts, "concepts");
   console.log(passage1, "passage1");
@@ -254,9 +238,9 @@ function get_annotation_spans(relationship_obj, passage1, passage2) {
         highlight_dict_small['text'] = passage1[ann]['text'];
         console.log(highlight_list_small, "highlight_dict_small");
         highlight_list_small.push(highlight_dict_small);
+        highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
       };
     };
-
     for (ann in passage2) {
       if (passage2[ann]['text'] == concept) {
         highlight_dict_small = {};
@@ -265,19 +249,13 @@ function get_annotation_spans(relationship_obj, passage1, passage2) {
         highlight_dict_small['text'] = passage2[ann]['text'];
         console.log(highlight_list_small, "highlight_dict_small");
         highlight_list_small.push(highlight_dict_small);
+        highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
       };
     };
-    highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
   };
   console.log(highlight_dict_LARGE, "higlight_dict_LARGE");
-
   return highlight_dict_LARGE;
 };
-
-
-
-
-
 
 
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
@@ -302,7 +280,7 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
 
 
     // reformat each section and use highlight_dict to change colors in the text at the same time.
-    var section_count = 0;
+    section_count = 0;
     $('.section').each(function(el_idx, el) {
       var section_text = $(this).text();
       highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
@@ -338,7 +316,6 @@ function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
   return carry_on_word;
 };
 
-
 function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
   console.log(concept_pairs_total);
   console.log(concept_pairs_remaining);
@@ -369,12 +346,12 @@ $('#submit_button').on('click', function(evt) {
   console.log(concept_pairs_remaining);
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
-  var section_count = 0;
+
+  section_count = 0;
   $('.section').each(function(el_idx, el) {
     var section_text = $(this).text();
     highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
-    // section_text = format_text_colors(section_text, relationship_obj, 2);
     console.log(section_text);
     $(this).html(section_text);
     section_count++;
