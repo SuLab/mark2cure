@@ -235,73 +235,31 @@ class Document(models.Model):
         return user_ids
 
     # Jennifer's method
-    def make_concept_lists(self):
-        """
-        TODO: should be removed from views and possibly added to models or tasks?
-        Input is one document. Output is three concept lists in order: disease, gene,
-        chemical. Also output is the pubtator_anns.
-
-        This is SO slow*** Need to find a way to only show things if there are chemicals + diseases.
-
-        If there are no chem/dis, then no reason to show it.
-        """
-        disease_dict = {}
-        gene_dict = {}
-        chemical_dict = {}
-        pubtator_bioc = ""  # need this here for now to return back an empty pubtator_bioc for docs that don't have valid pubtators.
-
-        if self.valid_pubtator():
-            pubtator_bioc = self.as_bioc_with_pubtator_annotations()
-
-            for passage in pubtator_bioc.passages:
-
-                for annotation in passage.annotations:
-                    concept_type = annotation.infons['type']
-                    concept_UID = annotation.infons['UID']
-
-                    if concept_UID != "None":
-
-                        if concept_type == "0":
-                            disease_dict[concept_UID] = annotation.infons
-
-                        if concept_type == "1":
-                            gene_dict[concept_UID] = annotation.infons
-
-                        if concept_type == "2":
-                            chemical_dict[concept_UID] = annotation.infons
-
-        return chemical_dict, gene_dict, disease_dict, pubtator_bioc
-
-    # Jennifer's method
-    def make_cgd_concepts(self, chemical_dict, gene_dict, disease_dict):
-        """ This method takes a current document and makes annotations as needed.
-        If annotations already exist for this document, then no annotations will be made.
+    def add_concepts_to_database(self, relation_pair_list):
+        """ This method takes a current document and relation pair list and
+        makes annotations/concepts for the document. If annotations already
+        exist for this document, then no annotations will be made.
         """
         if not Concept.objects.filter(document=self).exists():
-            # TODO: customize this so that it takes a list of ** concept dictionaries instead of three dicts
-            if chemical_dict:
-                for chemical in chemical_dict:
-                    Concept.objects.create(document=self, uid=chemical_dict[chemical]['UID'], stype="c", text=chemical_dict[chemical]['text'], start=0, stop=0)
-            if gene_dict:
-                for gene in gene_dict:
-                    Concept.objects.create(document=self, uid=gene_dict[gene]['UID'], stype="g", text=gene_dict[gene]['text'], start=0, stop=0)
-            if disease_dict:
-                for disease in disease_dict:
-                    Concept.objects.create(document=self, uid=disease_dict[disease]['UID'], stype="d", text=disease_dict[disease]['text'], start=0, stop=0)
+            unique_id_list = []  # avoid duplicates
+            for pair in relation_pair_list:
+                for concept in pair:
+                    if concept['uid'] in unique_id_list:
+                        continue
+                    else:
+                        unique_id_list.append(concept['uid'])
+                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=concept['text'], start=0, stop=0)
 
     # Jennifer's method
-    def add_relation_pairs_to_database(self, concept_dict_list):
+    def add_relation_pairs_to_database(self, relation_pair_list):
         if not Relation.objects.filter(document=self).exists():
-            # itertools.combinations finds all possible pairs (pairs or 2 here) of relations in any number of lists.
-            for tuple_item in list(itertools.combinations(concept_dict_list, 2)):
-                concept1_dict = tuple_item[0]
-                concept2_dict = tuple_item[1]
-                if concept1_dict and concept2_dict:
-                    for concept1 in concept1_dict:
-                        for concept2 in concept2_dict:
-                            concept1_final = Concept.objects.get(document=self, uid=concept1)
-                            concept2_final = Concept.objects.get(document=self, uid=concept2)
-                            Relation.objects.create(document=self, relation=[ concept1, concept2 ], concept1_id=concept1_final, concept2_id=concept2_final, automated_cid=True)
+
+            for pair in relation_pair_list:
+                concept1 = pair[0]
+                concept2 = pair[1]
+                concept1_obj = Concept.objects.get(document=self, uid=concept1['uid'])
+                concept2_obj = Concept.objects.get(document=self, uid=concept2['uid'])
+                Relation.objects.create(document=self, relation=[ concept1['uid'], concept2['uid'] ], concept1_id=concept1_obj, concept2_id=concept2_obj, automated_cid=True)
 
     def unanswered_relation(self, request):
         relations = Relation.objects.filter(document=self)
@@ -373,6 +331,8 @@ class Pubtator(models.Model):
                     count += len(passage.annotations)
 
         return count
+
+
 
 
 class Section(models.Model):
