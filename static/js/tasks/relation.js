@@ -218,10 +218,9 @@ var section_text1_offset;
 var section_text2_offset;
 
 
-
 // Makes object containing text locations
+var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage1, passage2) {
-  highlight_dict_LARGE = {};
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
   console.log(concepts, "concepts");
   console.log(passage1, "passage1");
@@ -261,16 +260,32 @@ function get_annotation_spans(relationship_obj, passage1, passage2) {
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
-  // console.log(data);
   concept_pairs_remaining = data.length;
   console.log(concept_pairs_remaining, "concept pairs remaining");
   concept_pairs_total = concept_pairs_remaining;
   var relationship_obj = data[0];
 
+  $.getJSON('/document/pubtator/specific/'+ '9903' +'.json', function( data_pubtator_tmchem ) {
+    pubtator_data = data_pubtator_tmchem;
 
-// 9886 chemicals, OCP2 and 15 N
-// 9888 genes, just OCP2
-  $.getJSON('/document/pubtator/specific/'+ '9886' +'.json', function( data_pubtator_tmchem ) {
+    passage1 = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2 = pubtator_data.collection.document.passage[1]['annotation'];
+    // section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
+    // section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
+
+
+    // reformat each section and use highlight_dict to change colors in the text at the same time.
+    // section_count = 0;
+    $('.section').each(function(el_idx, el) {
+      // var section_text = $(this).text();
+      highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
+      // section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
+      // $(this).html(section_text);
+      // section_count++;
+    });
+  });
+
+  $.getJSON('/document/pubtator/specific/'+ '9902' +'.json', function( data_pubtator_tmchem ) {
     pubtator_data = data_pubtator_tmchem;
 
     passage1 = pubtator_data.collection.document.passage[0]['annotation'];
@@ -352,7 +367,7 @@ $('#submit_button').on('click', function(evt) {
     var section_text = $(this).text();
     highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
-    console.log(section_text);
+    // console.log(section_text);
     $(this).html(section_text);
     section_count++;
   });
