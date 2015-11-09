@@ -246,7 +246,8 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   concept_pairs_total = concept_pairs_remaining;
   var relationship_obj = data[0];
 
-  $.getJSON('/document/pubtator/specific/'+ '9903' +'.json', function( data_pubtator_tmchem ) {
+  // c1 text spans
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( data_pubtator_tmchem ) {
     pubtator_data = data_pubtator_tmchem;
 
     passage1a = pubtator_data.collection.document.passage[0]['annotation'];
@@ -254,10 +255,11 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
 
     $('.section').each(function(el_idx, el) {
       highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
+      console.log(highlight_dict_LARGE, "1st round highlight dict")
     });
   });
 
-  $.getJSON('/document/pubtator/specific/'+ '9902' +'.json', function( data_pubtator_tmchem ) {
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( data_pubtator_tmchem ) {
     pubtator_data = data_pubtator_tmchem;
 
     passage1b = pubtator_data.collection.document.passage[0]['annotation'];
@@ -298,7 +300,7 @@ function yays_selection() {
 function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
   carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you.", "Don't stop now.", "", "", "" ];
   if (concept_pairs_total >= 5 && concept_pairs_remaining <= 3 )
-    carry_on = ["You're a trooper.", 'Most impressive.', "We know you're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
+    carry_on = ["You're a trooper.", 'Most impressive.', "You're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
   carry_on_word = carry_on[Math.floor(Math.random()*carry_on.length)];
   return carry_on_word;
 };
@@ -336,8 +338,8 @@ $('#submit_button').on('click', function(evt) {
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
     var section_text = $(this).text();
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1b, passage2b);
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1b, passage2b);
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);
     section_count++;

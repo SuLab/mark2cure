@@ -35,8 +35,6 @@ import os
 
 @login_required
 def home(request):
-    # how many documents to display on the home page, sort through 30 docs and see if there are docs that have chem/diseases
-    # TODO test
     concepts_available = Concept.objects.all()
 
     queryset_documents = []
@@ -95,6 +93,16 @@ def relation_api(request, document_pk):
         concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
         relation_type = concept1.stype + "_" + concept2.stype
 
+
+        def get_pub_pk(concept_stype):
+            if concept_stype == "g":
+                pubtator = Pubtator.objects.get(document=current_document, kind="GNormPlus").pk
+            elif concept_stype == "d":
+                pubtator = Pubtator.objects.get(document=current_document, kind="DNorm").pk
+            else:
+                pubtator = Pubtator.objects.get(document=current_document, kind="tmChem").pk
+            return pubtator
+
         if (relation_type == 'g_d' or relation_type == 'd_g'):
             file_key = 'gene_disease_relation_menu';
 
@@ -104,28 +112,24 @@ def relation_api(request, document_pk):
         if (relation_type == 'g_c' or relation_type == 'c_g' ):
             file_key = 'gene_chemical_relation_menu';
 
-
         # always have gene on the left and disease on the right for sentence structure
         if relation_type == 'c_g' or relation_type == 'd_g' or relation_type == 'd_c':
-            concept1_new = concept2
-            concept2_new = concept1
-            concept1 = concept1_new
-            concept2 = concept2_new
-
+            concept1, concept2 = concept2, concept1
 
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
         # relation_dict['test'] = concept1
 
-        
         relation_dict['c1_id']= str(concept1.id)
         relation_dict['c1_text']= str(concept1.text)
         relation_dict['c1_stype']= str(concept1.stype)
         relation_dict['c1_correct'] = True
+        relation_dict['c1_pub'] = str(get_pub_pk(str(concept1.stype)))
         relation_dict['c2_id']= str(concept2.id)
         relation_dict['c2_text']= str(concept2.text)
         relation_dict['c2_stype']= str(concept2.stype)
         relation_dict['c2_correct'] = True
+        relation_dict['c2_pub'] = str(get_pub_pk(str(concept2.stype)))
         relation_dict['relation_type'] = file_key
         relation_dict['pk'] = relation.pk
 
@@ -138,9 +142,7 @@ def relation(request, document_pk):
     form = AnswerForm
     # the document instance
     current_document = get_object_or_404(Document, pk=document_pk)
-    # the section instances
-    section_title = Section.objects.get(document=current_document, kind="t")
-    section_abstract = Section.objects.get(document=current_document, kind="a")
+
 
     relation = current_document.unanswered_relation(request)
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)

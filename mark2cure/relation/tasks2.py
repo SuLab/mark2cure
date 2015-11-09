@@ -21,7 +21,6 @@ determined if there are non-overlapping concepts
 
 """
 
-
 def check_for_overlaps(c1_dict_location, c2_dict_location):
     """ Takes the location from the concepts and checks to see
     if they overlap. Swaps c1 and c2 in this function to
@@ -98,7 +97,7 @@ def make_concept_dicts_from_pubtators(document):
     return gene_dict, disease_dict, chemical_dict
 
 
-queryset_documents = Document.objects.all()[80:90]
+queryset_documents = Document.objects.all()[0:50]
 for document in queryset_documents:
 
     gene_dict, disease_dict, chemical_dict = make_concept_dicts_from_pubtators(document)

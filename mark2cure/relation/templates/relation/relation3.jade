@@ -28,14 +28,13 @@ block content
     .row.head-space
       .col-xs-12
 
+        .col-xs-12
+          h3 Use the menu in the box below to help relate the two concepts:
+
         .container#tree-insert
 
-        .row
-          .col-xs-12
-            - for section in sections
-              p.section #{section.text}
-            h3#praise_after_completion
-
+        .col-xs-12
+          h3#praise_after_completion
 
         form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
           - csrf_token
@@ -46,6 +45,9 @@ block content
           .row(style="padding-top:20px;" class="col-xs-4 col-xs-offset-4")
             button.btn.btn-default.btn-block(type="submit")#submit_button Submit
 
+          .col-xs-12
+            - for section in sections
+              p.section #{section.text}
 
 
 block post-footer
