@@ -161,28 +161,18 @@ function format_text_colors(section_text, section1_length, section2_length, rela
   };
 
   str = section_text;
-  console.log(highlight_dict, "highlight_dict");
-  console.log(section1_length, "section1_length");
-  console.log(section2_length, "section2_length");
-  console.log(section_text, "section_text");
-  console.log(section_text.length, ".length");
 
   offset = 0;
-
   keys = Object.keys(highlight_dict).sort(function(a, b) {return a - b;});
 
   // process keys in reverse order
   for (i = keys.length - 1; i > -1; i--) {
-    console.log(section_count, "section_count", typeof(section_count), "section_count_type");
     key = keys[i];
-    console.log(key, "key");
     key_offset = key;
     if (section_count == 0 && key > section1_length) {  // Passed the end of section 1
-      console.log("continue")
       continue;
     }
     else if (section_count == 1 && key < section1_length) {  // In section 2 but key is in section 1
-      console.log("continue")
       continue;
     }
     else if (section_count == 1 && key > section1_length) {  // In section 2 and need to shift left by section1_length
@@ -191,9 +181,7 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     else {  // Within section 1
       key_offset = key;
     };
-    console.log(key_offset, "key_offset");
     try {
-    console.log(highlight_dict[key][0]['span'], "highlight_dict[key]");
     if (highlight_dict[key][0]['text'] == relationship_obj.c1_text){
       concept_idx = 1;
     } else {
@@ -201,14 +189,14 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     };
     str = str.replace(new RegExp("^(.{" + key_offset + "})(.{" + highlight_dict[key][0]['span'] + "})"),   "$1<strong style='background-color:" + color_find(relationship_obj['c'+concept_idx+'_stype']) + "'>$2</strong>");
 
-  }
-  catch(err){
-    console.log(err, "LOG THE ERROR");
-  };
+    }
+    catch(err){
+      console.log(err, "LOG THE ERROR");
+    };
 
+    };
+    return str;
   };
-  return str;
-};
 
 var global_data;
 var concept_pairs_remaining;
@@ -222,9 +210,6 @@ var section_text2_offset;
 var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage1, passage2) {
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
-  console.log(concepts, "concepts");
-  console.log(passage1, "passage1");
-  console.log(passage2, "passage2");
 
   for (i = 0; i < concepts.length; i++) {
     highlight_list_small = [];
@@ -235,7 +220,6 @@ function get_annotation_spans(relationship_obj, passage1, passage2) {
         highlight_dict_small['index'] = passage1[ann]['location']['@offset'];
         highlight_dict_small['span'] = passage1[ann]['location']['@length'];
         highlight_dict_small['text'] = passage1[ann]['text'];
-        console.log(highlight_list_small, "highlight_dict_small");
         highlight_list_small.push(highlight_dict_small);
         highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
       };
@@ -246,13 +230,11 @@ function get_annotation_spans(relationship_obj, passage1, passage2) {
         highlight_dict_small['index'] = passage2[ann]['location']['@offset'];
         highlight_dict_small['span'] = passage2[ann]['location']['@length'];
         highlight_dict_small['text'] = passage2[ann]['text'];
-        console.log(highlight_list_small, "highlight_dict_small");
         highlight_list_small.push(highlight_dict_small);
         highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
       };
     };
   };
-  console.log(highlight_dict_LARGE, "higlight_dict_LARGE");
   return highlight_dict_LARGE;
 };
 
@@ -261,35 +243,25 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
   concept_pairs_remaining = data.length;
-  console.log(concept_pairs_remaining, "concept pairs remaining");
   concept_pairs_total = concept_pairs_remaining;
   var relationship_obj = data[0];
 
   $.getJSON('/document/pubtator/specific/'+ '9903' +'.json', function( data_pubtator_tmchem ) {
     pubtator_data = data_pubtator_tmchem;
 
-    passage1 = pubtator_data.collection.document.passage[0]['annotation'];
-    passage2 = pubtator_data.collection.document.passage[1]['annotation'];
-    // section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
-    // section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
+    passage1a = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2a = pubtator_data.collection.document.passage[1]['annotation'];
 
-
-    // reformat each section and use highlight_dict to change colors in the text at the same time.
-    // section_count = 0;
     $('.section').each(function(el_idx, el) {
-      // var section_text = $(this).text();
-      highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
-      // section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
-      // $(this).html(section_text);
-      // section_count++;
+      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
     });
   });
 
   $.getJSON('/document/pubtator/specific/'+ '9902' +'.json', function( data_pubtator_tmchem ) {
     pubtator_data = data_pubtator_tmchem;
 
-    passage1 = pubtator_data.collection.document.passage[0]['annotation'];
-    passage2 = pubtator_data.collection.document.passage[1]['annotation'];
+    passage1b = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2b = pubtator_data.collection.document.passage[1]['annotation'];
     section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
     section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
 
@@ -298,13 +270,13 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
     section_count = 0;
     $('.section').each(function(el_idx, el) {
       var section_text = $(this).text();
-      highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
-      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
+      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1b, passage2b);
+      console.log(highlight_dict_LARGE, "second round highlight dict")
+      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
       $(this).html(section_text);
       section_count++;
     });
   });
-
 
   // Start the tree
   file_key = relationship_obj.relation_type;
@@ -314,9 +286,9 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   };
   Tree.start();
 
-
 });
 
+// Variable praise section:
 function yays_selection() {
   yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!', 'Woohoo!', 'Hooray!', 'Yeaahh!', 'Look at you!'];
   yay_word = yays[Math.floor(Math.random()*yays.length)];
@@ -332,8 +304,6 @@ function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
 };
 
 function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
-  console.log(concept_pairs_total);
-  console.log(concept_pairs_remaining);
   if (concept_pairs_remaining == 1) {
     html_display = "<em>" + yays_selection() + " This is the last one in this text!</em>";
   }
@@ -358,16 +328,17 @@ $('#submit_button').on('click', function(evt) {
   var relationship_obj = global_data[counter];
   counter += 1;
 
-  console.log(concept_pairs_remaining);
+  // console.log(concept_pairs_remaining);
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
 
   section_count = 0;
   $('.section').each(function(el_idx, el) {
+    highlight_dict_LARGE = {};
     var section_text = $(this).text();
-    highlight_dict = get_annotation_spans(relationship_obj, passage1, passage2);
-    section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict, section_count);
-    // console.log(section_text);
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1b, passage2b);
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
+    section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);
     section_count++;
   });
