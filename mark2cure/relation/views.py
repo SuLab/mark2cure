@@ -158,11 +158,13 @@ def results(request, relation_id): #, relation_id
     print request, "JEN RESULTS REQUEST"
     relation = get_object_or_404(Relation, pk=relation_id)
     relation_type = request.POST['relation_type']
+    print relation_type, "RELATION TYPE"
     form = AnswerForm(request.POST or None)
 
     if form.is_valid():
+        print "VALID FORM"
         form.save()
-
+    relation_type = "testing views relation_type"
     if request.method == 'POST':
         ctx = {
         'relation_type':relation_type,

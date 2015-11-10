@@ -205,7 +205,6 @@ var clean_section_text;
 var section_text1_offset;
 var section_text2_offset;
 
-
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage1, passage2) {
@@ -317,8 +316,21 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 
 
 var counter = 1;
-
 $('#submit_button').on('click', function(evt) {
+  var relationship_obj = global_data[counter];
+  $.ajax({
+    type: 'POST',
+    url: '/relation/test/results/',
+    data: $.extend({'csrfmiddlewaretoken': csrf_token },
+                   {'relation_type': "test answer"},
+                   {'relation': relationship_obj.pk },
+                   {'username': username }),
+    cache: false,
+    async: false,
+    success: function() { console.log('win'); },
+    error: function() { console.log('fail'); },
+  });
+
   concept_pairs_remaining -= 1;
   if (concept_pairs_remaining == 0) {
     pass;
@@ -326,11 +338,11 @@ $('#submit_button').on('click', function(evt) {
   else {
     evt.preventDefault();
   };
+
   $('#praise_after_completion').hide();
-  var relationship_obj = global_data[counter];
+
   counter += 1;
 
-  // console.log(concept_pairs_remaining);
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
 
