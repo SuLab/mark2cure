@@ -193,8 +193,6 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     catch(err){
       console.log(err, "LOG THE ERROR");
     };
-    console.log(relationship_obj['c1_stype'])
-    console.log(relationship_obj['c2_stype'])
     };
     return str;
   };
@@ -212,20 +210,22 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
 
   for (i = 0; i < concepts.length; i++) {
-    highlight_list_small = [];
     concept = concepts[i];
 
-    function find_anns_from_passage(concepts, passage){
+    function find_anns_from_passage(concept, passage){
+      highlight_list_small = [];
       for (ann in passage) {
         highlight_dict_small = {};
 
         if (passage['text'] == concept){
+          console.log(passage['text'])
           highlight_dict_small['index'] = passage['location']['@offset'];
           highlight_dict_small['span'] = passage['location']['@length'];
           highlight_dict_small['text'] = passage['text'];
           highlight_list_small.push(highlight_dict_small);
           highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
         } else if (passage[ann]['text'] == concept) {
+          console.log(passage[ann]['text'])
           highlight_dict_small['index'] = passage[ann]['location']['@offset'];
           highlight_dict_small['span'] = passage[ann]['location']['@length'];
           highlight_dict_small['text'] = passage[ann]['text'];
@@ -235,8 +235,9 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
       };
       return highlight_dict_LARGE;
     };
-    highlight_dict_LARGE = find_anns_from_passage(concepts, passage0)
-    highlight_dict_LARGE = find_anns_from_passage(concepts, passage1)
+    highlight_dict_LARGE = find_anns_from_passage(concept, passage0)
+    highlight_dict_LARGE = find_anns_from_passage(concept, passage1)
+
 
   };
   return highlight_dict_LARGE;
@@ -254,10 +255,10 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pub1_data ) {
 
     passage0_pub1 = pub1_data.collection.document.passage[0]['annotation'];
-    passage0_pub1 = pub1_data.collection.document.passage[1]['annotation'];
+    passage1_pub1 = pub1_data.collection.document.passage[1]['annotation'];
 
     $('.section').each(function(el_idx, el) {
-      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage0_pub1);
+      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
       console.log(highlight_dict_LARGE, "1st round highlight dict")
     });
   });
@@ -350,13 +351,16 @@ $('#submit_button').on('click', function(evt) {
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
 
+
+
+
   section_count = 0;
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
     section_text = $(this).text();
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage0_pub1);
-    console.log(highlight_dict_LARGE, "lg1")
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2,  passage1_pub2);
+
     console.log(highlight_dict_LARGE, "lg2")
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);
