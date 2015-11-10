@@ -1,7 +1,7 @@
-var menu_data = {
+var data = {
   "chemical_disease_relation_menu": [{
     "id": "1",
-    "text": "relates to",
+    "text": "relates to disease",
     "desc": "The chemical has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
@@ -88,7 +88,7 @@ Tree.addInitializer(function(options) {
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
-  var coll = new RelationList(menu_data[file_key]);
+  var coll = new RelationList(data[file_key]);
 
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
@@ -207,7 +207,7 @@ var section_text2_offset;
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
-function get_annotation_spans(relationship_obj, passage0, passage1) {
+function get_annotation_spans(relationship_obj, passage1, passage2) {
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
 
   for (i = 0; i < concepts.length; i++) {
@@ -246,12 +246,11 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   var relationship_obj = data[0];
 
   // c1 text spans
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pubtator_1_data ) {
-    // console.log(pubtator_1_data);
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( data_pubtator_tmchem ) {
+    pubtator_data = data_pubtator_tmchem;
 
-    passage0_pub1 = pubtator_1_data.collection.document.passage[0]['annotation'];
-    passage1_pub1 = pubtator_1_data.collection.document.passage[1]['annotation'];
-    console.log(passage0_pub1, "passage0 pub 1")
+    passage1a = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2a = pubtator_data.collection.document.passage[1]['annotation'];
 
     $('.section').each(function(el_idx, el) {
       highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
@@ -259,14 +258,14 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
     });
   });
 
-  console.log(relationship_obj.c2_pub, "c2 pub");
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( pubtator_2_data ) {
-    // console.log(pubtator_2_data);
-    passage0_pub2 = pubtator_2_data.collection.document.passage[0]['annotation'];
-    passage1_pub2 = pubtator_2_data.collection.document.passage[1]['annotation'];
-    section_text1_offset = pubtator_2_data.collection.document.passage[0]['text'].length
-    section_text2_offset = pubtator_2_data.collection.document.passage[1]['text'].length
-    // console.log(passage0_pub2, "passage0 pub2")
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( data_pubtator_tmchem ) {
+    pubtator_data = data_pubtator_tmchem;
+
+    passage1b = pubtator_data.collection.document.passage[0]['annotation'];
+    passage2b = pubtator_data.collection.document.passage[1]['annotation'];
+    section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
+    section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
+
 
     // reformat each section and use highlight_dict to change colors in the text at the same time.
     section_count = 0;
@@ -283,11 +282,9 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   // Start the tree
   file_key = relationship_obj.relation_type;
   concepts = {
-    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
-    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
+    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype },
+    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
   };
-
-  // var coll = new RelationList(data[file_key]);
   Tree.start();
 
 });
@@ -366,7 +363,7 @@ $('#submit_button').on('click', function(evt) {
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
 
-  var coll = new RelationList(menu_data[file_key]);
+  var coll = new RelationList(data[file_key]);
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
     concepts: concepts,
