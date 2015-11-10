@@ -1,7 +1,7 @@
-var data = {
+var menu_data = {
   "chemical_disease_relation_menu": [{
     "id": "1",
-    "text": "relates to disease",
+    "text": "relates to",
     "desc": "The chemical has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
@@ -39,34 +39,34 @@ var data = {
 
   "gene_disease_relation_menu": [{
     "id": "1",
-    "text": "relates to the disease",
+    "text": "relates to",
     "desc": "The gene is related to the disease in some manner.",
     "example": "The gene responsible for Triple A syndrome, AAAS, has recently been identified.",
     "children": [{
       "id": "1-1",
-      "text": "Altered expression is associated with",
+      "text": "altered expression is associated with",
       "desc": "Gene expression is the process by which information from a gene is used in the synthesis of a functional gene product (mRNA, protein, or microRNAs). When gene expression is altered, gene expression is either increased or decreased.",
       "example": "Several studies revealed significantly higher EPHB4 expression in malignancies such as prostate cancer.",
       }, {
-      "id": "1-3",
-      "text": "Mutation is associated with",
+      "id": "1-2",
+      "text": "mutation is associated with",
       "desc": "Gene mutations or aberrations are permanent changes in the gene DNA sequence, differing from the sequence found in most people. Mutations range in size; they can affect anywhere from a single DNA base pair to a large piece of a chromosome that includes multiple genes.",
       "example": "Mutations in the COL5A or COL3A genes are only a few of the genetic causes of Ehlers-Danlos syndrome.",
       }, {
-        "id": "1-4",
-        "text": "And post-translational modifications are associated with",
-        "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
-        "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in both post-translational processing of wild-type thyroglobulin",
+      "id": "1-3",
+      "text": "and post-translational modifications are associated with",
+      "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
+      "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in both post-translational processing of wild-type thyroglobulin",
     }]}, {
     "id": "2",
-    "text": "Has no relation to",
+    "text": "has no relation to",
     "desc": "The gene does not relate to the disease.",
     "example": "The precise role of Ngly1 in the ERAD process remains unclear in mammals.",
   }],
 
   "gene_chemical_relation_menu": [{
     "id": "1",
-    "text": "relates to the chemical",
+    "text": "relates to",
 
     "children": [{
       "id": "1-1",
@@ -88,7 +88,7 @@ Tree.addInitializer(function(options) {
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
-  var coll = new RelationList(data[file_key]);
+  var coll = new RelationList(menu_data[file_key]);
 
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
@@ -207,7 +207,7 @@ var section_text2_offset;
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
-function get_annotation_spans(relationship_obj, passage1, passage2) {
+function get_annotation_spans(relationship_obj, passage0, passage1) {
   concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
 
   for (i = 0; i < concepts.length; i++) {
@@ -246,11 +246,12 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   var relationship_obj = data[0];
 
   // c1 text spans
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( data_pubtator_tmchem ) {
-    pubtator_data = data_pubtator_tmchem;
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pubtator_1_data ) {
+    // console.log(pubtator_1_data);
 
-    passage1a = pubtator_data.collection.document.passage[0]['annotation'];
-    passage2a = pubtator_data.collection.document.passage[1]['annotation'];
+    passage0_pub1 = pubtator_1_data.collection.document.passage[0]['annotation'];
+    passage1_pub1 = pubtator_1_data.collection.document.passage[1]['annotation'];
+    console.log(passage0_pub1, "passage0 pub 1")
 
     $('.section').each(function(el_idx, el) {
       highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage1a, passage2a);
@@ -258,14 +259,14 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
     });
   });
 
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( data_pubtator_tmchem ) {
-    pubtator_data = data_pubtator_tmchem;
-
-    passage1b = pubtator_data.collection.document.passage[0]['annotation'];
-    passage2b = pubtator_data.collection.document.passage[1]['annotation'];
-    section_text1_offset = pubtator_data.collection.document.passage[0]['text'].length
-    section_text2_offset = pubtator_data.collection.document.passage[1]['text'].length
-
+  console.log(relationship_obj.c2_pub, "c2 pub");
+  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( pubtator_2_data ) {
+    // console.log(pubtator_2_data);
+    passage0_pub2 = pubtator_2_data.collection.document.passage[0]['annotation'];
+    passage1_pub2 = pubtator_2_data.collection.document.passage[1]['annotation'];
+    section_text1_offset = pubtator_2_data.collection.document.passage[0]['text'].length
+    section_text2_offset = pubtator_2_data.collection.document.passage[1]['text'].length
+    // console.log(passage0_pub2, "passage0 pub2")
 
     // reformat each section and use highlight_dict to change colors in the text at the same time.
     section_count = 0;
@@ -282,9 +283,11 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   // Start the tree
   file_key = relationship_obj.relation_type;
   concepts = {
-    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype },
-    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
+    'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
+    'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
+
+  // var coll = new RelationList(data[file_key]);
   Tree.start();
 
 });
@@ -363,7 +366,7 @@ $('#submit_button').on('click', function(evt) {
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
 
-  var coll = new RelationList(data[file_key]);
+  var coll = new RelationList(menu_data[file_key]);
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
     concepts: concepts,
