@@ -1,4 +1,4 @@
-var menu_data = {
+var data = {
   "chemical_disease_relation_menu": [{
     "id": "1",
     "text": "relates to disease",
@@ -88,7 +88,7 @@ Tree.addInitializer(function(options) {
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
-  var coll = new RelationList(menu_data[file_key]);
+  var coll = new RelationList(data[file_key]);
 
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
@@ -244,6 +244,43 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
 };
 
 
+var passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset;
+
+function pub_specific_info(relationship_obj) {
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pub1_data ) {
+
+      passage0_pub1 = pub1_data.collection.document.passage[0]['annotation'];
+      passage1_pub1 = pub1_data.collection.document.passage[1]['annotation'];
+
+      $('.section').each(function(el_idx, el) {
+        highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
+        console.log(highlight_dict_LARGE, "1st round highlight dict")
+      });
+    });
+
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( pub2_data ) {
+
+      passage0_pub2 = pub2_data.collection.document.passage[0]['annotation'];
+      passage1_pub2 = pub2_data.collection.document.passage[1]['annotation'];
+      section_text1_offset = pub2_data.collection.document.passage[0]['text'].length
+      section_text2_offset = pub2_data.collection.document.passage[1]['text'].length
+
+
+      // reformat each section and use highlight_dict to change colors in the text at the same time.
+      section_count = 0;
+      $('.section').each(function(el_idx, el) {
+        section_text = $(this).text();
+        highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2, passage1_pub2);
+        console.log(highlight_dict_LARGE, "second round highlight dict")
+        section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
+        $(this).html(section_text);
+        section_count++;
+      });
+    });
+    return passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset;
+  };
+
+
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
@@ -251,37 +288,7 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   concept_pairs_total = concept_pairs_remaining;
   relationship_obj = data[0];
 
-  // c1 text spans
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pub1_data ) {
-
-    passage0_pub1 = pub1_data.collection.document.passage[0]['annotation'];
-    passage1_pub1 = pub1_data.collection.document.passage[1]['annotation'];
-
-    $('.section').each(function(el_idx, el) {
-      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
-      console.log(highlight_dict_LARGE, "1st round highlight dict")
-    });
-  });
-
-  $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( pub2_data ) {
-
-    passage0_pub2 = pub2_data.collection.document.passage[0]['annotation'];
-    passage1_pub2 = pub2_data.collection.document.passage[1]['annotation'];
-    section_text1_offset = pub2_data.collection.document.passage[0]['text'].length
-    section_text2_offset = pub2_data.collection.document.passage[1]['text'].length
-
-
-    // reformat each section and use highlight_dict to change colors in the text at the same time.
-    section_count = 0;
-    $('.section').each(function(el_idx, el) {
-      section_text = $(this).text();
-      highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2, passage1_pub2);
-      console.log(highlight_dict_LARGE, "second round highlight dict")
-      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
-      $(this).html(section_text);
-      section_count++;
-    });
-  });
+  passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
 
   // Start the tree
   file_key = relationship_obj.relation_type;
@@ -322,6 +329,10 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 var counter = 1;
 $('#submit_button').on('click', function(evt) {
   relationship_obj = global_data[counter];
+  // TODO fix this... need to get pubtator 1 and 2 passage 0 and 1 TODO TODO
+  // I need this because I need to have the current pubtator's passage/annotations
+  // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
+
   console.log(relationship_obj, "relationship obj")
   $.ajax({
     type: 'POST',
@@ -351,8 +362,7 @@ $('#submit_button').on('click', function(evt) {
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
 
-
-
+  // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
 
   section_count = 0;
   $('.section').each(function(el_idx, el) {
@@ -373,7 +383,7 @@ $('#submit_button').on('click', function(evt) {
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
 
-  var coll = new RelationList(menu_data[file_key]);
+  var coll = new RelationList(data[file_key]);
   Tree['start'].show( new RelationCompositeView({
     collection: coll,
     concepts: concepts,
