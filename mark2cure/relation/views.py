@@ -64,7 +64,7 @@ def home(request):
             queryset_documents.remove(doc)
 
     # Just show a few
-    queryset_documents = queryset_documents[:10]
+    queryset_documents = queryset_documents[:50]
 
     ctx = {
         'documents': queryset_documents,
