@@ -5,17 +5,19 @@ block header
     include includes/header-anon
 
 block step-instructions
-  h2 Sometimes different drugs or drug classes may be mentioned, be sure to mark them all. If a drug therapy is used, just mark the drug.
+  h2.text-center Sometimes different drugs or drug classes may be mentioned, be sure to mark them all. If a drug therapy is used, just mark the drug.
   p In the box below, mark every instance of the drug and the drug class (rule #1), and abbreviations of the drug class (rule #3)
 
 block paragraph
   p.paragraph Other SSRI regimen , such as Paxil therapy , have also been prescribed for the treatment of obsessive-compulsive disorder , panic disorder , and Bulimina Nervosa .
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='60', aria-valuemin='0', aria-valuemax='100', style='width: 60%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='60' max='100').progress.progress-striped
+    .progress
+      span(style='width: 60%;').progress-bar 60%
 
 block next-link
-  a(href='{% url "training:three" step_num=5 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:three" step_num=5 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block answers
   script.

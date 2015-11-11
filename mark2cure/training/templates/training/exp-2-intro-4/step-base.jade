@@ -9,11 +9,13 @@ block content
   #Training4Modal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
     .modal-dialog
       .modal-content
-        .modal-body
+        .modal-header
           p.lead Instead of reading the same abstract three times and marking a different concept each time, you can use color coding to mark 3 different concepts all at once
-          .panel.panel-info
-            .panel-body
+        .modal-body
+          .card
+            .card-header
               h3.text-center In this tutorial, you will learn about:
+            .card-block
               ul.list-unstyled.list-inline.text-center
                 li
                   ul.list-unstyled
@@ -21,13 +23,14 @@ block content
                     li Feedback and scoring
                     li Machine-based pre-population
         .modal-footer
-          button(type="button", data-dismiss="modal").btn.btn-default Close
+          button(type="button", data-dismiss="modal").btn.btn-primary Close
+
   .container
     .row.foot-space
       .col-md-12
         block step-instructions
 
-    #partner(style='display: none;').row.head-space
+    #partner(style='display: none;').row.m-t-md
       .row
         .col-md-4.col-md-offset-4
           .alert.alert-success
@@ -40,10 +43,10 @@ block content
 
     block highlightkey
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-md-8.col-md-offset-2
         .progress
-          block progress-bar
+          block progress
       .col-md-8.col-md-offset-2
         #next-container.pull-right
           block next-link

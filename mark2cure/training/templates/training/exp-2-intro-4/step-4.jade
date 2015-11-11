@@ -1,11 +1,13 @@
 extends training/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2 Continue to mark disease concept terms in blue, gene concept terms in green, and treatment concept terms in pink.
+  h2.text-center Continue to mark disease concept terms in blue, gene concept terms in green, and treatment concept terms in pink.
   p To remove a highlight, click on your marking until you’ve scrolled through all the colors.
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='60', aria-valuemin='0', aria-valuemax='100', style='width: 60%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='60' max='100').progress.progress-striped
+    .progress
+      span(style='width: 60%;').progress-bar 60%
 
   #TrainingHelpModal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
     .modal-dialog
@@ -16,11 +18,11 @@ block progress-bar
           img#hint(src='http://sulab.org/wordpress/wp-content/uploads/2015/05/M2C_NGLY1_T04-04.png', style='display:none;').img.img-responsive
 
         .modal-footer
-          button(type="button", data-dismiss="modal").btn.btn-default Close
+          button(type="button", data-dismiss="modal").btn.btn-primary Close
 
 
 block next-link
-  a(href='{% url "training:four" step_num=5 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:four" step_num=5 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block ypet
   include training/includes/intro-multi-js

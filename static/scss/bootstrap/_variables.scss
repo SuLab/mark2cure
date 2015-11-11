@@ -457,9 +457,9 @@ $tooltip-arrow-color:         $tooltip-bg !default;
 
 // Popovers
 
-$popover-bg:                          #fff !default;
+$popover-bg:                          $brand-primary !default;
 $popover-max-width:                   276px !default;
-$popover-border-color:                rgba(0,0,0,.2) !default;
+$popover-border-color:                $color_white !default;
 $popover-fallback-border-color:       #ccc !default;
 
 $popover-title-bg:                    darken($popover-bg, 3%) !default;

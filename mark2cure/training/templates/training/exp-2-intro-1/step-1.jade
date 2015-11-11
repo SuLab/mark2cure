@@ -1,17 +1,19 @@
 extends training/exp-2-intro-1/step-base
 
 block step-instructions
-  h2 A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
+  h2.text-center A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
   p In the box below, mark every instance of the disease (rule #1)
 
 block paragraph
   p.paragraph To assess the management of diabetes , we reviewed the records of 20 diabetes patients .
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='0', aria-valuemin='0', aria-valuemax='100', style='width: 0%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='0' max='100').progress.progress-striped
+    .progress
+      span(style='width: 0%;').progress-bar 0%
 
 block next-link
-  a(href='{% url "training:one" step_num=2 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:one" step_num=2 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block answers
   script.

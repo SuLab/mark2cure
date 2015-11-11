@@ -8,13 +8,17 @@ block content
   #Training2Modal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
     .modal-dialog
       .modal-content
-        .modal-body
-          h2 The Genes Concept includes more than just gene names
-          h2 <strong>Do NOT mark Diseases Concept terms in this tutorial.</strong>
+        .modal-header
+          h2.text-center The Genes Concept includes more than just gene names
+          p.lead.text-center <strong>Do NOT mark Diseases Concept terms in this tutorial.</strong>
 
-          .panel.panel-info
-            .panel-body
+        .modal-body
+
+          .card
+            .card-header
               h3.text-center Acquire the Gene Marking Skill by learning the Genes Concept.
+
+            .card-block
               p.text-center The Genes Concept includes:
               ul.list-unstyled.list-inline.text-center
                 li <strong>Genes</strong>
@@ -25,16 +29,18 @@ block content
                   ul.list-unstyled
                     li Proteins
                     li MicroRNAs
+
         .modal-footer
-          button(type="button", data-dismiss="modal").btn.btn-default Close
+          button(type="button", data-dismiss="modal").btn.btn-primary Close
+
   .container
-    .row.foot-space
+    .row.m-t-md
       .col-md-12
         block step-instructions
           h2 A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
           p In the box below, mark every instance of the disease (rule #1)
 
-    #partner(style='display: none;').row.head-space
+    #partner(style='display: none;').row.m-t-md
       .row
         .col-md-4.col-md-offset-4
           .alert.alert-success
@@ -45,14 +51,13 @@ block content
       #quest.col-md-10.col-md-offset-1.paragraph-box
         block paragraph
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-md-8.col-md-offset-2
         .progress
-          block progress-bar
+          block progress
       .col-md-8.col-md-offset-2
         #next-container.pull-right
           block next-link
-
 
 block post-footer
   include training/includes/intro-1-js

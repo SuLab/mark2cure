@@ -14,9 +14,9 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-center New skill acquired: Gene Marking
+        p.lead.text-center New skill acquired: Gene Marking
       .col-xs-10.col-xs-offset-1
-        h2.text-center Points gained: <span id='score'>0</span>
+        p.lead.text-center Points gained: <span id='score'>0</span>
 
     .row
       .col-xs-10.col-xs-offset-1
@@ -28,9 +28,9 @@ block content
             p <strong>Gene Products</strong> – usually a protein or microRNA that is encoded by the gene and will sometimes have the same name/symbol as the gene.
 
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-xs-4.col-xs-offset-4
-        a(href='{% url "training:three" step_num=1 %}', id='next').btn.btn-default.btn-block Next
+        a(href='{% url "training:three" step_num=1 %}', id='next').btn.btn-primary.btn-block Next
 
 
 block post-footer

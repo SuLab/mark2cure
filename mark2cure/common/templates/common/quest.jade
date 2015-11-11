@@ -64,7 +64,7 @@ block content
           .paragraphs
 
 
-    .row.head-space
+    .row.m-t-md
       .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
         div(role="group").btn-group-vertical
           a(href='{% url "instructions:disease-marking" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
@@ -121,7 +121,7 @@ block post-footer
         var regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box head-space"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });

@@ -9,21 +9,21 @@ block content
     .row
       .col-xs-8.col-xs-offset-2
         .row.alert.alert-info.alert-sticky.text-center
-          h2 This is what you marked in Training #2!
-          h4 Most people don't think they can do this and would be scared to try, but <strong>YOU DID IT!</strong>
-          h4 Highlighting genes concept terms like this is how you will earn points and help science!
+          h2.text-center This is what you marked in Training #2!
+          p.lead.text-center Most people don't think they can do this and would be scared to try, but <strong>YOU DID IT!</strong>
+          p.lead.text-center Highlighting genes concept terms like this is how you will earn points and help science!
           .col-xs-4.col-xs-offset-4
-            a(href='{% url "training:two" step_num="feedback" %}', id='next').btn.btn-default.pull-right Next
+            a(href='{% url "training:two" step_num="feedback" %}', id='next').btn.btn-primary.pull-right Next
 
-    .row.head-space
+    .row.m-t-md
       #quest.col-md-10.col-md-offset-1.paragraph-box
         p.paragraph.results Cystic Fibrosis ( CF ) is an autosomal recessive disorder caused by mutations in both alleles of the <span class="user_annotated_green">cystic fibrosis transmembrane-conductance regulator</span> ( <span class='user_annotated_green'>CFTR</span> ) gene . Mutations affecting the <span class='user_annotated_green'>CFTR</span> protein cause perturbations in mucosal viscosity. In addition to increased mucosal viscosity, CF patients may suffer from hyper-inflammation which has been linked to reduced levels of <span class='user_annotated_green'>CAV1</span> in mouse models of the disease.  Down regulation of <span class='user_annotated_green'>microRNA-199a-5p</span> has been found to restore <span class='user_annotated_green'>CAV1</span> levels in mice. The <span class='user_annotated_green'>MIR199</span> family may be of interest in CF .
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-md-10.col-md-offset-1
         .progress
           div(role='progressbar', aria-valuenow='100', aria-valuemin='0', aria-valuemax='100', style='width: 100%;').progress-bar.progress-bar-striped.active
 
-    .row.head-space
-      a(href='{% url "training:two" step_num="feedback" %}', id='next').btn.btn-default.pull-right Next
+    .row.m-t-md
+      a(href='{% url "training:two" step_num="feedback" %}', id='next').btn.btn-primary.pull-right Next
 

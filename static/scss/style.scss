@@ -15,7 +15,7 @@ $color_red:             #E85997;
 $color_error_red:       #E64C66;
 $color_yellow:          #FEFF02;
 
-$color_disease:         blue;
+$color_disease:         #D1F3FF;
 $color_gene:            #B1FFA8;
 $color_treatment:       #FFD1DC;
 
@@ -49,39 +49,13 @@ $color_treatment:       #FFD1DC;
 @import 'utils/support';
 @import 'utils/training';
 
-.head-space { margin-top: 1.5em; }
-
 .popover {
-  border-radius: 0px;
-  border: 2px solid white;
-  box-shadow: none;
-  background-color: #7F3CFF;
-  color: #fff;
-  font-size: 16px;
-}
+  color: $color_white;
 
-.popover {
-  display: none;
-  z-index: 1030;
-}
-
-.popover-title {
-  border-radius: 0px;
-}
-
-.popover.top > .arrow:after { border-top-color: #7F3CFF; }
-.popover.bottom > .arrow:after { border-bottom-color: #7F3CFF; }
-.popover.left > .arrow:after { border-left-color: #7F3CFF; }
-
-
-.popover-user .popover-title,
-.popover-user .popover-title a {
-  background-color: #7F3CFF;
-  color: #fff !important;
-}
-
-.popover-user .popover-content {
-  background-color: #fff;
-  color: #000;
+  .popover-title { display: none; }
+  .popover-content {
+    padding: 4px 8px;
+    p { margin: 0px; padding: 0px; }
+  }
 }
 

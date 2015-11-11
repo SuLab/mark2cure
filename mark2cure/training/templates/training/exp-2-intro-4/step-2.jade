@@ -1,22 +1,24 @@
 extends training/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2 To change the color of a marking, first mark the word or span of words that fit a concept. Then, click on the mark you just made to change its color.
+  h2.text-center To change the color of a marking, first mark the word or span of words that fit a concept. Then, click on the mark you just made to change its color.
   h2 <span class="user_annotated_green"><strong>Green</strong></span> will refer to the Genes Concept
   p In the box below, use your Gene Marking Skill to highlight gene concept terms in green
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='20', aria-valuemin='0', aria-valuemax='100', style='width: 20%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='20' max='100').progress.progress-striped
+    .progress
+      span(style='width: 20%;').progress-bar 20%
 
 block next-link
-  a(href='{% url "training:four" step_num=3 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:four" step_num=3 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block highlightkey
   .row
     .col-xs-1
       h2 Key
-    .col-xs-3.head-space
-      div(role="group").btn-group-vertical
+    .col-xs-3.m-t-md
+      #btn-type-list(role="group").btn-group-vertical
         a(href='{% url "instructions:disease-marking" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
           | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
 

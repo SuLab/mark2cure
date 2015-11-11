@@ -14,9 +14,9 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-center New skill acquired: Disease Marking
+        p.lead.text-center New skill acquired: Disease Marking
       .col-xs-10.col-xs-offset-1
-        h2.text-center Points gained: <span id='score'>0</span>
+        p.lead.text-center Points gained: <span id='score'>0</span>
 
     .row
       .col-xs-10.col-xs-offset-1
@@ -31,9 +31,9 @@ block content
           li
             p <strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-xs-4.col-xs-offset-4
-        a(href='{% url "training:two" step_num=1 %}', id='next').btn.btn-default.btn-block Next
+        a(href='{% url "training:two" step_num=1 %}', id='next').btn.btn-primary.btn-block Next
 
 
 block post-footer

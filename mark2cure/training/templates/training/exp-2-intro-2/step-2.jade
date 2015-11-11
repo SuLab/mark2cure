@@ -7,11 +7,13 @@ block step-instructions
 block paragraph
   p.paragraph Mutations affecting the CFTR protein cause perturbations in mucosal viscosity .
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='25', aria-valuemin='0', aria-valuemax='100', style='width: 25%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='25' max='100').progress.progress-striped
+    .progress
+      span(style='width: 25%;').progress-bar 25%
 
 block next-link
-  a(href='{% url "training:two" step_num=3 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:two" step_num=3 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block answers
   script.

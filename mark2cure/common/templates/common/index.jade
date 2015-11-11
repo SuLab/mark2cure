@@ -13,13 +13,13 @@ block header
 
       - if not user.is_authenticated
         .col-sm-2
-          a(data-toggle="modal", data-target="#login-modal").btn.btn-default.btn-inverse.pull-right.head-space Login
+          a(data-toggle="modal", data-target="#login-modal").btn.btn-default.btn-inverse.pull-right.m-t-md Login
         include registration/login-modal
 
 
 block content
   .container-fluid.landing-container.img-focus
-    .row.head-space
+    .row.m-t-md
       .col-xs-10.col-xs-offset-1
         .row
           .col-sm-6.col-sm-offset-1
@@ -54,7 +54,7 @@ block content
                       .input-group-btn
                         button(type="submit").btn.btn-default Submit
 
-  .container-fluid.landing-container.head-space
+  .container-fluid.landing-container.m-t-md
     .row
       .col-xs-8.col-xs-offset-2
         .row
@@ -81,7 +81,7 @@ block content
               .col-xs-10.col-xs-offset-1
                 .row
                   .col-xs-10.col-xs-offset-1
-                    ul.list-inline.text-center.head-space
+                    ul.list-inline.text-center.m-t-md
                       li(style="margin-bottom: 6px;")
                         a(href="https://twitter.com/Mark2Cure", target="_blank").btn.btn-default
                           i.fa.fa-twitter-square.fa-2x.pull-left
@@ -114,7 +114,7 @@ block content
 
           .col-xs-6
             h3 I contribute
-            .col-xs-12.head-space
+            .col-xs-12.m-t-md
               #carousel-testimonials(data-ride="carousel").carousel.slide
                 div(role="listbox").carousel-inner
                   - for item in quotes
@@ -124,7 +124,7 @@ block content
 
 
   hr
-  .container-fluid.landing-container.head-space
+  .container-fluid.landing-container.m-t-md
     .row
       .col-xs-8.col-xs-offset-2
         .row

@@ -6,11 +6,11 @@ block header
 
 block content
 
-    .row.head-space-xl
+    .row.m-t-md
       .col-xs-12
         h1.text-center Sign In
 
-    .row.head-space
+    .row.m-t-md
       .col-xs-4.col-xs-offset-4
         - if form.errors
           p Your username and password didn't match. Please try again.
@@ -29,7 +29,7 @@ block content
               .col-xs-6.col-xs-offset-3
                 #{form.password|as_vertical_form}
 
-          .form-group.head-space
+          .form-group.m-t-md
             .row
               .col-xs-4.col-xs-offset-4
                 input(type='submit', value='Sign In').btn.btn-primary.btn-block

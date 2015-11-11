@@ -13,5 +13,12 @@
     color: $color_black;
     text-transform: uppercase;
     margin-bottom: 0px;
+    font-family: $font_helvetica;
+  }
+}
+
+#btn-type-list {
+  .btn {
+    border: none;
   }
 }

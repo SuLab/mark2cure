@@ -5,6 +5,10 @@
     margin-top: 20px;
   }
 
+  h4:hover {
+    cursor: pointer;
+  }
+
   #network-row {
     @include user-select(none);
     i {

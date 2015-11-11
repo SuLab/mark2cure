@@ -1,17 +1,19 @@
 extends training/exp-2-intro-1/step-base
 
 block step-instructions
-  h2 A <strong>disease class</strong> is a category or group of different diseases. Diseases in a disease class have something in common (like affected organ)
+  h2.text-center A <strong>disease class</strong> is a category or group of different diseases. Diseases in a disease class have something in common (like affected organ)
   p In the box below, mark the <strong>specific disease</strong> mentioned separately from the <strong>disease class</strong> mentioned. Also, mark the <strong>abbreviations</strong> of each.
 
 block paragraph
   p.paragraph ... with or without rheumatoid arthritis ( RA ) or heart disease ( HD ) .
 
-block progress-bar
-  div(role='progressbar', aria-valuenow='50', aria-valuemin='0', aria-valuemax='100', style='width: 50%;').progress-bar.progress-bar-striped.active
+block progress
+  progress(value='50' max='100').progress.progress-striped
+    .progress
+      span(style='width: 50%;').progress-bar 50%
 
 block next-link
-  a(href='{% url "training:one" step_num=6 %}', id='next', disabled).btn.btn-default.pull-right Next
+  a(href='{% url "training:one" step_num=6 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block answers
   script.
