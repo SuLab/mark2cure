@@ -64,7 +64,7 @@ def home(request):
             queryset_documents.remove(doc)
 
     # Just show a few
-    queryset_documents = queryset_documents[:50]
+    queryset_documents = queryset_documents[:10]
 
     ctx = {
         'documents': queryset_documents,
@@ -124,12 +124,12 @@ def relation_api(request, document_pk):
         relation_dict['c1_text']= str(concept1.text)
         relation_dict['c1_stype']= str(concept1.stype)
         relation_dict['c1_correct'] = True
-        relation_dict['c1_pub'] = str(get_pub_pk(str(concept1.stype)))
+        relation_dict['c1_pub_pk'] = str(get_pub_pk(str(concept1.stype)))
         relation_dict['c2_id']= str(concept2.id)
         relation_dict['c2_text']= str(concept2.text)
         relation_dict['c2_stype']= str(concept2.stype)
         relation_dict['c2_correct'] = True
-        relation_dict['c2_pub'] = str(get_pub_pk(str(concept2.stype)))
+        relation_dict['c2_pub_pk'] = str(get_pub_pk(str(concept2.stype)))
         relation_dict['relation_type'] = file_key
         relation_dict['pk'] = relation.pk
 
@@ -141,13 +141,16 @@ def relation_api(request, document_pk):
 def relation(request, document_pk):
     form = AnswerForm
     # the document instance
-    current_document = get_object_or_404(Document, pk=document_pk)
+    document = get_object_or_404(Document, pk=document_pk)
 
 
-    relation = current_document.unanswered_relation(request)
-    unanswered_relations_for_user = current_document.unanswered_relation_list(request)
+    relation = document.unanswered_relation(request)
+    # TODO this is incorrect. Needs to be removed.
+    # print relation, "relation, views"
+    unanswered_relations_for_user = document.unanswered_relation_list(request)
+    print unanswered_relations_for_user, "unanswered_relations_for_user views"
 
-    ctx = {'sections': Section.objects.filter(document=current_document),
+    ctx = {'sections': Section.objects.filter(document=document),
            'relation': relation,
            'document_pk': document_pk,
            }

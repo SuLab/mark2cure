@@ -97,7 +97,7 @@ def make_concept_dicts_from_pubtators(document):
     return gene_dict, disease_dict, chemical_dict
 
 
-queryset_documents = Document.objects.all()[0:200]
+queryset_documents = Document.objects.all()[0:50]
 for document in queryset_documents:
 
     gene_dict, disease_dict, chemical_dict = make_concept_dicts_from_pubtators(document)
@@ -113,10 +113,6 @@ for document in queryset_documents:
 
                     concepts_overlap = check_for_overlaps(concept1_dict[c1]['location'], concept2_dict[c2]['location'])
 
-                    if concept1_dict[c1]['text'] == concept2_dict[c2]['text']:
-                        print "same text flag"
-                    if concepts_overlap == True:
-                        print "overlap flag"
                     if concepts_overlap != True and concept1_dict[c1]['text'] != concept2_dict[c2]['text']:
 
                         relation_pair_list.append([ concept1_dict[c1], concept2_dict[c2] ] )

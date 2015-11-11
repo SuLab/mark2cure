@@ -266,8 +266,8 @@ class Document(models.Model):
 
         for relation in relations:
 
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            if not relation_specific_answers:
+            answers_for_relation = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
+            if not answers_for_relation:
                 return relation
 
     def unanswered_relation_list(self, request):
@@ -275,8 +275,10 @@ class Document(models.Model):
         relation_list = []
         for relation in relations:
 
-            relation_specific_answers = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            relation_list.append(relation)
+            answers_for_relation = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
+            if len(answers_for_relation) == 0:
+                # if no answers, then add to relation list
+                relation_list.append(relation)
 
         return relation_list
 

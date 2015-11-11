@@ -195,7 +195,7 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     };
     };
     return str;
-  };
+};
 
 var global_data;
 var concept_pairs_remaining;
@@ -244,10 +244,12 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
 };
 
 
-var passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset;
+var passage0_pub1, passage1_pub1,
+    passage0_pub2, passage1_pub2,
+    section_text1_offset, section_text2_offset;
 
 function pub_specific_info(relationship_obj) {
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub +'.json', function( pub1_data ) {
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub_pk +'.json', function( pub1_data ) {
 
       passage0_pub1 = pub1_data.collection.document.passage[0]['annotation'];
       passage1_pub1 = pub1_data.collection.document.passage[1]['annotation'];
@@ -258,7 +260,7 @@ function pub_specific_info(relationship_obj) {
       });
     });
 
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub +'.json', function( pub2_data ) {
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub_pk +'.json', function( pub2_data ) {
 
       passage0_pub2 = pub2_data.collection.document.passage[0]['annotation'];
       passage1_pub2 = pub2_data.collection.document.passage[1]['annotation'];
@@ -277,6 +279,7 @@ function pub_specific_info(relationship_obj) {
         section_count++;
       });
     });
+
     return passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset;
   };
 
@@ -286,10 +289,12 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
 
   concept_pairs_remaining = data.length;
   concept_pairs_total = concept_pairs_remaining;
+  // TODO make this the next relationship that they need to answer, not always the first one
   relationship_obj = data[0];
 
   passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
-
+  console.log('ASYNC ISSUE LOG', passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset);
+  
   // Start the tree
   file_key = relationship_obj.relation_type;
   concepts = {
@@ -329,6 +334,8 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 var counter = 1;
 $('#submit_button').on('click', function(evt) {
   relationship_obj = global_data[counter];
+  counter += 1;
+
   // TODO fix this... need to get pubtator 1 and 2 passage 0 and 1 TODO TODO
   // I need this because I need to have the current pubtator's passage/annotations
   // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
@@ -357,17 +364,17 @@ $('#submit_button').on('click', function(evt) {
 
   $('#praise_after_completion').hide();
 
-  counter += 1;
 
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
 
-  // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
 
   section_count = 0;
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
     section_text = $(this).text();
+    // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
+
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2,  passage1_pub2);
 
