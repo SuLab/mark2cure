@@ -31,7 +31,7 @@ block content
           - if progress
             h4.progress-label Community progress on this set:
 
-            progress(value="{{ progress }}" max="100").progress
+            progress(value="{{ progress }}", max="100").progress
               .progress
                 span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
 
@@ -39,7 +39,8 @@ block content
     .row
       .col-xs-4.col-xs-offset-4
         a
-          h4.text-center Toggle Network
+          h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
+
     #network-row(style="height:800px;display:none;").row
       .col-xs-1
         .row

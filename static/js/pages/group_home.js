@@ -1,4 +1,11 @@
 $('#group-network h4').click(function() {
+
+  if( $('#network-row').is(":visible")  ) {
+    $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
+  } else {
+    $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
+  };
+
   $('#network-row').toggle(function() {
     s.refresh();
     s.refresh();
