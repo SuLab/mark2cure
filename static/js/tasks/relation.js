@@ -206,14 +206,22 @@ var concept_pairs_total;
 var clean_section_text;
 var section_text1_offset;
 var section_text2_offset;
+var relationship_obj;
+var concepts;
+var file_key;
+var pub1_passage0, pub1_passage1,
+    pub2_passage0, pub2_passage1,
+    pub3_passage0, pub3_passage1,
+    section_text1_offset, section_text2_offset;
+
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage0, passage1) {
-  concepts = [relationship_obj.c1_text, relationship_obj.c2_text];
+  concept_list = [relationship_obj.c1_text, relationship_obj.c2_text];
 
-  for (i = 0; i < concepts.length; i++) {
-    concept = concepts[i];
+  for (i = 0; i < concept_list.length; i++) {
+    concept = concept_list[i];
 
     function find_anns_from_passage(concept, passage){
       highlight_list_small = [];
@@ -246,10 +254,6 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
   return highlight_dict_LARGE;
 };
 
-var pub1_passage0, pub1_passage1,
-    pub2_passage0, pub2_passage1,
-    pub3_passage0, pub3_passage1,
-    section_text1_offset, section_text2_offset;
 
 function pub_specific_info(relationship_obj) {
 
@@ -288,6 +292,7 @@ function pub_specific_info(relationship_obj) {
       });
     });
   };
+
 
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
