@@ -12,7 +12,9 @@ from ..analysis.models import Report
 from ..userprofile.models import UserProfile
 from ..document.models import Document, Pubtator
 from ..document.tasks import get_pubmed_document
-from ..common.models import Task, UserQuestRelationship, Group
+
+from ..common.models import Group
+from ..task.models import Task, UserQuestRelationship
 from ..common.bioc import *
 
 import pandas as pd
@@ -20,6 +22,7 @@ import itertools
 import datetime
 import uuid
 import csv
+
 
 def dataframe_view(request, df, format_type, ctx={}, template='control/dataframe_base.jade'):
     if format_type == "download":

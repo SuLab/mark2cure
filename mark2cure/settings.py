@@ -58,7 +58,7 @@ class Base(Configuration):
         'django.contrib.flatpages',
         'django.contrib.webdesign',
         'django.contrib.sitemaps',
-        'raven.contrib.django.raven_compat',
+        #'raven.contrib.django.raven_compat',
 
         'djangoratings',
         'social.apps.django_app.default',
@@ -85,6 +85,10 @@ class Base(Configuration):
         'mark2cure.instructions',
         'mark2cure.training',
         'mark2cure.document',
+
+        'mark2cure.task',
+        'mark2cure.task.entity_recognition',
+
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',

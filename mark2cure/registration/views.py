@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
 
-from mark2cure.common.models import Task, UserQuestRelationship
+from ..task.models import Task, UserQuestRelationship
 from mark2cure.userprofile.forms import UserProfileForm
 
 from django.core.urlresolvers import reverse

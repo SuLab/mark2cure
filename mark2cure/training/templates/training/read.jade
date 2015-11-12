@@ -20,9 +20,9 @@ block content
       .col-md-6.col-md-offset-3
         - for task in tasks
           - if task.kind == 't'
-            include common/includes/lib-item-training
+            include training/includes/lib-item-training
           - if task.kind == 'q'
-            include common/includes/lib-item-quest
+            include training/includes/lib-item-quest
 
 block post-footer
   - if user.is_authenticated

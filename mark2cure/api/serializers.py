@@ -1,5 +1,6 @@
 from mark2cure.userprofile.models import UserProfile, Team
-from mark2cure.common.models import Group, Task
+from ..common.models import Group
+from ..task.models import Task
 
 from rest_framework import serializers
 
