@@ -1,4 +1,7 @@
 var data = {
+  // "concept-1-broken": "asdfasdfsadf",
+  // "concept-2-broken": "asdfasadffsadf",
+
   "chemical_disease_relation_menu": [{
     "id": "1",
     "text": "relates to disease",
@@ -243,58 +246,60 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
   return highlight_dict_LARGE;
 };
 
-
-var passage0_pub1, passage1_pub1,
-    passage0_pub2, passage1_pub2,
+var pub1_passage0, pub1_passage1,
+    pub2_passage0, pub2_passage1,
+    pub3_passage0, pub3_passage1,
     section_text1_offset, section_text2_offset;
 
 function pub_specific_info(relationship_obj) {
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c1_pub_pk +'.json', function( pub1_data ) {
 
-      passage0_pub1 = pub1_data.collection.document.passage[0]['annotation'];
-      passage1_pub1 = pub1_data.collection.document.passage[1]['annotation'];
-
+    // Third (not guaranteed pubtator).  There are either two or three pubtators.
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[2] +'.json', function( pub3_data ) {
+      pub3_passage0 = pub3_data.collection.document.passage[0]['annotation'];
+      pub3_passage1 = pub3_data.collection.document.passage[1]['annotation'];
       $('.section').each(function(el_idx, el) {
-        highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
-        console.log(highlight_dict_LARGE, "1st round highlight dict")
+        highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub3_passage0, pub3_passage1);
       });
     });
 
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.c2_pub_pk +'.json', function( pub2_data ) {
+    // Below are the first and second guaranteed Pubtators. The "third pubtator" is not guaranteed
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[1] +'.json', function( pub1_data ) {
+      pub1_passage0 = pub1_data.collection.document.passage[0]['annotation'];
+      pub1_passage1 = pub1_data.collection.document.passage[1]['annotation'];
+      $('.section').each(function(el_idx, el) {
+        highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
+      });
+    });
 
-      passage0_pub2 = pub2_data.collection.document.passage[0]['annotation'];
-      passage1_pub2 = pub2_data.collection.document.passage[1]['annotation'];
+    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[0] +'.json', function( pub2_data ) {
+      pub2_passage0 = pub2_data.collection.document.passage[0]['annotation'];
+      pub2_passage1 = pub2_data.collection.document.passage[1]['annotation'];
       section_text1_offset = pub2_data.collection.document.passage[0]['text'].length
       section_text2_offset = pub2_data.collection.document.passage[1]['text'].length
-
 
       // reformat each section and use highlight_dict to change colors in the text at the same time.
       section_count = 0;
       $('.section').each(function(el_idx, el) {
         section_text = $(this).text();
-        highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2, passage1_pub2);
-        console.log(highlight_dict_LARGE, "second round highlight dict")
+        highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
         section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
         $(this).html(section_text);
         section_count++;
       });
     });
-
-    return passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset;
   };
-
 
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
   concept_pairs_remaining = data.length;
   concept_pairs_total = concept_pairs_remaining;
-  // TODO make this the next relationship that they need to answer, not always the first one
-  relationship_obj = data[0];
 
-  passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
-  console.log('ASYNC ISSUE LOG', passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset);
-  
+  // API is built off of the "unanswered relations". Therefore this is always the first unanswered one,
+  // even if user leaves and returns.
+  relationship_obj = data[0];
+  pub_specific_info(relationship_obj);
+
   // Start the tree
   file_key = relationship_obj.relation_type;
   concepts = {
@@ -330,17 +335,11 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
   return html_display;
 };
 
-
 var counter = 1;
 $('#submit_button').on('click', function(evt) {
   relationship_obj = global_data[counter];
   counter += 1;
 
-  // TODO fix this... need to get pubtator 1 and 2 passage 0 and 1 TODO TODO
-  // I need this because I need to have the current pubtator's passage/annotations
-  // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
-
-  console.log(relationship_obj, "relationship obj")
   $.ajax({
     type: 'POST',
     url: '/relation/test/results/',
@@ -363,21 +362,18 @@ $('#submit_button').on('click', function(evt) {
   };
 
   $('#praise_after_completion').hide();
-
-
   html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
   $('#praise_after_completion').html( html_display ).fadeIn(900);
-
 
   section_count = 0;
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
     section_text = $(this).text();
-    // passage0_pub1, passage1_pub1, passage0_pub2, passage1_pub2, section_text1_offset, section_text2_offset = pub_specific_info(relationship_obj)
 
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub1, passage1_pub1);
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, passage0_pub2,  passage1_pub2);
-
+    // Build the higlight dictionary to contain all needed highlights
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub3_passage0, pub3_passage1);
     console.log(highlight_dict_LARGE, "lg2")
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);

@@ -64,7 +64,7 @@ def home(request):
             queryset_documents.remove(doc)
 
     # Just show a few
-    queryset_documents = queryset_documents[:10]
+    queryset_documents = queryset_documents[:20]
 
     ctx = {
         'documents': queryset_documents,
@@ -82,11 +82,15 @@ def relation_api(request, document_pk):
     section_title = Section.objects.get(document=current_document, kind="t")
     section_abstract = Section.objects.get(document=current_document, kind="a")
 
-    relation = current_document.unanswered_relation(request)
+    # Only make api for relations that do not have an answer!
+    # This is why data[0] inside relation.js works
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
-    # ^^^^^^ no dry
+    # ^^^^^^ no dry TODO Max, why isn't this dry?
+
 
     relation_list = []
+    global pubtator_pk_list
+    pub_list = []
     for relation in unanswered_relations_for_user:
         relation_dict = {}
         concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
@@ -96,13 +100,14 @@ def relation_api(request, document_pk):
 
         def get_pub_pk(concept_stype):
             if concept_stype == "g":
-                pubtator = Pubtator.objects.get(document=current_document, kind="GNormPlus").pk
+                pub = Pubtator.objects.get(document=current_document, kind="GNormPlus").pk
             elif concept_stype == "d":
-                pubtator = Pubtator.objects.get(document=current_document, kind="DNorm").pk
+                pub = Pubtator.objects.get(document=current_document, kind="DNorm").pk
             else:
-                pubtator = Pubtator.objects.get(document=current_document, kind="tmChem").pk
-            return pubtator
-
+                pub = Pubtator.objects.get(document=current_document, kind="tmChem").pk
+            if pub not in pub_list:
+                pub_list.append(pub)
+            return pub
         if (relation_type == 'g_d' or relation_type == 'd_g'):
             file_key = 'gene_disease_relation_menu';
 
@@ -132,6 +137,7 @@ def relation_api(request, document_pk):
         relation_dict['c2_pub_pk'] = str(get_pub_pk(str(concept2.stype)))
         relation_dict['relation_type'] = file_key
         relation_dict['pk'] = relation.pk
+        relation_dict['pub_list'] = pub_list
 
         relation_list.append(relation_dict)
 
@@ -144,11 +150,12 @@ def relation(request, document_pk):
     document = get_object_or_404(Document, pk=document_pk)
 
 
+    # TODO do I need this relation piece
     relation = document.unanswered_relation(request)
     # TODO this is incorrect. Needs to be removed.
     # print relation, "relation, views"
-    unanswered_relations_for_user = document.unanswered_relation_list(request)
-    print unanswered_relations_for_user, "unanswered_relations_for_user views"
+    # unanswered_relations_for_user = document.unanswered_relation_list(request)
+    # print unanswered_relations_for_user, "unanswered_relations_for_user views"
 
     ctx = {'sections': Section.objects.filter(document=document),
            'relation': relation,
