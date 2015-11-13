@@ -144,7 +144,8 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     };
 
     var c1TimeoutId;
-    // this.ui.c1.fadeIn(700); //TODO I want this but not every time the menu is clicked. 
+    // this.ui.c1.fadeIn(700); //TODO I want this but not every time the menu is clicked.
+    this.ui.c1.addClass("glyphicon glyphicon-remove-circle");
     this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"160px"});
     this.ui.c1.hover(function() {
       stype_word = get_stype_word(concepts['c1'].type);
@@ -152,7 +153,8 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
         c1TimeoutId = window.setTimeout(function() {
           c1TimeoutId = null;
           self.ui['c1'].addClass('not-correct-concept');
-          self.ui['c1'].html('<h3>Is '+ concepts['c1'].text + ' not a '+ stype_word +'?</h3>');
+          self.ui['c1'].removeClass("glyphicon glyphicon-remove-circle");
+          self.ui['c1'].html('<h3>'+ concepts['c1'].text + '<br>is not a '+ stype_word +'.</br></h3>').css("background-color", "red");
         }, 500);
       }
     }, function() {
@@ -176,6 +178,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     var c2TimeoutId;
     // this.ui.c2.fadeIn(700);
+    this.ui.c2.addClass("glyphicon glyphicon-remove-circle");
     this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"160px"});
     this.ui.c2.hover(function() {
       stype_word = get_stype_word(concepts['c2'].type);
@@ -183,7 +186,8 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
         c2TimeoutId = window.setTimeout(function() {
           c2TimeoutId = null;
           self.ui['c2'].addClass('not-correct-concept');
-          self.ui['c2'].html('<h3>Is '+ concepts['c2'].text + ' not a '+ stype_word +'?</h3>');
+          self.ui['c2'].removeClass("glyphicon glyphicon-remove-circle");
+          self.ui['c2'].html('<h3>'+ concepts['c2'].text + '<br>is not a '+ stype_word +'.</br></h3>').css("background-color", "red");
         }, 750);
       }
     }, function() {
