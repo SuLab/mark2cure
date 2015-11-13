@@ -7,313 +7,70 @@ extends base
 block header
   - with headerMessage=task.name
     include includes/header-relation
+  <meta charset="utf-8">
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Mark2Cure</title>
+
+
+  <link rel="stylesheet" href="https://mark2cure.org/static/css/style.css">
+  <link rel="stylesheet" href="https://mark2cure.org/static/css/document-style.css">
+
+  <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='http://www.puff.me.uk/scripps/Tree/main.css'>
+
+
 
 block content
-  .container
+  .container-fluid(style="padding-right:250px; padding-left: 250px")
     .row.head-space
+
+      h3 Use the menu in the box below to help relate the two concepts:
+
+      .container-fluid#tree-insert
+
       .col-xs-12
+        h3#praise_after_completion
 
-    .row.head-space
-      .col-xs-12
-        h3 Using the following abstract, please answer questions about chemical/disease relations.
-        p {{ current_paper|safe }}
-        h3 Help us define how {{ chemical_html|safe }} relates to {{ disease_html|safe }}:
+      form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
+        - csrf_token
+        input#relation_type(type="hidden", name="relation_type", value="test inside jade")
+        input#username(type="hidden", name="username", value=request.user)
+        input#relation(type="hidden", name="relation", value=relation.pk)
 
-        #jqxWidget
-        h3
-          span#concept1
-          span#jen_results
-          span#concept2
+        .row(style="padding:20px;" class="col-xs-4 col-xs-offset-4")
+          button.btn.btn-default.btn-block(type="submit")#submit_button Submit
 
-        #relation-submit.row
-          .col-xs-5.col-xs-offset
-            p.button.btn.btn-default.btn-block.done Submit
+        .col-xs-12
+          - for section in sections
+            p.section #{section.text}
 
-        form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
-          - csrf_token
-          input#relation_type(type="hidden", name="relation_type")
-          input#username(type="hidden", name="username", value=request.user)
-          input#relation(type="hidden", name="relation", value=relation.pk)
-
-          br
-          a
-            input#my_submit_button(type="submit", value="Submit Contributions to Science")
 
 block post-footer
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/jquery-1.11.1.min.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/scripts/demos.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxcore.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxdata.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxbuttons.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxscrollbar.js")
-  script(type="text/javascript", src="http://www.jqwidgets.com/jquery-widgets-demo/jqwidgets/jqxmenu.js")
+
+  script(type="text/javascript", src="/static/js/libs/jquery-1.11.1.min.js")
+  script(type="text/javascript", src="/static/js/libs/bootstrap.min.js")
+  script(type="text/javascript", src="/static/js/libs/underscore-min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone-min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone-relational.js")
+  script(type="text/javascript", src="http://www.puff.me.uk/scripps/Tree/src/libs/backbone.radio.min.js")
+  script(type="text/javascript", src="/static/js/libs/backbone.marionette.min.js")
+
+  <script type="html/template" id="tree-template">
+  <div id="tree" class="row text-center">
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1"><h3><%= c1.text %></h3></div>
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6">
+  <h3 id="relation" class="disabled">Select a Relationship below...</h3>
+  <ul class="list-group"></ul>
+  </div>
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2"><h3><%= c2.text %></h3></div>
+  </div>
+  </script>
 
   script.
-    $(document).ready(function () {
-
-      var chemical_disease_relation_menu = [{
-          "id": "1",
-          "text": "(chemical) relates to disease",
-          "parentid": "-1",
-          "subMenuWidth": '200px'
-        }, {
-          "id": "2",
-          "text": "has no relation to",
-          "parentid": "-1",
-          "subMenuWidth": '200px'
-        },
-        {
-          "id": "1-2",
-          "text": "exacerbates",
-          "parentid": "1"
-        }, {
-          "id": "1-1",
-          "text": "treats",
-          "parentid": "1"
-        }, {
-          "id": "1-1-1",
-          "text": "treats the symptoms of",
-          "parentid": "1-1"
-        }, {
-          "id": "1-1-2",
-          "text": "treats the cause of",
-          "parentid": "1-1"
-        }];
-
-
-      var gene_disease_relation_menu = [{
-          "id": "1",
-          "text": "(gene) relates to the disease",
-          "parentid": "-1",
-          "subMenuWidth": '300px'
-        }, {
-          "id": "2",
-          "text": "has no relation to",
-          "parentid": "-1",
-          "subMenuWidth": '300px'
-        },
-        {
-          "id": "1-1",
-          "text": "altered expression is associated with",
-          "parentid": "1",
-          "subMenuWidth": '300px'
-        }, {
-          "id": "1-2",
-          "text": "altered regulation leads to",
-          "parentid": "1"
-        },
-        {
-          "id": "1-3",
-          "text": "mutation is associated with",
-          "parentid": "1",
-          "subMenuWidth": '300px'
-        }, {
-          "id": "1-4",
-          "text": "and post-translational modifications are associated with",
-          "parentid": "1"
-        }, {
-          "id": "1-1-1",
-          "text": "decreased expression leads to",
-          "parentid": "1-1"
-        }, {
-          "id": "1-1-2",
-          "text": "increased expression leads to",
-          "parentid": "1-1"
-        }
-        , {
-          "id": "1-3-1",
-          "text": "deletion mutation is associated with",
-          "parentid": "1-3"
-        }, {
-          "id": "1-3-2",
-          "text": "duplication mutation is associated with",
-          "parentid": "1-3"
-        }, {
-          "id": "1-3-3",
-          "text": "insertion mutation is associated with",
-          "parentid": "1-3"
-        }, {
-          "id": "1-3-4",
-          "text": "inversion mutation is associated with",
-          "parentid": "1-3"
-        }, {
-          "id": "1-3-5",
-          "text": "substitution mutation is associated with",
-          "parentid": "1-3"
-        }];
-
-
-
-        var gene_chemical_relation_menu = [{
-            "id": "1",
-            "text": "(gene) relates to the chemical",
-            "parentid": "-1",
-            "subMenuWidth": '200px'
-          }, {
-            "id": "2",
-            "text": "has no relation to",
-            "parentid": "-1",
-            "subMenuWidth": '200px'
-          },
-          {
-            "id": "1-2",
-            "text": "activity is changed by",
-            "parentid": "1"
-          }, {
-            "id": "1-1",
-            "text": "amount is changed by",
-            "parentid": "1"
-          }, {
-            "id": "1-1-1",
-            "text": "expression is decreased by",
-            "parentid": "1-1"
-          }, {
-            "id": "1-1-2",
-            "text": "expression is increased by",
-            "parentid": "1-1"
-          }, {
-            "id": "1-2-1",
-            "text": "activity is inhibited by",
-            "parentid": "1-2"
-          }, {
-            "id": "1-2-2",
-            "text": "activity is activated by",
-            "parentid": "1-2"
-          }];
-
-
-
-      if ("{{ relation_type }}" == 'g_d' | "{{ relation_type }}" == 'd_g')
-        var data = gene_disease_relation_menu;
-
-      else if ("{{ relation_type }}" == 'c_d' | "{{ relation_type }}" == 'd_c' )
-        var data = chemical_disease_relation_menu;
-
-      else if ("{{ relation_type }}" === 'g_c' | "{{ relation_type }}" === 'c_g' )
-        var data = gene_chemical_relation_menu;
-
-
-      var source = {
-          datatype: "json",
-          datafields: [
-            { name: 'id' },
-            { name: 'parentid' },
-            { name: 'text' },
-            { name: 'subMenuWidth' }
-            ],
-          id: 'id',
-          localdata: data
-          };
-
-      var dataAdapter = new $.jqx.dataAdapter(source);
-          dataAdapter.dataBind();
-      var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
-      $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
-
-
-      $("#jqxWidget").on('itemclick', function (evt) {
-
-        var chemical_color = '#E65CE6';
-        var disease_color = '#0099FF';
-        var gene_color = '#00cc00';
-
-
-        var chemical_to_show = " {{ concept1.text }} ";
-        $('#concept1').text( chemical_to_show ).css({'color': chemical_color });
-
-        var string_to_show = $(evt.args).text();
-        $('#jen_results').text( string_to_show ).css({'color': '#000000'});
-
-        var disease_to_show = " {{ concept2.text }} ";
-        $('#concept2').text( disease_to_show ).css({'color': disease_color });
-
-        $.ajax({
-          type: 'POST',
-          url: '/relation/test/results/',
-          data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, {'relation_type': string_to_show}, {'relation': "{{ relation.pk }}"}, {'username': "{{request.user}}" }),
-          cache: false,
-          async: false,
-
-          success: function() {
-            console.log('win');
-
-          },
-          error: function() { console.log('fail'); },
-        });
-
-        console.log( $('h3#jen_results').text() );
-        $('#relation_type').val( string_to_show );
-      });
-      var pk_list = "{{ pk_list }}";
-      pk_list = JSON.parse(pk_list.replace(/&quot;/g,'"'));
-
-      $("#relation-submit").on('click', function(evt) {
-        console.log("test click");
-
-        var pop_next_relation_item = pk_list.pop();
-        console.log(pop_next_relation_item);
-        var relation_list = "{{relation_list}}";
-        relation_list = JSON.parse(relation_list.replace(/&quot;/g,'"'));
-        console.log(relation_list);
-
-        if (relation_list[0][pop_next_relation_item])
-          var current_relation = relation_list[0][pop_next_relation_item];
-        else if (relation_list[1][pop_next_relation_item])
-          var current_relation = relation_list[1][pop_next_relation_item];
-        else if (relation_list[2][pop_next_relation_item])
-          var current_relation = relation_list[2][pop_next_relation_item];
-        else if (relation_list[3][pop_next_relation_item])
-          var current_relation = relation_list[3][pop_next_relation_item];
-        else if (relation_list[4][pop_next_relation_item])
-          var current_relation = relation_list[4][pop_next_relation_item];
-        else if (relation_list[5][pop_next_relation_item])
-          var current_relation = relation_list[5][pop_next_relation_item];
-
-        console.log(current_relation);
-
-
-        console.log(current_relation.relation_type);
-
-        if (current_relation.relation_type === 'g_d' | current_relation.relation_type === 'd_g' )
-          var data = gene_disease_relation_menu;
-        else if (current_relation.relation_type === 'c_d' | current_relation.relation_type === 'd_c' )
-          var data = chemical_disease_relation_menu;
-        else if (current_relation.relation_type === 'g_c' | current_relation.relation_type === 'c_g' )
-          var data = gene_chemical_relation_menu;
-
-
-        var chemical_color = '#E65CE6';
-        var disease_color = '#0099FF';
-
-        var concept1_to_show = current_relation.concept1;
-        console.log("test");
-        $('#concept1').text( concept1_to_show ).css({'color': chemical_color });
-
-        var string_to_show = $(evt.args).text();
-        $('#jen_results').text( string_to_show ).css({'color': '#000000'});
-
-        var concept2_to_show = current_relation.concept2;
-        $('#concept2').text( concept2_to_show ).css({'color': disease_color });
-
-        var source = {
-            datatype: "json",
-            datafields: [
-              { name: 'id' },
-              { name: 'parentid' },
-              { name: 'text' },
-              { name: 'subMenuWidth' }
-              ],
-            id: 'id',
-            localdata: data
-            };
-
-        var dataAdapter = new $.jqx.dataAdapter(source);
-            dataAdapter.dataBind();
-        var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
-        $('#jqxWidget').jqxMenu({ source: records, height: 80,  width: '250', mode: 'vertical', clickToOpen: true});
-
-
-      });
-
-
-    });
+    var csrf_token = "{{csrf_token}}";
+    var relation_pk = "{{ relation.pk }}";
+    var document_pk = "{{ document_pk }}";
+    var username = "{{ request.user }}";
+    console.log(document_pk);
+  script(src="/static/js/libs/tree.js")
+  script(src="/static/js/tasks/relation.js")

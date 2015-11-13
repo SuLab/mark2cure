@@ -161,7 +161,7 @@ def relation(request, document_pk):
            'relation': relation,
            'document_pk': document_pk,
            }
-    return TemplateResponse(request, 'relation/relation3.jade', ctx)
+    return TemplateResponse(request, 'relation/relation.jade', ctx)
 
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
