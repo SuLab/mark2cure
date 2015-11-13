@@ -21,33 +21,28 @@ block header
 
 
 block content
-  .container
+  .container-fluid(style="padding-right:250px; padding-left: 250px")
     .row.head-space
-      .col-xs-12
 
-    .row.head-space
+      h3 Use the menu in the box below to help relate the two concepts:
+
+      .container-fluid#tree-insert
+
       .col-xs-12
+        h3#praise_after_completion
+
+      form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
+        - csrf_token
+        input#relation_type(type="hidden", name="relation_type", value="test inside jade")
+        input#username(type="hidden", name="username", value=request.user)
+        input#relation(type="hidden", name="relation", value=relation.pk)
+
+        .row(style="padding:20px;" class="col-xs-4 col-xs-offset-4")
+          button.btn.btn-default.btn-block(type="submit")#submit_button Submit
 
         .col-xs-12
-          h3 Use the menu in the box below to help relate the two concepts:
-
-        .container#tree-insert
-
-        .col-xs-12
-          h3#praise_after_completion
-
-        form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
-          - csrf_token
-          input#relation_type(type="hidden", name="relation_type", value="test inside jade")
-          input#username(type="hidden", name="username", value=request.user)
-          input#relation(type="hidden", name="relation", value=relation.pk)
-
-          .row(style="padding:20px;" class="col-xs-4 col-xs-offset-4")
-            button.btn.btn-default.btn-block(type="submit")#submit_button Submit
-
-          .col-xs-12
-            - for section in sections
-              p.section #{section.text}
+          - for section in sections
+            p.section #{section.text}
 
 
 block post-footer

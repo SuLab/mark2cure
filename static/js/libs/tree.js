@@ -144,6 +144,8 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     };
 
     var c1TimeoutId;
+    // this.ui.c1.fadeIn(700); //TODO I want this but not every time the menu is clicked. 
+    this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"160px"});
     this.ui.c1.hover(function() {
       stype_word = get_stype_word(concepts['c1'].type);
       if (!c1TimeoutId) {
@@ -164,7 +166,17 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
       }
     });
 
+    function color_find(relationship_type) {
+      var color;
+      if (relationship_type === "g") { color = "#B1FFA8"; };
+      if (relationship_type === "d") { color = "#d1f3ff"; };
+      if (relationship_type === "c") { color = "#ffd1dc"; };
+      return color;
+    };
+
     var c2TimeoutId;
+    // this.ui.c2.fadeIn(700);
+    this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"160px"});
     this.ui.c2.hover(function() {
       stype_word = get_stype_word(concepts['c2'].type);
       if (!c2TimeoutId) {
