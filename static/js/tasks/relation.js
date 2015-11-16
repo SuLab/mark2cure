@@ -3,89 +3,91 @@ var data = {
   // "concept-2-broken": "asdfasadffsadf",
 
   "chemical_disease_relation_menu": [{
-    "id": "1",
+    "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",
     "text": "relates to disease",
     "desc": "The chemical has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
-        "id": "1-2",
+        "id": "72zuw4bgzz5dniepb3rmls23nsltwocbk274c98m",
         "text": "exacerbates",
         "desc": "The chemical worsens or exacerbates the disease in any manner.",
         "example": "St. John's Wort has been known to worsen symptoms of Parkinson's disease.",
       }, {
-        "id": "1-1",
+        "id": "jilhvc5p2cy0atls8659a1fggjvvkmahwuspy2kr",
         "text": "treats",
         "desc": "The chemical improves or treats the disease in any manner.",
         "example": "Treatment with gingerol may provide a novel therapeutic strategy for prion-mediated neurotoxicity",
       }, {
-        "id": "1-3",
+        "id": "yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5",
         "text": "increases risk of disease",
         "desc": "Administration of the drug increases chances of getting the disease. Considered an 'adverse side effect' of the drug.",
         "example": "Parkinson's disease risk factors include ageing, exposure to toxins and genetic defects.",
       }, {
-        "id": "1-4",
+        "id": "jyiczzhhupcp7cmebl422ax5dxe1jkwuq647oaw2",
         "text": "may cause",
         "desc": "Administration of the chemical may cause or lead to the disease.",
         "example": "43% of mice given the chemical NVP-BHG712 developed pulmonary metastases.",
       }, {
-        "id": "1-5",
+        "id": "lt18qfxd1ehj7ymxb29wrv6qa41mocwe6eor9dna",
         "text": "prevents",
         "desc": "Administration of the chemical prevents the disease",
         "example": "Malarone is taken daily by travelers wanting to prevent malaria.",
       }]
     }, {
-    "id": "2",
+    "id": "4mzrh5ub3nla6b1ostx7qdparjl3lrd9o567ubif",
     "text": "has no relation to",
     "desc": "There is no relation between the chemical and disease.",
     "example": "To study soft tissue sarcoma, an experimental group of mice was given the chemical NVP-BHG712.",
   }],
 
   "gene_disease_relation_menu": [{
-    "id": "1",
+    "id": "qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j",
     "text": "relates to",
     "desc": "The gene is related to the disease in some manner.",
     "example": "The gene responsible for Triple A syndrome, AAAS, has recently been identified.",
     "children": [{
-      "id": "1-1",
+      "id": "u0q779rcrevnu6aki694dqka4fnfwvwqgpl06ybl",
       "text": "altered expression is associated with",
       "desc": "Gene expression is the process by which information from a gene is used in the synthesis of a functional gene product (mRNA, protein, or microRNAs). When gene expression is altered, gene expression is either increased or decreased.",
       "example": "Several studies revealed significantly higher EPHB4 expression in malignancies such as prostate cancer.",
       }, {
-      "id": "1-2",
+      "id": "04110gzdcxz8niuv83ev08ut7lv0xep4iym5sxm5",
       "text": "mutation is associated with",
       "desc": "Gene mutations or aberrations are permanent changes in the gene DNA sequence, differing from the sequence found in most people. Mutations range in size; they can affect anywhere from a single DNA base pair to a large piece of a chromosome that includes multiple genes.",
       "example": "Mutations in the COL5A or COL3A genes are only a few of the genetic causes of Ehlers-Danlos syndrome.",
       }, {
-      "id": "1-3",
+      "id": "5mgmlk7rnbbd8q6amuapd3elwjpnbho0raegv59c",
       "text": "and post-translational modifications are associated with",
       "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
       "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in both post-translational processing of wild-type thyroglobulin",
     }]}, {
-    "id": "2",
+    "id": "7aqs9bklotxhbq3r5dcofvsskiefb1yn2nkt1y4a",
     "text": "has no relation to",
     "desc": "The gene does not relate to the disease.",
     "example": "The precise role of Ngly1 in the ERAD process remains unclear in mammals.",
   }],
 
   "gene_chemical_relation_menu": [{
-    "id": "1",
+    "id": "txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7",
     "text": "relates to",
 
     "children": [{
-      "id": "1-1",
+      "id": "am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw",
       "text": "amount is changed by",
     }, {
-      "id": "1-2",
+      "id": "5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy",
       "text": "activity is changed by",
     }]
 
     }, {
-    "id": "2",
+    "id": "5mgmlk7rnbbd8q6amuapd3elwjpnbho0raegv59c",
     "text": "has no relation to"
     }
   ]
 
 };
+
+selected_relation = null;
 
 Tree.addInitializer(function(options) {
 
@@ -109,7 +111,8 @@ Tree.addInitializer(function(options) {
       concepts: concepts,
       choice: obj['choice']
     }));
-    console.log(obj['choice'].id);
+    selected_relation = obj['choice'].id;
+    console.log("Selected item:", obj['choice'].id);
   });
 
   /* When the back toggle is selected */
@@ -341,6 +344,10 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 };
 
 var counter = 1;
+
+
+
+
 $('#submit_button').on('click', function(evt) {
   relationship_obj = global_data[counter];
   counter += 1;
