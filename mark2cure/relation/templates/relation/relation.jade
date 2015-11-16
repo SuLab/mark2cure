@@ -33,12 +33,12 @@ block content
 
       form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
         - csrf_token
-        input#relation_type(type="hidden", name="relation_type", value="test inside jade")
+        input#relation_type(type="hidden", name="relation_type", value=selected_relation)
         input#username(type="hidden", name="username", value=request.user)
         input#relation(type="hidden", name="relation", value=relation.pk)
 
         .row(style="padding:20px;" class="col-xs-4 col-xs-offset-4")
-          button.btn.btn-default.btn-block(type="submit")#submit_button Submit
+          button.btn.btn-default.btn-block#submit_button Submit
 
         .col-xs-12
           - for section in sections

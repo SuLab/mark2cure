@@ -86,10 +86,11 @@ var data = {
   ]
 
 };
-
-selected_relation = null;
+var selected_relation = null;
 
 Tree.addInitializer(function(options) {
+  selected_relation = null;
+  $('#submit_button').addClass('disabled');
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
@@ -112,7 +113,10 @@ Tree.addInitializer(function(options) {
       choice: obj['choice']
     }));
     selected_relation = obj['choice'].id;
-    console.log("Selected item:", obj['choice'].id);
+    if( selected_relation != null ) {
+      $('#submit_button').removeClass('disabled');
+    };
+    console.log("Selected item:", selected_relation);
   });
 
   /* When the back toggle is selected */
@@ -346,9 +350,8 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 var counter = 1;
 
 
-
-
 $('#submit_button').on('click', function(evt) {
+  $(this).addClass('disabled');
   relationship_obj = global_data[counter];
   counter += 1;
 
@@ -356,7 +359,7 @@ $('#submit_button').on('click', function(evt) {
     type: 'POST',
     url: '/relation/test/results/',
     data: $.extend({'csrfmiddlewaretoken': csrf_token },
-                   {'relation_type': "test answer"},
+                   {'relation_type': selected_relation},
                    {'relation': relationship_obj.pk },
                    {'username': username }),
     cache: false,
