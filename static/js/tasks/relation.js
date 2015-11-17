@@ -197,8 +197,7 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     } else {
       concept_idx = 2;
     };
-    str = str.replace(new RegExp("^(.{" + key_offset + "})(.{" + highlight_dict[key][0]['span'] + "})"),   "$1<strong style='background-color:" + color_find(relationship_obj['c'+concept_idx+'_stype']) + "'>$2</strong>");
-
+    str = str.replace(new RegExp("^(.{" + String(key_offset) + "})(.{" + String(highlight_dict[key][0]['span']) + "})"),   "$1<strong style='background-color:" + String(color_find(relationship_obj['c'+concept_idx+'_stype'])) + "'>$2</strong>");
     }
     catch(err){
       console.log(err, "LOG THE ERROR");
@@ -220,30 +219,39 @@ var pub1_passage0, pub1_passage1,
     pub2_passage0, pub2_passage1,
     pub3_passage0, pub3_passage1,
     section_text1_offset, section_text2_offset;
-
+var section_text1 = "";
+var section_text2 = "";
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage0, passage1) {
   concept_list = [relationship_obj.c1_text, relationship_obj.c2_text];
+  type_list = [relationship_obj.c1_stype, relationship_obj.c2_stype];
 
   for (i = 0; i < concept_list.length; i++) {
     concept = concept_list[i];
+    concept_stype = type_list[i];
+
+    if (concept_stype == "g") {
+        lookup_stype = "NCBI Gene";
+    } else if (concept_stype == "d") {
+        lookup_stype = "MEDIC";
+      }
+    else if (concept_stype == "c") {
+        lookup_stype = "MESH";
+    };
 
     function find_anns_from_passage(concept, passage){
       highlight_list_small = [];
       for (ann in passage) {
         highlight_dict_small = {};
-
-        if (passage['text'] == concept){
-          console.log(passage['text'])
+        if (passage['text'] == concept && lookup_stype == passage['infon'][0]['@key']){
           highlight_dict_small['index'] = passage['location']['@offset'];
           highlight_dict_small['span'] = passage['location']['@length'];
           highlight_dict_small['text'] = passage['text'];
           highlight_list_small.push(highlight_dict_small);
           highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
-        } else if (passage[ann]['text'] == concept) {
-          console.log(passage[ann]['text'])
+        } else if (passage[ann]['text'] == concept && lookup_stype == passage[ann]['infon'][0]['@key']) {
           highlight_dict_small['index'] = passage[ann]['location']['@offset'];
           highlight_dict_small['span'] = passage[ann]['location']['@length'];
           highlight_dict_small['text'] = passage[ann]['text'];
@@ -291,7 +299,20 @@ function pub_specific_info(relationship_obj) {
       // reformat each section and use highlight_dict to change colors in the text at the same time.
       section_count = 0;
       $('.section').each(function(el_idx, el) {
-        section_text = $(this).text();
+        section_text = $(this).html();
+
+        if (section_text1 == "" && section_count == 0) {
+          section_text1 = section_text;
+        };
+        if (section_text2 == "" && section_count == 1) {
+          section_text2 = section_text;
+        };
+        if (section_count == 0){
+          section_text = section_text1;
+        } else if (section_count == 1) {
+          section_text = section_text2;
+        };
+
         highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
         section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
         $(this).html(section_text);
@@ -383,13 +404,24 @@ $('#submit_button').on('click', function(evt) {
   section_count = 0;
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
-    section_text = $(this).text();
+    section_text = $(this).html();
+    if (section_text1 == "" && section_count == 0) {
+      section_text1 = section_text;
+    };
+    if (section_text2 == "" && section_count == 1) {
+      section_text2 = section_text;
+    };
+    if (section_count == 0){
+      section_text = section_text1;
+    } else if (section_count == 1) {
+      section_text = section_text2;
+    };
+
 
     // Build the higlight dictionary to contain all needed highlights
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub3_passage0, pub3_passage1);
-    console.log(highlight_dict_LARGE, "lg2")
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);
     section_count++;
