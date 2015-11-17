@@ -4,7 +4,7 @@ var data = {
 
   "chemical_disease_relation_menu": [{
     "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",
-    "text": "relates to disease",
+    "text": "relates to",
     "desc": "The chemical has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
@@ -56,7 +56,7 @@ var data = {
       "desc": "Gene mutations or aberrations are permanent changes in the gene DNA sequence, differing from the sequence found in most people. Mutations range in size; they can affect anywhere from a single DNA base pair to a large piece of a chromosome that includes multiple genes.",
       "example": "Mutations in the COL5A or COL3A genes are only a few of the genetic causes of Ehlers-Danlos syndrome.",
       }, {
-      "id": "5mgmlk7rnbbd8q6amuapd3elwjpnbho0raegv59c",
+      "id": "rhkmksv5jh0vn7p47uk3fwdior6mlgaubwh1l6ow",
       "text": "and post-translational modifications are associated with",
       "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
       "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in both post-translational processing of wild-type thyroglobulin",
@@ -86,7 +86,24 @@ var data = {
   ]
 
 };
+
+var global_data;
+var concept_pairs_remaining;
+var concept_pairs_total;
+var clean_section_text;
+var section_text1_offset;
+var section_text2_offset;
+var relationship_obj;
+var concepts;
+var file_key;
+var pub1_passage0, pub1_passage1,
+    pub2_passage0, pub2_passage1,
+    pub3_passage0, pub3_passage1,
+    section_text1_offset, section_text2_offset;
+var section_text1 = "";
+var section_text2 = "";
 var selected_relation = null;
+
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
@@ -130,6 +147,8 @@ Tree.addInitializer(function(options) {
 
     /* Backup: Go to the top of the stack */
     collection = coll;
+    selected_relation = null;
+    $('#submit_button').addClass('disabled');
 
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
@@ -206,21 +225,6 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     return str;
 };
 
-var global_data;
-var concept_pairs_remaining;
-var concept_pairs_total;
-var clean_section_text;
-var section_text1_offset;
-var section_text2_offset;
-var relationship_obj;
-var concepts;
-var file_key;
-var pub1_passage0, pub1_passage1,
-    pub2_passage0, pub2_passage1,
-    pub3_passage0, pub3_passage1,
-    section_text1_offset, section_text2_offset;
-var section_text1 = "";
-var section_text2 = "";
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
@@ -369,19 +373,20 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 };
 
 var counter = 1;
-
-
 $('#submit_button').on('click', function(evt) {
   $(this).addClass('disabled');
-  relationship_obj = global_data[counter];
+  relationship_obj = global_data[counter];  //TODO NEED TO LOG THE CORRECT RELATIONSHIP OBJECT
+  previous_relationship_for_ajax = global_data[counter-1];
   counter += 1;
+  console.log(relationship_obj.pk);
+
 
   $.ajax({
     type: 'POST',
     url: '/relation/test/results/',
     data: $.extend({'csrfmiddlewaretoken': csrf_token },
                    {'relation_type': selected_relation},
-                   {'relation': relationship_obj.pk },
+                   {'relation': previous_relationship_for_ajax.pk },
                    {'username': username }),
     cache: false,
     async: false,
@@ -404,6 +409,7 @@ $('#submit_button').on('click', function(evt) {
   section_count = 0;
   $('.section').each(function(el_idx, el) {
     highlight_dict_LARGE = {};
+    // TODO make into a function
     section_text = $(this).html();
     if (section_text1 == "" && section_count == 0) {
       section_text1 = section_text;
@@ -416,7 +422,6 @@ $('#submit_button').on('click', function(evt) {
     } else if (section_count == 1) {
       section_text = section_text2;
     };
-
 
     // Build the higlight dictionary to contain all needed highlights
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);

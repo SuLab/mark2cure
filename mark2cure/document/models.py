@@ -261,23 +261,12 @@ class Document(models.Model):
                 concept2_obj = Concept.objects.get(document=self, uid=concept2['uid'])
                 Relation.objects.create(document=self, relation=[ concept1['uid'], concept2['uid'] ], concept1_id=concept1_obj, concept2_id=concept2_obj, automated_cid=True)
 
-    def unanswered_relation(self, request):
-        relations = Relation.objects.filter(document=self)
-
-        for relation in relations:
-
-            answers_for_relation = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            if not answers_for_relation:
-                return relation
 
     def unanswered_relation_list(self, request):
         relations = Relation.objects.filter(document=self)
         relation_list = []
         for relation in relations:
-
-            answers_for_relation = Answer.objects.filter(username=request.user).filter(relation=relation.pk)
-            if len(answers_for_relation) == 0:
-                # if no answers, then add to relation list
+            if not Answer.objects.filter(username=request.user).filter(relation=relation.pk).exists():
                 relation_list.append(relation)
 
         return relation_list

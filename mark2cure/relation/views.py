@@ -20,6 +20,8 @@ from ..common.formatter import bioc_as_json, apply_bioc_annotations
 from ..common.bioc import BioCReader
 from ..userprofile.models import UserProfile
 from ..document.models import Document, Section, Pubtator
+from ..common.models import Group
+
 
 from brabeion import badges
 import datetime
@@ -35,36 +37,22 @@ import os
 
 @login_required
 def home(request):
-    concepts_available = Concept.objects.all()
 
-    queryset_documents = []
-    for concept in concepts_available:
-        if concept.document not in queryset_documents:
-            queryset_documents.append(concept.document)
+    # Just get group 4 for now. TODO upon integration, make this better (Max)
+    group_pk = 4
+    group = Group.objects.get(pk=group_pk)
+    documents = Document.objects.filter(task__group=group).all()
+    docs_with_unanswered_relations_for_user = []
 
-    # TODO exclude documents that do not contain unanswered user relation pairs
-    def exclude_user_answered_relations(queryset_documents):
-        exclude_list = []
-        for document in queryset_documents:
-            user_paper_relations = Relation.objects.filter(document=document.id)
-            flag = 0
-            for relation in user_paper_relations:
-                user_paper_answers = Answer.objects.all().filter(relation=relation.pk).filter(username=request.user)
-                if len(user_paper_answers) == 1:
-                    flag += 1
-                if flag == len(user_paper_relations):
-                    exclude_list.append(document)
+    for document in documents:
+        relations = Relation.objects.filter(document=document)
+        for relation in relations:
+            if not Answer.objects.filter(username=request.user).filter(relation=relation.pk).exists():
+                if document not in docs_with_unanswered_relations_for_user:
+                    docs_with_unanswered_relations_for_user.append(document)
+                break
 
-        return exclude_list # returns a query_set
-
-    exclude_list = exclude_user_answered_relations(queryset_documents)
-
-    for doc in exclude_list:
-        if doc in queryset_documents:
-            queryset_documents.remove(doc)
-
-    # Just show a few
-    queryset_documents = queryset_documents[:20]
+    queryset_documents = docs_with_unanswered_relations_for_user[:20]
 
     ctx = {
         'documents': queryset_documents,
@@ -75,28 +63,21 @@ def home(request):
 @login_required
 def relation_api(request, document_pk):
     from django.http import JsonResponse
-
     # the document instance
     current_document = get_object_or_404(Document, pk=document_pk)
-    # the section instances
-    section_title = Section.objects.get(document=current_document, kind="t")
-    section_abstract = Section.objects.get(document=current_document, kind="a")
 
     # Only make api for relations that do not have an answer!
     # This is why data[0] inside relation.js works
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
     # ^^^^^^ no dry TODO Max, why isn't this dry?
 
-
     relation_list = []
-    global pubtator_pk_list
     pub_list = []
     for relation in unanswered_relations_for_user:
         relation_dict = {}
         concept1 = Concept.objects.get(document=current_document, uid=relation.concept1_id)
         concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
         relation_type = concept1.stype + "_" + concept2.stype
-
 
         def get_pub_pk(concept_stype):
             if concept_stype == "g":
@@ -123,8 +104,6 @@ def relation_api(request, document_pk):
 
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
-        # relation_dict['test'] = concept1
-
         relation_dict['c1_id']= str(concept1.id)
         relation_dict['c1_text']= str(concept1.text)
         relation_dict['c1_stype']= str(concept1.stype)
@@ -151,7 +130,8 @@ def relation(request, document_pk):
 
 
     # TODO do I need this relation piece
-    relation = document.unanswered_relation(request)
+    relations = document.unanswered_relation_list(request)
+    relation = relations[0]
     # TODO this is incorrect. Needs to be removed.
     # print relation, "relation, views"
     # unanswered_relations_for_user = document.unanswered_relation_list(request)
@@ -165,10 +145,10 @@ def relation(request, document_pk):
 
 #pass in relation similar to above method
 def results(request, relation_id): #, relation_id
-    print request, "JEN RESULTS REQUEST"
+    # print request, "JEN RESULTS REQUEST"
     relation = get_object_or_404(Relation, pk=relation_id)
     relation_type = request.POST['relation_type']
-    print relation_type, "RELATION TYPE"
+    # print relation_type, "RELATION TYPE"
     form = AnswerForm(request.POST or None)
 
     if form.is_valid():
@@ -186,7 +166,7 @@ def results(request, relation_id): #, relation_id
 @require_http_methods(['POST'])
 def create_post(request):
     form = AnswerForm(request.POST or None)
-    print form
+    # print form
     if form.is_valid():
         form.save()
 
@@ -196,7 +176,6 @@ def create_post(request):
 @require_http_methods(['POST'])
 def jen_bioc(request):
     # print request
-    print "JEN JEN BIOC"
     relation_list = request.POST['relation_list']
     # print relation_list
     writer_json = bioc_as_json(relation_list)
