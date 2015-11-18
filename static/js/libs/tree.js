@@ -106,6 +106,10 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     'c1': '#c1',
     'relation': '#relation',
     'c2': '#c2',
+    'c1_not_correct': '#c1_not_correct',
+    'c1_remove_icon': '#c1_remove_icon',
+    'c2_not_correct': '#c2_not_correct',
+    'c2_remove_icon': '#c2_remove_icon',
   },
 
   events : {
@@ -144,18 +148,24 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     };
 
     var c1TimeoutId;
+    c1_stype_word = get_stype_word(concepts['c1'].type);
+    c2_stype_word = get_stype_word(concepts['c2'].type);
+
     // this.ui.c1.fadeIn(700); //TODO I want this but not every time the menu is clicked.
-    this.ui.c1.addClass("glyphicon glyphicon-remove-circle");
-    this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"160px"});
+    this.ui.c1_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
+    this.ui.c1_not_correct.css({"color":color_find(concepts['c1'].type)});
+    this.ui.c1_not_correct.html('<h3>is not a '+ c1_stype_word +'.</h3>')
+    this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"220px"});
     this.ui.c1.hover(function() {
-      stype_word = get_stype_word(concepts['c1'].type);
       if (!c1TimeoutId) {
         c1TimeoutId = window.setTimeout(function() {
           c1TimeoutId = null;
-          self.ui['c1'].addClass('not-correct-concept');
-          self.ui['c1'].removeClass("glyphicon glyphicon-remove-circle");
-          self.ui['c1'].html('<h3>'+ concepts['c1'].text + '<br>is not a '+ stype_word +'.</br></h3>').css("background-color", "red");
-        }, 500);
+          // self.ui['c1'].addClass('not-correct-concept');
+          self.ui['c1_remove_icon'].css("color", "red")
+          self.ui['c1'].css("background-color", "red");
+          self.ui['c1_not_correct'].html('<h3>is not a '+ c1_stype_word +'.</h3>').css("color", "black");
+
+        }, 600);
       }
     }, function() {
       if (c1TimeoutId) {
@@ -178,17 +188,20 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     var c2TimeoutId;
     // this.ui.c2.fadeIn(700);
-    this.ui.c2.addClass("glyphicon glyphicon-remove-circle");
-    this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"160px"});
+    this.ui.c2_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
+    this.ui.c2_not_correct.css({"color":color_find(concepts['c2'].type)});
+    this.ui.c2_not_correct.html('<h3>is not a '+ c2_stype_word +'.</h3>')
+    this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"220px"});
     this.ui.c2.hover(function() {
       stype_word = get_stype_word(concepts['c2'].type);
       if (!c2TimeoutId) {
         c2TimeoutId = window.setTimeout(function() {
           c2TimeoutId = null;
-          self.ui['c2'].addClass('not-correct-concept');
-          self.ui['c2'].removeClass("glyphicon glyphicon-remove-circle");
-          self.ui['c2'].html('<h3>'+ concepts['c2'].text + '<br>is not a '+ stype_word +'.</br></h3>').css("background-color", "red");
-        }, 750);
+          // self.ui['c1'].addClass('not-correct-concept');
+          self.ui['c2_remove_icon'].css("color", "red")
+          self.ui['c2'].css("background-color", "red");
+          self.ui['c2_not_correct'].html('<h3>is not a '+ c2_stype_word +'.</h3>').css("color", "black");
+        }, 600);
       }
     }, function() {
       if (c2TimeoutId) {

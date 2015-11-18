@@ -57,13 +57,24 @@ block post-footer
 
   <script type="html/template" id="tree-template">
   <div id="tree" class="row text-center">
-  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1"><h3><%= c1.text %></h3></div>
+
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
+  <div id="c1_remove_icon"><p></p></div>
+  <div><h3><%= c1.text %></h3></div>
+  <div id="c1_not_correct"><h2></h2></div>
+  </div>
+
   <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6">
   <h3 id="relation" class="disabled">Select a Relationship below...</h3>
   <ul class="list-group"></ul>
   </div>
-  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2"><h3><%= c2.text %></h3></div>
+
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2">
+  <div id="c2_remove_icon"><p></p></div>
+  <div><h3><%= c2.text %></h3></div>
+  <div id="c2_not_correct"><h2></h2></div>
   </div>
+
   </script>
 
   script.
