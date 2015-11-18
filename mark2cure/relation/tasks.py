@@ -18,32 +18,35 @@ from mark2cure.common.formatter import bioc_writer, bioc_as_json
 that contain concepts. Must be done server side so that it can be
 determined if there are non-overlapping concepts
 (at least one pair, or "relation pair" per document).
-
 """
 
-def check_for_overlaps(c1_dict_location, c2_dict_location):
+def check_for_overlaps(c1_dict_locations, c2_dict_locations):
     """ Takes the location from the concepts and checks to see
     if they overlap. Swaps c1 and c2 in this function to
     determine the first word. Returns boolean explaining if
     those concept pairs are compatible (do not overlap) """
 
-    split_location_c1 = re.split(":", c1_dict_location)
-    split_location_c2 = re.split(":", c2_dict_location)
+    concepts_overlap_flag = False
 
-    c1_start = int(split_location_c1[0])
-    c1_end = int(split_location_c1[0]) + int(split_location_c1[1])
-    c2_start = int(split_location_c2[0])
-    c2_end = int(split_location_c2[0]) + int(split_location_c2[1])
+    for c1_location in c1_dict_locations:
+        for c2_location in c2_dict_locations:
 
-    if c1_start > c2_start:
-        c1_start, c2_start = c2_start, c1_start
-        c1_end, c2_end = c2_end, c1_end
+            split_location_c1 = re.split(":", c1_location)
+            split_location_c2 = re.split(":", c2_location)
 
-    concepts_overlap = False
-    if c2_start < c1_end:
-        concepts_overlap = True
+            c1_start = int(split_location_c1[0])
+            c1_end = int(split_location_c1[0]) + int(split_location_c1[1])
+            c2_start = int(split_location_c2[0])
+            c2_end = int(split_location_c2[0]) + int(split_location_c2[1])
 
-    return concepts_overlap
+            if c1_start > c2_start:
+                c1_start, c2_start = c2_start, c1_start
+                c1_end, c2_end = c2_end, c1_end
+
+            if c2_start < c1_end:
+                concepts_overlap_flag = True
+
+    return concepts_overlap_flag
 
 
 def return_pubtator_dict(pubtator, pub_type):
@@ -71,13 +74,16 @@ def return_pubtator_dict(pubtator, pub_type):
                         stype = "c"
 
                     if uid != None:
-                        pub_dict[uid] = {
-                            'text': text,
-                            'stype': stype,
-                            'location': location,
-                            'uid': uid
-                            }
-
+                        if uid in pub_dict:
+                            if location not in pub_dict[uid]['location']:
+                                pub_dict[uid]['location'].append(location)
+                        else:
+                            pub_dict[uid] = {
+                                'text': text,
+                                'stype': stype,
+                                'location': [location],
+                                'uid': uid
+                                }
         return pub_dict
 
 
@@ -97,7 +103,8 @@ def make_concept_dicts_from_pubtators(document):
     return gene_dict, disease_dict, chemical_dict
 
 
-queryset_documents = Document.objects.all()[0:90]
+# TODO this is how many documents to import via ***TASKS***
+queryset_documents = Document.objects.all()[0:100]
 for document in queryset_documents:
 
     gene_dict, disease_dict, chemical_dict = make_concept_dicts_from_pubtators(document)
@@ -111,9 +118,9 @@ for document in queryset_documents:
             for c1 in concept1_dict:
                 for c2 in concept2_dict:
 
-                    concepts_overlap = check_for_overlaps(concept1_dict[c1]['location'], concept2_dict[c2]['location'])
+                    concepts_overlap_flag = check_for_overlaps(concept1_dict[c1]['location'], concept2_dict[c2]['location'])
 
-                    if concepts_overlap != True and concept1_dict[c1]['text'] != concept2_dict[c2]['text']:
+                    if concepts_overlap_flag != True and concept1_dict[c1]['text'] != concept2_dict[c2]['text']:
 
                         relation_pair_list.append([ concept1_dict[c1], concept2_dict[c2] ] )
 
