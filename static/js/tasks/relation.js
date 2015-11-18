@@ -276,56 +276,79 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
 
 function pub_specific_info(relationship_obj) {
 
-    // Third (not guaranteed pubtator).  There are either two or three pubtators.
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[2] +'.json', function( pub3_data ) {
+    // Third (not guaranteed pubtator).  There are either two or sometimes three pubtators.
+  $.ajax({
+  url: '/document/pubtator/specific/'+ relationship_obj.pub_list[2] +'.json',
+  dataType: 'json',
+  async: false,
+  success: function(pub3_data) {
       pub3_passage0 = pub3_data.collection.document.passage[0]['annotation'];
       pub3_passage1 = pub3_data.collection.document.passage[1]['annotation'];
       $('.section').each(function(el_idx, el) {
         highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub3_passage0, pub3_passage1);
       });
-    });
+    },
+    error: function() {
+      console.log("failed to retrieve third/optional Pubtator API");
+      }
+  });
 
-    // Below are the first and second guaranteed Pubtators. The "third pubtator" is not guaranteed
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[1] +'.json', function( pub1_data ) {
+  $.ajax({
+  url: '/document/pubtator/specific/' + relationship_obj.pub_list[1] + '.json',
+  dataType: 'json',
+  async: false,
+  success: function(pub1_data) {
       pub1_passage0 = pub1_data.collection.document.passage[0]['annotation'];
       pub1_passage1 = pub1_data.collection.document.passage[1]['annotation'];
       $('.section').each(function(el_idx, el) {
         highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
       });
+    },
+    error: function() {
+      console.log("failed to retrieve first required Pubtator API");
+      }
+  });
+
+  $.ajax({
+  url: '/document/pubtator/specific/'+ relationship_obj.pub_list[0] +'.json',
+  dataType: 'json',
+  async: false,
+  success: function(pub2_data) {
+    pub2_passage0 = pub2_data.collection.document.passage[0]['annotation'];
+    pub2_passage1 = pub2_data.collection.document.passage[1]['annotation'];
+    section_text1_offset = pub2_data.collection.document.passage[0]['text'].length
+    section_text2_offset = pub2_data.collection.document.passage[1]['text'].length
+
+    // reformat each section and use highlight_dict to change colors in the text at the same time.
+    section_count = 0;
+    $('.section').each(function(el_idx, el) {
+      section_text = $(this).html();
+
+      if (section_text1 == "" && section_count == 0) {
+        section_text1 = section_text;
+      };
+      if (section_text2 == "" && section_count == 1) {
+        section_text2 = section_text;
+      };
+      if (section_count == 0){
+        section_text = section_text1;
+      } else if (section_count == 1) {
+        section_text = section_text2;
+      };
+
+      highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
+      section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
+      $(this).html(section_text);
+      section_count++;
     });
-
-    $.getJSON('/document/pubtator/specific/'+ relationship_obj.pub_list[0] +'.json', function( pub2_data ) {
-      pub2_passage0 = pub2_data.collection.document.passage[0]['annotation'];
-      pub2_passage1 = pub2_data.collection.document.passage[1]['annotation'];
-      section_text1_offset = pub2_data.collection.document.passage[0]['text'].length
-      section_text2_offset = pub2_data.collection.document.passage[1]['text'].length
-
-      // reformat each section and use highlight_dict to change colors in the text at the same time.
-      section_count = 0;
-      $('.section').each(function(el_idx, el) {
-        section_text = $(this).html();
-
-        if (section_text1 == "" && section_count == 0) {
-          section_text1 = section_text;
-        };
-        if (section_text2 == "" && section_count == 1) {
-          section_text2 = section_text;
-        };
-        if (section_count == 0){
-          section_text = section_text1;
-        } else if (section_count == 1) {
-          section_text = section_text2;
-        };
-
-        highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
-        section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
-        $(this).html(section_text);
-        section_count++;
-      });
-    });
+  },
+  error: function() {
+    console.log("failed to retrieve final required Pubtator API");
+    }
+  });
   };
-
-
+// Must go to this API first to retrieve info prior to getting Pub Specific APIs
+// Therefore, no point to do this asynchronously with pub_specific_info() function
 $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
