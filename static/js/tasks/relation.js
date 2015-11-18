@@ -226,6 +226,21 @@ function format_text_colors(section_text, section1_length, section2_length, rela
 };
 
 
+function get_section_text(section_text, section_count){
+  if (section_text1 == "" && section_count == 0) {
+    section_text1 = section_text;
+  };
+  if (section_text2 == "" && section_count == 1) {
+    section_text2 = section_text;
+  };
+  if (section_count == 0){
+    section_text = section_text1;
+  } else if (section_count == 1) {
+    section_text = section_text2;
+  };
+  return section_text;
+};
+
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
 function get_annotation_spans(relationship_obj, passage0, passage1) {
@@ -322,19 +337,9 @@ function pub_specific_info(relationship_obj) {
     // reformat each section and use highlight_dict to change colors in the text at the same time.
     section_count = 0;
     $('.section').each(function(el_idx, el) {
-      section_text = $(this).html();
 
-      if (section_text1 == "" && section_count == 0) {
-        section_text1 = section_text;
-      };
-      if (section_text2 == "" && section_count == 1) {
-        section_text2 = section_text;
-      };
-      if (section_count == 0){
-        section_text = section_text1;
-      } else if (section_count == 1) {
-        section_text = section_text2;
-      };
+      section_text = $(this).html();
+      section_text = get_section_text(section_text, section_count);
 
       highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
       section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
@@ -434,17 +439,7 @@ $('#submit_button').on('click', function(evt) {
     highlight_dict_LARGE = {};
     // TODO make into a function
     section_text = $(this).html();
-    if (section_text1 == "" && section_count == 0) {
-      section_text1 = section_text;
-    };
-    if (section_text2 == "" && section_count == 1) {
-      section_text2 = section_text;
-    };
-    if (section_count == 0){
-      section_text = section_text1;
-    } else if (section_count == 1) {
-      section_text = section_text2;
-    };
+    section_text = get_section_text(section_text, section_count);
 
     // Build the higlight dictionary to contain all needed highlights
     highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
