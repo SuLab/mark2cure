@@ -79,16 +79,57 @@ def relation_api(request, document_pk):
         concept2 = Concept.objects.get(document=current_document, uid=relation.concept2_id)
         relation_type = concept1.stype + "_" + concept2.stype
 
-        def get_pub_pk(concept_stype):
+        def get_pub_pk(concept_stype, uid):
+            global pub_list
+
             if concept_stype == "g":
-                pub = Pubtator.objects.get(document=current_document, kind="GNormPlus").pk
+                pub = Pubtator.objects.get(document=current_document, kind="GNormPlus")
             elif concept_stype == "d":
-                pub = Pubtator.objects.get(document=current_document, kind="DNorm").pk
+                pub = Pubtator.objects.get(document=current_document, kind="DNorm")
             else:
-                pub = Pubtator.objects.get(document=current_document, kind="tmChem").pk
-            if pub not in pub_list:
-                pub_list.append(pub)
-            return pub
+                pub = Pubtator.objects.get(document=current_document, kind="tmChem")
+
+
+            if concept_stype == "g":
+                pub_type = "NCBI Gene"
+            elif concept_stype == "d":
+                pub_type = "MEDIC"
+            elif concept_stype == "c":
+                pub_type = "MESH"
+
+            pubtator = pub
+
+            if pubtator.valid():
+                pub_dict = {}
+                r = BioCReader(source=pubtator.content)
+                r.read()
+                for doc_idx, document in enumerate(r.collection.documents):
+                    for passage_idx, passage in enumerate(document.passages):
+                        for annotation in r.collection.documents[doc_idx].passages[passage_idx].annotations:
+                            try:
+                                text = annotation.text
+                                uid = annotation.infons[pub_type]
+                                location = str(annotation.locations[0])
+                            except:
+                                continue
+
+                            if uid != None:
+                                if uid in pub_dict:
+                                    if location not in pub_dict[uid]['location']:
+                                        pub_dict[uid]['location'].append(location)
+                                    if text not in pub_dict[uid]['text']:
+                                        pub_dict[uid]['text'].append(text)
+                                else:
+                                    pub_dict[uid] = {
+                                        'text': [text],
+                                        'stype': concept_stype,
+                                        'location': [location],
+                                        'uid': uid
+                                        }
+
+            return pub.pk, pub_dict
+
+
         if (relation_type == 'g_d' or relation_type == 'd_g'):
             file_key = 'gene_disease_relation_menu';
 
@@ -104,22 +145,34 @@ def relation_api(request, document_pk):
 
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
+        pub1_pk, pub1_dict = get_pub_pk(str(concept1.stype), concept1.uid)
+        pub2_pk, pub2_dict = get_pub_pk(str(concept2.stype), concept2.uid)
+
+        if pub1_pk not in pub_list:
+            pub_list.append(pub1_pk)
+        if pub2_pk not in pub_list:
+            pub_list.append(pub2_pk)
+
+
         relation_dict['c1_id']= str(concept1.id)
         relation_dict['c1_text']= str(concept1.text)
         relation_dict['c1_stype']= str(concept1.stype)
-        relation_dict['c1_correct'] = True
-        relation_dict['c1_pub_pk'] = str(get_pub_pk(str(concept1.stype)))
+        relation_dict['c1_uid']= str(concept1.uid)
+        relation_dict['c1_locations'] = pub1_dict[concept1.uid]['location']
+        relation_dict['c1_pub_pk'] = str(pub1_pk)
         relation_dict['c2_id']= str(concept2.id)
         relation_dict['c2_text']= str(concept2.text)
         relation_dict['c2_stype']= str(concept2.stype)
-        relation_dict['c2_correct'] = True
-        relation_dict['c2_pub_pk'] = str(get_pub_pk(str(concept2.stype)))
+        relation_dict['c2_uid']= str(concept2.uid)
+        relation_dict['c1_locations'] = pub2_dict[concept2.uid]['location']
+        relation_dict['c2_pub_pk'] = str(pub2_pk)
         relation_dict['relation_type'] = file_key
         relation_dict['pk'] = relation.pk
         relation_dict['pub_list'] = pub_list
 
         relation_list.append(relation_dict)
 
+    print relation_list
     return JsonResponse(relation_list, safe=False)
 
 @login_required
