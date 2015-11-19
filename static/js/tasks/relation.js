@@ -84,7 +84,6 @@ var data = {
     "text": "has no relation to"
     }
   ]
-
 };
 
 var global_data;
@@ -104,10 +103,9 @@ var section_text1 = "";
 var section_text2 = "";
 var selected_relation = null;
 
-
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  $('#submit_button').addClass('disabled');
+  // $('#submit_button').addClass('disabled');
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
@@ -130,9 +128,9 @@ Tree.addInitializer(function(options) {
       choice: obj['choice']
     }));
     selected_relation = obj['choice'].id;
-    if( selected_relation != null ) {
-      $('#submit_button').removeClass('disabled');
-    };
+    // if( selected_relation != null ) {
+    //   $('#submit_button').removeClass('disabled');
+    // };
     console.log("Selected item:", selected_relation);
   });
 
@@ -148,7 +146,7 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    $('#submit_button').addClass('disabled');
+    // $('#submit_button').addClass('disabled');
 
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
@@ -158,7 +156,6 @@ Tree.addInitializer(function(options) {
     }));
   });
 });
-
 
 /* Other stuff for Rel demo */
 $('.entity').on('mouseover', function(evt) {
@@ -170,7 +167,6 @@ $('.entity').on('mouseout', function(evt) {
   $(this).find('.text').show();
   $(this).find('.message').hide();
 });
-
 
 /* The current relationship pair we are working on in the array
 At document start, we should work with first item, then "ON SUBMIT" we should
@@ -225,8 +221,9 @@ function format_text_colors(section_text, section1_length, section2_length, rela
     return str;
 };
 
-
 function get_section_text(section_text, section_count){
+  console.log(section_text, "section text");
+
   if (section_text1 == "" && section_count == 0) {
     section_text1 = section_text;
   };
@@ -238,52 +235,34 @@ function get_section_text(section_text, section_count){
   } else if (section_count == 1) {
     section_text = section_text2;
   };
+
   return section_text;
 };
 
 // Makes object containing text locations
 var highlight_dict_LARGE = {};
-function get_annotation_spans(relationship_obj, passage0, passage1) {
+function get_annotation_spans(relationship_obj) {
   concept_list = [relationship_obj.c1_text, relationship_obj.c2_text];
   type_list = [relationship_obj.c1_stype, relationship_obj.c2_stype];
+  location_lists = [relationship_obj.c1_locations, relationship_obj.c2_locations]
 
   for (i = 0; i < concept_list.length; i++) {
-    concept = concept_list[i];
+    concept_text = concept_list[i];
     concept_stype = type_list[i];
+    location_list = location_lists[i];
 
-    if (concept_stype == "g") {
-        lookup_stype = "NCBI Gene";
-    } else if (concept_stype == "d") {
-        lookup_stype = "MEDIC";
-      }
-    else if (concept_stype == "c") {
-        lookup_stype = "MESH";
+    for (locations = 0; locations < location_list.length; locations ++){
+        highlight_dict_small = {}
+        highlight_list_small = [];
+
+        var location = location_list[locations]
+        var location = location.split(":")
+        highlight_dict_small['index'] = location[0]
+        highlight_dict_small['span'] = location[1]
+        highlight_dict_small['text'] = concept_text
+        highlight_list_small.push(highlight_dict_small);
+        highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small;
     };
-
-    function find_anns_from_passage(concept, passage){
-      highlight_list_small = [];
-      for (ann in passage) {
-        highlight_dict_small = {};
-        if (passage['text'] == concept && lookup_stype == passage['infon'][0]['@key']){
-          highlight_dict_small['index'] = passage['location']['@offset'];
-          highlight_dict_small['span'] = passage['location']['@length'];
-          highlight_dict_small['text'] = passage['text'];
-          highlight_list_small.push(highlight_dict_small);
-          highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small
-        } else if (passage[ann]['text'] == concept && lookup_stype == passage[ann]['infon'][0]['@key']) {
-          highlight_dict_small['index'] = passage[ann]['location']['@offset'];
-          highlight_dict_small['span'] = passage[ann]['location']['@length'];
-          highlight_dict_small['text'] = passage[ann]['text'];
-          highlight_list_small.push(highlight_dict_small);
-          highlight_dict_LARGE[highlight_dict_small['index']] = highlight_list_small;
-        };
-      };
-      return highlight_dict_LARGE;
-    };
-    highlight_dict_LARGE = find_anns_from_passage(concept, passage0)
-    highlight_dict_LARGE = find_anns_from_passage(concept, passage1)
-
-
   };
   return highlight_dict_LARGE;
 };
@@ -291,7 +270,7 @@ function get_annotation_spans(relationship_obj, passage0, passage1) {
 
 function pub_specific_info(relationship_obj) {
 
-    // Third (not guaranteed pubtator).  There are either two or sometimes three pubtators.
+  // Third (not guaranteed pubtator).  There are either two or sometimes three pubtators.
   $.ajax({
   url: '/document/pubtator/specific/'+ relationship_obj.pub_list[2] +'.json',
   dataType: 'json',
@@ -341,7 +320,7 @@ function pub_specific_info(relationship_obj) {
       section_text = $(this).html();
       section_text = get_section_text(section_text, section_count);
 
-      highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
+      highlight_dict_LARGE = get_annotation_spans(relationship_obj);
       section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
       $(this).html(section_text);
       section_count++;
@@ -402,7 +381,7 @@ function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
 
 var counter = 1;
 $('#submit_button').on('click', function(evt) {
-  $(this).addClass('disabled');
+  // $(this).addClass('disabled');
   relationship_obj = global_data[counter];  //TODO NEED TO LOG THE CORRECT RELATIONSHIP OBJECT
   previous_relationship_for_ajax = global_data[counter-1];
   counter += 1;
@@ -441,10 +420,9 @@ $('#submit_button').on('click', function(evt) {
     section_text = $(this).html();
     section_text = get_section_text(section_text, section_count);
 
-    // Build the higlight dictionary to contain all needed highlights
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub1_passage0, pub1_passage1);
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub2_passage0, pub2_passage1);
-    highlight_dict_LARGE = get_annotation_spans(relationship_obj, pub3_passage0, pub3_passage1);
+    // Build the higlight dictionary to contain all needed highlights for both
+    // concepts in the PAIR
+    highlight_dict_LARGE = get_annotation_spans(relationship_obj);
     section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
     $(this).html(section_text);
     section_count++;

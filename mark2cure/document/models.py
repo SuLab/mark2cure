@@ -248,7 +248,7 @@ class Document(models.Model):
                         continue
                     else:
                         unique_id_list.append(concept['uid'])
-                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=concept['text'], start=0, stop=0)
+                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=max(concept['text'], key=len), start=0, stop=0)
 
     # Jennifer's method
     def add_relation_pairs_to_database(self, relation_pair_list):
