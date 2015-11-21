@@ -52,7 +52,7 @@ def home(request):
                     docs_with_unanswered_relations_for_user.append(document)
                 break
 
-    queryset_documents = docs_with_unanswered_relations_for_user[:20]
+    queryset_documents = docs_with_unanswered_relations_for_user[:100]
 
     ctx = {
         'documents': queryset_documents,
@@ -88,7 +88,6 @@ def relation_api(request, document_pk):
                 pub = Pubtator.objects.get(document=current_document, kind="DNorm")
             else:
                 pub = Pubtator.objects.get(document=current_document, kind="tmChem")
-
 
             if concept_stype == "g":
                 pub_type = "NCBI Gene"
@@ -164,7 +163,7 @@ def relation_api(request, document_pk):
         relation_dict['c2_text']= str(concept2.text)
         relation_dict['c2_stype']= str(concept2.stype)
         relation_dict['c2_uid']= str(concept2.uid)
-        relation_dict['c1_locations'] = pub2_dict[concept2.uid]['location']
+        relation_dict['c2_locations'] = pub2_dict[concept2.uid]['location']
         relation_dict['c2_pub_pk'] = str(pub2_pk)
         relation_dict['relation_type'] = file_key
         relation_dict['pk'] = relation.pk

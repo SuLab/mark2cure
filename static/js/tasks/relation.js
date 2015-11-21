@@ -105,7 +105,7 @@ var selected_relation = null;
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  // $('#submit_button').addClass('disabled');
+  $('#submit_button').addClass('disabled');
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
@@ -128,9 +128,9 @@ Tree.addInitializer(function(options) {
       choice: obj['choice']
     }));
     selected_relation = obj['choice'].id;
-    // if( selected_relation != null ) {
-    //   $('#submit_button').removeClass('disabled');
-    // };
+    if( selected_relation != null ) {
+      $('#submit_button').removeClass('disabled');
+    };
     console.log("Selected item:", selected_relation);
   });
 
@@ -146,7 +146,7 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    // $('#submit_button').addClass('disabled');
+    $('#submit_button').addClass('disabled');
 
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
@@ -267,6 +267,19 @@ function get_annotation_spans(relationship_obj) {
   return highlight_dict_LARGE;
 };
 
+function repeat(str, num_repeats) {
+    return new Array(num_repeats + 1).join(str);
+};
+
+function add_progress_bar(concept_pairs_remaining, concept_pairs_total) {
+  concept_pairs_left = concept_pairs_total - concept_pairs_remaining;
+  var circle = "&#8226; ";  // circle symbol
+  var remaining_concept_circles = repeat(circle, concept_pairs_left);
+  var completed_concept_circles = repeat(circle, concept_pairs_remaining);
+  var added_text = $('<span />').css('color', '#7F3CFF');
+  added_text.html(remaining_concept_circles);
+  $('#testie').html(added_text).css("font-size", "40px").append(completed_concept_circles);
+};
 
 function pub_specific_info(relationship_obj) {
 
@@ -322,7 +335,7 @@ function pub_specific_info(relationship_obj) {
 
       highlight_dict_LARGE = get_annotation_spans(relationship_obj);
       section_text = format_text_colors(section_text, section_text1_offset, section_text2_offset, relationship_obj, highlight_dict_LARGE, section_count);
-      $(this).html(section_text);
+      $(this).html(section_text).css('line-height', '40px');
       section_count++;
     });
   },
@@ -351,37 +364,13 @@ $.getJSON('/relation/'+ document_pk +'/api/', function(data) {
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
   };
   Tree.start();
-
+  add_progress_bar(concept_pairs_remaining, concept_pairs_total)
 });
 
-// Variable praise section:
-function yays_selection() {
-  yays = ['Sweet!', 'Great!', 'Nice!', 'Awesome!', 'Nice job!', 'Excellent!', 'Wow!', 'Woohoo!', 'Hooray!', 'Yeaahh!', 'Look at you!'];
-  yay_word = yays[Math.floor(Math.random()*yays.length)];
-  return yay_word;
-};
-
-function carry_on_selection(concept_pairs_total, concept_pairs_remaining) {
-  carry_on = ['Carry on.', 'Keep going.', "Help some more.", "We still need you.", "Don't stop now.", "", "", "" ];
-  if (concept_pairs_total >= 5 && concept_pairs_remaining <= 3 )
-    carry_on = ["You're a trooper.", 'Most impressive.', "You're dedicated.", 'Very persistent.', 'Almost there.', 'On a role.', 'You are amazing.'];
-  carry_on_word = carry_on[Math.floor(Math.random()*carry_on.length)];
-  return carry_on_word;
-};
-
-function html_praise_display(concept_pairs_total, concept_pairs_remaining) {
-  if (concept_pairs_remaining == 1) {
-    html_display = "<em>" + yays_selection() + " This is the last one in this text!</em>";
-  }
-  else {
-    html_display = "<em>" + yays_selection() + " Only " + concept_pairs_remaining + " concept pairs left. " + carry_on_selection(concept_pairs_total, concept_pairs_remaining) +"</em>";
-  }
-  return html_display;
-};
 
 var counter = 1;
 $('#submit_button').on('click', function(evt) {
-  // $(this).addClass('disabled');
+
   relationship_obj = global_data[counter];  //TODO NEED TO LOG THE CORRECT RELATIONSHIP OBJECT
   previous_relationship_for_ajax = global_data[counter-1];
   counter += 1;
@@ -409,9 +398,7 @@ $('#submit_button').on('click', function(evt) {
     evt.preventDefault();
   };
 
-  $('#praise_after_completion').hide();
-  html_display = html_praise_display(concept_pairs_total, concept_pairs_remaining);
-  $('#praise_after_completion').html( html_display ).fadeIn(900);
+  add_progress_bar(concept_pairs_remaining, concept_pairs_total)
 
   section_count = 0;
   $('.section').each(function(el_idx, el) {
@@ -433,6 +420,8 @@ $('#submit_button').on('click', function(evt) {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
+  $(this).addClass('disabled');
+  selected_relation = null;
 
   var coll = new RelationList(data[file_key]);
   Tree['start'].show( new RelationCompositeView({

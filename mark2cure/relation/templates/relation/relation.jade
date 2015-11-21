@@ -18,18 +18,18 @@ block header
   <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
   <link rel='stylesheet' href='http://www.puff.me.uk/scripps/Tree/main.css'>
 
-
-
 block content
+
+  .container-fluid
+    div(style="background: #f5f5f5;").row
+      .col-xs-12(style="padding-right:250px; padding-left: 250px")
+        h4#testie
+
   .container-fluid(style="padding-right:250px; padding-left: 250px")
-    .row.head-space
 
       h3 Use the menu in the box below to help relate the two concepts:
 
       .container-fluid#tree-insert
-
-      .col-xs-12
-        h3#praise_after_completion
 
       form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
         - csrf_token
@@ -42,8 +42,7 @@ block content
 
         .col-xs-12
           - for section in sections
-            p.section #{section.text}
-
+            p.section.paragraph-box #{section.text}
 
 block post-footer
 
