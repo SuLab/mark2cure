@@ -37,9 +37,12 @@ import os
 
 @login_required
 def home(request):
-
-    # Just get group 4 for now. TODO upon integration, make this better (Max)
-    group_pk = 4
+    """Find documents to display to user. I was not too sure how to approach this part.For
+    now, I just provide them some documents to view. This needs to be improved.
+    TODO
+    Just get group 4 for now. TODO upon integration, make this better (Max, ideas?)
+    """
+    group_pk = 5
     group = Group.objects.get(pk=group_pk)
     documents = Document.objects.filter(task__group=group).all()
     docs_with_unanswered_relations_for_user = []
@@ -62,12 +65,16 @@ def home(request):
 
 @login_required
 def relation_api(request, document_pk):
+    """Only make api for relations that do not have an answer! TODO is this okay? This can
+    not be changed for now because this is why data[0] inside relation.js works. Need to
+    know where the next concept is that doesn't have a user's answer already. This is
+    why I do document.unanswered_relation_list (to make API for only
+    unanswered_relations).
+    """
     from django.http import JsonResponse
     # the document instance
     current_document = get_object_or_404(Document, pk=document_pk)
 
-    # Only make api for relations that do not have an answer!
-    # This is why data[0] inside relation.js works
     unanswered_relations_for_user = current_document.unanswered_relation_list(request)
     # ^^^^^^ no dry TODO Max, why isn't this dry?
 
@@ -128,19 +135,14 @@ def relation_api(request, document_pk):
 
             return pub.pk, pub_dict
 
-
-        if (relation_type == 'g_d' or relation_type == 'd_g'):
+        if (relation_type == 'g_d'):
             file_key = 'gene_disease_relation_menu';
 
-        if (relation_type == 'c_d' or relation_type == 'd_c' ):
+        if (relation_type == 'c_d'):
             file_key = 'chemical_disease_relation_menu';
 
-        if (relation_type == 'g_c' or relation_type == 'c_g' ):
+        if (relation_type == 'g_c'):
             file_key = 'gene_chemical_relation_menu';
-
-        # always have gene on the left and disease on the right for sentence structure
-        if relation_type == 'c_g' or relation_type == 'd_g' or relation_type == 'd_c':
-            concept1, concept2 = concept2, concept1
 
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
@@ -151,7 +153,6 @@ def relation_api(request, document_pk):
             pub_list.append(pub1_pk)
         if pub2_pk not in pub_list:
             pub_list.append(pub2_pk)
-
 
         relation_dict['c1_id']= str(concept1.id)
         relation_dict['c1_text']= str(concept1.text)
@@ -176,18 +177,14 @@ def relation_api(request, document_pk):
 
 @login_required
 def relation(request, document_pk):
+    """Main page for users to find the relationship between two concepts.
+    """
+
     form = AnswerForm
-    # the document instance
     document = get_object_or_404(Document, pk=document_pk)
 
-
-    # TODO do I need this relation piece
     relations = document.unanswered_relation_list(request)
-    relation = relations[0]
-    # TODO this is incorrect. Needs to be removed.
-    # print relation, "relation, views"
-    # unanswered_relations_for_user = document.unanswered_relation_list(request)
-    # print unanswered_relations_for_user, "unanswered_relations_for_user views"
+    relation = relations[0] # was used...TODO check on this
 
     ctx = {'sections': Section.objects.filter(document=document),
            'relation': relation,
@@ -196,13 +193,13 @@ def relation(request, document_pk):
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
 #pass in relation similar to above method
-def results(request, relation_id): #, relation_id
-    # print request, "JEN RESULTS REQUEST"
+def results(request, relation_id):
     relation = get_object_or_404(Relation, pk=relation_id)
     relation_type = request.POST['relation_type']
-    # print relation_type, "RELATION TYPE"
     form = AnswerForm(request.POST or None)
 
+    # TODO: Need help with this. Can I submit *** ALL*** answers via ajax?  Do I even need
+    # the final submit/form?  Seems unnecessary.
     if form.is_valid():
         print "VALID FORM"
         form.save()
