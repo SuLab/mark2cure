@@ -29,7 +29,6 @@ def check_for_overlaps(c1_dict_locations, c2_dict_locations):
     those concept pairs are compatible (do not overlap) """
 
     concepts_overlap_flag = False
-
     for c1_location in c1_dict_locations:
         for c2_location in c2_dict_locations:
 
@@ -51,9 +50,11 @@ def check_for_overlaps(c1_dict_locations, c2_dict_locations):
     return concepts_overlap_flag
 
 
-def return_pubtator_dict(pubtator, pub_type):
-    """ Input one pubtator, and it's type and get one dictionary. TODO: later we might
-    want to return different dictionaries."""
+def return_pubtator_dict(pubtator, pub_key, stype):
+    """ Input one pubtator (GNormPlus, DNorm, tmChem) and the pub type key (NCBI
+    Gene, MEDIC, or MESH) for the infons. And the stype and return one
+    dictionary. TODO: later we might want to return different dictionaries so
+    we would use different 'pub keys' and stypes."""
     global bad_document_flag
     if pubtator.valid():
         pub_dict = {}
@@ -71,17 +72,10 @@ def return_pubtator_dict(pubtator, pub_type):
                 for annotation in r.collection.documents[doc_idx].passages[passage_idx].annotations:
                     try:
                         text = annotation.text
-                        uid = annotation.infons[pub_type]
+                        uid = annotation.infons[pub_key]
                         location = str(annotation.locations[0])
                     except:
                         continue
-
-                    if pub_type == "NCBI Gene":
-                        stype = "g"
-                    elif pub_type == "MEDIC":
-                        stype = "d"
-                    elif pub_type == "MESH":
-                        stype = "c"
 
                     if uid != None:
                         if uid in pub_dict:
@@ -100,28 +94,30 @@ def return_pubtator_dict(pubtator, pub_type):
 
 
 def make_concept_dicts_from_pubtators(document):
-    """
-    input a document and return information from all three Pubtators.
+    """Input a document and return information from all three Pubtators (if
+    there are three). Try/except because sometimes there are no pubtators.
     """
     available_pub_list = []
-    # Try/except due to sometimes multiple pubs come back!
     try:
         pub_gene = Pubtator.objects.get(document=document, kind="GNormPlus")
-        gene_dict =  return_pubtator_dict(pub_gene, "NCBI Gene")
+        gene_dict =  return_pubtator_dict(pub_gene, "NCBI Gene", 'g')
         available_pub_list.append(gene_dict)
     except:
+        print document.document_id, "CHECK THE PUBTATOR gnorm"
         pass
     try:
         pub_disease = Pubtator.objects.get(document=document, kind="DNorm")
-        disease_dict = return_pubtator_dict(pub_disease, "MEDIC")
+        disease_dict = return_pubtator_dict(pub_disease, "MEDIC", 'd')
         available_pub_list.append(disease_dict)
     except:
+        print document.document_id, "CHECK THE PUBTATOR dnorm"
         pass
     try:
         pub_chemical = Pubtator.objects.get(document=document, kind="tmChem")
-        chemical_dict = return_pubtator_dict(pub_chemical, "MESH")
+        chemical_dict = return_pubtator_dict(pub_chemical, "MESH", 'c')
         available_pub_list.append(chemical_dict)
     except:
+        print document.document_id, "CHECK THE PUBTATOR, tmchem"
         pass
 
     # TODO, if we add species, etc. this might change
@@ -143,18 +139,24 @@ information to 1) check for overlapping words 2) filter out bad documents
 5) Use the longest word as the representative "text" if there are multiple texts
 per UID
 """
+
 # this is how many documents to import via ***TASKS***
-queryset_documents = Document.objects.all()[:100]
+queryset_documents = Document.objects.all()[:500]
 
 for document in queryset_documents:
     concept_dict_list = make_concept_dicts_from_pubtators(document)
-    # TODO list of docs that we know are bad Pubtators (they'll produce bad highlights)
+    """list of docs that we know have bad Pubtators (they'll produce bad
+    highlights). They contain characters that throw of the Pubtator's results
+    such as >, < or %. Causes unpredictable results.
+    Ex: document pk 1801, Sometimes percent signs
+    are stored as percents in the M2C DB, but sometimes they come out as a "y"
+    like in 1801.
+    """
     bad_document_list = ["1801"]
 
     if bad_document_flag == True or str(document.pk) in bad_document_list:
         # reset flag and continue through documents
         bad_document_flag = False
-        # Do not use docs with ">, < or % because they cause unpredictable errors with highlights"
         continue
     relation_pair_list = []
     if len(concept_dict_list) >= 2:
@@ -166,10 +168,16 @@ for document in queryset_documents:
                     for c2 in concept2_dict:
 
                         concepts_overlap_flag = check_for_overlaps(concept1_dict[c1]['location'], concept2_dict[c2]['location'])
-
+                        """Maximum is the longest word out of all possible
+                        "texts" for one unique ID (preference to show word and
+                        not the acronym
+                        """
                         if concepts_overlap_flag != True and max(concept1_dict[c1]['text'], key=len) != max(concept2_dict[c2]['text'], key=len):
                             relation_pair_list.append([ concept1_dict[c1], concept2_dict[c2] ] )
 
+    """Add the concepts for each document, then add the relations for each
+    document
+    """
     if relation_pair_list != []:
         document.add_concepts_to_database(relation_pair_list)
         document.add_relation_pairs_to_database(relation_pair_list)

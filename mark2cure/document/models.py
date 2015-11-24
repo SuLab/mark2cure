@@ -292,9 +292,8 @@ class Document(models.Model):
 
 
     def unanswered_relation_list(self, request):
-        """
-        We need to know what documents contain relations that do not have
-        answers on the "relation home page/dashboard".  We also need to know
+        """We need to know what documents contain relations that do not have
+        answers on the "relation home page/dashboard". We also need to know
         which relation pairs they have available as "tasks" for the main
         relation.jade web page.
         """

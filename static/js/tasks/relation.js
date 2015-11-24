@@ -73,10 +73,10 @@ var data = {
 
     "children": [{
       "id": "am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw",
-      "text": "amount is changed by",
+      "text": "drug affects the gene or gene product",
     }, {
       "id": "5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy",
-      "text": "activity is changed by",
+      "text": "gene or gene product affects the drug",
     }]
 
     }, {
@@ -222,7 +222,6 @@ function format_text_colors(section_text, section1_length, section2_length, rela
 };
 
 function get_section_text(section_text, section_count){
-  console.log(section_text, "section text");
 
   if (section_text1 == "" && section_count == 0) {
     section_text1 = section_text;
