@@ -73,10 +73,10 @@ var data = {
 
     "children": [{
       "id": "am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw",
-      "text": "drug affects the gene or gene product",
+      "text": "affects",
     }, {
       "id": "5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy",
-      "text": "gene or gene product affects the drug",
+      "text": "is affected by",
     }]
 
     }, {
