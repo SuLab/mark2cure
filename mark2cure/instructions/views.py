@@ -26,7 +26,7 @@ def gene_drug_relation(request):
 def gene_gene_relation(request):
     pass
 
-def chemical_chemical_relation(request):
+def drug_drug_relation(request):
     pass
 
 def disease_disease_relation(request):

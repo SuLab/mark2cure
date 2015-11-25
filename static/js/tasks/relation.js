@@ -5,17 +5,17 @@ var data = {
   "chemical_disease_relation_menu": [{
     "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",
     "text": "relates to",
-    "desc": "The chemical has some type of relation to the disease.",
+    "desc": "The drug has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
         "id": "72zuw4bgzz5dniepb3rmls23nsltwocbk274c98m",
         "text": "exacerbates",
-        "desc": "The chemical worsens or exacerbates the disease in any manner.",
+        "desc": "The drug worsens or exacerbates the disease in any manner.",
         "example": "St. John's Wort has been known to worsen symptoms of Parkinson's disease.",
       }, {
         "id": "jilhvc5p2cy0atls8659a1fggjvvkmahwuspy2kr",
         "text": "treats",
-        "desc": "The chemical improves or treats the disease in any manner.",
+        "desc": "The drug improves or treats the disease in any manner.",
         "example": "Treatment with gingerol may provide a novel therapeutic strategy for prion-mediated neurotoxicity",
       }, {
         "id": "yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5",
@@ -25,19 +25,19 @@ var data = {
       }, {
         "id": "jyiczzhhupcp7cmebl422ax5dxe1jkwuq647oaw2",
         "text": "may cause",
-        "desc": "Administration of the chemical may cause or lead to the disease.",
-        "example": "43% of mice given the chemical NVP-BHG712 developed pulmonary metastases.",
+        "desc": "Administration of the drug may cause or lead to the disease.",
+        "example": "43% of mice given the drug NVP-BHG712 developed pulmonary metastases.",
       }, {
         "id": "lt18qfxd1ehj7ymxb29wrv6qa41mocwe6eor9dna",
         "text": "prevents",
-        "desc": "Administration of the chemical prevents the disease",
+        "desc": "Administration of the drug prevents the disease",
         "example": "Malarone is taken daily by travelers wanting to prevent malaria.",
       }]
     }, {
     "id": "4mzrh5ub3nla6b1ostx7qdparjl3lrd9o567ubif",
     "text": "has no relation to",
-    "desc": "There is no relation between the chemical and disease.",
-    "example": "To study soft tissue sarcoma, an experimental group of mice was given the chemical NVP-BHG712.",
+    "desc": "There is no relation between the drug and disease.",
+    "example": "To study soft tissue sarcoma, an experimental group of mice was given the drug NVP-BHG712.",
   }],
 
   "gene_disease_relation_menu": [{

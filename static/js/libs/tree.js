@@ -143,7 +143,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
       else if (stype === "d")
         stype_word = "disease";
       else if (stype === "c")
-        stype_word = "chemical";
+        stype_word = "drug";
     return stype_word;
     };
 
