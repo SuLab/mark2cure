@@ -16,12 +16,11 @@ def treatment_marking(request):
 def gene_disease_relation(request):
     return TemplateResponse(request, 'instructions/gene-disease-relation.html')
 
-def chemical_disease_relation(request):
-    return TemplateResponse(request, 'instructions/chemical-disease-relation.html')
+def drug_disease_relation(request):
+    return TemplateResponse(request, 'instructions/drug-disease-relation.html')
 
-def gene_chemical_relation(request):
-    # TODO
-    pass
+def gene_drug_relation(request):
+    return TemplateResponse(request, 'instructions/gene-drug-relation.html')
 
 """ TODO this will be for a later date when we add more relations."""
 def gene_gene_relation(request):

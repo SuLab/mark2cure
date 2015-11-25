@@ -15,14 +15,11 @@ urlpatterns = patterns('',
     url(r'^gene-disease-relation/$',
         views.gene_disease_relation, name='gene-disease-relation'),
 
-    url(r'^chemical-disease-relation/$',
-        views.chemical_disease_relation, name='chemical-disease-relation'),
+    url(r'^drug-disease-relation/$',
+        views.drug_disease_relation, name='drug-disease-relation'),
 
-    # TODO: add this after ontology is finalized.
-    url(r'^gene-chemical-relation/$',
-        views.gene_chemical_relation, name='gene-chemical-relation'),
-
-
+    url(r'^gene-drug-relation/$',
+        views.gene_drug_relation, name='gene-drug-relation'),
 
 
 )
