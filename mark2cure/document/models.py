@@ -116,15 +116,6 @@ class Document(models.Model):
 
         return document
 
-    """
-    ***************************************************************
-    TODO: *** MAX *** this is NOT needed for the relation module anymore.
-
-    Meaning upon merge, this method can be reverted to the state you originally
-    had.
-
-    ***************************************************************
-    """
     def as_bioc_with_pubtator_annotations(self, request=None):
         '''
             This is a function that merges the 3 different pubtator
@@ -151,29 +142,14 @@ class Document(models.Model):
             for p_idx, passage in enumerate(document.passages):
                 # For each passage in each document in the collection
                 # add the appropriate annotation
-
                 for p in pub_readers:
+
                     for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
                         ann_type = annotation.infons['type']
 
-                        ann_GENE = annotation.infons.get('NCBI Gene', 'None')  # genes
-                        ann_MEDIC = annotation.infons.get('MEDIC', 'None')  # diseases
-                        ann_MESH = annotation.infons.get('MESH', 'None')  # chemicals
-
                         if ann_type in approved_types:
                             annotation.clear_infons()
-                            annotation.put_infon('type', str(approved_types.index(ann_type)) )
-                            annotation.put_infon('text', str(annotation.text) )
-
-                            if ann_type == "Gene":
-                                annotation.put_infon('UID', str(ann_GENE) )
-
-                            if ann_type == "Disease":
-                                annotation.put_infon('UID', str(ann_MEDIC) )
-
-                            if ann_type == "Chemical":
-                                annotation.put_infon('UID', str(ann_MESH) )
-
+                            annotation.put_infon('type', str(approved_types.index(ann_type)))
                             annotation.put_infon('user', 'pubtator')
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
@@ -210,6 +186,7 @@ class Document(models.Model):
                                 pass
 
         return reader.collection.documents[0]
+
 
     def as_writer(self, request=None):
         from mark2cure.common.formatter import bioc_writer
