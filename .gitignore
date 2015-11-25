@@ -72,7 +72,6 @@ docs/_build/
 /..bfg-report
 /static/fonts/*
 env_vars
-mark2cure/*/migrations
 force.json
 static/node_modules
 static/bower_components

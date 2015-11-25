@@ -44,6 +44,8 @@ class Base(Configuration):
     SITE_ID = 1
     INTERNAL_IPS = ('127.0.0.1',)
 
+    ACCOUNT_ACTIVATION_DAYS = 7
+
     # Application definition
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -110,7 +112,7 @@ class Base(Configuration):
         'disable_existing_loggers': True,
         'root': {
             'level': 'DEBUG',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
         },
         'formatters': {
             'verbose': {

@@ -30,13 +30,16 @@ class UniqueTokenManager(models.Manager):  # this might end up in `utils`
         raise RuntimeError('Could not create unique token.')
 
 
+def valid_until_gen():
+    return now() + timedelta(settings.ACCOUNT_ACTIVATION_DAYS)
+
+
 class AbstractToken(models.Model):
 
     TOKEN_LENGTH = 32
 
     token = models.CharField(max_length=TOKEN_LENGTH, unique=True)
-    valid_until = models.DateTimeField(
-        default=lambda: now() + timedelta(settings.ACCOUNT_ACTIVATION_DAYS))
+    valid_until = models.DateTimeField( default=valid_until_gen() )
 
     objects = UniqueTokenManager(token_field='token',
                                  token_length=TOKEN_LENGTH)
