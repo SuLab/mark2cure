@@ -238,7 +238,7 @@ class Document(models.Model):
                         continue
                     else:
                         unique_id_list.append(concept['uid'])
-                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=max(concept['text'], key=len), start=0, stop=0)
+                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=max(concept['text'], key=len) )
 
     # Jennifer's method
     def add_relation_pairs_to_database(self, relation_pair_list):
@@ -265,7 +265,7 @@ class Document(models.Model):
 
                 concept1_obj = Concept.objects.get(document=self, uid=concept1['uid'])
                 concept2_obj = Concept.objects.get(document=self, uid=concept2['uid'])
-                Relation.objects.create(document=self, relation=[ concept1['uid'], concept2['uid'] ], concept1_id=concept1_obj, concept2_id=concept2_obj, automated_cid=True)
+                Relation.objects.create(document=self, relation=[ concept1['uid'], concept2['uid'] ], concept1_id=concept1_obj, concept2_id=concept2_obj )
 
 
     def unanswered_relation_list(self, request):

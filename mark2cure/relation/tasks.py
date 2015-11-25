@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from .models import Paper, Sentence, Relation, Concept  # JENNIFER TODO, import all models to be populated
+from .models import Relation, Concept
 from ..document.models import Document, Pubtator
 import os
 import subprocess

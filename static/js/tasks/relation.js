@@ -19,7 +19,7 @@ var data = {
         "example": "Treatment with gingerol may provide a novel therapeutic strategy for prion-mediated neurotoxicity",
       }, {
         "id": "yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5",
-        "text": "increases risk of disease",
+        "text": "increases risk of",
         "desc": "Administration of the drug increases chances of getting the disease. Considered an 'adverse side effect' of the drug.",
         "example": "Parkinson's disease risk factors include ageing, exposure to toxins and genetic defects.",
       }, {

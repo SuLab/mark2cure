@@ -14,8 +14,6 @@ class Concept(models.Model):
     uid = models.TextField(blank=False)
     stype = models.TextField(blank=False)
     text = models.TextField(blank=False)
-    start = models.IntegerField()
-    stop = models.IntegerField()
 
     def __unicode__(self):
         return self.uid
@@ -25,12 +23,6 @@ class Relation(models.Model):
     relation = models.TextField(blank=False)
     concept1_id = models.ForeignKey(Concept, related_name='concept1')
     concept2_id = models.ForeignKey(Concept, related_name='concept2')
-
-    automated_cid = models.BooleanField(default=False)
-    # TODO if CID relation automatically determined, then apply
-    # relation choice to auto
-    if automated_cid == True:
-        relation = "auto"
 
     def __unicode__(self):
         return self.relation
