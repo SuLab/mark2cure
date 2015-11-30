@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from ..document.models import Document
-from ..task.models import DocumentQuestRelationship
+from ..task.models import DocumentQuestRelationship, Task
 
 from brabeion.base import Badge, BadgeAwarded
 from brabeion import badges
@@ -160,7 +160,6 @@ class Group(models.Model):
                 DocumentQuestRelationship.objects.create(task=last_task, document=document)
 
             else:
-                #from ..task.models import Task
                 last_task, task_created = Task.objects.get_or_create(
                     name=str(name_counter),
                     completions=completions,
