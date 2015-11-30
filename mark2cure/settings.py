@@ -63,7 +63,6 @@ class Base(Configuration):
         'raven.contrib.django.raven_compat',
 
         'djangoratings',
-        'social.apps.django_app.default',
         'djrill',
         'djcelery',
         'robots',
@@ -151,29 +150,7 @@ class Base(Configuration):
     }
 
     AUTHENTICATION_BACKENDS = (
-        'social.backends.open_id.OpenIdAuth',
-        'social.backends.google.GoogleOpenId',
-        'social.backends.google.GoogleOAuth2',
-        'social.backends.google.GoogleOAuth',
-
-        'social.backends.twitter.TwitterOAuth',
-        'social.backends.facebook.FacebookOAuth2',
-
         'django.contrib.auth.backends.ModelBackend',
-    )
-
-    SOCIAL_AUTH_PIPELINE = (
-        'social.pipeline.social_auth.social_details',
-        'social.pipeline.social_auth.social_uid',
-        'social.pipeline.social_auth.auth_allowed',
-        'social.pipeline.social_auth.social_user',
-        'social.pipeline.user.get_username',
-        # Ensures many socials w/ single email are 1 user
-        'social.pipeline.social_auth.associate_by_email',
-        'social.pipeline.user.create_user',
-        'social.pipeline.social_auth.associate_user',
-        'social.pipeline.social_auth.load_extra_data',
-        'social.pipeline.user.user_details'
     )
 
     MIDDLEWARE_CLASSES = (
@@ -229,9 +206,6 @@ class Base(Configuration):
 
         'mark2cure.common.context_processors.support_form',
         'mark2cure.registration.context_processors.inject_signup_forms',
-
-        'social.apps.django_app.context_processors.backends',
-        'social.apps.django_app.context_processors.login_redirect',
     )
 
     MEDIA_URL = 'media/'

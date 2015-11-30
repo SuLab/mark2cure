@@ -8,8 +8,6 @@ from django.core.mail import send_mail
 
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 
-from .models import EmailConfirmationRequest, EmailChangeRequest
-
 
 class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -66,10 +64,12 @@ class RequestEmailConfirmationForm(forms.Form):
         send_mail(email, self.template, context)
 
     def create_request_instance(self):
-        email = self.cleaned_data['email']
-        EmailConfirmationRequest.objects.filter(email=email).delete()
-        return EmailConfirmationRequest.objects.create(
-            email=self.cleaned_data['email'])
+        #email = self.cleaned_data['email']
+        # (TODO) If enabled again, this will fail
+        #EmailConfirmationRequest.objects.filter(email=email).delete()
+        #return EmailConfirmationRequest.objects.create(
+        #    email=self.cleaned_data['email'])
+        pass
 
 
 class RequestEmailChangeForm(RequestEmailConfirmationForm):
@@ -88,7 +88,9 @@ class RequestEmailChangeForm(RequestEmailConfirmationForm):
         return self.cleaned_data['email']
 
     def create_request_instance(self):
-        EmailChangeRequest.objects.filter(user=self.user).delete()
-        return EmailChangeRequest.objects.create(
-            email=self.cleaned_data['email'], user=self.user)
+        # (TODO) If enabled again, this will fail
+        #EmailChangeRequest.objects.filter(user=self.user).delete()
+        #return EmailChangeRequest.objects.create(
+        #    email=self.cleaned_data['email'], user=self.user)
+        pass
 

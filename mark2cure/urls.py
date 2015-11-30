@@ -52,7 +52,6 @@ urlpatterns = patterns('',
     url(r'^registration/', include('mark2cure.registration.urls',
         namespace='registration')),
 
-    url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('django.contrib.auth.urls', namespace='auth')),
 
     url(r'^comments/', include('django_comments.urls')),

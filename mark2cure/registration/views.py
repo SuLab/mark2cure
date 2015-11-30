@@ -13,8 +13,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.views import password_reset, password_reset_confirm
 from django.utils.translation import ugettext as _
 
-from .models import EmailConfirmationRequest, EmailChangeRequest
-
 from datetime import datetime
 from urllib import urlencode
 from brabeion import badges
@@ -65,91 +63,6 @@ def user_creation_settings(request):
     return TemplateResponse(request, 'registration/create-settings.jade',
             {'user_change_form': user_change_form,
              'user_profile_form': user_profile_form})
-
-
-def request_email_confirmation(request):
-    local_host = utils.get_local_host(request)
-    form = forms.RequestEmailConfirmationForm(local_host=local_host,
-                                              data=request.POST or None)
-    if form.is_valid():
-        form.send()
-        msg = _('Confirmation email has been sent. '
-                'Please check your inbox.')
-        messages.success(request, msg)
-        return redirect(settings.LOGIN_REDIRECT_URL)
-
-    return TemplateResponse(request,
-                            'registration/request_email_confirmation.jade',
-                            {'form': form})
-
-
-@login_required
-def request_email_change(request):
-    form = forms.RequestEmailChangeForm(
-        local_host=utils.get_local_host(request), user=request.user,
-        data=request.POST or None)
-    if form.is_valid():
-        form.send()
-        msg = _('Confirmation email has been sent. '
-                'Please check your inbox.')
-        messages.success(request, msg)
-        return redirect(settings.LOGIN_REDIRECT_URL)
-
-    return TemplateResponse(
-        request, 'registration/request_email_confirmation.jade',
-        {'form': form})
-
-
-def confirm_email(request, token):
-    if not request.POST:
-        try:
-            email_confirmation_request = EmailConfirmationRequest.objects.get(
-                token=token, valid_until__gte=datetime.now())
-            # TODO: cronjob (celery task) to delete stale tokens
-        except EmailConfirmationRequest.DoesNotExist:
-            return TemplateResponse(request, 'registration/invalid_token.jade')
-        user = email_confirmation_request.get_authenticated_user()
-        email_confirmation_request.delete()
-        auth_login(request, user)
-        messages.success(request, _('You are now logged in.'))
-
-    form = forms.SetOrRemovePasswordForm(user=request.user,
-                                         data=request.POST or None)
-    if form.is_valid():
-        form.save()
-        messages.success(request, _('Password has been successfully changed.'))
-        return redirect(settings.LOGIN_REDIRECT_URL)
-
-    return TemplateResponse(
-        request, 'registration/set_password.jade', {'form': form})
-
-
-def change_email(request, token):
-    try:
-        email_change_request = EmailChangeRequest.objects.get(
-            token=token, valid_until__gte=datetime.now())
-        # TODO: cronjob (celery task) to delete stale tokens
-    except EmailChangeRequest.DoesNotExist:
-        return TemplateResponse(request, 'registration/invalid_token.jade')
-
-    # if another user is logged in, we need to log him out, to allow the email
-    # owner confirm his identity
-    if (request.user.is_authenticated() and
-            request.user != email_change_request.user):
-        auth_logout(request)
-    if not request.user.is_authenticated():
-        query = urlencode({
-            'next': request.get_full_path(),
-            'email': email_change_request.user.email})
-        login_url = utils.url(path=settings.LOGIN_URL, query=query)
-        return redirect(login_url)
-
-    request.user.email = email_change_request.email
-    request.user.save()
-    email_change_request.delete()
-
-    messages.success(request, _('Your email has been successfully changed'))
-    return redirect(settings.LOGIN_REDIRECT_URL)
 
 
 def reset_confirm(request, uidb36=None, token=None):

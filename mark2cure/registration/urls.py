@@ -14,15 +14,15 @@ urlpatterns = patterns('',
     url(r'^create/settings/$', views.user_creation_settings, name='user_creation_settings'),
     url(r'^create/$', views.user_creation, name='user_creation'),
 
-    url(r'^request_email_confirmation/$', views.request_email_confirmation,
-        name='request_email_confirmation'),
-    url(r'^confirm_email/(?P<token>\w+)/$', views.confirm_email,
-        name='confirm_email'),
+    #url(r'^request_email_confirmation/$', views.request_email_confirmation,
+    #    name='request_email_confirmation'),
+    #url(r'^confirm_email/(?P<token>\w+)/$', views.confirm_email,
+    #    name='confirm_email'),
 
-    url(r'^request_email_change/$', views.request_email_change,
-        name='request_email_change'),
-    url(r'^change_email/(?P<token>\w+)/$', views.change_email,
-        name='change_email'),
+    #url(r'^request_email_change/$', views.request_email_change,
+    #    name='request_email_change'),
+    #url(r'^change_email/(?P<token>\w+)/$', views.change_email,
+    #    name='change_email'),
 
     # Reset Email
     url(r'^password_reset/done/$',
