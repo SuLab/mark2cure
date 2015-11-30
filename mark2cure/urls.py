@@ -44,10 +44,8 @@ urlpatterns = patterns('',
     # Task Section
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
-    url(r'^task/', include('mark2cure.task.urls',
-        namespace='task')),
     url(r'^task/entity-recognition/', include('mark2cure.task.entity_recognition.urls',
-        namespace='entity-recognition')),
+        namespace='task-entity-recognition')),
 
 
     url(r'^talk/', include('mark2cure.talk.urls',

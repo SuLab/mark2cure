@@ -25,7 +25,7 @@ block post-footer
 
     YPet.addInitializer(function(options) {
 
-      $.getJSON('/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function( data ) {
+      $.getJSON('/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function( data ) {
         self_data = data;
         passages = data.collection.document.passage;
         regions = {};
@@ -52,7 +52,7 @@ block post-footer
 
     /* Submit Feedback and show partner */
     $.ajax({
-      url:'/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
+      url:'/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
       dataType: 'json',
       success: function(data) {
 

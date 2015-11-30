@@ -59,7 +59,7 @@ block post-footer
             return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
           });
           if(set.length) {
-            window.location = '/quest/' + set[0].id;
+            window.location = '/task/entity-recognition/quest/' + set[0].id;
           } else { window.location = '/dashboard/'; }
         }
       };

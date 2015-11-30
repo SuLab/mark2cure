@@ -108,7 +108,7 @@ class UserQuestRelationship(models.Model):
         get_latest_by = 'updated'
 
     def __unicode__(self):
-        return u'/quest/{quest_pk}/ {username}'.format(
+        return u'/task/entity-recognition/quest/{quest_pk}/ {username}'.format(
             quest_pk=self.task.pk,
             username=self.user.username)
 

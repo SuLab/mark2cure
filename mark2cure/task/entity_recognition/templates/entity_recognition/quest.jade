@@ -96,7 +96,7 @@ block content
               | Yes, Let's Talk
 
           .col-xs-6
-            a(href='/quest/{{task.pk}}/').button.btn.btn-primary.btn-block.done
+            a(href='/task/entity-recognition/quest/{{task.pk}}/').button.btn.btn-primary.btn-block.done
               | Next Doc
 
 
@@ -158,7 +158,7 @@ block post-footer
     function show_results() {
       /* Show partner comparison */
       $.ajax({
-        url:'/document/{{task.pk}}/{{document.pk}}/results.json',
+        url:'/task/entity-recognition/{{task.pk}}/{{document.pk}}/results.json',
         dataType: 'json',
         cache: false,
         async: false,
@@ -204,7 +204,7 @@ block post-footer
 
         var section_pk = +_.find(passage.infon, function(o){return o['@key']=='id';})['#text'],
             annotations = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON(),
-            url = '/document/{{task.pk}}/'+ section_pk +'/annotation/';
+            url = '/task/entity-recognition/{{task.pk}}/'+ section_pk +'/annotation/';
         ann_counter += annotations.length;
 
         /* Iterate over each of the annotations within that section */
@@ -224,7 +224,7 @@ block post-footer
       /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
       $.ajax({
         type: 'POST',
-        url: '/quest/{{task.pk}}/{{document.pk}}/submit/',
+        url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
         data: {'csrfmiddlewaretoken': '{{csrf_token}}'},
         cache: false,
         async: false,
