@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from ..document.models import Document, View
-from ..common.models import Group
 
 
 class Task(models.Model):
@@ -31,7 +30,7 @@ class Task(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     # Tasks are not shared between groups so no need for m2m
-    group = models.ForeignKey(Group, blank=True, null=True)
+    group = models.ForeignKey('common.Group', blank=True, null=True)
 
     def total_points(self):
         print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
