@@ -111,7 +111,7 @@ class Base(Configuration):
         'disable_existing_loggers': True,
         'root': {
             'level': 'DEBUG',
-            'handlers': ['console'],
+            'handlers': ['sentry'],
         },
         'formatters': {
             'verbose': {
