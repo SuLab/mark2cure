@@ -115,9 +115,9 @@ class Group(models.Model):
         task_queryset = self.task_set.extra(select={
             "completed": """
                 SELECT COUNT(*) AS completed
-                FROM common_userquestrelationship
-                WHERE (common_userquestrelationship.completed = 1
-                    AND common_userquestrelationship.task_id = common_task.id)"""
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)"""
         })
         completed = sum([x for x in task_queryset.values_list('completed', flat=True) if x is not None])
         required = sum([x for x in task_queryset.values_list('completions', flat=True) if x is not None])

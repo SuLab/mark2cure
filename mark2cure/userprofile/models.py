@@ -219,16 +219,16 @@ class UserProfile(models.Model):
             ).extra(select={
                 "community_submission_count": """
                     SELECT COUNT(*) AS cummunity_submission_count
-                    FROM common_userquestrelationship
-                    WHERE (common_userquestrelationship.completed = 1
-                        AND common_userquestrelationship.task_id = common_task.id)""",
+                    FROM task_userquestrelationship
+                    WHERE (task_userquestrelationship.completed = 1
+                        AND task_userquestrelationship.task_id = task_task.id)""",
 
                 "user_completed": """
                     SELECT COUNT(*) AS user_completed
-                    FROM common_userquestrelationship
-                    WHERE (common_userquestrelationship.completed = 1
-                        AND common_userquestrelationship.user_id = %d
-                        AND common_userquestrelationship.task_id = common_task.id)""" % (self.user.pk,)
+                    FROM task_userquestrelationship
+                    WHERE (task_userquestrelationship.completed = 1
+                        AND task_userquestrelationship.user_id = %d
+                        AND task_userquestrelationship.task_id = task_task.id)""" % (self.user.pk,)
 
         }).values('id', 'community_submission_count', 'user_completed', 'completions',)
         uncompleted_quests = [task for task in queryset if task['user_completed'] == 0 and (task['completions'] is None or task['community_submission_count'] < task['completions'])  ]
