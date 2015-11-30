@@ -70,7 +70,6 @@ docs/_build/
 /results
 
 /..bfg-report
-/static/fonts/*
 env_vars
 force.json
 static/node_modules
