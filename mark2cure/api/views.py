@@ -149,8 +149,7 @@ def group_users_bioc(request, group_pk, format_type):
     # Fetch all the section pks and their text length
     sections = Section.objects.filter(
         document__document_id__in=document_pmids
-    ).extra(select={'section_length': 'LENGTH(text)'
-    }).values('pk', 'section_length')
+    ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
     all_section_pks = [s['pk'] for s in sections]
 
     # Fetch all the actual annotations using

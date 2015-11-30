@@ -6,7 +6,7 @@ from .models import Document, Pubtator
 
 
 def read_bioc(request, pubmed_id, format_type):
-    """A plan (no annotations) BioC file for a PMID"""
+    """A plain (no annotations) BioC file for a PMID"""
     writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)
 

@@ -1,12 +1,6 @@
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
-
-from ...document.models import Document, Section, View, Annotation
-
 from django.contrib.auth.models import User
 
-from datetime import datetime
-from Bio import Entrez, Medline
+from ...document.models import View, Annotation
 
 import random
 
@@ -68,7 +62,7 @@ def select_best_opponent(task, document, player):
         row_length = df.shape[0]
         if row_length:
             # Top 1/2 of the users (sorted by F)
-            df = df.iloc[:row_length/2]
+            df = df.iloc[:row_length / 2]
 
             # Select 1 at random
             top_half_user_pks = list(df.user)

@@ -15,7 +15,6 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
 
-
     def __unicode__(self):
         return self.title
 

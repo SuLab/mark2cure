@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.db import models
 
-from mark2cure.common.models import Group, SupportMessage
+from .models import Group, SupportMessage
+from ..task.models import DocumentQuestRelationship
 
 
 class GroupAdmin(admin.ModelAdmin):

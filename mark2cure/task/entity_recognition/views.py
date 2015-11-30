@@ -1,35 +1,21 @@
-from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseServerError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from mark2cure.common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
+from django.shortcuts import get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods
+from django.http import HttpResponse, HttpResponseServerError
+from django.template.response import TemplateResponse
 
-from ..models import Task, UserQuestRelationship
-
-from .utils import generate_results, select_best_opponent
-from ...document.models import Document, Section, Annotation
+from ...common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
+from ...document.models import Document, Section
 from .forms import AnnotationForm
+from ..models import Task, UserQuestRelationship
+from .utils import generate_results, select_best_opponent
 
 from brabeion import badges
 import random
 import os
-
-from django.http import HttpResponse, HttpResponseServerError
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-from django.template.response import TemplateResponse
-from django.views.decorators.cache import cache_page
-from django.contrib.auth.models import User
-from django.contrib import messages
-
-
-import logging
-logger = logging.getLogger(__name__)
-
 
 
 def read_users_bioc(request, pubmed_id, format_type):
@@ -166,7 +152,6 @@ def identify_annotations_submit(request, task_pk, section_pk):
     return HttpResponseServerError()
 
 
-
 @login_required
 def quest_read_doc(request, quest_pk, doc_idx):
     task = get_object_or_404(Task, pk=quest_pk)
@@ -257,7 +242,6 @@ def quest_read_doc_results(request, quest_pk, doc_idx):
            'opponent': opponent,
            'document': relevant_view.section.document}
     return TemplateResponse(request, 'entity_recognition/quest-results.jade', ctx)
-
 
 
 @login_required

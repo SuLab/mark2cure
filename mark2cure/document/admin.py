@@ -52,7 +52,7 @@ class PubtatorAdmin(admin.ModelAdmin):
         return obj.document.document_id
 
     def valid(self, obj):
-        return False != obj.valid()
+        return obj.valid() is not False
 
     def annotations(self, obj):
         return obj.count_annotations()

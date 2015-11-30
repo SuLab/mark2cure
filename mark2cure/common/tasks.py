@@ -1,8 +1,4 @@
-from ..common.models import Task, Group, DocumentQuestRelationship
-from ..document.models import Document
-
 from celery import task
-import random
 
 import logging
 logger = logging.getLogger(__name__)

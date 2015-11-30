@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from ..document.models import Document, View
+from ..document.models import Document
+from ..task.models import Task, DocumentQuestRelationship
 
 from brabeion.base import Badge, BadgeAwarded
 from brabeion import badges
@@ -80,6 +81,8 @@ badges.register(PointsBadge)
 
 
 class Group(models.Model):
+    '''Describe a non-task specific selection of documents (1-n) that curator defined'''
+
     name = models.CharField(max_length=200)
     stub = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
@@ -130,7 +133,7 @@ class Group(models.Model):
         queryset = self.get_documents().prefetch_related('pubtator_set')
         completed = sum([3 for x in queryset if x.pubtator_set.filter(validate_cache=True).count() == 3])
         if completed:
-            return (Decimal(completed) / Decimal(queryset.count()*3)) * 100
+            return (Decimal(completed) / Decimal(queryset.count() * 3)) * 100
         else:
             return 0
 
@@ -168,7 +171,6 @@ class Group(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 
 class SupportMessage(models.Model):

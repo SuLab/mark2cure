@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -21,7 +21,6 @@ import pandas as pd
 import itertools
 import datetime
 import uuid
-import csv
 
 
 def dataframe_view(request, df, format_type, ctx={}, template='control/dataframe_base.jade'):
@@ -41,7 +40,7 @@ def dataframe_view(request, df, format_type, ctx={}, template='control/dataframe
         stnd_ctx = {
             'dataframe': df,
             'dataframe_html': df.to_html(classes='table table-striped table-condensed'),
-            'view_name': request.resolver_match.namespace+':'+request.resolver_match.url_name
+            'view_name': request.resolver_match.namespace + ':' + request.resolver_match.url_name
         }
         stnd_ctx.update(ctx)
         return TemplateResponse(request, template, stnd_ctx)
@@ -177,10 +176,10 @@ def document_read(request, pk):
 def home(request):
     today = datetime.datetime.now()
     users_online = {
-        'hour': UserProfile.objects.filter(last_seen__gte=today-datetime.timedelta(hours=1)).count(),
-        'day': UserProfile.objects.filter(last_seen__gte=today-datetime.timedelta(days=1)).count(),
-        'week': UserProfile.objects.filter(last_seen__gte=today-datetime.timedelta(days=7)).count(),
-        'month': UserProfile.objects.filter(last_seen__gte=today-datetime.timedelta(days=30)).count()
+        'hour': UserProfile.objects.filter(last_seen__gte=today - datetime.timedelta(hours=1)).count(),
+        'day': UserProfile.objects.filter(last_seen__gte=today - datetime.timedelta(days=1)).count(),
+        'week': UserProfile.objects.filter(last_seen__gte=today - datetime.timedelta(days=7)).count(),
+        'month': UserProfile.objects.filter(last_seen__gte=today - datetime.timedelta(days=30)).count()
     }
     ctx = {
         'users_online': users_online
