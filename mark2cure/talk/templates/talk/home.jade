@@ -126,7 +126,7 @@ block post-footer
 
     YPet.addInitializer(function(options) {
 
-      $.getJSON('/document/{{doc.pk}}/user/{{user.pk}}/results.json', function( data ) {
+      $.getJSON('/task/entity-recognition/{{doc.pk}}/user/{{user.pk}}/results.json', function( data ) {
         self_data = data;
         passages = data.collection.document.passage;
         regions = {};
@@ -157,7 +157,7 @@ block post-footer
     $('ul.pagination li a').on('mouseover', function(evt) {
       var user_pk = $(this).data('userpk');
 
-      $.getJSON('/document/{{doc.pk}}/user/'+ user_pk +'/results.json', function( data ) {
+      $.getJSON('/task/entity-recognition/{{doc.pk}}/user/'+ user_pk +'/results.json', function( data ) {
         self_data = data;
         passages = data.collection.document.passage;
 
