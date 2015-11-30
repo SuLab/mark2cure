@@ -39,12 +39,19 @@ urlpatterns = patterns('',
         namespace='instructions')),
     url(r'^training/', include('mark2cure.training.urls',
         namespace='training')),
+
+
+    # Task Section
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
+    url(r'^task/', include('mark2cure.task.urls',
+        namespace='task')),
+    url(r'^task/entity-recognition/', include('mark2cure.task.entity_recognition.urls',
+        namespace='entity-recognition')),
+
 
     url(r'^talk/', include('mark2cure.talk.urls',
         namespace='talk')),
-
     url(r'team/', include('mark2cure.team.urls',
         namespace='team', app_name='team')),
     url(r'u/', include('mark2cure.userprofile.urls',

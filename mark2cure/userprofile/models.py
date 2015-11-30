@@ -9,7 +9,8 @@ from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
 from mark2cure.document.models import Annotation, Document, View
-from mark2cure.common.models import Group, Task, UserQuestRelationship
+from mark2cure.common.models import Group
+from mark2cure.task.models import Task, UserQuestRelationship
 from mark2cure.analysis.models import Report
 
 from django.utils import timezone

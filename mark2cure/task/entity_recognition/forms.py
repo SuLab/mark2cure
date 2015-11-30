@@ -1,12 +1,6 @@
 from django import forms
 
-from mark2cure.document.models import Document, Annotation
-
-
-class DocumentForm(forms.ModelForm):
-    class Meta:
-        model = Document
-        fields = ['document_id']
+from mark2cure.document.models import Annotation
 
 
 class AnnotationForm(forms.ModelForm):

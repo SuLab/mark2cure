@@ -8,7 +8,8 @@ from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocatio
 from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
-from ..common.models import Group, Task
+from ..common.models import Group
+from ..task.models import Task
 from ..document.models import Section, Annotation
 
 from rest_framework.decorators import api_view

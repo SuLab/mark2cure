@@ -1,84 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-from mark2cure.common.models import Group, Task, UserQuestRelationship, DocumentQuestRelationship, SupportMessage
-from mark2cure.common.templatetags.truncatesmart import truncatesmart
-
-
-class UserQuestRelationshipAdmin(admin.ModelAdmin):
-    search_fields = ('user__username', 'task__name')
-
-    list_display = ('task', 'user', 'views_preview',
-                    'completed', 'score',
-                    'updated', 'created')
-
-    readonly_fields = ('task', 'user', 'views',
-                    'completed', 'score',
-                    'updated', 'created')
-
-    def views_preview(self, obj):
-        return obj.views.count()
-
-    def group(self, obj):
-        if obj.task.group:
-            return obj.task.group.stub
-        else:
-            return '[none]'
-
-    mymodel = models.ForeignKey(DocumentQuestRelationship)
-
-
-class DocumentQuestRelationshipAdmin(admin.ModelAdmin):
-    search_fields = ('document__document_id', 'task__name', 'task__group__name')
-
-    list_display = ('task', 'document_preview', 'document_pmid', 'points',
-                    'group',
-                    'updated', 'created')
-
-    readonly_fields = ('task', 'document',
-                       'updated', 'created')
-
-    def document_preview(self, obj):
-        return truncatesmart(obj.document.title)
-
-    def document_pmid(self, obj):
-        return obj.document.document_id
-
-    def group(self, obj):
-        if obj.task.group:
-            return obj.task.group.stub
-        else:
-            return '[none]'
-
-    mymodel = models.ForeignKey(DocumentQuestRelationship)
-
-
-class TaskAdmin(admin.ModelAdmin):
-    search_fields = ('name', 'group__name')
-
-    list_display = ('name', 'kind', 'contributions', 'completions',
-                    'points', 'experiment', 'document_count',
-                    'requires_qualification', 'provides_qualification', 'meta_url',
-                    'updated', 'created', 'group_preview')
-
-    readonly_fields = ('kind', 'documents',
-                    'users',
-                    'meta_url',
-                    'updated', 'created', 'group')
-
-    def contributions(self, obj):
-        return UserQuestRelationship.objects.filter(task=obj, completed=True).count()
-
-    def group_preview(self, obj):
-        if obj.group:
-            return obj.group.stub
-        else:
-            return '[none]'
-
-    def document_count(self, obj):
-        return obj.documents.count()
-
-    mymodel = models.ForeignKey(Task)
+from mark2cure.common.models import Group, SupportMessage
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -97,7 +20,7 @@ class GroupAdmin(admin.ModelAdmin):
     def total_documents(self, obj):
         return DocumentQuestRelationship.objects.filter(task__group=obj).count()
 
-    mymodel = models.ForeignKey(Task)
+    mymodel = models.ForeignKey(Group)
 
 
 class SupportMessageAdmin(admin.ModelAdmin):
@@ -123,7 +46,4 @@ class SupportMessageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Group, GroupAdmin)
-admin.site.register(Task, TaskAdmin)
-admin.site.register(UserQuestRelationship, UserQuestRelationshipAdmin)
-admin.site.register(DocumentQuestRelationship, DocumentQuestRelationshipAdmin)
 admin.site.register(SupportMessage, SupportMessageAdmin)

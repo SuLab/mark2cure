@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
 
-from mark2cure.common.models import Task, UserQuestRelationship
+from ..task.models import Task, UserQuestRelationship
 
 from brabeion import badges
 

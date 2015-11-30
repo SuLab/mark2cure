@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from mark2cure.document.managers import DocumentManager
-
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from django.forms.models import model_to_dict
@@ -17,7 +15,6 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
 
-    objects = DocumentManager()
 
     def __unicode__(self):
         return self.title
