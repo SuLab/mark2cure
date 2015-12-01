@@ -1,17 +1,8 @@
-from django.conf import settings
+from ...common.bioc import BioCReader
+from ...document.models import Document, Pubtator
 
-from .models import Relation, Concept
-from ..document.models import Document, Pubtator
-import os
-import subprocess
 import re
-import sys
-from collections import defaultdict
 import itertools
-
-from mark2cure.common.bioc import BioCReader
-from mark2cure.common.formatter import bioc_writer, bioc_as_json
-
 
 """
 # makes concept lists for only documents that have at least two dictionaries
@@ -21,6 +12,7 @@ determined if there are non-overlapping concepts
 """
 
 bad_document_flag = False
+
 
 def check_for_overlaps(c1_dict_locations, c2_dict_locations):
     """ Takes the location from the concepts and checks to see
@@ -63,7 +55,7 @@ def return_pubtator_dict(pubtator, pub_key, stype):
         for doc_idx, document in enumerate(r.collection.documents):
             for passage_idx, passage in enumerate(document.passages):
 
-                if bad_document_flag == True:
+                if bad_document_flag is True:
                     # flag already raised, so don't need to check for the following
                     pass
                 elif "%" in passage.text or "<" in passage.text or ">" in passage.text:
@@ -77,7 +69,7 @@ def return_pubtator_dict(pubtator, pub_key, stype):
                     except:
                         continue
 
-                    if uid != None:
+                    if uid is not None:
                         if uid in pub_dict:
                             if location not in pub_dict[uid]['location']:
                                 pub_dict[uid]['location'].append(location)
@@ -89,7 +81,7 @@ def return_pubtator_dict(pubtator, pub_key, stype):
                                 'stype': stype,
                                 'location': [location],
                                 'uid': uid
-                                }
+                            }
         return pub_dict
 
 
@@ -100,7 +92,7 @@ def make_concept_dicts_from_pubtators(document):
     available_pub_list = []
     try:
         pub_gene = Pubtator.objects.get(document=document, kind="GNormPlus")
-        gene_dict =  return_pubtator_dict(pub_gene, "NCBI Gene", 'g')
+        gene_dict = return_pubtator_dict(pub_gene, "NCBI Gene", 'g')
         available_pub_list.append(gene_dict)
     except:
         print document.document_id, "CHECK THE PUBTATOR gnorm"
@@ -154,7 +146,7 @@ for document in queryset_documents:
     """
     bad_document_list = ["1801"]
 
-    if bad_document_flag == True or str(document.pk) in bad_document_list:
+    if bad_document_flag is True or str(document.pk) in bad_document_list:
         # reset flag and continue through documents
         bad_document_flag = False
         continue
@@ -172,8 +164,8 @@ for document in queryset_documents:
                         "texts" for one unique ID (preference to show word and
                         not the acronym
                         """
-                        if concepts_overlap_flag != True and max(concept1_dict[c1]['text'], key=len) != max(concept2_dict[c2]['text'], key=len):
-                            relation_pair_list.append([ concept1_dict[c1], concept2_dict[c2] ] )
+                        if concepts_overlap_flag is not True and max(concept1_dict[c1]['text'], key=len) != max(concept2_dict[c2]['text'], key=len):
+                            relation_pair_list.append([concept1_dict[c1], concept2_dict[c2]])
 
     """Add the concepts for each document, then add the relations for each
     document

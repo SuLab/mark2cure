@@ -1,13 +1,5 @@
-'''
-Sets up the models for the relation application, modeled after Max's
-Document/models.py file for standardization and using Toby's data_model.py
-
-Most of this code is Toby's, but reconfigured to work in the Django app, where
-tasks.py performs much of the actions involved in populating the new documents
-(pmid) into the database.
-
-'''
 from django.db import models
+
 
 class Concept(models.Model):
     document = models.ForeignKey('document.Document')
@@ -17,6 +9,7 @@ class Concept(models.Model):
 
     def __unicode__(self):
         return self.uid
+
 
 class Relation(models.Model):
     document = models.ForeignKey('document.Document')

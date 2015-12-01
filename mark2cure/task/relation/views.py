@@ -1,38 +1,17 @@
-# learn shortcuts
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.views import generic
-from django.utils import timezone
 
-from django.http import HttpResponse, HttpResponseServerError, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import get_object_or_404, redirect, render_to_response, RequestContext
 from django.template.response import TemplateResponse
-from django.contrib.messages import get_messages
-from django.contrib.auth.models import User
-from django.contrib import messages
 
-from ..common.formatter import bioc_as_json, apply_bioc_annotations
-from ..common.bioc import BioCReader
-from ..userprofile.models import UserProfile
-from ..document.models import Document, Section, Pubtator
-from ..common.models import Group
-
-
-from brabeion import badges
-import datetime
-import re
-import json
-import random
-import itertools
+from ...common.formatter import bioc_as_json
+from ...common.bioc import BioCReader
+from ...common.models import Group
+from ...document.models import Document, Section, Pubtator
 
 from .models import Answer, Relation, Concept
 from .forms import AnswerForm
-import os
 
 
 @login_required
@@ -119,7 +98,7 @@ def relation_api(request, document_pk):
                             except:
                                 continue
 
-                            if uid != None:
+                            if uid is not None:
                                 if uid in pub_dict:
                                     if location not in pub_dict[uid]['location']:
                                         pub_dict[uid]['location'].append(location)
@@ -131,18 +110,18 @@ def relation_api(request, document_pk):
                                         'stype': concept_stype,
                                         'location': [location],
                                         'uid': uid
-                                        }
+                                    }
 
             return pub.pk, pub_dict
 
         if (relation_type == 'g_d'):
-            file_key = 'gene_disease_relation_menu';
+            file_key = 'gene_disease_relation_menu'
 
         if (relation_type == 'c_d'):
-            file_key = 'chemical_disease_relation_menu';
+            file_key = 'chemical_disease_relation_menu'
 
         if (relation_type == 'g_c'):
-            file_key = 'gene_chemical_relation_menu';
+            file_key = 'gene_chemical_relation_menu'
 
         # when I passed this information to html, I could not retain the object, (error "is not JSON serializable")
         # so I put them in different properties
@@ -154,16 +133,16 @@ def relation_api(request, document_pk):
         if pub2_pk not in pub_list:
             pub_list.append(pub2_pk)
 
-        relation_dict['c1_id']= str(concept1.id)
-        relation_dict['c1_text']= str(concept1.text)
-        relation_dict['c1_stype']= str(concept1.stype)
-        relation_dict['c1_uid']= str(concept1.uid)
+        relation_dict['c1_id'] = str(concept1.id)
+        relation_dict['c1_text'] = str(concept1.text)
+        relation_dict['c1_stype'] = str(concept1.stype)
+        relation_dict['c1_uid'] = str(concept1.uid)
         relation_dict['c1_locations'] = pub1_dict[concept1.uid]['location']
         relation_dict['c1_pub_pk'] = str(pub1_pk)
-        relation_dict['c2_id']= str(concept2.id)
-        relation_dict['c2_text']= str(concept2.text)
-        relation_dict['c2_stype']= str(concept2.stype)
-        relation_dict['c2_uid']= str(concept2.uid)
+        relation_dict['c2_id'] = str(concept2.id)
+        relation_dict['c2_text'] = str(concept2.text)
+        relation_dict['c2_stype'] = str(concept2.stype)
+        relation_dict['c2_uid'] = str(concept2.uid)
         relation_dict['c2_locations'] = pub2_dict[concept2.uid]['location']
         relation_dict['c2_pub_pk'] = str(pub2_pk)
         relation_dict['relation_type'] = file_key
@@ -175,16 +154,14 @@ def relation_api(request, document_pk):
     print relation_list
     return JsonResponse(relation_list, safe=False)
 
+
 @login_required
 def relation(request, document_pk):
-    """Main page for users to find the relationship between two concepts.
-    """
-
-    form = AnswerForm
+    """Main page for users to find the relationship between two concepts."""
     document = get_object_or_404(Document, pk=document_pk)
 
     relations = document.unanswered_relation_list(request)
-    relation = relations[0] # was used...TODO check on this
+    relation = relations[0]  # was used...TODO check on this
 
     ctx = {'sections': Section.objects.filter(document=document),
            'relation': relation,
@@ -192,9 +169,12 @@ def relation(request, document_pk):
            }
     return TemplateResponse(request, 'relation/relation.jade', ctx)
 
-#pass in relation similar to above method
+
+# Pass in relation similar to above method
 def results(request, relation_id):
+    # (TODO) Why is relation being passed in but never used? -Max
     relation = get_object_or_404(Relation, pk=relation_id)
+
     relation_type = request.POST['relation_type']
     form = AnswerForm(request.POST or None)
 
@@ -206,10 +186,11 @@ def results(request, relation_id):
     relation_type = "testing views relation_type"
     if request.method == 'POST':
         ctx = {
-        'relation_type':relation_type,
+            'relation_type':relation_type,
         }
         return TemplateResponse(request, 'relation/results.jade', ctx)
-    #return HttpResponseRedirect(reverse("relation:home"))
+    # return HttpResponseRedirect(reverse("relation:home"))
+
 
 @login_required
 @require_http_methods(['POST'])
@@ -221,11 +202,11 @@ def create_post(request):
 
     return HttpResponse(200)
 
+
 @login_required
 @require_http_methods(['POST'])
 def jen_bioc(request):
-    # print request
+    # (TODO) Why are these assigned but never used? -Max
     relation_list = request.POST['relation_list']
-    # print relation_list
     writer_json = bioc_as_json(relation_list)
     return HttpResponse(200)

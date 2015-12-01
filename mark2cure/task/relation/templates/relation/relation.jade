@@ -31,7 +31,7 @@ block content
 
       .container-fluid#tree-insert
 
-      form(role='form', action="{% url 'relation:results' relation.pk %}", method="POST")
+      form(role='form', action="{% url 'task-relation:results' relation.pk %}", method="POST")
         - csrf_token
         input#relation_type(type="hidden", name="relation_type", value=selected_relation)
         input#username(type="hidden", name="username", value=request.user)

@@ -5,7 +5,7 @@ from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from django.forms.models import model_to_dict
 
-from ..relation.models import Concept, Relation, Answer
+from ..task.relation.models import Concept, Relation, Answer
 
 import itertools
 

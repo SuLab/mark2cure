@@ -19,11 +19,6 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
-  .container-fluid
-    .row
-      .col-md-10.col-md-offset-1
-        h2.text-center
-          a(href='{% url "relation:home" %}')  Interested in trying the new relation identification module?
 
   #dashboard.container-fluid
     .row
@@ -43,8 +38,13 @@ block content
                   li Total Annotations: #{user.userprofile.annotations_count|intcomma}
                   li Score: #{user.userprofile.rating_score|intcomma}
                   li Level: #{user.userprofile.highest_level.name}
-              .card-footer.text-center
-                a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile
+
+              .card-block
+                a(href='{% url "task-relation:home" %}')
+                  | Interested in trying the new relation identification module?
+
+            .card-footer.text-center
+              a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile
 
         .row
           .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1

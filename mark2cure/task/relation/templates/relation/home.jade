@@ -16,7 +16,7 @@ block content
         h3 Select one of the following papers to help us further define chemical/disease relations:
           .list-group
             - for document in documents
-              a(href='{% url "relation:relation" document_pk=document.pk %}').list-group-item
+              a(href='{% url "task-relation:relation" document_pk=document.pk %}').list-group-item
                 #{document.title}
 
 
