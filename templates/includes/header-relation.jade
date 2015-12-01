@@ -1,0 +1,42 @@
+nav(role='navigation').navbar.navbar-default.navbar-static-top
+  .container-fluid
+    .row
+      .col-sm-3
+        h1
+          a(href='{% url "common:home" %}') Mark2Cure
+
+      .col-sm-6
+        h2.text-center Relation Module #{headerMessage}
+
+      .col-sm-3
+        #example-foo-collapse-1.collapse.navbar-collapse
+          .row
+            .col-xs-6
+              .row
+                .col-xs-12
+                  p {{user}}
+              .row
+                .col-xs-12
+                   p
+                    a(data-toggle="modal", data-target="#relationshipInstructionsModal") Instructions
+
+
+            .col-xs-6
+              .row
+                .col-xs-12
+                  p
+                    a(href='{% url "profile:public-profile" username=user.username %}') Profile
+                .col-xs-12
+                  p
+                    a(href='{% url "registration:logout" %}') Logout
+
+
+    .row
+      button(type='button', data-toggle='collapse', data-target='#example-foo-collapse-1').navbar-toggle
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+
+include instructions/relation-instructions-modal
+include instructions/concept-definitions-relation-modal

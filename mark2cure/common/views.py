@@ -39,6 +39,7 @@ def why_mark2cure(request):
 
 @login_required
 def dashboard(request):
+    # We redirect user to the training route if their skill is not level 7
     if not request.user.profile.highest_level("skill").level == 7:
         return redirect('training:route')
 
@@ -53,7 +54,6 @@ def dashboard(request):
 
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
-
 
 @login_required
 def group_view(request, group_stub):
@@ -76,5 +76,4 @@ def support(request):
         form.save()
         return HttpResponse(200)
     return HttpResponse(500)
-
 

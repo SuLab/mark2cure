@@ -22,9 +22,14 @@ class TalkViews(TestCase, TestBase):
         self.assertEqual(response.status_code, 403)
         self.client.logout()
 
-        # Confirm view online
-        # (TODO) ***Jennifer ask Max*** how to view online here.
-        # Confused about this behavior vs other tests.
+        # Confirm Moderator can views
+        response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
+        self.assertEqual(response.status_code, 200)
+
+        # Confirm view online for NON-MODERATOR
+        # (TODO) Complete document
+
+        self.client.logout()
 
     def test_annotation_search(self):
         # Confirm non-auth'd redirect

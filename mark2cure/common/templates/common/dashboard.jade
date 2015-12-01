@@ -19,10 +19,17 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
+  .container-fluid
+    .row
+      .col-md-10.col-md-offset-1
+        h2.text-center
+          a(href='{% url "relation:home" %}')  Interested in trying the new relation identification module?
+
   #dashboard.container-fluid
     .row
       .col-sm-8.col-sm-offset-0.col-lg-7.col-lg-offset-1
         #group-selection
+
 
       .col-sm-4.col-sm-offset-0.col-lg-3.col-lg-offset-0
         .row
@@ -55,7 +62,6 @@ block post-footer
       var draw_dashboard = function(group, quests) {
         $('#group-'+ group.pk).html('');
         var canvas = d3.select('#group-'+ group.pk);
-
         var available_quests = _.filter(quests, function(item) { return item.enabled && !item.completed });
         var completion_size = _.map(available_quests, function(item) { return item.completions; });
 
@@ -72,7 +78,6 @@ block post-footer
         };
         var quest = canvas.selectAll('.quest').remove();
         var quest = canvas.selectAll('.quest').data(quests);
-
         quest.enter().append('div')
           .attr(attrs)
           .style(styles)
@@ -108,8 +113,6 @@ block post-footer
 
               }
             });
-
-
           });
         }
       });

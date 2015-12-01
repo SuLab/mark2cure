@@ -1,0 +1,88 @@
+
+li a {
+    color: #7F3CFF;
+    font-family: "Lucidia Console", Geneva, Arial,
+          SunSans-Regular, sans-serif;
+    font-size: 20px;
+}
+
+
+body {
+  padding-left: 8em;
+  padding-right: 8em;
+  padding-top: 2em;
+  font-family: "Lucidia Console", Geneva, Arial,
+        SunSans-Regular, sans-serif
+  color: black;
+  background-color: white }
+ul.navbar {
+  position: absolute;
+  top: 2em;
+  left: 1em;
+  width: 9em }
+
+p {
+  font-family: "Lucidia Console", Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  line-height: 1.8em;
+  font-size: 20px;
+  padding-left: 120px;
+  padding-right: 200px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+h1 {
+  font-family: "Lucidia Console", Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  line-height: 2px;
+  padding-bottom: 5px;
+}
+
+#purple_center {
+  color:  #7F3CFF;
+  text-align: center;
+}
+
+h2 {
+  font-family: "Lucidia Console", Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  line-height: 1.4em;
+  padding: 10px 30px;
+}
+
+
+h3 {
+    font-family: "Lucidia Console", Geneva, Arial,
+          SunSans-Regular, sans-serif;
+    padding-bottom: 20px;
+}
+
+h4 {
+  font-family: "Lucidia Console", Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  line-height: 1.8em;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+}
+
+#left_align {
+  text-align: left;
+  padding-left: 0px;
+}
+
+
+.comment_box {
+  width: 500px;
+  height: 200px;
+  color: Silver;
+  border-style: solid;
+  border-width: thick;
+  text-align: left;
+  word-wrap: break-word;
+  padding-left:0;
+  padding-top:0;
+  padding-bottom:0em;
+  padding-right: 0em;
+}
