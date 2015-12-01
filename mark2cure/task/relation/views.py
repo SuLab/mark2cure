@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
+from django.contrib import messages
 
 from ...common.formatter import bioc_as_json
 from ...common.bioc import BioCReader
@@ -21,13 +22,12 @@ def home(request):
     TODO
     Just get group 4 for now. TODO upon integration, make this better (Max, ideas?)
     """
-    group_pk = 5
-    group = Group.objects.get(pk=group_pk)
-    documents = Document.objects.filter(task__group=group).all()
     docs_with_unanswered_relations_for_user = []
 
-    for document in documents:
+    group = Group.objects.get(pk=5)
+    for document in Document.objects.filter(task__group=group).all():
         relations = Relation.objects.filter(document=document)
+
         for relation in relations:
             if not Answer.objects.filter(username=request.user).filter(relation=relation.pk).exists():
                 if document not in docs_with_unanswered_relations_for_user:
@@ -35,6 +35,9 @@ def home(request):
                 break
 
     queryset_documents = docs_with_unanswered_relations_for_user[:100]
+
+    msg = '<p class="lead text-center">Select one of the following papers to help us further define chemical/disease relations.</p>'
+    messages.info(request, msg, extra_tags='safe alert-success')
 
     ctx = {
         'documents': queryset_documents,

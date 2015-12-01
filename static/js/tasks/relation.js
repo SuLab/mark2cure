@@ -345,7 +345,7 @@ function pub_specific_info(relationship_obj) {
   };
 // Must go to this API first to retrieve info prior to getting Pub Specific APIs
 // Therefore, no point to do this asynchronously with pub_specific_info() function
-$.getJSON('/relation/'+ document_pk +'/api/', function(data) {
+$.getJSON('/task/relation/'+ document_pk +'/api/', function(data) {
   global_data = data;
 
   concept_pairs_remaining = data.length;
@@ -378,7 +378,7 @@ $('#submit_button').on('click', function(evt) {
 
   $.ajax({
     type: 'POST',
-    url: '/relation/test/results/',
+    url: '/task/relation/test/results/',
     data: $.extend({'csrfmiddlewaretoken': csrf_token },
                    {'relation_type': selected_relation},
                    {'relation': previous_relationship_for_ajax.pk },

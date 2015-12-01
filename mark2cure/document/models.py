@@ -212,49 +212,8 @@ class Document(models.Model):
     """The following three methods are new Document methods for the Relation
     app.
     """
-    def add_concepts_to_database(self, relation_pair_list):
-        """This method takes a document and relation pair list and makes
-        annotations/unique concepts for the document. If annotations already
-        exist for this document, then no annotations will be made. Concepts are
-        only created when a variety of criteria is met (see relation/tasks for
-        a description of the criteria)
-        """
-        if not Concept.objects.filter(document=self).exists():
-            unique_id_list = []  # avoid duplicates
-            for pair in relation_pair_list:
-                for concept in pair:
-                    if concept['uid'] in unique_id_list:
-                        continue
-                    else:
-                        unique_id_list.append(concept['uid'])
-                        Concept.objects.create(document=self, uid=concept['uid'], stype=concept['stype'], text=max(concept['text'], key=len) )
 
     # Jennifer's method
-    def add_relation_pairs_to_database(self, relation_pair_list):
-        """This method takes a document and a relation pair list and makes the
-        appropriate "relation." The reason relations are stored instead of
-        created on the fly, is because there was a significant amount of code
-        performed to determine whether or not relations even exist.  We need
-        those relation pairs to determine if the document is worth showing to
-        a user.
-        """
-        if not Relation.objects.filter(document=self).exists():
-
-            for pair in relation_pair_list:
-                concept1 = pair[0]
-                concept2 = pair[1]
-                relation_type = concept1['stype'] + "_" + concept2['stype']
-
-                # always have gene on the left and disease on the right for
-                # sentence structure (this is important for future analysis)
-                # Keeps concepts inside of "relations" in right orientation in db
-                # TODO (IMPORTANT if adding more concepts)
-                if relation_type == 'c_g' or relation_type == 'd_g' or relation_type == 'd_c':
-                    concept1, concept2 = concept2, concept1
-
-                concept1_obj = Concept.objects.get(document=self, uid=concept1['uid'])
-                concept2_obj = Concept.objects.get(document=self, uid=concept2['uid'])
-                Relation.objects.create(document=self, relation=[ concept1['uid'], concept2['uid'] ], concept1_id=concept1_obj, concept2_id=concept2_obj )
 
 
     def unanswered_relation_list(self, request):

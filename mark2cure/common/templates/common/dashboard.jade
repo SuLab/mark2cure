@@ -3,6 +3,7 @@ extends base
 - load widget_tweaks
 - load brabeion_tags
 - load humanize
+- load group
 
 block header
   - with headerMessage='Community Dashboard'
@@ -23,7 +24,8 @@ block content
   #dashboard.container-fluid
     .row
       .col-sm-8.col-sm-offset-0.col-lg-7.col-lg-offset-1
-        #group-selection
+        block dashboard-content
+          #group-selection
 
 
       .col-sm-4.col-sm-offset-0.col-lg-3.col-lg-offset-0
@@ -39,9 +41,10 @@ block content
                   li Score: #{user.userprofile.rating_score|intcomma}
                   li Level: #{user.userprofile.highest_level.name}
 
-              .card-block
-                a(href='{% url "task-relation:home" %}')
-                  | Interested in trying the new relation identification module?
+              - if request.user|has_group:"Comment Moderators"
+                .card-block
+                  a(href='{% url "task-relation:home" %}')
+                    | Interested in trying the new relation identification module?
 
             .card-footer.text-center
               a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile

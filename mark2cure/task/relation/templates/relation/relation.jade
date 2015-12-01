@@ -7,16 +7,7 @@ extends base
 block header
   - with headerMessage=task.name
     include includes/header-relation
-  <meta charset="utf-8">
-  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <title>Mark2Cure</title>
 
-
-  <link rel="stylesheet" href="https://mark2cure.org/static/css/style.css">
-  <link rel="stylesheet" href="https://mark2cure.org/static/css/document-style.css">
-
-  <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
-  <link rel='stylesheet' href='http://www.puff.me.uk/scripps/Tree/main.css'>
 
 block content
 
@@ -57,14 +48,6 @@ block content
 
 
 block post-footer
-
-  script(type="text/javascript", src="/static/js/libs/jquery-1.11.1.min.js")
-  script(type="text/javascript", src="/static/js/libs/bootstrap.min.js")
-  script(type="text/javascript", src="/static/js/libs/underscore-min.js")
-  script(type="text/javascript", src="/static/js/libs/backbone-min.js")
-  script(type="text/javascript", src="/static/js/libs/backbone-relational.js")
-  script(type="text/javascript", src="http://www.puff.me.uk/scripps/Tree/src/libs/backbone.radio.min.js")
-  script(type="text/javascript", src="/static/js/libs/backbone.marionette.min.js")
 
   <script type="html/template" id="tree-template">
   <div id="tree" class="row text-center">

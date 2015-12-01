@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from mark2cure.common.formatter import bioc_writer, bioc_as_json
+from ..common.bioc import BioCReader, BioCWriter
+from ..common.formatter import bioc_writer, bioc_as_json
 from .models import Document, Pubtator
 
 
