@@ -166,7 +166,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
           // self.ui['c1'].addClass('not-correct-concept');
           //self.ui['c1_remove_icon'].css("color", "red")
           //self.ui['c1'].css("background-color", "red");
-          self.ui['c1_not_correct'].html('<h3>is not a '+ c1_stype_word +'.</h3>').css("color", "black");
+          //self.ui['c1_not_correct'].html('<h3>is not a '+ c1_stype_word +'.</h3>').css("color", "black");
 
         }, 600);
       }
@@ -194,7 +194,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     //this.ui.c2_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
     this.ui.c2_not_correct.css({"color":color_find(concepts['c2'].type)});
     // TODO relation-integration this is silly, but it reserved the max height of the highlighted box area, I know this is not the best way to do this.
-    this.ui.c2_not_correct.html('<h3>is not a '+ c2_stype_word +'.</h3>')
+    //this.ui.c2_not_correct.html('<h3>is not a '+ c2_stype_word +'.</h3>')
     //this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"220px"});
     this.ui.c2.hover(function() {
       stype_word = get_stype_word(concepts['c2'].type);
