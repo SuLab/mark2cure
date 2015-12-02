@@ -12,39 +12,42 @@ block header
 block content
 
   .container-fluid
-    div(style="background: #f5f5f5;").row
-      .col-xs-12(style="padding-right:250px; padding-left: 250px")
+    #quest-guide.row
+      .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
         h4#testie
 
   .container-fluid(style="padding-right:250px; padding-left: 250px")
+    .row
+      #tree-insert
 
-      h3 Use the menu in the box below to help relate the two concepts:
-
-      .container-fluid#tree-insert
-
+    .row
       form(role='form', action="{% url 'task-relation:results' relation.pk %}", method="POST")
         - csrf_token
         input#relation_type(type="hidden", name="relation_type", value=selected_relation)
         input#username(type="hidden", name="username", value=request.user)
         input#relation(type="hidden", name="relation", value=relation.pk)
 
-        .row(style="padding:20px;" class="col-xs-4 col-xs-offset-4")
-          button.btn.btn-default.btn-block#submit_button Submit
 
-        .col-xs-12
-          - for section in sections
-            p.section.paragraph-box #{section.text}
+    .row
+      .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-4
+        button.btn.btn-primary.btn-block#submit_button Submit
 
-    .container.head-space
-      .row
-        .col-xs-3
-          div(role="group").btn-group-vertical
+    .row
+      .col-xs-12.col-md-10.col-md-offset-1
+        div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").document
+          .paragraphs
+            - for section in sections
+              .paragraph-box.m-t-md
+                p.paragraph #{section.text}
 
-            a(data-toggle="modal", data-target="#relationshipInstructionsModal", style='background-color: #d1f3ff;').btn.btn-info
-              | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
+    .row.m-t-md
+      .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
+        div(role="group").btn-group-vertical
+          a(data-toggle="modal", data-target="#relationshipInstructionsModal", style='background-color: #d1f3ff;').btn.btn-default
+            | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
 
-            a(data-toggle="modal", data-target="#conceptDefinitionsModal", style='background-color: #d1f3ff;').btn.btn-info
-              | Concept Definitions  <i class="fa fa-external-link fa-lg"></i>
+          a(data-toggle="modal", data-target="#conceptDefinitionsModal", style='background-color: #d1f3ff;').btn.btn-default
+            | Concept Definitions  <i class="fa fa-external-link fa-lg"></i>
 
 
 block post-footer

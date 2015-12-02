@@ -153,19 +153,19 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
 
     // this.ui.c1.fadeIn(700); //TODO relation-integration I want the concepts + boxes to fade in slowly after pressing "submit" but not every time the menu is clicked.
-    this.ui.c1_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
+    //this.ui.c1_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
     this.ui.c1_not_correct.css({"color":color_find(concepts['c1'].type)});
     // TODO relation-integration this is silly, but it reserved the max height of the highlighted box area, I know this is not the best way to do this.
-    this.ui.c1_not_correct.html('<h3>is not a '+ c1_stype_word +'.</h3>')
-    this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"220px"});
+    //this.ui.c1_not_correct.html('<h3>is not a '+ c1_stype_word +'.</h3>')
+    //this.ui.c1.css({"background-color":color_find(concepts['c1'].type),"min-height":"220px"});
     this.ui.c1.hover(function() {
       if (!c1TimeoutId) {
         c1TimeoutId = window.setTimeout(function() {
           c1TimeoutId = null;
           // TODO this class made too much "movement upon hover"
           // self.ui['c1'].addClass('not-correct-concept');
-          self.ui['c1_remove_icon'].css("color", "red")
-          self.ui['c1'].css("background-color", "red");
+          //self.ui['c1_remove_icon'].css("color", "red")
+          //self.ui['c1'].css("background-color", "red");
           self.ui['c1_not_correct'].html('<h3>is not a '+ c1_stype_word +'.</h3>').css("color", "black");
 
         }, 600);
@@ -191,11 +191,11 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     var c2TimeoutId;
     // this.ui.c2.fadeIn(700); //TODO relation-integration I want the concepts + boxes to fade in slowly after pressing "submit" but not every time the menu is clicked
-    this.ui.c2_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
+    //this.ui.c2_remove_icon.addClass("fa fa-times-circle").css({'font-size': '25px', 'color': 'grey'});
     this.ui.c2_not_correct.css({"color":color_find(concepts['c2'].type)});
     // TODO relation-integration this is silly, but it reserved the max height of the highlighted box area, I know this is not the best way to do this.
     this.ui.c2_not_correct.html('<h3>is not a '+ c2_stype_word +'.</h3>')
-    this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"220px"});
+    //this.ui.c2.css({"background-color":color_find(concepts['c2'].type),"min-height":"220px"});
     this.ui.c2.hover(function() {
       stype_word = get_stype_word(concepts['c2'].type);
       if (!c2TimeoutId) {
@@ -203,8 +203,8 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
           c2TimeoutId = null;
           // TODO relation-integration this class made too much "movement upon hover"
           // self.ui['c1'].addClass('not-correct-concept');
-          self.ui['c2_remove_icon'].css("color", "red")
-          self.ui['c2'].css("background-color", "red");
+          //self.ui['c2_remove_icon'].css("color", "red")
+          //self.ui['c2'].css("background-color", "red");
           self.ui['c2_not_correct'].html('<h3>is not a '+ c2_stype_word +'.</h3>').css("color", "black");
         }, 600);
       }
