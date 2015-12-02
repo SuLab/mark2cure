@@ -8,3 +8,99 @@
   }
 
 }
+
+#tree-insert {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 4px solid #e7e7e7;
+}
+
+#tree {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
+#tree #c1 h3 {
+  text-align: right;
+}
+
+#tree #c2 h3 {
+  text-align: left;
+}
+
+#tree a, a:hover {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#tree h3 {
+  font-size: 1.75em;
+  line-height: 1.75em;
+  margin: 10px 0px;
+  padding: 6px;
+}
+
+#tree h3:hover {
+  cursor: pointer;
+}
+
+#tree .not-correct-concept:hover {
+  color: #fff;
+  background-color: #D92B24;
+}
+
+#tree #c1.not-correct-concept:hover h3,
+#tree #c2.not-correct-concept:hover h3 {
+  text-align: center;
+}
+
+#tree #relation.disabled {
+  color: #e7e7e7;
+}
+#tree #relation.relation-go-back:hover {
+  color: #fff;
+  background-color: #D92B24;
+}
+
+#tree .list-group-item,
+#tree .list-group-item:first-child,
+#tree .list-group-item:last-child {
+  border-radius: 0px;
+  border: 2px solid black;
+  border-bottom: none;
+  font-size: 1.25em;
+  line-height: 1.25em;
+  letter-spacing: 0.05em;
+}
+
+#tree .list-group-item:last-child {
+  border-bottom: 2px solid black;
+}
+
+#tree a.list-group-item:hover {
+  color: #fff;
+  background-color: #31A7DA;
+}
+
+/* ETC OTHER */
+p.doc {
+  font-family: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
+  line-height: 1.8em;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+}
+
+.btn.btn-default {
+  border: 2px solid black;
+}
+
+#credits {
+  position: fixed;
+  bottom: 6px;
+  left: 20px;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
