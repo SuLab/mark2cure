@@ -6,9 +6,21 @@ from rest_framework import serializers
 
 
 class GroupSerializer(serializers.ModelSerializer):
+
+    documents = serializers.SerializerMethodField()
+    complete_percent = serializers.SerializerMethodField()
+
+    def get_documents(self, group):
+        return group.get_documents().values_list('document_id', flat=True)
+
+    def get_complete_percent(self, group):
+        return group.percentage_complete()
+
     class Meta:
         model = Group
-        fields = ('pk', 'name', 'stub', 'description')
+        fields = ('pk', 'name', 'stub',
+                  'description', 'enabled', 'complete_percent',
+                  'documents')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

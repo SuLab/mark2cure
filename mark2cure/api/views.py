@@ -109,7 +109,7 @@ def analysis_group(request, group_pk):
     return Response(response)
 
 
-@login_required
+#@login_required
 @api_view(['GET'])
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
@@ -230,10 +230,10 @@ def group_pubtator_bioc(request, group_pk, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-@login_required
+#@login_required
 @api_view(['GET'])
 def group_list(request):
-    queryset = Group.objects.filter(enabled=True).order_by('-order').all()
+    queryset = Group.objects.all().order_by('-order')
     serializer = GroupSerializer(queryset, many=True)
     return Response(serializer.data)
 
