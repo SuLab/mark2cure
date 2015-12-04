@@ -100,22 +100,26 @@ block post-footer
         'url': '/api/groups/',
         'success': function(data) {
           _.each(data, function(v) {
-            var template = _.template("<div class='row m-t-md'><div class='col-xs-12'><h3><a href='/group/<%- stub %>/'><%- name %></a></h3><a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a></div><div id='group-<%- pk %>' class='col-xs-12 paragraph-box'><h2 class='quest-loading text-cente'>Loading...</h2></div></div>");
-            $('#group-selection').append(template(v));
+            if(v.enabled) {
+              var template = _.template("<div class='row m-t-md'><div class='col-xs-12'><h3><a href='/group/<%- stub %>/'><%- name %></a></h3><a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a></div><div id='group-<%- pk %>' class='col-xs-12 paragraph-box'><h2 class='quest-loading text-cente'>Loading...</h2></div></div>");
+              $('#group-selection').append(template(v));
 
-            $.ajax({
-              'type': 'GET',
-              'url': '/api/quest/'+ v.pk +'/',
-              'success': function(data) {
-                draw_dashboard(v, data);
+              $.ajax({
+                'type': 'GET',
+                'url': '/api/quest/'+ v.pk +'/',
+                'success': function(data) {
+                  draw_dashboard(v, data);
 
-                $('#group-selection .quest').click(function(evt) {
-                  var link = $(this).find('a');
-                  if(link.length) { location.href=link.attr('href'); }
-                });
+                  $('#group-selection .quest').click(function(evt) {
+                    var link = $(this).find('a');
+                    if(link.length) { location.href=link.attr('href'); }
+                  });
 
-              }
-            });
+                }
+              });
+
+            };
+
           });
         }
       });
