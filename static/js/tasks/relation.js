@@ -105,7 +105,7 @@ var selected_relation = null;
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  $('#submit_button').addClass('disabled');
+  $('#submit_button').attr('disabled','disabled');
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
@@ -129,7 +129,7 @@ Tree.addInitializer(function(options) {
     }));
     selected_relation = obj['choice'].id;
     if( selected_relation != null ) {
-      $('#submit_button').removeClass('disabled');
+      $("#submit_button").removeAttr('disabled');
     };
     console.log("Selected item:", selected_relation);
   });
@@ -146,7 +146,7 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    $('#submit_button').addClass('disabled');
+    $('#submit_button').attr('disabled','disabled');
 
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
@@ -363,7 +363,7 @@ $.getJSON('/task/relation/'+ document_pk +'/api/', function(data) {
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype }
   };
   Tree.start();
-  add_progress_bar(concept_pairs_remaining, concept_pairs_total)
+  add_progress_bar(concept_pairs_remaining, concept_pairs_total);
 });
 
 
@@ -374,7 +374,6 @@ $('#submit_button').on('click', function(evt) {
   previous_relationship_for_ajax = global_data[counter-1];
   counter += 1;
   console.log(relationship_obj.pk);
-
 
   $.ajax({
     type: 'POST',
@@ -419,7 +418,7 @@ $('#submit_button').on('click', function(evt) {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
-  $(this).addClass('disabled');
+  $('#submit_button').attr('disabled','disabled');
   selected_relation = null;
 
   var coll = new RelationList(data[file_key]);
