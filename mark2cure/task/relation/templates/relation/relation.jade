@@ -13,7 +13,7 @@ block content
 
   .container-fluid
     #quest-guide.row
-      .col-xs-12.col-xs-offset-1.col-md-12.col-md-offset-1.col-lg-12.col-lg-offset-1
+      .col-xs-12.col-md-12.col-md-offset-1.col-lg-12.col-lg-offset-1
         p#progress-bar
 
     .row
@@ -29,8 +29,9 @@ block content
 
 
         .row
-          .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-4
-            button.btn.btn-primary.btn-block#submit-button Submit
+          .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
+            #submit-button-container
+              p(id="submit-button", disabled).button.btn.btn-primary.btn-block.disabled Submit
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -61,7 +62,7 @@ block post-footer
   <div id="c1_not_correct"><h2></h2></div>
   </div>
 
-  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6">
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
   <h3 id="relation" class="disabled">Select a Relationship below...</h3>
   <ul class="list-group"></ul>
   </div>

@@ -105,8 +105,14 @@ var selected_relation = null;
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  $('#submit-button').attr('disabled','disabled');
-
+  $('#submit-button').attr('disabled',true);
+  $('#submit-button-container').popover({
+    trigger: "hover",
+    title: "Keep Going!",
+    content: "Please complete the task before moving forward.",
+    placement: "top",
+    container: "body"
+  });
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
   var coll = new RelationList(data[file_key]);
@@ -129,7 +135,8 @@ Tree.addInitializer(function(options) {
     }));
     selected_relation = obj['choice'].id;
     if( selected_relation != null ) {
-      $("#submit-button").removeAttr('disabled');
+      $("#submit-button").attr('disabled', false).removeClass('disabled');
+      $('#submit-button-container').popover('disable');
     };
     console.log("Selected item:", selected_relation);
   });
@@ -146,8 +153,15 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    $('#submit-button').attr('disabled','disabled');
-
+    $('#submit-button').attr('disabled', true).addClass('disabled');
+    $('#submit-button-container').popover('enable');
+    $('#submit-button-container').popover({
+      trigger: "hover",
+      title: "Keep Going!",
+      content: "Please complete the task before moving forward.",
+      placement: "top",
+      container: "body"
+    });
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
       collection: coll,
@@ -418,7 +432,16 @@ $('#submit-button').on('click', function(evt) {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
-  $('#submit-button').attr('disabled','disabled');
+  $('#submit-button').attr('disabled', true).addClass('disabled');
+  $('#submit-button-container').popover('enable');
+
+  $('#submit-button-container').popover({
+    trigger: "hover",
+    title: "Keep Going!",
+    content: "Please complete the task before moving forward.",
+    placement: "top",
+    container: "body"
+  });
   selected_relation = null;
 
   var coll = new RelationList(data[file_key]);
