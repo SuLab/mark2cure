@@ -13,12 +13,12 @@ block content
 
   .container-fluid
     #quest-guide.row
-      .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
-        h4#testie
+      .col-xs-12.col-xs-offset-1.col-md-12.col-md-offset-1.col-lg-12.col-lg-offset-1
+        p#progress-bar
 
-  .container-fluid(style="padding-right:250px; padding-left: 250px")
     .row
-      #tree-insert
+      .col-xs-12.col-md-10.col-md-offset-1
+        #tree-insert
 
     .row
       form(role='form', action="{% url 'task-relation:results' relation.pk %}", method="POST")
@@ -30,7 +30,7 @@ block content
 
         .row
           .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-4
-            button.btn.btn-primary.btn-block#submit_button Submit
+            button.btn.btn-primary.btn-block#submit-button Submit
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1

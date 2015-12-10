@@ -105,7 +105,7 @@ var selected_relation = null;
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  $('#submit_button').attr('disabled','disabled');
+  $('#submit-button').attr('disabled','disabled');
 
   Tree.addRegions({'start': '#tree-insert'});
   /* When the app is first loaded */
@@ -129,7 +129,7 @@ Tree.addInitializer(function(options) {
     }));
     selected_relation = obj['choice'].id;
     if( selected_relation != null ) {
-      $("#submit_button").removeAttr('disabled');
+      $("#submit-button").removeAttr('disabled');
     };
     console.log("Selected item:", selected_relation);
   });
@@ -146,7 +146,7 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    $('#submit_button').attr('disabled','disabled');
+    $('#submit-button').attr('disabled','disabled');
 
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
@@ -277,7 +277,7 @@ function add_progress_bar(concept_pairs_remaining, concept_pairs_total) {
   var completed_concept_circles = repeat(circle, concept_pairs_remaining);
   var added_text = $('<span />').css('color', '#7F3CFF');
   added_text.html(remaining_concept_circles);
-  $('#testie').html(added_text).css("font-size", "40px").append(completed_concept_circles);
+  $('#progress-bar').html(added_text).css("font-size", "50px").append(completed_concept_circles);
 };
 
 function pub_specific_info(relationship_obj) {
@@ -368,7 +368,7 @@ $.getJSON('/task/relation/'+ document_pk +'/api/', function(data) {
 
 
 var counter = 1;
-$('#submit_button').on('click', function(evt) {
+$('#submit-button').on('click', function(evt) {
 
   relationship_obj = global_data[counter];  //TODO NEED TO LOG THE CORRECT RELATIONSHIP OBJECT
   previous_relationship_for_ajax = global_data[counter-1];
@@ -418,7 +418,7 @@ $('#submit_button').on('click', function(evt) {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
-  $('#submit_button').attr('disabled','disabled');
+  $('#submit-button').attr('disabled','disabled');
   selected_relation = null;
 
   var coll = new RelationList(data[file_key]);
