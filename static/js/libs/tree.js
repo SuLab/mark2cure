@@ -139,11 +139,11 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     function get_stype_word(stype) {
       if (stype === 'g')
-        stype_word = "gene";
+        stype_word = "genes concept";
       else if (stype === "d")
-        stype_word = "disease";
+        stype_word = "disease concept";
       else if (stype === "c")
-        stype_word = "drug";
+        stype_word = "treatments concept";
     return stype_word;
     };
 
