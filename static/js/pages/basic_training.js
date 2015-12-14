@@ -7,6 +7,20 @@ YPet.addInitializer(function(options) {
 YPet.start();
 
 
+$('a').on('click', function(evt) {
+  if( $(this).hasClass('disabled') ) {
+    evt.preventDefault();
+  }
+});
+
+$('#next-container').popover({
+  trigger: "hover",
+  title: "Keep Going!",
+  content: "Please complete the task before moving forward.",
+  placement: "top",
+  container: "body"
+});
+
 var step_function = function() {
   switch (step_idx) {
     case 0:
@@ -51,6 +65,7 @@ var step_function = function() {
       });
       $next_el.popover('show');
       $next_el.attr('disabled', false).removeClass('disabled');
+      $('#next-container').popover('disable');
       break;
   };
 

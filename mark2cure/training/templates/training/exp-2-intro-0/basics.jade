@@ -15,10 +15,11 @@ block content
           #basics
             p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
 
-    .row.m-t-md
-      a(href='{% url "training:introduction" step_num=2 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
-
-  #popover.popover
+    .col-md-8.col-md-offset-2
+      #next-container.pull-right
+        block next-link
+          .row.m-t-md
+            a(href='{% url "training:introduction" step_num=2 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block post-footer
   script(src='/static/js/pages/basic_training.js')
