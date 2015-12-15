@@ -105,7 +105,7 @@ var selected_relation = null;
 
 Tree.addInitializer(function(options) {
   selected_relation = null;
-  $('#submit-button').attr('disabled',true);
+  $('#submit-button').attr('disabled',true).addClass('disabled');
   $('#submit-button-container').popover({
     trigger: "hover",
     title: "Keep Going!",
@@ -135,8 +135,7 @@ Tree.addInitializer(function(options) {
     }));
     selected_relation = obj['choice'].id;
     if( selected_relation != null ) {
-      $("#submit-button").attr('disabled', false).removeClass('disabled');
-      $('#submit-button-container').popover('disable');
+      $("#submit-button").attr('disabled',false).removeClass('disabled');
     };
     console.log("Selected item:", selected_relation);
   });
@@ -153,15 +152,8 @@ Tree.addInitializer(function(options) {
     /* Backup: Go to the top of the stack */
     collection = coll;
     selected_relation = null;
-    $('#submit-button').attr('disabled', true).addClass('disabled');
-    $('#submit-button-container').popover('enable');
-    $('#submit-button-container').popover({
-      trigger: "hover",
-      title: "Keep Going!",
-      content: "Please complete the task before moving forward.",
-      placement: "top",
-      container: "body"
-    });
+    $('#submit-button').attr('disabled',true).addClass('disabled');
+
     /* Call the View Redraw */
     Tree['start'].show( new RelationCompositeView({
       collection: coll,
@@ -387,7 +379,7 @@ $('#submit-button').on('click', function(evt) {
   relationship_obj = global_data[counter];  //TODO NEED TO LOG THE CORRECT RELATIONSHIP OBJECT
   previous_relationship_for_ajax = global_data[counter-1];
   counter += 1;
-  console.log(relationship_obj.pk);
+  // console.log(relationship_obj.pk);
 
   $.ajax({
     type: 'POST',
@@ -404,12 +396,12 @@ $('#submit-button').on('click', function(evt) {
 
   concept_pairs_remaining -= 1;
   if (concept_pairs_remaining == 0) {
+    console.log('submit form and continue');
     pass;
   }
   else {
     evt.preventDefault();
   };
-
   add_progress_bar(concept_pairs_remaining, concept_pairs_total)
 
   section_count = 0;
@@ -432,16 +424,7 @@ $('#submit-button').on('click', function(evt) {
     'c1': {'text': relationship_obj.c1_text, 'type': relationship_obj.c1_stype},
     'c2': {'text': relationship_obj.c2_text, 'type': relationship_obj.c2_stype}
   };
-  $('#submit-button').attr('disabled', true).addClass('disabled');
-  $('#submit-button-container').popover('enable');
-
-  $('#submit-button-container').popover({
-    trigger: "hover",
-    title: "Keep Going!",
-    content: "Please complete the task before moving forward.",
-    placement: "top",
-    container: "body"
-  });
+  $('#submit-button').attr('disabled',true).addClass('disabled');
   selected_relation = null;
 
   var coll = new RelationList(data[file_key]);

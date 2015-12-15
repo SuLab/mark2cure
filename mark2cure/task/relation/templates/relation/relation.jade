@@ -21,18 +21,15 @@ block content
         #tree-insert
 
     .row
-      form(role='form', action="{% url 'task-relation:results' relation.pk %}", method="POST")
-        - csrf_token
-        input#relation_type(type="hidden", name="relation_type", value=selected_relation)
-        input#username(type="hidden", name="username", value=request.user)
-        input#relation(type="hidden", name="relation", value=relation.pk)
+       form(role='form', action="{% url 'task-relation:results' relation.pk %}", method="POST")
+         - csrf_token
+         input#relation_type(type="hidden", name="relation_type", value=selected_relation)
+         input#username(type="hidden", name="username", value=request.user)
+         input#relation(type="hidden", name="relation", value=relation.pk)
 
-
-        .row
-          .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
-            #submit-button-container
-              p(id="submit-button", disabled).button.btn.btn-primary.btn-block.disabled Submit
-
+         .row
+           .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-4
+             button.btn.btn-primary.btn-block#submit-button Submit
     .row
       .col-xs-12.col-md-10.col-md-offset-1
         div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").document
@@ -44,7 +41,7 @@ block content
     .row.m-t-md
       .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
         div(role="group").btn-group-vertical
-          a(data-toggle="modal", data-target="#relationshipInstructionsModal", style='background-color: #7F3CFF; color:#fff').btn.btn-default
+          a(data-toggle="modal", data-target="#relationshipInstructionsModal", style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
             | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
 
           a(data-toggle="modal", data-target="#diseaseDefinitionsModal", style='background-color: #d1f3ff;').btn.btn-default
