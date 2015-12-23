@@ -2,35 +2,54 @@ from django.db import models
 
 
 class Concept(models.Model):
-    document = models.ForeignKey('document.Document')
-    uid = models.TextField(blank=False)
-    stype = models.TextField(blank=False)
-    text = models.TextField(blank=False)
+    # This can't be primary_key b/c might have duplicates between versions or ontologies
+    id = models.CharField(max_length=200, primary_key=True)
+
+    # ETC Meta
+    # origin = models.CharField(null=True, blank=True)
+    # version = models.DecimalField(null=True, blank=True)
+    # ontology_id = models.DecimalField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.uid
+        return self.id
+
+
+class ConceptText(models.Model):
+    concept = models.ForeignKey(Concept)
+    text = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.text
+
+
+class ConceptDocumentRelationship(models.Model):
+    concept_text = models.ForeignKey(ConceptText)
+    document = models.ForeignKey('document.Document')
+    STYPE_CHOICES = (
+        ('c', 'MESH'),
+        ('d', 'MEDIC'),
+        ('g', 'NCBI Gene')
+    )
+    stype = models.CharField(max_length=1, choices=STYPE_CHOICES, null=True, blank=False)
+
+    def __unicode__(self):
+        return self.concept_text.text
 
 
 class Relation(models.Model):
     document = models.ForeignKey('document.Document')
-    relation = models.TextField(blank=False)
-    concept1_id = models.ForeignKey(Concept, related_name='concept1')
-    concept2_id = models.ForeignKey(Concept, related_name='concept2')
+
+    relation_type = models.CharField(max_length=3)
+
+    concept_1 = models.ForeignKey(Concept, related_name='concept_1')
+    concept_2 = models.ForeignKey(Concept, related_name='concept_2')
 
     def __unicode__(self):
-        return self.relation
+        return self.relation_type
 
 
-class Answer(models.Model):
-    """
-    Class where the user can provide their response to whether or not chemicals
-    and diseases are related. TODO: if there is an auto CID, then don't have
-    the user provide Answers to the relations!!
-    """
+class RelationAnnotation(models.Model):
+    # Only access through Document.Annotation.metadata.RelationAnnotation
     relation = models.ForeignKey(Relation)
-    # TODO, this might get updated from Toby's code in the future
-    relation_type = models.TextField(blank=True)
-    # user confidence order 1 to 4 (where 1 is not confident and 4 is confident)
-    # This value is used in scoring later
+    answer = models.CharField(max_length=40)
 
-    username = models.TextField(blank=True)

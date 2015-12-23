@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Concept, Relation, Answer
+from .models import Concept, Relation
 
-
+'''
 class ConceptAdmin(admin.ModelAdmin):
     list_display = ('document', 'uid', 'stype', 'text')
 
@@ -12,8 +12,8 @@ class RelationAdmin(admin.ModelAdmin):
 
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ('relation', 'relation_type', 'username')
+'''
 
 
-admin.site.register(Concept, ConceptAdmin)
-admin.site.register(Relation, RelationAdmin)
-admin.site.register(Answer, AnswerAdmin)
+admin.site.register(Concept)
+admin.site.register(Relation)

@@ -2,11 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
+from mark2cure.common.bioc import BioCReader, BioCWriter, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from django.forms.models import model_to_dict
 
-from ..task.relation.models import Concept, Relation, Answer
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
+from ..task.relation.models import Concept, Relation
+
+import pandas as pd
+pd.set_option('display.width', 1000)
 import itertools
 
 
@@ -70,6 +75,67 @@ class Document(models.Model):
                 return False
 
         return True
+
+    def as_pubtator_annotation_df(self):
+        # If the document has 3 solid annotations
+        # "GNormPlus"
+        # "DNorm"
+        # "tmChem"
+        df_columns = ('uid', 'source', 'ann_type', 'text', 'offset', 'location')
+
+        pubtator_dfs = []
+        if self.valid_pubtator():
+
+            pubtators = Pubtator.objects.filter(
+                document=self,
+                session_id='',
+                content__isnull=False).all()
+
+            for pubtator in pubtators:
+                r = BioCReader(source=pubtator.content)
+                r.read()
+
+                pubtator_arr = []
+                bioc_document = r.collection.documents[0]
+                for passage in bioc_document.passages:
+
+                    for annotation in passage.annotations:
+                        infons = annotation.infons
+
+                        annotation_type = None
+                        uid_type = None
+                        uid = None
+
+                        for key in infons.keys():
+                            if key == 'type':
+                                annotation_type = infons.get(key, None)
+                            else:
+                                uid_type = key
+                                uid = infons.get(uid_type, None)
+
+                        #print infons.keys()
+                        #print infons
+                        #print uid_type, uid, '('+str(annotation_type)+')'
+                        #print ' - '*40
+
+                        pubtator_arr.append({
+                            'uid': uid,
+                            'source': uid_type,
+
+                            'ann_type': annotation_type,
+                            'text': str(annotation.text),
+
+                            'offset': int(passage.offset),
+                            'location': str(annotation.locations[0])
+                        })
+
+                pubtator_dfs.append( pd.DataFrame(pubtator_arr, columns=df_columns) )
+
+        if len(pubtator_dfs):
+            return pd.concat(pubtator_dfs)
+        else:
+            return pd.DataFrame([], columns=df_columns)
+
 
     def as_bioc_with_user_annotations(self, request=None):
         '''
@@ -209,26 +275,6 @@ class Document(models.Model):
         user_ids = list(set(View.objects.filter(section__document=self, completed=True).values_list('user', flat=True)))
         return user_ids
 
-    """The following three methods are new Document methods for the Relation
-    app.
-    """
-
-    # Jennifer's method
-
-
-    def unanswered_relation_list(self, request):
-        """We need to know what documents contain relations that do not have
-        answers on the "relation home page/dashboard". We also need to know
-        which relation pairs they have available as "tasks" for the main
-        relation.jade web page.
-        """
-        relations = Relation.objects.filter(document=self)
-        relation_list = []
-        for relation in relations:
-            if not Answer.objects.filter(username=request.user).filter(relation=relation.pk).exists():
-                relation_list.append(relation)
-
-        return relation_list
 
 
     class Meta:
@@ -274,6 +320,17 @@ class Pubtator(models.Model):
         except Exception:
             # If one of them doesn't validate leave
             return False
+
+
+    def as_writer(self, request=None):
+        r = BioCReader(source=self.content)
+        r.read()
+
+        bioc_writer = BioCWriter()
+        bioc_writer.collection = r.collection
+
+        return bioc_writer
+
 
     def count_annotations(self):
         if self.valid():
@@ -378,6 +435,10 @@ TASK_TYPE_CHOICE = (
 
 
 class View(models.Model):
+    '''
+        When completing tasks not on a Section level. Work is associated
+        with the FIRST section available, regardless of the Section type
+    '''
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default=False, blank=True)
     opponent = models.ForeignKey('self', blank=True, null=True)
@@ -421,7 +482,11 @@ class Annotation(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
-    view = models.ForeignKey(View)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_id = models.IntegerField(blank=True, null=True)
+    metadata = GenericForeignKey('content_type', 'object_id')
+
+    view = models.ForeignKey(View, blank=True, null=True)
 
     def is_exact_match(self, comparing_annotation):
         required_matching_keys = ['kind', 'start', 'text', 'type']

@@ -9,70 +9,11 @@ block header
 
 block content
   .container-fluid
-    div(style="background: #f5f5f5;").row
-      .col-xs-6.col-xs-offset-1
-
     .row
-      div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").container.document
-        .paragraphs
-          p
-          p
-          p Thank you, {{request.user}}, for providing the following answers:
-          p {{ relation_type }}
+      .col-xs-6.col-xs-offset-3
+          p Thank you, {{request.user}}, for defining the relationships in {{ document }}
 
-          p
-          .list-group
-            a(href='{% url "task-relation:home" %}').list-group-item
-              p Return to Relation Home
+          a(href='{% url "task-relation:home" %}')
+            p Return to Relation Home
 
 
-
-block post-footer
-  script.
-    var task_id = "{{ task.pk }}";
-    var self_data, passages, regions;
-
-    YPet.addInitializer(function(options) {
-
-      $.getJSON('/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function( data ) {
-        self_data = data;
-        passages = data.collection.document.passage;
-        regions = {};
-
-        _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box head-space"><p class="paragraph"></p></div></div>';
-          $('.paragraphs').append(p_body);
-          regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
-        });
-        YPet.addRegions(regions);
-
-        _.each(passages, function(passage, passage_idx) {
-          var p = new Paragraph({'text': passage.text});
-          YPet[''+passage_idx].show( new WordCollectionView({
-            collection: p.get('words'),
-            passage_json: passage,
-            bioc_json: data
-          }) );
-        });
-
-      });
-    });
-    YPet.start();
-
-    /* Submit Feedback and show partner */
-    $.ajax({
-      url:'/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
-      dataType: 'json',
-      success: function(data) {
-
-        partner_data = data;
-
-        /* Show underlines */
-        var passages = data.collection.document.passage;
-        _.each(passages, function(passage, passage_idx) {
-          YPet[passage_idx].currentView.drawBioC(passage, true);
-        });
-
-      },
-      error: function(error_res) { }
-    });

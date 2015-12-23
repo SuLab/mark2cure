@@ -12,7 +12,7 @@ block dashboard-content
     - if documents
       .list-group
         - for document in documents
-          a(href='{% url "task-relation:relation" document_pk=document.pk %}').list-group-item
+          a(href='{% url "task-relation:task" document_pk=document.pk %}').list-group-item
             #{document.title}
     - else
       p.lead.text-center.m-t-lg Sorry, no relationship tasks currently avialable for you to work on.

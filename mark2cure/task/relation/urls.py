@@ -2,27 +2,21 @@ from django.conf.urls import patterns, url
 
 from . import views
 
-# TODO, these are not used currently
-
 urlpatterns = patterns('',
+
+
+    url(r'^(?P<document_pk>\d+)/(?P<relation_pk>\d+)/submit/$',
+        views.submit_annotation, name='submit-annotation'),
+
+    url(r'^(?P<document_pk>\d+)/results/$',
+        views.show_document_results, name='results'),
+
     url(r'^(?P<document_pk>\d+)/api/$',
-        views.relation_api, name='relation-api'),
+        views.fetch_document_relations, name='fetch-document-relations'),
 
     url(r'^(?P<document_pk>\d+)/$',
-        views.relation, name='relation'),
+        views.relation_task_home, name='task'),
 
-    url(r'^(?P<relation_id>[0-9]+)/results/$',
-        views.results, name='results'),
-
-    url(r'^test/results/$',
-        views.create_post, name='create_post'),
-
-    url(r'',
-        views.home, name='home'),
-
-    url(r'^jen_bioc/$',
-        views.jen_bioc, name='jen_bioc'),
-
-
+    url(r'', views.relation_list, name='home'),
 
 )
