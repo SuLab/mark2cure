@@ -87,17 +87,24 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     'relation': '#relation',
     'c2': '#c2',
     'c1_not_correct': '#c1_not_correct',
-    'c1_remove_icon': '#c1_remove_icon',
     'c2_not_correct': '#c2_not_correct',
-    'c2_remove_icon': '#c2_remove_icon',
   },
 
   events : {
-    'mousedown @ui.relation': 'resetRelationship'
+    'mousedown @ui.relation': 'resetRelationship',
+    'mousedown @ui.c1_not_correct': 'c1Error',
+    'mousedown @ui.c2_not_correct': 'c2Error'
   },
 
   resetRelationship: function(evt) {
     Tree['convoChannel'].trigger('back', this.options);
+  },
+
+  c1Error: function(evt) {
+    Tree['convoChannel'].trigger('error', 'c_1');
+  },
+  c2Error: function(evt) {
+    Tree['convoChannel'].trigger('error', 'c_2');
   },
 
   onRender : function() {

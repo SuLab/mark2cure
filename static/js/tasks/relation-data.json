@@ -1,6 +1,13 @@
 {
-  "c_1_broken": "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy",
-  "c_2_broken": "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer",
+  "c_1_broken": {
+    "id": "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy",
+    "text": "C1 is Incorrect"
+  },
+
+  "c_2_broken": {
+    "id": "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer",
+    "text": "C2 is Incorrect"
+  },
 
   "c_d": [{
     "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",

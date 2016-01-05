@@ -81,6 +81,8 @@ head
       script(src='#{STATIC_URL}js/libs/odometer.min.js')
       script(src='#{STATIC_URL}js/libs/modernizr.custom.js')
       script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
+      script(src='https://cdn.ravenjs.com/2.0.1/raven.min.js')
+
 
       // Network Requirements
       script(src='#{STATIC_URL}js/libs/sigma.min.js')
@@ -127,7 +129,8 @@ head
           fetchContext: true,
           linesOfContext: 30
         };
-        Raven.config('http://9ad160c7d8394f4e96c0da30f9d50a14@sentry.sulab.org/3', raven_options).install();
+        Raven.config('https://2e8a4df0f5a640409c45630cb43472b4@app.getsentry.com/61810').install()
+
         Raven.setUser({
           email: "{{ request.user.email }}",
           id: "{{ request.user.pk }}"

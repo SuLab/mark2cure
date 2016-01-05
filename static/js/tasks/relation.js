@@ -15,23 +15,21 @@ RelationTask = Backbone.Model.extend({
     }
 });
 
+
 var submit_status = function() {
   if( Tree.start.currentView.options.choice ) {
     $('#submit_button').attr('disabled', false).removeClass('disabled');
   } else {
     $('#submit_button').attr('disabled', true).addClass('disabled');
   };
-  /*
-  var current_selection = Tree.start.currentView.options.choice.get('id');
-  */
 };
+
 
 RelationTaskCollection = Backbone.Collection.extend({
   model: RelationTask,
   initialize: function (models, options) {
     this.on('change:user_completed', this.next, this);
   },
-
   next: function() {
     var next_relationship = collection.findWhere({user_completed: false});
     if (next_relationship) {
@@ -50,7 +48,6 @@ RelationTaskCollection = Backbone.Collection.extend({
         var rcv = new RelationCompositeView({collection: obj['collection'], concepts: self.current_relationship.get('concepts'), choice: obj['choice'] })
         Tree['start'].show(rcv);
         submit_status();
-
       });
 
       /* When the back toggle is selected */
@@ -60,32 +57,50 @@ RelationTaskCollection = Backbone.Collection.extend({
         submit_status();
       });
 
+      /* When C1 or C2 is incorrect */
+      Tree['convoChannel'].on('error', function(obj) {
+        var rcv = new RelationCompositeView({
+          collection: new RelationList([]),
+          concepts: self.current_relationship.get('concepts'),
+          choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] )
+        })
+        Tree['start'].show(rcv);
+        submit_status();
+      });
+
       var concepts = self.current_relationship.get('concepts');
       var concept_uids = [concepts['c1'].id, concepts['c2'].id];
+      console.log('-- --', concept_uids);
+
       _.each(passages, function(passage, passage_idx) {
+        var tmp_passage = passage;
+        console.log(passage.annotation.length);
+
         var filtered_annotations = _.filter(passage.annotation, function(annotation) {
           return _.any(annotation.infon, function(infon) {
+            //console.log(infon);
             return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
           });
         });
-        passage['annotation'] = filtered_annotations;
 
-        var p = new Paragraph({'text': passage.text});
+        //console.log(filtered_annotations);
+        //console.log('--- ---');
+        tmp_passage['annotation'] = filtered_annotations;
+
+        var p = new Paragraph({'text': tmp_passage.text});
         YPet[''+passage_idx].show( new WordCollectionView({
           collection: p.get('words'),
-          passage_json: passage,
+          passage_json: tmp_passage,
         }) );
-        YPet[''+passage_idx].currentView.drawBioC(passage, false);
+        YPet[''+passage_idx].currentView.drawBioC(tmp_passage, false);
         YPet[''+passage_idx].currentView.drawBioC(null, true);
       });
-
 
     } else {
       /* If no other relations to complete, submit document */
       $('#task_relation_results').submit();
     }
   }
-
 });
 
 
@@ -97,12 +112,10 @@ var ProgressItem = Backbone.Marionette.ItemView.extend({
     this.listenTo(this.model, 'change:user_completed', this.render);
   },
   onRender: function() {
-    if (this.model.get('user_completed')) {
-      this.$el.removeClass('uncompleted').addClass('active');
-    }
+    if (this.model.get('user_completed')) { this.$el.removeClass('uncompleted').addClass('active'); }
   }
-
 });
+
 
 var ProgressView = Backbone.Marionette.CollectionView.extend({
   childView: ProgressItem
@@ -137,7 +150,9 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
 
 
 $('#submit_button').on('click', function(evt) {
+  console.log('f');
   var current_selection = Tree.start.currentView.options.choice.get('id');
+  console.log('f2');
 
   if(current_selection) {
     $.ajax({
@@ -153,8 +168,5 @@ $('#submit_button').on('click', function(evt) {
       error: function() { alert('Please refresh your browswer and try again.') },
     });
   }
-
-
 });
-
 
