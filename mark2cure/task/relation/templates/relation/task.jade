@@ -13,8 +13,8 @@ block content
 
   .container-fluid
     #quest-guide.row
-      .col-xs-12.col-md-12.col-md-offset-1.col-lg-12.col-lg-offset-1
-        p#progress-bar
+      .col-xs-12.col-md-10.col-md-offset-1
+        ul#progress-bar.list-unstyled.list-inline
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -22,7 +22,7 @@ block content
 
     .row
       .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-4
-        button.btn.btn-primary.btn-block#submit_button Submit
+        button(id='submit_button', disabled).btn.btn-primary.btn-block.disabled Submit
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1

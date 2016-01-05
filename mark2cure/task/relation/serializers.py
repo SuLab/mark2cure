@@ -29,11 +29,13 @@ class RelationSerializer(serializers.ModelSerializer):
         return {
             'c1': {
                 'text': cdr1.concept_text.text,
-                'type': cdr1.stype
+                'type': cdr1.stype,
+                'id': relation.concept_1.id
             },
             'c2': {
                 'text': cdr2.concept_text.text,
-                'type': cdr2.stype
+                'type': cdr2.stype,
+                'id': relation.concept_2.id
             }
         }
 

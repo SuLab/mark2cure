@@ -1,48 +1,7 @@
 Tree.addInitializer(function(options) {
-  console.log('Tree INIT:', options);
-
   Tree.addRegions({'start': '#tree-insert'});
-
-  /* When the app is first loaded */
-  var coll = new RelationList(options['data'][options.relation_type]);
-
-  Tree['start'].show( new RelationCompositeView({
-    collection: coll,
-    concepts: options.concepts,
-    choice: false
-  }));
-
   Backbone.Radio.DEBUG = true;
   Tree['convoChannel'] = Backbone.Radio.channel('convo');
-
-  /* When an item is selected */
-  Tree['convoChannel'].on('click', function(obj) {
-    Tree['start'].show( new RelationCompositeView({
-      collection: obj['collection'],
-      concepts: options.concepts,
-      choice: obj['choice']
-    }));
-  });
-
-  /* When the back toggle is selected */
-  Tree['convoChannel'].on('back', function(opts) {
-    var collection;
-
-    var parentRel = opts['choice'].get('parentRelation');
-    if(parentRel) { collection = parentRel.get('children'); }
-
-    if(opts['collection']) { collection = opts['collection']; }
-
-    /* Backup: Go to the top of the stack */
-    collection = coll;
-
-    /* Call the View Redraw */
-    Tree['start'].show( new RelationCompositeView({
-      collection: coll,
-      concepts: options.concepts,
-      choice: false
-    }));
-  });
 });
 
 
@@ -56,6 +15,17 @@ RelationTask = Backbone.Model.extend({
     }
 });
 
+var submit_status = function() {
+  if( Tree.start.currentView.options.choice ) {
+    $('#submit_button').attr('disabled', false).removeClass('disabled');
+  } else {
+    $('#submit_button').attr('disabled', true).addClass('disabled');
+  };
+  /*
+  var current_selection = Tree.start.currentView.options.choice.get('id');
+  */
+};
+
 RelationTaskCollection = Backbone.Collection.extend({
   model: RelationTask,
   initialize: function (models, options) {
@@ -65,35 +35,88 @@ RelationTaskCollection = Backbone.Collection.extend({
   next: function() {
     var next_relationship = collection.findWhere({user_completed: false});
     if (next_relationship) {
+      var self = this;
+      if( Tree['convoChannel'] ) { Tree['convoChannel'].unbind(); }
 
-      this.current_relationship = collection.findWhere({user_completed: false});
-      var coll = new RelationList( relation_task_settings['data'][ this.current_relationship.get('relation_type') ] );
-      Tree['start'].show( new RelationCompositeView({
-        collection: coll,
-        concepts: this.current_relationship.get('concepts'),
-        choice: false
-      }));
+      /* Assign an uncompleted relationship as the current focused task */
+      self.current_relationship = collection.findWhere({user_completed: false});
+
+      var coll = new RelationList( relation_task_settings['data'][ self.current_relationship.get('relation_type') ] );
+      var view_options = {collection: coll, concepts: self.current_relationship.get('concepts'), choice: false };
+      Tree['start'].show(new RelationCompositeView(view_options));
+
+      /* When an item is selected */
+      Tree['convoChannel'].on('click', function(obj) {
+        var rcv = new RelationCompositeView({collection: obj['collection'], concepts: self.current_relationship.get('concepts'), choice: obj['choice'] })
+        Tree['start'].show(rcv);
+        submit_status();
+
+      });
+
+      /* When the back toggle is selected */
+      Tree['convoChannel'].on('back', function(opts) {
+        /* Clicking back always completely resets
+        var parentRel = opts['choice'].get('parentRelation');
+        if(parentRel) { collection = parentRel.get('children'); }
+        if(opts['collection']) { collection = opts['collection']; } */
+
+        /* Backup: Go to the top of the stack */
+        Tree['start'].show(new RelationCompositeView(view_options));
+        submit_status();
+      });
+
 
     } else {
+      /* If no other relations to complete, submit document */
       $('#task_relation_results').submit();
     }
   }
 
-  //remaining
 });
 
 
+var ProgressItem = Backbone.Marionette.ItemView.extend({
+  tagName: 'li',
+  className: 'uncompleted',
+  template: _.template('&#8226;'),
+  initialize : function(options) {
+    this.listenTo(this.model, 'change:user_completed', this.render);
+  },
+  onRender: function() {
+    if (this.model.get('user_completed')) {
+      this.$el.removeClass('uncompleted').addClass('active');
+    }
+  }
+
+});
+
+var ProgressView = Backbone.Marionette.CollectionView.extend({
+  childView: ProgressItem
+});
+
+
+/* Initalize the page by loading all relation tasks
+ * and fetching all required data */
 var collection;
 $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', function(data) {
   if(relation_task_settings) {
-    var filtered_data = _.where( data, {'user_completed': false} );
-    collection = new RelationTaskCollection(filtered_data);
 
-    var current_relationship = collection.findWhere({user_completed: false});
-    collection.current_relationship = current_relationship;
-    Tree.start( $.extend(collection.current_relationship.toJSON(), relation_task_settings) );
+    /* Initalize the Application, but load events later */
+    Tree.start();
+
+    /* Onload request all relation tasks to complete */
+    var filtered_data = _.where( data, {'user_completed': false});
+    collection = new RelationTaskCollection(filtered_data);
+    collection.next();
+
+    /* Init Progressbar event listner */
+    (new ProgressView({
+      collection: collection,
+      el: '#progress-bar'
+    })).render();
 
   } else {
+    /* There were no relation tasks to complete for this document (scoped to this user) */
     alert('Sorry, there was a problem.');
   }
 });
@@ -111,6 +134,7 @@ $('#submit_button').on('click', function(evt) {
       cache: false,
       success: function() {
         collection.current_relationship.set('user_completed', true);
+        submit_status();
       },
       error: function() { alert('Please refresh your browswer and try again.') },
     });
@@ -118,3 +142,4 @@ $('#submit_button').on('click', function(evt) {
 
 
 });
+

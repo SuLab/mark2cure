@@ -20,63 +20,32 @@ stype_hash = {
     'NCBI Gene': 'g'
 }
 
-def check_for_overlaps(c1_dict_locations, c2_dict_locations):
-    """ Takes the location from the concepts and checks to see
-    if they overlap. Swaps c1 and c2 in this function to
-    determine the first word. Returns boolean explaining if
-    those concept pairs are compatible (do not overlap) """
-
-    concepts_overlap_flag = False
-    for c1_location in c1_dict_locations:
-        for c2_location in c2_dict_locations:
-
-            split_location_c1 = re.split(":", c1_location)
-            split_location_c2 = re.split(":", c2_location)
-
-            c1_start = int(split_location_c1[0])
-            c1_end = int(split_location_c1[0]) + int(split_location_c1[1])
-            c2_start = int(split_location_c2[0])
-            c2_end = int(split_location_c2[0]) + int(split_location_c2[1])
-
-            if c1_start > c2_start:
-                c1_start, c2_start = c2_start, c1_start
-                c1_end, c2_end = c2_end, c1_end
-
-            if c2_start < c1_end:
-                concepts_overlap_flag = True
-
-    return concepts_overlap_flag
-
-
 @task()
 def import_concepts():
     """
-    START (functions are above)
 
     This is where the number of documents to prepopulate the relation app starts
-    from. For each document we make concept dictionaries from each pubtator containing
-    information to 1) check for overlapping words 2) filter out bad documents
-    3) Make sure there are at least two concept_types so that pairs can be formed
-    4) Do not use concepts without a unique identification (UID)
-    5) Use the longest word as the representative "text" if there are multiple texts
-    per UID
+    from. For each document we make concept dictionaries from each pubtator
+        1) check for overlapping words
+        2) filter out bad documents
+        3) Make sure there are at least two concept_types so that pairs can be formed
+        4) Do not use concepts without a unique identification (UID)
+        5) Use the longest word as the representative "text" if there are multiple texts
+        per UID
     """
-
-    from collections import Counter
 
     for document in Document.objects.all():
 
         df = document.as_pubtator_annotation_df()
         # We need annotations with at least a UID and Source
         df.dropna(subset=('uid', 'source'), how='any', inplace=True)
-        #df = df[df['source'].isin(['MESH', 'MEDIC', 'NCBI Gene'])]
+        df = df[df['source'].isin(['MESH', 'MEDIC', 'NCBI Gene'])]
 
         # (TODO) Inspect for , in IDs and duplicate rows
 
         # Remove duplicate (uid, source, [not text]) and drop location + offset
         df.drop(['location', 'offset'], axis=1, inplace=True)
         df.drop_duplicates(['uid', 'source', 'text'], inplace=True)
-        uid_source_uniq_df = df.drop_duplicates(['uid', 'source'])
 
         # Put these into the DB
         for index, row in df.iterrows():
@@ -84,6 +53,7 @@ def import_concepts():
             # (TODO) Maybe make these bulk creates
             c, created = Concept.objects.get_or_create(id=row['uid'])
             ct, created = ConceptText.objects.get_or_create(concept_id=row['uid'], text=row['text'])
+            # (TODO) Consider ann_type in addition to source
             cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype= stype_hash.get(row['source'], None) )
 
 

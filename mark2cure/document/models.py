@@ -201,11 +201,21 @@ class Document(models.Model):
 
                     for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
                         ann_type = annotation.infons['type']
+                        infons = annotation.infons
 
                         if ann_type in approved_types:
+
+                            uid_type = None
+                            uid = None
+                            for key in infons.keys():
+                                if key != 'type':
+                                    uid_type = key
+                                    uid = infons.get(uid_type, None)
+
                             annotation.clear_infons()
                             annotation.put_infon('type', str(approved_types.index(ann_type)))
                             annotation.put_infon('user', 'pubtator')
+                            annotation.put_infon('uid', str(uid))
                             reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
 
                 # Remove the shorter annotation if they're multiple
