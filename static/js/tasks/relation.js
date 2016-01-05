@@ -55,14 +55,28 @@ RelationTaskCollection = Backbone.Collection.extend({
 
       /* When the back toggle is selected */
       Tree['convoChannel'].on('back', function(opts) {
-        /* Clicking back always completely resets
-        var parentRel = opts['choice'].get('parentRelation');
-        if(parentRel) { collection = parentRel.get('children'); }
-        if(opts['collection']) { collection = opts['collection']; } */
-
-        /* Backup: Go to the top of the stack */
+        /* Clicking back always completely resets. Backup: Go to the top of the stack */
         Tree['start'].show(new RelationCompositeView(view_options));
         submit_status();
+      });
+
+      var concepts = self.current_relationship.get('concepts');
+      var concept_uids = [concepts['c1'].id, concepts['c2'].id];
+      _.each(passages, function(passage, passage_idx) {
+        var filtered_annotations = _.filter(passage.annotation, function(annotation) {
+          return _.any(annotation.infon, function(infon) {
+            return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
+          });
+        });
+        passage['annotation'] = filtered_annotations;
+
+        var p = new Paragraph({'text': passage.text});
+        YPet[''+passage_idx].show( new WordCollectionView({
+          collection: p.get('words'),
+          passage_json: passage,
+        }) );
+        YPet[''+passage_idx].currentView.drawBioC(passage, false);
+        YPet[''+passage_idx].currentView.drawBioC(null, true);
       });
 
 
@@ -142,4 +156,5 @@ $('#submit_button').on('click', function(evt) {
 
 
 });
+
 

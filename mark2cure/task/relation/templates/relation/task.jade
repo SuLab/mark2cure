@@ -28,9 +28,10 @@ block content
       .col-xs-12.col-md-10.col-md-offset-1
         div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").document
           .paragraphs
-            - for section in document.section_set.all
-              .paragraph-box.m-t-md
-                p.section.paragraph #{section.text}
+
+    //- for section in document.section_set.all
+    //  .paragraph-box.m-t-md
+    //    p.section.paragraph #{section.text}
 
     .row(style="display:none;")
       form(id="task_relation_results", action='{% url "task-relation:results" document_pk=document.pk %}', method='POST')
@@ -79,11 +80,41 @@ block post-footer
   script.
     var relation_task_settings = {
       'csrf_token': "{{csrf_token}}",
-      'document_pk': "{{ document.pk }}"
+      'document_pk': "{{ document.pk }}",
+      'document_pmid': "{{ document.document_id }}"
     };
     $.getJSON('/static/js/tasks/relation-data.json', function(data) {
       relation_task_settings['data'] = data;
     });
+
+    var self_data, passages, regions;
+
+    YPet.addInitializer(function(options) {
+
+      $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
+        self_data = data;
+        passages = data.collection.document.passage;
+        regions = {};
+
+        _.each(passages, function(passage, passage_idx) {
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
+          $('.paragraphs').append(p_body);
+          regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+        });
+        YPet.addRegions(regions);
+
+        _.each(passages, function(passage, passage_idx) {
+          var p = new Paragraph({'text': passage.text});
+          YPet[''+passage_idx].show( new WordCollectionView({
+            collection: p.get('words'),
+          }) );
+          YPet[''+passage_idx].currentView.drawBioC(null, true);
+        });
+
+      });
+    });
+    YPet.start();
+
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation.js")
