@@ -11,7 +11,9 @@ RelationTask = Backbone.Model.extend({
       document: null,
       relation_type: null,
       concepts: {},
-      user_completed: false
+      user_completed: false,
+      available: true,
+      current: false
     }
 });
 
@@ -31,21 +33,25 @@ RelationTaskCollection = Backbone.Collection.extend({
     this.on('change:user_completed', this.next, this);
   },
   next: function() {
-    var next_relationship = collection.findWhere({user_completed: false});
+    var next_relationship = collection.findWhere({user_completed: false, available: true});
+    console.log('NEXT:', next_relationship, collection);
     if (next_relationship) {
       var self = this;
       if( Tree['convoChannel'] ) { Tree['convoChannel'].unbind(); }
 
       /* Assign an uncompleted relationship as the current focused task */
-      self.current_relationship = collection.findWhere({user_completed: false});
+      collection.each(function(r) { r.set('current', false); })
+      next_relationship.set('current', true);
+      var current_relationship = collection.findWhere({'current': true});
+      var concepts = current_relationship.get('concepts');
 
-      var coll = new RelationList( relation_task_settings['data'][ self.current_relationship.get('relation_type') ] );
-      var view_options = {collection: coll, concepts: self.current_relationship.get('concepts'), choice: false };
+      var coll = new RelationList( relation_task_settings['data'][ current_relationship.get('relation_type') ] );
+      var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false };
       Tree['start'].show(new RelationCompositeView(view_options));
 
       /* When an item is selected */
       Tree['convoChannel'].on('click', function(obj) {
-        var rcv = new RelationCompositeView({collection: obj['collection'], concepts: self.current_relationship.get('concepts'), choice: obj['choice'] })
+        var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'] });
         Tree['start'].show(rcv);
         submit_status();
       });
@@ -61,14 +67,13 @@ RelationTaskCollection = Backbone.Collection.extend({
       Tree['convoChannel'].on('error', function(obj) {
         var rcv = new RelationCompositeView({
           collection: new RelationList([]),
-          concepts: self.current_relationship.get('concepts'),
+          concepts: concepts,
           choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] )
         })
         Tree['start'].show(rcv);
         submit_status();
       });
 
-      var concepts = self.current_relationship.get('concepts');
       var concept_uids = [concepts['c1'].id, concepts['c2'].id];
       console.log('-- --', concept_uids);
 
@@ -110,9 +115,23 @@ var ProgressItem = Backbone.Marionette.ItemView.extend({
   template: _.template('&#8226;'),
   initialize : function(options) {
     this.listenTo(this.model, 'change:user_completed', this.render);
+    this.listenTo(this.model, 'change:current', this.render);
+    this.listenTo(this.model, 'change:available', this.render);
   },
   onRender: function() {
-    if (this.model.get('user_completed')) { this.$el.removeClass('uncompleted').addClass('active'); }
+    var class_options = ['uncompleted', 'completed', 'skip', 'active']
+    var self = this;
+    _.each(class_options, function(c) { self.$el.removeClass(c); });
+
+    if ( this.model.get('user_completed') ) {
+      this.$el.addClass('completed');
+    }
+    if ( !this.model.get('available') ) {
+      this.$el.addClass('skip');
+    }
+    if ( this.model.get('current') ) {
+      this.$el.addClass('active');
+    }
   }
 });
 
@@ -132,8 +151,7 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
     Tree.start();
 
     /* Onload request all relation tasks to complete */
-    var filtered_data = _.where( data, {'user_completed': false});
-    collection = new RelationTaskCollection(filtered_data);
+    collection = new RelationTaskCollection(data);
     collection.next();
 
     /* Init Progressbar event listner */
@@ -149,21 +167,36 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
 });
 
 
+var incorrect_flag_arr = ["zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy", "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer"];
 $('#submit_button').on('click', function(evt) {
-  console.log('f');
-  var current_selection = Tree.start.currentView.options.choice.get('id');
-  console.log('f2');
+  var current_selection = Tree.start.currentView.options.choice;
+  var current_relationship = collection.findWhere({'current': true});
 
-  if(current_selection) {
+  if(current_selection.get('id')) {
     $.ajax({
       type: 'POST',
-      url: '/task/relation/'+ relation_task_settings.document_pk +'/'+ collection.current_relationship.id +'/submit/',
+      url: '/task/relation/'+ relation_task_settings.document_pk +'/'+ current_relationship.id +'/submit/',
       data: $.extend({'csrfmiddlewaretoken': relation_task_settings.csrf_token },
-                     {'relation': current_selection}),
+                     {'relation': current_selection.get('id')}),
       cache: false,
       success: function() {
-        collection.current_relationship.set('user_completed', true);
+
+        if( _.contains(incorrect_flag_arr, current_selection.get('id')) ) {
+          var incorrect_key = 'c'+(1+incorrect_flag_arr.indexOf(current_selection.get('id')));
+          var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
+
+          collection.each(function(relation) {
+            var concepts = relation.get('concepts');
+            if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
+              relation.set('available', false);
+            }
+          });
+
+        }
+
+        current_relationship.set('user_completed', true);
         submit_status();
+
       },
       error: function() { alert('Please refresh your browswer and try again.') },
     });

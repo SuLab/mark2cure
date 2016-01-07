@@ -9,9 +9,10 @@
   @include media-breakpoint-down(md) {
     ol { text-align: center; }
   }
+  li.uncompleted { color: $color_gray; }
   li.completed { color: $color_gray_light; }
   li.active { color: $color_purple; }
-  li.uncompleted { color: $color_gray; }
+  li.skip { color: $color_white; }
 
   p {
     color: $color_gray;
