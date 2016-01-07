@@ -34,7 +34,6 @@ RelationTaskCollection = Backbone.Collection.extend({
   },
   next: function() {
     var next_relationship = collection.findWhere({user_completed: false, available: true});
-    console.log('NEXT:', next_relationship, collection);
     if (next_relationship) {
       var self = this;
       if( Tree['convoChannel'] ) { Tree['convoChannel'].unbind(); }
@@ -81,16 +80,11 @@ RelationTaskCollection = Backbone.Collection.extend({
         var tmp_passage = passage;
         console.log(passage.annotation.length);
 
-        var filtered_annotations = _.filter(passage.annotation, function(annotation) {
+        tmp_passage['annotation'] = _.filter(passage.annotation, function(annotation) {
           return _.any(annotation.infon, function(infon) {
-            //console.log(infon);
             return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
           });
         });
-
-        //console.log(filtered_annotations);
-        //console.log('--- ---');
-        tmp_passage['annotation'] = filtered_annotations;
 
         var p = new Paragraph({'text': tmp_passage.text});
         YPet[''+passage_idx].show( new WordCollectionView({

@@ -81,12 +81,11 @@ block post-footer
       relation_task_settings['data'] = data;
     });
 
-    var self_data, passages, regions;
+    var passages, regions;
 
     YPet.addInitializer(function(options) {
 
       $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
-        self_data = data;
         passages = data.collection.document.passage;
         regions = {};
 
