@@ -39,12 +39,18 @@
         "text": "prevents",
         "desc": "Administration of the drug prevents the disease",
         "example": "Malarone is taken daily by travelers wanting to prevent malaria."
+      }, {
+        "id": "nircjx48im90gy5uzqzc79gk3eagg7m36pti8oqi",
+        "text": "other relation, or relation unclear"
       }]
     }, {
     "id": "4mzrh5ub3nla6b1ostx7qdparjl3lrd9o567ubif",
     "text": "has no relation to",
     "desc": "There is no relation between the drug and disease.",
     "example": "To study soft tissue sarcoma, an experimental group of mice was given the drug NVP-BHG712."
+  }, {
+    "id": "ac1m2h0vxye2vuzv6cljr7be12o0d9oclir0kmr8",
+    "text": "other relation, or relation unclear"
   }],
 
   "g_d": [{
@@ -67,11 +73,17 @@
       "text": "and post-translational modifications are associated with",
       "desc": "Translation is protein synthesis. When changes are made to a protein during or after translation, it is considered a post-translational modification.",
       "example": "A small interfering RNA causes knockdown of ATP2C1 expression, resulting in defects in both post-translational processing of wild-type thyroglobulin"
+    }, {
+      "id": "a86ujdunjj2gt0yeyyl027pp4yqbabotvmu0flwt",
+      "text": "other relation, or relation unclear"
     }]}, {
     "id": "7aqs9bklotxhbq3r5dcofvsskiefb1yn2nkt1y4a",
     "text": "has no relation to",
     "desc": "The gene does not relate to the disease.",
     "example": "The precise role of Ngly1 in the ERAD process remains unclear in mammals."
+  }, {
+    "id": "52d80rv4t0h0g14gb83oamjfm8h9rz19zl1ubzku",
+    "text": "other relation, or relation unclear"
   }],
 
   "g_c": [{
@@ -84,11 +96,17 @@
     }, {
       "id": "5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy",
       "text": "is affected by"
+    }, {
+      "id": "xdnolju6wacvakqnmz6237zwbh0ta3ftw8mdcp50",
+      "text": "other relation, or relation unclear"
     }]
 
     }, {
     "id": "5mgmlk7rnbbd8q6amuapd3elwjpnbho0raegv59c",
     "text": "has no relation to"
+    }, {
+      "id": "ytbg2u85xp0hayhv1sh6kjlonaag1n4kfgidp1o1",
+      "text": "other relation, or relation unclear"
     }
   ]
 }
