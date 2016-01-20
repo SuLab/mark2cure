@@ -18,7 +18,7 @@ class RelationSerializer(serializers.ModelSerializer):
     concepts = serializers.SerializerMethodField()
 
     def get_user_status(self, relation):
-        return False
+        return True if relation.user_completed_count > 0 else False
 
     def get_concepts(self, relation):
         # (TODO) Select the longest text

@@ -110,7 +110,20 @@ def fetch_document_relations(request, document_pk):
     for section in document.section_set.all():
         View.objects.get_or_create(task_type='ri', section=section, user=request.user)
 
-    queryset = Relation.objects.filter(document=document)
+    queryset = Relation.objects.filter(document=document).extra(select={
+        "user_completed_count": """
+            SELECT COUNT(*) AS user_completed_count
+            FROM document_annotation
+
+            INNER JOIN `document_view` ON ( document_annotation.view_id = document_view.id )
+            INNER JOIN `relation_relationannotation` ON ( document_annotation.object_id = relation_relationannotation.id )
+
+            WHERE (document_annotation.kind = 'r'
+                AND document_annotation.content_type_id = 56
+                AND document_view.user_id = %d
+                AND relation_relationannotation.relation_id = relation_relation.id)""" % (request.user.pk,)
+    })
+
     serializer = RelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
