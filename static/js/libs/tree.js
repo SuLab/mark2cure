@@ -43,7 +43,9 @@ RelationList = Backbone.Collection.extend({
   url: '/api/v1/words',
 });
 
-
+function get_stype(the_current_relation) {
+  return $(this).hasClass('.gene');
+};
 /*
  * Views
  */
@@ -84,16 +86,20 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
   ui: {
     'c1': '#c1',
+    'c1_fade_in': '.fade_in',
     'relation': '#relation',
     'c2': '#c2',
+    'c2_fade_in': '.fade_in',
     'c1_not_correct': '#c1_not_correct',
     'c2_not_correct': '#c2_not_correct',
+    'submit_button': '#submit_button'
   },
 
   events : {
     'mousedown @ui.relation': 'resetRelationship',
     'mousedown @ui.c1_not_correct': 'c1Error',
-    'mousedown @ui.c2_not_correct': 'c2Error'
+    'mousedown @ui.c2_not_correct': 'c2Error',
+    'mousedown @ui.submit_button': 'submit_fade_in',
   },
 
   resetRelationship: function(evt) {
@@ -107,6 +113,13 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     Tree['convoChannel'].trigger('error', 'c_2');
   },
 
+  submit_fade_in: function(evt){
+    console.log('submit fade in');
+    this.ui.c1.fadeIn(1000);
+    this.ui.c2.fadeIn(1000);
+  },
+
+
   onRender : function() {
     var self = this;
     var choice = this.options['choice'];
@@ -118,6 +131,20 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     if(choice) {
       this.ui.relation.removeClass('disabled').text( choice.get('text') );
     }
+
+    // this.ui.c1_fade_in.fadeIn(1000);
+    // this.ui.c2_fade_in.fadeIn(1000);
+
+    // this.ui.c1.fadeIn(1000);
+    // this.ui.c2.fadeIn(1000);
+
+    this.ui.c1.mouseenter(function () {
+      $(this).addClass("not-correct-concept");
+    });
+
+    this.ui.c2.mouseenter(function () {
+      $(this).addClass("not-correct-concept");
+    });
 
     if(choice || this.collection.parentRelation) {
       this.ui.relation.removeClass('disabled');

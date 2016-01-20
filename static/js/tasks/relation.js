@@ -17,7 +17,7 @@ RelationTask = Backbone.Model.extend({
     }
 });
 
-
+// submit button status changes accordingly
 var submit_status = function() {
   if( Tree.start.currentView.options.choice ) {
     $('#submit_button').attr('disabled', false).removeClass('disabled');
@@ -26,6 +26,33 @@ var submit_status = function() {
   };
 };
 
+
+var add_relation_classes = function(current_relationship) {
+  var relation_type = current_relationship.get('relation_type');
+  if (relation_type == "g_c") {
+    $('#c1').addClass('gene');
+    $('#c1_not_correct_stype').html("<p>is not a gene concept?</p>");
+    $('#c2').addClass('chemical');
+    $('#c2_not_correct_stype').html("<p>is not a chemical concept?</p>");
+  } else if (relation_type == "c_d") {
+    $('#c1').addClass('chemical');
+    $('#c1_not_correct_stype').html("<p>is not a chemical concept?</p>");
+    $('#c2').addClass('disease');
+    $('#c2_not_correct_stype').html("<p>is not a disease concept?</p>");
+  } else if (relation_type == "g_d") {
+    $('#c1').addClass('gene');
+    $('#c1_not_correct_stype').html("<p>is not a gene concept?</p>");
+    $('#c2').addClass('disease');
+    $('#c2_not_correct_stype').html("<p>is not a disease concept?</p>");
+  };
+};
+
+// (TODO) have C1 and C2 "fade in if they are the new concept. User experience.
+var add_fade_in_classes = function() {
+  console.log('add fade in classes');
+  $('#c1').addClass('fade_in');
+  $('#c2').addClass('fade_in');
+};
 
 RelationTaskCollection = Backbone.Collection.extend({
   model: RelationTask,
@@ -46,13 +73,16 @@ RelationTaskCollection = Backbone.Collection.extend({
 
       var coll = new RelationList( relation_task_settings['data'][ current_relationship.get('relation_type') ] );
       var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false };
+      add_fade_in_classes();
       Tree['start'].show(new RelationCompositeView(view_options));
+      add_relation_classes(current_relationship);
 
       /* When an item is selected */
       Tree['convoChannel'].on('click', function(obj) {
         var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'] });
         Tree['start'].show(rcv);
         submit_status();
+        add_relation_classes(current_relationship);
       });
 
       /* When the back toggle is selected */
@@ -60,6 +90,7 @@ RelationTaskCollection = Backbone.Collection.extend({
         /* Clicking back always completely resets. Backup: Go to the top of the stack */
         Tree['start'].show(new RelationCompositeView(view_options));
         submit_status();
+        add_relation_classes(current_relationship);
       });
 
       /* When C1 or C2 is incorrect */
@@ -71,6 +102,7 @@ RelationTaskCollection = Backbone.Collection.extend({
         })
         Tree['start'].show(rcv);
         submit_status();
+        add_relation_classes(current_relationship);
       });
 
 
@@ -148,8 +180,15 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
 
     /* Onload request all relation tasks to complete */
     collection = new RelationTaskCollection(data);
+    // Sort the collection by C1 on initial data load:
+    var new_collection = _.sortBy(collection.models, function(c) {
+      return c.attributes.concepts.c1.text;
+    });
+    collection.models = new_collection;
     collection.next();
 
+    var current_relationship = collection.findWhere({'current': true});
+    add_relation_classes(current_relationship);
     /* Init Progressbar event listner */
     (new ProgressView({
       collection: collection,
@@ -198,4 +237,3 @@ $('#submit_button').on('click', function(evt) {
     });
   }
 });
-
