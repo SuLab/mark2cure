@@ -15,9 +15,9 @@ determined if there are non-overlapping concepts
 """
 
 stype_hash = {
-    'MESH': 'c',
-    'MEDIC': 'd',
-    'NCBI Gene': 'g'
+    'Chemical': 'c',
+    'Disease': 'd',
+    'Gene': 'g'
 }
 
 @task()
@@ -39,13 +39,17 @@ def import_concepts():
         df = document.as_pubtator_annotation_df()
         # We need annotations with at least a UID and Source
         df.dropna(subset=('uid', 'source'), how='any', inplace=True)
-        df = df[df['source'].isin(['MESH', 'MEDIC', 'NCBI Gene'])]
+        df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
 
         # (TODO) Inspect for , in IDs and duplicate rows
+        # remove unnecessary prefixes from uids
+        df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("MESH:") else v)
+        df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("OMIM:") else v)
+        df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[6:] if v.startswith("CHEBI:") else v)
 
         # Remove duplicate (uid, source, [not text]) and drop location + offset
         df.drop(['location', 'offset'], axis=1, inplace=True)
-        df.drop_duplicates(['uid', 'source', 'text'], inplace=True)
+        df.drop_duplicates(['uid', 'ann_type', 'text'], inplace=True)
 
         # Put these into the DB
         for index, row in df.iterrows():
@@ -54,7 +58,8 @@ def import_concepts():
             c, created = Concept.objects.get_or_create(id=row['uid'])
             ct, created = ConceptText.objects.get_or_create(concept_id=row['uid'], text=row['text'])
             # (TODO) Consider ann_type in addition to source
-            cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype= stype_hash.get(row['source'], None) )
+            # agree with this comment. 'source' is too variable. Just use ann_type -JF
+            cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype= stype_hash.get(row['ann_type'], None) )
 
 
 @task()
