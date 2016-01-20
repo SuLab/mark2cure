@@ -32,6 +32,9 @@ urlpatterns = patterns('',
     url(r'^groups/$',
         views.group_list, name='groups-api'),
 
+    url(r'relationships',
+        views.relation_list, name='relations-api'),
+
     url(r'^leaderboard/users/(?P<day_window>\d+)/$',
         views.leaderboard_users, name='leaderboard-users'),
 

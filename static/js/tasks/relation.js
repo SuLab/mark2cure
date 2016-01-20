@@ -75,7 +75,6 @@ RelationTaskCollection = Backbone.Collection.extend({
 
 
       var concept_uids = [concepts['c1'].id, concepts['c2'].id];
-      console.log('-- --', concept_uids);
       tmp_passages = [];
 
       _.each(passages, function(p, p_idx) {
@@ -87,8 +86,6 @@ RelationTaskCollection = Backbone.Collection.extend({
             return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
           });
         });
-
-        console.log( tmp_passage['annotation'] );
 
         var p = new Paragraph({'text': tmp_passage.text});
         YPet[''+p_idx].show( new WordCollectionView({

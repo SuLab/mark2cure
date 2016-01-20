@@ -9,11 +9,21 @@ block header
     include includes/header
 
 block dashboard-content
+
     - if documents
-      .list-group
-        - for document in documents
-          a(href='{% url "task-relation:task" document_pk=document.pk %}').list-group-item
-            #{document.title}
+      #document-relation-board
+
     - else
       p.lead.text-center.m-t-lg Sorry, no relationship tasks currently avialable for you to work on.
+
+block post-footer
+    script(src="/static/js/tasks/relation-list.js")
+
+    script.
+      DocumentRelationBoard.addInitializer(function(options) {
+        DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
+        var docs = new DocumentList();
+        DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
+      });
+      DocumentRelationBoard.start();
 

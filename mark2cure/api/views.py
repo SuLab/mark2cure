@@ -5,11 +5,12 @@ from django.http import HttpResponse
 
 
 from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer
+from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
-from ..common.models import Group
+from ..common.models import Document, Group
 from ..task.models import Task
+from ..task.relation.models import Relation
 from ..document.models import Section, Annotation
 
 from rest_framework.decorators import api_view
@@ -129,6 +130,39 @@ def quest_group_list(request, group_pk):
     }).prefetch_related('documents')
 
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
+    return Response(serializer.data)
+
+@login_required
+@api_view(['GET'])
+def relation_list(request):
+
+    document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))
+    queryset = Document.objects.filter(id__in=document_ids).extra(select={
+        "current_completed_count": """
+            SELECT COUNT(*) AS user_completed_count
+            FROM document_view
+
+            INNER JOIN `document_section` ON ( document_view.section_id = document_section.id)
+
+            WHERE (document_view.task_type = 'ri'
+                AND document_view.completed = 1
+                AND document_section.document_id = document_document.id)""",
+
+        # How many times has this Document Task View been completed (should only be 0 or 1)
+        "user_completed_count": """
+            SELECT COUNT(*) AS user_completed_count
+            FROM document_view
+
+            INNER JOIN `document_section` ON ( document_view.section_id = document_section.id)
+
+            WHERE (document_view.task_type = 'ri'
+                AND document_view.completed = 1
+                AND document_view.user_id = %d
+        AND document_section.document_id = document_document.id)""" % (request.user.pk,)
+    })[:100]
+
+
+    serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
 

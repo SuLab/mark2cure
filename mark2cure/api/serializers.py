@@ -1,5 +1,5 @@
 from mark2cure.userprofile.models import UserProfile, Team
-from ..common.models import Group
+from ..common.models import Document, Group
 from ..task.models import Task
 
 from rest_framework import serializers
@@ -85,4 +85,32 @@ class QuestSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'documents', 'points',
                   'requires_qualification', 'provides_qualification',
                   'meta_url', 'user', 'progress')
+
+
+class DocumentRelationSerializer(serializers.ModelSerializer):
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        context = kwargs.pop('context', {})
+        user = context.get('user', None)
+
+        # Instantiate the superclass normally
+        super(DocumentRelationSerializer, self).__init__(*args, **kwargs)
+
+    user = serializers.SerializerMethodField('get_user_status')
+    progress = serializers.SerializerMethodField('get_progress_status')
+
+    def get_user_status(self, document):
+        return {'enabled': True,
+                'completed': True if document.user_completed_count > 0 else False}
+
+    def get_progress_status(self, task):
+        return {'required': 15,
+                'current': task.current_completed_count,
+                'completed': task.current_completed_count >= 15 }
+
+    class Meta:
+        model = Document
+        fields = ('id', 'title', 'document_id',
+                  'user', 'progress')
 
