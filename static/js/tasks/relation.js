@@ -73,26 +73,31 @@ RelationTaskCollection = Backbone.Collection.extend({
         submit_status();
       });
 
+
       var concept_uids = [concepts['c1'].id, concepts['c2'].id];
       console.log('-- --', concept_uids);
+      tmp_passages = [];
 
-      _.each(passages, function(passage, passage_idx) {
-        var tmp_passage = passage;
-        console.log(passage.annotation.length);
+      _.each(passages, function(p, p_idx) {
+        /* Deep clone passage objects */
+        tmp_passage = $.extend({}, p);
 
-        tmp_passage['annotation'] = _.filter(passage.annotation, function(annotation) {
+        tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
           return _.any(annotation.infon, function(infon) {
             return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
           });
         });
 
+        console.log( tmp_passage['annotation'] );
+
         var p = new Paragraph({'text': tmp_passage.text});
-        YPet[''+passage_idx].show( new WordCollectionView({
+        YPet[''+p_idx].show( new WordCollectionView({
           collection: p.get('words'),
           passage_json: tmp_passage,
         }) );
-        YPet[''+passage_idx].currentView.drawBioC(tmp_passage, false);
-        YPet[''+passage_idx].currentView.drawBioC(null, true);
+        YPet[''+p_idx].currentView.drawBioC(tmp_passage, false);
+        YPet[''+p_idx].currentView.drawBioC(null, true);
+
       });
 
     } else {
@@ -117,11 +122,11 @@ var ProgressItem = Backbone.Marionette.ItemView.extend({
     var self = this;
     _.each(class_options, function(c) { self.$el.removeClass(c); });
 
-    if ( this.model.get('user_completed') ) {
-      this.$el.addClass('completed');
-    }
     if ( !this.model.get('available') ) {
       this.$el.addClass('skip');
+    }
+    if ( this.model.get('user_completed') ) {
+      this.$el.addClass('completed');
     }
     if ( this.model.get('current') ) {
       this.$el.addClass('active');

@@ -14,6 +14,10 @@
   li.active { color: $color_purple; }
   li.skip { color: $color_white; }
 
+  h3 {
+    cursor: default;
+  }
+
   p {
     color: $color_gray;
     text-transform: uppercase;
