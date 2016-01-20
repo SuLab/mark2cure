@@ -21,12 +21,31 @@
   font-weight: 300;
 }
 
-#tree #c1 h3 {
+#tree #c1 {
   text-align: right;
+  @include media-breakpoint-down(xs) {
+    text-align: center;
+  }
+
 }
 
-#tree #c2 h3 {
+#tree #c2 {
   text-align: left;
+  @include media-breakpoint-down(xs) {
+    text-align: center;
+  }
+}
+
+#tree .gene h3, {
+  background-color: $color_gene;
+}
+
+#tree .disease h3 {
+  background-color: $color_disease;
+}
+
+#tree .chemical h3 {
+  background-color: $color_treatment;
 }
 
 #tree a, a:hover {
@@ -42,21 +61,50 @@
 }
 
 #tree h3:hover {
-  cursor: pointer;
+  cursor: default;
 }
 
 #tree .not-correct-concept:hover {
   color: #fff;
   background-color: #D92B24;
+  cursor: pointer;
 }
 
-#tree #c1.not-correct-concept:hover h3,
-#tree #c2.not-correct-concept:hover h3 {
-  text-align: center;
+#tree .not-correct-concept-stype:hover{
+  color: #fff;
+  background-color: #D92B24;
+  cursor: pointer;
 }
+
+#tree #c1_not_correct {
+  cursor: pointer;
+  text-align: left;
+  @include media-breakpoint-down(xs) {
+    text-align: center;
+  }
+}
+
+#tree #c2_not_correct {
+  cursor: pointer;
+  text-align: right;
+  @include media-breakpoint-down(xs) {
+    text-align: center;
+  }
+}
+
+
+#tree #relation {
+  cursor: pointer;
+}
+
+// #tree #c1.not-correct-concept:hover h3,
+// #tree #c2.not-correct-concept:hover h3 {
+//   text-align: center;
+// }
 
 #tree #relation.disabled {
   color: #e7e7e7;
+  cursor: default;
 }
 #tree #relation.relation-go-back:hover {
   color: #fff;
@@ -103,4 +151,3 @@ p.doc {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
-
