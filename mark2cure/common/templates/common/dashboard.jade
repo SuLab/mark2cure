@@ -41,7 +41,7 @@ block content
                   li Score: #{user.userprofile.rating_score|intcomma}
                   li Level: #{user.userprofile.highest_level.name}
 
-              - if request.user|has_group:"Comment Moderators"
+              - if request.user|has_group:"Uxtesters"
                 .card-block
                   a(href='{% url "task-relation:home" %}')
                     | Interested in trying the new relation identification module?
