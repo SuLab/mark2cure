@@ -33,10 +33,10 @@ var add_relation_classes = function(current_relationship) {
     $('#c1').addClass('gene');
     $('#c1_not_correct_stype').html("<p>is not a gene concept?</p>");
     $('#c2').addClass('chemical');
-    $('#c2_not_correct_stype').html("<p>is not a chemical concept?</p>");
+    $('#c2_not_correct_stype').html("<p>is not a drug concept?</p>");
   } else if (relation_type == "c_d") {
     $('#c1').addClass('chemical');
-    $('#c1_not_correct_stype').html("<p>is not a chemical concept?</p>");
+    $('#c1_not_correct_stype').html("<p>is not a drug concept?</p>");
     $('#c2').addClass('disease');
     $('#c2_not_correct_stype').html("<p>is not a disease concept?</p>");
   } else if (relation_type == "g_d") {
