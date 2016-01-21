@@ -24,7 +24,7 @@ Relation = Backbone.RelationalModel.extend({
   get_selected: function() {
     /* Try to find an instance of 'this' model type in the store */
     var model = Backbone.Relational.store.find( this, {"selected": true});
-    console.log('model:', model);
+    // console.log('model:', model);
 
     if ( !model && _.isObject( attributes ) ) {
       var coll = Backbone.Relational.store.getCollection( this );
@@ -114,7 +114,6 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
   },
 
   submit_fade_in: function(evt){
-    console.log('submit fade in');
     this.ui.c1.fadeIn(1000);
     this.ui.c2.fadeIn(1000);
   },
@@ -129,8 +128,25 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
      */
 
     if(choice) {
+      function get_stype_word(stype){
+        if (stype == 'g'){
+          stype_word = 'gene';
+        } else if ( stype == 'c'){
+          stype_word = 'drug';
+        } else {
+          stype_word = 'disease';
+        }
+        return stype_word;
+      };
+
+      if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
+        this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
+      } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
+        this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
+      } else {
       this.ui.relation.removeClass('disabled').text( choice.get('text') );
-    }
+      };
+    };
 
     // this.ui.c1_fade_in.fadeIn(1000);
     // this.ui.c2_fade_in.fadeIn(1000);
