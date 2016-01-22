@@ -26,9 +26,9 @@ class ConceptDocumentRelationship(models.Model):
     concept_text = models.ForeignKey(ConceptText)
     document = models.ForeignKey('document.Document')
     STYPE_CHOICES = (
-        ('c', 'MESH'),
-        ('d', 'MEDIC'),
-        ('g', 'NCBI Gene')
+        ('c', 'Chemical'),
+        ('d', 'Disease'),
+        ('g', 'Gene')
     )
     stype = models.CharField(max_length=1, choices=STYPE_CHOICES, null=True, blank=False)
 
