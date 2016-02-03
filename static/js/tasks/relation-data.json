@@ -50,7 +50,7 @@
     "example": "To study soft tissue sarcoma, an experimental group of mice was given the drug NVP-BHG712."
   }, {
     "id": "ac1m2h0vxye2vuzv6cljr7be12o0d9oclir0kmr8",
-    "text": "other relation, or relation unclear"
+    "text": "cannot be determined"
   }],
 
   "g_d": [{
@@ -83,7 +83,7 @@
     "example": "The precise role of Ngly1 in the ERAD process remains unclear in mammals."
   }, {
     "id": "52d80rv4t0h0g14gb83oamjfm8h9rz19zl1ubzku",
-    "text": "other relation, or relation unclear"
+    "text": "cannot be determined"
   }],
 
   "g_c": [{
@@ -106,7 +106,7 @@
     "text": "has no relation to"
     }, {
       "id": "ytbg2u85xp0hayhv1sh6kjlonaag1n4kfgidp1o1",
-      "text": "other relation, or relation unclear"
+      "text": "cannot be determined"
     }
   ]
 }
