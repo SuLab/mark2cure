@@ -86,20 +86,28 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
   ui: {
     'c1': '#c1',
-    'c1_fade_in': '.fade_in',
-    'relation': '#relation',
     'c2': '#c2',
-    'c2_fade_in': '.fade_in',
+    'relation': '#relation',
     'c1_not_correct': '#c1_not_correct',
     'c2_not_correct': '#c2_not_correct',
+    'incorrect_buttons': '.fa.fa-times-circle',
     'submit_button': '#submit_button'
   },
 
   events : {
+    'mouseover @ui.incorrect_buttons': 'hoverIncorrect',
+    'mouseout @ui.incorrect_buttons': 'hoverOutIncorrect',
     'mousedown @ui.relation': 'resetRelationship',
     'mousedown @ui.c1_not_correct': 'c1Error',
     'mousedown @ui.c2_not_correct': 'c2Error',
     'mousedown @ui.submit_button': 'submit_fade_in',
+  },
+
+  hoverIncorrect: function(evt) {
+    $(evt.target).parent().addClass('incorrect');
+  },
+  hoverOutIncorrect: function(evt) {
+    $(evt.target).parent().removeClass('incorrect');
   },
 
   resetRelationship: function(evt) {
@@ -113,12 +121,6 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     Tree['convoChannel'].trigger('error', 'c_2');
   },
 
-  submit_fade_in: function(evt){
-    this.ui.c1.fadeIn(1000);
-    this.ui.c2.fadeIn(1000);
-  },
-
-
   onRender : function() {
     var self = this;
     var choice = this.options['choice'];
@@ -126,6 +128,15 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     /*
      * console.log('[RelationCompositeView onRender] Choice:', choice);
      */
+
+    if(this.options.first_draw) {
+      if( _.has(concepts['c1'], 'fadeIn') ) {
+        this.ui.c1.addClass('fade-in one');
+      };
+      if( _.has(concepts['c2'], 'fadeIn') ) {
+        this.ui.c2.addClass('fade-in one');
+      };
+    }
 
     if(choice) {
       function get_stype_word(stype){
@@ -141,26 +152,14 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
       if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
         this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
+
       } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
         this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
+
       } else {
-      this.ui.relation.removeClass('disabled').text( choice.get('text') );
+        this.ui.relation.removeClass('disabled').text( choice.get('text') );
       };
     };
-
-    // this.ui.c1_fade_in.fadeIn(1000);
-    // this.ui.c2_fade_in.fadeIn(1000);
-
-    // this.ui.c1.fadeIn(1000);
-    // this.ui.c2.fadeIn(1000);
-
-    this.ui.c1.mouseenter(function () {
-      $(this).addClass("not-correct-concept");
-    });
-
-    this.ui.c2.mouseenter(function () {
-      $(this).addClass("not-correct-concept");
-    });
 
     if(choice || this.collection.parentRelation) {
       this.ui.relation.removeClass('disabled');

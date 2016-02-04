@@ -19,116 +19,120 @@
 #tree {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
-}
 
-#tree #c1 {
-  text-align: right;
-  @include media-breakpoint-down(xs) {
-    text-align: center;
+  #c1 {
+    text-align: right;
   }
 
-}
-
-#tree #c2 {
-  text-align: left;
-  @include media-breakpoint-down(xs) {
-    text-align: center;
+  #c2 {
+    text-align: left;
   }
-}
 
-#tree .gene h3, {
-  background-color: $color_gene;
-}
-
-#tree .disease h3 {
-  background-color: $color_disease;
-}
-
-#tree .chemical h3 {
-  background-color: $color_treatment;
-}
-
-#tree a, a:hover {
-  text-decoration: none;
-  cursor: pointer;
-}
-
-#tree h3 {
-  font-size: 1.75em;
-  line-height: 1.75em;
-  margin: 10px 0px;
-  padding: 6px;
-}
-
-#tree h3:hover {
-  cursor: default;
-}
-
-#tree .not-correct-concept:hover {
-  color: #fff;
-  background-color: #D92B24;
-  cursor: pointer;
-}
-
-#tree .not-correct-concept-stype:hover{
-  color: #fff;
-  background-color: #D92B24;
-  cursor: pointer;
-}
-
-#tree #c1_not_correct {
-  cursor: pointer;
-  text-align: left;
-  @include media-breakpoint-down(xs) {
-    text-align: center;
+  .gene {
+    border: 16px solid $color_gene;
   }
-}
 
-#tree #c2_not_correct {
-  cursor: pointer;
-  text-align: right;
-  @include media-breakpoint-down(xs) {
-    text-align: center;
+  .disease {
+    border: 16px solid $color_disease;
   }
-}
+
+  .chemical {
+    border: 16px solid $color_treatment;
+  }
+
+  .concept.incorrect {
+    border: 16px solid red;
+  }
+
+  .concept {
+
+    h3 {
+      font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+      font-weight: 300;
+      color: $color_gray_dark;
+      letter-spacing: 1px;
+      font-size: 1.75em;
+      margin: 10px 0px;
+    }
+
+    .fa.fa-times-circle {
+      color: $color_gray_light;
+      font-size: 1.6em;
+      cursor: pointer;
+      position: absolute;
+    }
+    .fa.fa-times-circle:hover {
+      color: $color_gray_dark;
+    }
+
+    #c1_not_correct {
+      top: 4px;
+      left: 4px;
+    }
+    #c2_not_correct {
+      top: 4px;
+      right: 4px;
+    }
+
+    .not_correct_stype {
+      visibility: hidden;
+    }
+
+    margin-top: 72px;
+    @include media-breakpoint-down(lg) {
+      margin-top: 72px;
+    }
+
+    @include media-breakpoint-down(sm) {
+      margin-top: 108px;
+    }
+
+    @include media-breakpoint-down(xs) {
+      margin-top: 0px;
+      text-align: center;
+    }
+  }
+
+  .concept.incorrect .not_correct_stype {
+    visibility: visible;
+  }
+
+  #relation {
+    cursor: pointer;
+    padding: 12px 0px;
+  }
+
+  #relation.disabled {
+    color: #e7e7e7;
+    cursor: default;
+  }
+  #relation.relation-go-back:hover {
+    color: #fff;
+    background-color: #D92B24;
+  }
+
+  .list-group-item,
+  .list-group-item:first-child,
+  .list-group-item:last-child {
+    border-radius: 0px;
+    border: 2px solid black;
+    border-bottom: none;
+    font-size: 1.25em;
+    line-height: 1.25em;
+    letter-spacing: 0.05em;
+  }
+
+  .list-group-item:last-child {
+    border-bottom: 2px solid black;
+  }
+
+  a.list-group-item:hover {
+    color: #fff;
+    background-color: #31A7DA;
+  }
 
 
-#tree #relation {
-  cursor: pointer;
-}
 
-// #tree #c1.not-correct-concept:hover h3,
-// #tree #c2.not-correct-concept:hover h3 {
-//   text-align: center;
-// }
-
-#tree #relation.disabled {
-  color: #e7e7e7;
-  cursor: default;
-}
-#tree #relation.relation-go-back:hover {
-  color: #fff;
-  background-color: #D92B24;
-}
-
-#tree .list-group-item,
-#tree .list-group-item:first-child,
-#tree .list-group-item:last-child {
-  border-radius: 0px;
-  border: 2px solid black;
-  border-bottom: none;
-  font-size: 1.25em;
-  line-height: 1.25em;
-  letter-spacing: 0.05em;
-}
-
-#tree .list-group-item:last-child {
-  border-bottom: 2px solid black;
-}
-
-#tree a.list-group-item:hover {
-  color: #fff;
-  background-color: #31A7DA;
 }
 
 /* ETC OTHER */

@@ -26,32 +26,26 @@ var submit_status = function() {
   };
 };
 
-
 var add_relation_classes = function(current_relationship) {
   var relation_type = current_relationship.get('relation_type');
   if (relation_type == "g_c") {
     $('#c1').addClass('gene');
-    $('#c1_not_correct_stype').html("<p>is not a gene concept?</p>");
+    $('#c1 .not_correct_stype').text('is not a gene concept?');
     $('#c2').addClass('chemical');
-    $('#c2_not_correct_stype').html("<p>is not a drug concept?</p>");
+    $('#c2 .not_correct_stype').text('is not a drug concept?');
+
   } else if (relation_type == "c_d") {
     $('#c1').addClass('chemical');
-    $('#c1_not_correct_stype').html("<p>is not a drug concept?</p>");
+    $('#c1 .not_correct_stype').text('is not a drug concept?');
     $('#c2').addClass('disease');
-    $('#c2_not_correct_stype').html("<p>is not a disease concept?</p>");
+    $('#c2 .not_correct_stype').text('is not a disease concept?');
+
   } else if (relation_type == "g_d") {
     $('#c1').addClass('gene');
-    $('#c1_not_correct_stype').html("<p>is not a gene concept?</p>");
+    $('#c1 .not_correct_stype').text('is not a gene concept?');
     $('#c2').addClass('disease');
-    $('#c2_not_correct_stype').html("<p>is not a disease concept?</p>");
+    $('#c2 .not_correct_stype').text('is not a disease concept?');
   };
-};
-
-// (TODO) have C1 and C2 "fade in if they are the new concept. User experience.
-var add_fade_in_classes = function() {
-  console.log('add fade in classes');
-  $('#c1').addClass('fade_in');
-  $('#c2').addClass('fade_in');
 };
 
 RelationTaskCollection = Backbone.Collection.extend({
@@ -71,15 +65,23 @@ RelationTaskCollection = Backbone.Collection.extend({
       var current_relationship = collection.findWhere({'current': true});
       var concepts = current_relationship.get('concepts');
 
+      var current_idx = collection.indexOf(current_relationship);
+      if(current_idx >= 1) {
+        var previous_concepts = collection.at(current_idx-1).get('concepts');
+
+        if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
+        if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
+      }
+
       var coll = new RelationList( relation_task_settings['data'][ current_relationship.get('relation_type') ] );
-      var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false };
-      add_fade_in_classes();
+      var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false, first_draw: true };
+
       Tree['start'].show(new RelationCompositeView(view_options));
       add_relation_classes(current_relationship);
 
       /* When an item is selected */
       Tree['convoChannel'].on('click', function(obj) {
-        var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'] });
+        var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'], first_draw: false });
         Tree['start'].show(rcv);
         submit_status();
         add_relation_classes(current_relationship);
@@ -88,6 +90,7 @@ RelationTaskCollection = Backbone.Collection.extend({
       /* When the back toggle is selected */
       Tree['convoChannel'].on('back', function(opts) {
         /* Clicking back always completely resets. Backup: Go to the top of the stack */
+        view_options['first_draw'] = false;
         Tree['start'].show(new RelationCompositeView(view_options));
         submit_status();
         add_relation_classes(current_relationship);
@@ -98,7 +101,8 @@ RelationTaskCollection = Backbone.Collection.extend({
         var rcv = new RelationCompositeView({
           collection: new RelationList([]),
           concepts: concepts,
-          choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] )
+          choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] ),
+          first_draw: false
         })
         Tree['start'].show(rcv);
         submit_status();
