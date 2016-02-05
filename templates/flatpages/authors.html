@@ -1,0 +1,59 @@
+{% extends 'base.jade' %}
+
+{% block head-title %}
+  <title>{{ flatpage.title }}</title>
+{% endblock %}
+
+{% block content %}
+{{ flatpage.content }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+jQuery.get('https://s3.amazonaws.com/uploads.hipchat.com/25885/2353329/qXodIGeLzwnhFUB/beta%20copy%205.txt', function(data) {
+  var input_text = data;
+  function get_author_names_and_quotes() {
+
+    String.prototype.capitalize = function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+
+    var lines = input_text.split('\n');
+    var formatted_line = "";
+    // note this input text file has a header!
+    var complete_author_list = [];
+    for(var i = 1; i < lines.length - 1; i++){
+      var author_list = [];
+      var split_line = lines[i].split("\t");
+      var contribution_level = split_line[0]
+      var name = split_line[1].replace(/(\r\n|\n|\r)/gm,"").capitalize();
+      var quote = split_line[2].replace(/(\r\n|\n|\r)/gm,"").capitalize();
+
+      author_list = [name, quote, contribution_level];
+      complete_author_list.push(author_list);
+    };
+    complete_author_list = complete_author_list.sort();
+
+    for (i = 0; i < complete_author_list.length; i++){
+      name = complete_author_list[i][0];
+      quote = complete_author_list[i][1];
+      contribution_level = complete_author_list[i][2];
+      if (quote != "") {
+        quote = ': "' + quote + '"';
+      };
+      if (contribution_level == '3') {
+        name = "<span style='text-decoration:underline;'><strong>" + name + "</strong></span>";
+      };
+      if (contribution_level == '2'){
+        name = '<strong>' + name + '</strong>';
+      };
+      formatted_line = formatted_line + name + quote + "<br>";
+    };
+    return formatted_line;
+  };
+
+  $(document).ready(function(){
+    $('#authors').html(get_author_names_and_quotes() );
+  });
+});
+</script>
+
+{% endblock %}
