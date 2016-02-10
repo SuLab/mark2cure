@@ -38,7 +38,7 @@ jQuery.get('https://mark2cure.org/static/data/authors_beta_experiment.txt', func
       quote = complete_author_list[i][1];
       contribution_level = complete_author_list[i][2];
       if (quote != "") {
-        quote = ': "' + quote + '"';
+        quote = ': "<em>' + quote + '</em>"';
       };
       if (contribution_level == '3') {
         name = "<span style='text-decoration:underline;'><strong>" + name + "</strong></span>";

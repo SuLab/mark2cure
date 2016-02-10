@@ -1,49 +1,49 @@
 Status	Name to use	Quote
-3	AJ Eckhart	
-1	Anthony R Gangloff	
-3	Bill McQuillan	
+3	AJ Eckhart
+1	Anthony R Gangloff
+3	Bill McQuillan
 3	Beth Nanis	I Mark2Cure in memory of Mike.
-1	Christy Collins	
-1	Daniel Mietchen	Marc2Cure is a great way to bring researchers, citizen scientists and patients together to educate themselves and others while moving science forward.
-2	Matsumoto	
-1	Evelyn Bayna	
+1	Christy Collins
+1	Daniel Mietchen	Mark2Cure is a great way to bring researchers, citizen scientists and patients together to educate themselves and others while moving science forward.
+2	Matsumoto
+1	Evelyn Bayna
 1	Edward Lau	Mark2Cure Rocks
-1	Egon Willighagen	
-1	Gareth Morgan	
+1	Egon Willighagen
+1	Gareth Morgan
 3	Melissa Dunn (AKA: hashisNme)	Please go to http://www.hesaonline.org/ for more information about Hashimoto's Encephalopathy
-3	Isabelle Lee	
-1	BuchananMarshall	
-3	Dr. Judy Eckhart	
-1	joremen	
+3	Isabelle Lee
+1	BuchananMarshall
+3	Dr. Judy Eckhart
+1	joremen
 1	J.Page	Grateful to be able to help
-1	Judith Vilbrandt	
-1	Kayvee	
-3	Lyle	
-1	Linda Olson	
+1	Judith Vilbrandt
+1	Kayvee
+3	Lyle
+1	Linda Olson
 1	madms	Wish there were more projects like this!
-1	Pietro Michelucci	
-3	Maria	
+1	Pietro Michelucci
+3	Maria
 3	Matteo Vinci	happy to have been part of the beta, look forward to new research ahead
-2	Matthew H. Russell	
-1	Matthew Might	
-1	Tobias Meissner	
-1	Merell Liddle	
+2	Matthew H. Russell
+1	Matthew Might
+1	Tobias Meissner
+1	Merell Liddle
 1	Michael Davis	This is a staggeringly brilliant way to do research.
-2	Maureen Pflum	
-2	naragonj	
-1	oceangal	
-1	Obi L Griffith	
-1	Nina Gao	
-1	Linda Sharp	
+2	Maureen Pflum
+2	naragonj
+1	oceangal
+1	Obi L Griffith
+1	Nina Gao
+1	Linda Sharp
 1	Sally James	Citizen science helps researchers.
-3	Skye Spencer	
-1	James Howe	
-1	Antoine Taly	
-1	Vittorio Grieco	
-2	ckrypton	
-1	manabu	
-1	Ivo Georgiev	
-1	Erma Magnussen	
-1	Yu-Yun Chang	
+3	Skye Spencer
+1	James Howe
+1	Antoine Taly
+1	Vittorio Grieco
+2	ckrypton
+1	manabu
+1	Ivo Georgiev
+1	Erma Magnussen
+1	Yu-Yun Chang
 1	Nick Yorio	Great to be part of a potentially substantial innovation.
-1	Linda L Remy, PhD	
+1	Linda L Remy, PhD

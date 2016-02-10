@@ -39,6 +39,7 @@ head
 
   body
     block header
+      include registration/login-modal
       .container-fluid
         .row
           .col-sm-6.col-sm-offset-3.col-xs-6.col-xs-offset-0
@@ -47,7 +48,7 @@ head
 
           - if not user.is_authenticated
             .col-sm-2
-              a(data-toggle="modal", data-target="#loginModal").btn.btn-default.btn-inverse.pull-right.m-t-md Login
+              a(data-toggle="modal", data-target="#login-modal").btn.btn-default.btn-inverse.pull-right.m-t-md Login
 
 
     block content
