@@ -9,7 +9,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script>
 
-jQuery.get('https://mark2cure.org/static/data/authors_beta_experiment.txt', function(data) {
+jQuery.get('/static/data/authors_beta_experiment.txt', function(data) {
   var input_text = data;
   function get_author_names_and_quotes() {
 
@@ -25,8 +25,13 @@ jQuery.get('https://mark2cure.org/static/data/authors_beta_experiment.txt', func
       var author_list = [];
       var split_line = lines[i].split("\t");
       var contribution_level = split_line[0]
+      console.log(split_line);
+
       var name = split_line[1].replace(/(\r\n|\n|\r)/gm,"").capitalize();
-      var quote = split_line[2].replace(/(\r\n|\n|\r)/gm,"").capitalize();
+      var quote = "";
+      if(split_line.length == 3) {
+        quote = split_line[2].replace(/(\r\n|\n|\r)/gm,"").capitalize();
+      }
 
       author_list = [name, quote, contribution_level];
       complete_author_list.push(author_list);
