@@ -16,7 +16,7 @@ from ...common.models import Group
 from ...document.models import Document, Section, Pubtator, View, Annotation
 
 from .models import Relation, Concept, RelationAnnotation
-from .serializers import RelationSerializer
+from .serializers import RelationSerializer, RelationFeedbackSerializer
 
 
 @login_required
@@ -98,11 +98,8 @@ def submit_annotation(request, document_pk, relation_pk):
 @login_required
 @api_view(['GET'])
 def fetch_document_relations(request, document_pk):
-    """Only make api for relations that do not have an answer! TODO is this okay? This can
-    not be changed for now because this is why data[0] inside relation.js works. Need to
-    know where the next concept is that doesn't have a user's answer already. This is
-    why I do document.unanswered_relation_list (to make API for only
-    unanswered_relations).
+    """API that includes all the relationships within one document based on the
+    document's primary key.
     """
     document = get_object_or_404(Document, pk=document_pk)
 
@@ -128,3 +125,13 @@ def fetch_document_relations(request, document_pk):
     return Response(serializer.data)
 
 
+@login_required
+@api_view(['GET'])
+def fetch_relation_feedback(request, relation_pk):
+    """API for returning total number of answers for a relation.
+    """
+    relation = get_object_or_404(Relation, pk=relation_pk)
+
+    serializer = RelationFeedbackSerializer([relation], many=True, context={'user': request.user})
+
+    return Response(serializer.data)
