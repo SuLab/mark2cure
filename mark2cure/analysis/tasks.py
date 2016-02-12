@@ -51,6 +51,7 @@ def hashed_annotations_df(group_pk, private_api=False,
 
         # Fetch all the actual annotations using
         annotations = Annotation.objects.filter(
+            kind='e',
             view__section__pk__in=all_section_pks
         ).values(
             'pk',
