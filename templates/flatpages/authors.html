@@ -25,7 +25,6 @@ jQuery.get('/static/data/authors_beta_experiment.txt', function(data) {
       var author_list = [];
       var split_line = lines[i].split("\t");
       var contribution_level = split_line[0]
-      console.log(split_line);
 
       var name = split_line[1].replace(/(\r\n|\n|\r)/gm,"").capitalize();
       var quote = "";
