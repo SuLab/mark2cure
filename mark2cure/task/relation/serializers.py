@@ -194,9 +194,10 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
         for i in relation_answers:
             relation_answer_list.append(i.answer)
 
+        cdr_query = ConceptDocumentRelationship.objects.filter(document=relation.document)
 
-        concept_1_text = ConceptText.objects.get(concept=Concept.objects.get(id=relation.concept_1)).text
-        concept_2_text = ConceptText.objects.get(concept=Concept.objects.get(id=relation.concept_2)).text
+        cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
+        cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
 
         def get_label_and_group_from_json(json_data):
 
@@ -212,10 +213,10 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
                         label = dict_item['text']
                         group = 'Relation'
                         if key == 'c_1_broken':
-                            label = concept_1_text + ' marked incorrectly'
+                            label = cdr1.concept_text.text + ' marked incorrectly'
                             pass
                         elif key == 'c_2_broken':
-                            label = concept_2_text + ' marked incorrectly'
+                            label = cdr2.concept_text.text + ' marked incorrectly'
                             pass
                         elif key != relation.relation_type:
                             continue
@@ -243,10 +244,9 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
 
         return {
             'series': series_dict_list,
-            'concept_1_text': concept_1_text,
-            'concept_2_text': concept_2_text
+            'concept_1_text': cdr1.concept_text.text,
+            'concept_2_text': cdr2.concept_text.text
         }
 
     class Meta:
-        pass
         model = Relation
