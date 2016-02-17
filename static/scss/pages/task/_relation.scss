@@ -155,3 +155,32 @@ p.doc {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
+
+.tree-results {
+
+  .chart text {
+    fill: white;
+    font: 14px sans-serif;
+    text-anchor: end;
+  }
+  .chart .label {
+    fill: black;
+    font: 16px sans-serif;
+    text-anchor: end;
+  }
+  .chart .parent_label {
+    fill: black;
+    font: 18px sans-serif;
+    text-anchor: end;
+    text-decoration: underline;
+  }
+  .bar:hover {
+    fill: #d1f3ff;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+}

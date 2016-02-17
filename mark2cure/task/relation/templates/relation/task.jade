@@ -48,8 +48,30 @@ block content
           a(data-toggle="modal", data-target="#drugDefinitionsModal", style='background-color:rgb(255, 209, 220);').btn.btn-default
             | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
 
+          <div class="tree-results">
+          <div class="modal fade" id="modal1">
+          <div class="modal-dialog">
+          <div class="modal-content">
+          <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">How did you compare?</h4>
+          </div>
+          <div class="modal-body">
+          <svg class="chart"></svg>
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+          </div>
+          </div>
+          </div>
+          </div>
+          </div>
+
 
 block post-footer
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
 
   <script type="html/template" id="tree-template">
   <div id="tree" class="row text-center">
