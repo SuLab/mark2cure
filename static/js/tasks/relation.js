@@ -213,11 +213,17 @@ $('#submit_button').on('click', function(evt) {
 
   function show_results_modal(relation_pk) {
     console.log(relation_pk);
+
     $.getJSON('/task/relation/'+ relation_pk +'/feedback-api/', function(api_data) {
+      $(document).on("hidden.bs.modal", function (e) {
+        $(e.target).removeData("bs.modal").find(".modal-body").empty();
+        $(e.target).find(".modal-body").html('<svg class="chart"></svg>');
+      });
       data = {};
       data['series'] = api_data[0]['concepts']['series']
       console.log(api_data[0]['concepts']['concept_1_text']);
       console.log(api_data[0]['concepts']['concept_2_text']);
+      console.log('data', data);
 
       var chartWidth       = 400,
           barHeight        = 30,
@@ -231,7 +237,7 @@ $('#submit_button').on('click', function(evt) {
       for (var j=0; j < data.series.length; j++) {
         zippedData.push(data.series[j].values[0])
       }
-
+      console.log('zipped', zippedData);
       // Color scale
       var color = d3.scale.category20();
       var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.series.length;
@@ -285,6 +291,7 @@ $('#submit_button').on('click', function(evt) {
           .attr("y", 10)
           .attr("dy", ".35em")
           .text(function(d,i) {
+            console.log('label!!!', data.series[i].label)
             return data.series[i].label;
             });
 
@@ -311,15 +318,18 @@ $('#submit_button').on('click', function(evt) {
             .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
             .call(yAxis);
 
+
       $(modal1).modal();
+
+
 
     });
   }
-  console.log(current_relationship['id']);
-
-  show_results_modal(current_relationship['id']);
 
   if(current_selection.get('id')) {
+    console.log(current_relationship['id']);
+
+    show_results_modal(current_relationship['id']);
 
     $.ajax({
       type: 'POST',
