@@ -318,7 +318,7 @@ $('#submit_button').on('click', function(evt) {
             .call(yAxis);
 
 
-      $('.modal-title').html('Mark2Curators said the following about how ' + concept_1_text + ' relates to ' + concept_2_text);
+      $('.modal-title').html('Mark2Curators said the following about how ' + concept_1_text + ' relates to ' + concept_2_text + ":");
       $(modal1).modal();
 
 
