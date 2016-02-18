@@ -195,30 +195,23 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
             relation_answer_list.append(i.answer)
 
         cdr_query = ConceptDocumentRelationship.objects.filter(document=relation.document)
+        # (TODO) check that this doesn't contain more concept texts
 
-        print 'cdr_query', cdr_query
         cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
         cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
-        print 'cdr1', cdr1
-        print 'cdr2', cdr2
 
-        print cdr1.concept_text.text
-        print cdr2.concept_text.text
-        print 'relation', relation.relation_type
         def get_label_and_group_from_json(json_data):
 
                 answer_tally = Counter(relation_answer_list)
-
                 parent_series_dict_list = []
                 children_series_dict_list = []
                 for key, value in json_data.items():
-
                     dict_list = create_list(value)
 
                     for dict_item in dict_list:
                         label = dict_item['text']
-                        print label
-                        group = 'Relation'
+                        # group = 'Relation'
+                        group = ''
                         if key == 'c_1_broken':
                             label = cdr1.concept_text.text + ' marked incorrectly'
                             pass
@@ -237,9 +230,10 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
                         if children is not None:
                             for dict_in_children in children:
                                 label = dict_in_children['text']
-                                group = 'Relates to'
+                                # group = 'Relates to'
+                                group = ''
                                 try:
-                                    value = [answer_tally[dict_item['id']]]
+                                    value = [answer_tally[dict_in_children['id']]]
                                 except:
                                     value = [0]
                                 children_series_dict_list.append({'label': label, 'values': value, 'group': group})

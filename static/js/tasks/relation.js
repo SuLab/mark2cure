@@ -221,15 +221,15 @@ $('#submit_button').on('click', function(evt) {
       });
       data = {};
       data['series'] = api_data[0]['concepts']['series']
-      console.log(api_data[0]['concepts']['concept_1_text']);
-      console.log(api_data[0]['concepts']['concept_2_text']);
-      console.log('data', data);
 
-      var chartWidth       = 400,
-          barHeight        = 30,
+      var concept_1_text = api_data[0]['concepts']['concept_1_text'];
+      var concept_2_text = api_data[0]['concepts']['concept_2_text'];
+
+      var chartWidth       = 270,
+          barHeight        = 45,
           gapBetweenGroups = 1,
-          spaceForLabels   = 300,
-          spaceForLegend   = 150;
+          spaceForLabels   = 310,
+          spaceForLegend   = 0;
 
       // Zip the series data together (first values, second values, etc.)
       var zippedData = [];
@@ -237,7 +237,6 @@ $('#submit_button').on('click', function(evt) {
       for (var j=0; j < data.series.length; j++) {
         zippedData.push(data.series[j].values[0])
       }
-      console.log('zipped', zippedData);
       // Color scale
       var color = d3.scale.category20();
       var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.series.length;
@@ -319,6 +318,7 @@ $('#submit_button').on('click', function(evt) {
             .call(yAxis);
 
 
+      $('.modal-title').html('Mark2Curators said the following about how ' + concept_1_text + ' relates to ' + concept_2_text);
       $(modal1).modal();
 
 
@@ -328,8 +328,6 @@ $('#submit_button').on('click', function(evt) {
 
   if(current_selection.get('id')) {
     console.log(current_relationship['id']);
-
-    show_results_modal(current_relationship['id']);
 
     $.ajax({
       type: 'POST',
@@ -352,8 +350,8 @@ $('#submit_button').on('click', function(evt) {
           });
 
         }
-
         current_relationship.set('user_completed', true);
+        show_results_modal(current_relationship['id']);
         submit_status();
 
       },
