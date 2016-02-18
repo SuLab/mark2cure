@@ -42,7 +42,19 @@ def bioc_writer(request):
 
 def bioc_as_json(writer):
     o = xmltodict.parse(writer.__str__())
-    return json.dumps(o)
+
+    try:
+        json_dict = json.loads(json.dumps(o))
+        for passage_index, passage in enumerate(json_dict.get('collection').get('document').get('passage')):
+
+            anns = passage.get('annotation')
+            if type(anns) != list:
+                json_dict['collection']['document']['passage'][passage_index]['annotation'] = [anns]
+
+        return json.dumps(json_dict)
+
+    except:
+        return json.dumps(o)
 
 
 def apply_bioc_annotations(writer, user=None):
