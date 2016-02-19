@@ -132,8 +132,6 @@
     background-color: #31A7DA;
   }
 
-
-
 }
 
 /* ETC OTHER */
@@ -159,28 +157,44 @@ p.doc {
 
 .tree-results {
 
-  .chart text {
-    fill: white;
-    font: 14px sans-serif;
-    text-anchor: end;
+  .modal-dialog {
+    width: 90%;
+
+    .modal-content {
+      .modal-title {
+        color: $color_black;
+      }
+    }
   }
-  .chart .label {
-    fill: black;
-    font: 14px sans-serif;
-    text-anchor: end;
+
+  #results-chart {
+    margin: 0 auto;
+    text-align: center;
+
+    text {
+      fill: white;
+      font: 14px sans-serif;
+      text-anchor: end;
+    }
+    .label {
+      fill: black;
+      font: 14px sans-serif;
+      text-anchor: end;
+    }
+    .parent_label {
+      fill: black;
+      font: 16px sans-serif;
+      text-anchor: end;
+      text-decoration: underline;
+    }
+    .bar:hover {
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
   }
-  .chart .parent_label {
-    fill: black;
-    font: 16px sans-serif;
-    text-anchor: end;
-    text-decoration: underline;
-  }
-  .bar:hover {
-  }
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
+
 }

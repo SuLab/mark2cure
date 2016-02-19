@@ -28,19 +28,19 @@ var submit_status = function() {
 
 var add_relation_classes = function(current_relationship) {
   var relation_type = current_relationship.get('relation_type');
-  if (relation_type == "g_c") {
+  if (relation_type == 'g_c') {
     $('#c1').addClass('gene');
     $('#c1 .not_correct_stype').text('is not a gene concept?');
     $('#c2').addClass('chemical');
     $('#c2 .not_correct_stype').text('is not a drug concept?');
 
-  } else if (relation_type == "c_d") {
+  } else if (relation_type == 'c_d') {
     $('#c1').addClass('chemical');
     $('#c1 .not_correct_stype').text('is not a drug concept?');
     $('#c2').addClass('disease');
     $('#c2 .not_correct_stype').text('is not a disease concept?');
 
-  } else if (relation_type == "g_d") {
+  } else if (relation_type == 'g_d') {
     $('#c1').addClass('gene');
     $('#c1 .not_correct_stype').text('is not a gene concept?');
     $('#c2').addClass('disease');
@@ -119,7 +119,7 @@ RelationTaskCollection = Backbone.Collection.extend({
         tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
           return _.any(annotation.infon, function(infon) {
             var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
-            return infon['@key'] == "uid" && match;
+            return infon['@key'] == 'uid' && match;
           });
         });
 
@@ -206,24 +206,25 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
 });
 
 
-var incorrect_flag_arr = ["zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy", "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer"];
+var incorrect_flag_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 $('#submit_button').on('click', function(evt) {
   var current_selection = Tree.start.currentView.options.choice;
   var current_relationship = collection.findWhere({'current': true});
 
   function show_results_modal(relation_pk) {
-    console.log(relation_pk);
 
     $.getJSON('/task/relation/'+ relation_pk +'/feedback-api/', function(api_data) {
-      $(document).on("hidden.bs.modal", function (e) {
-        $(e.target).removeData("bs.modal").find(".modal-body").empty();
-        $(e.target).find(".modal-body").html('<svg class="chart"></svg>');
+      console.log(api_data);
+
+      $(document).on('hidden.bs.modal', function(e) {
+        $(e.target).removeData('bs.modal').find('.modal-body').empty();
+        $(e.target).find('#results-chart').html('');
       });
       data = {};
-      data['series'] = api_data[0]['concepts']['series']
+      data['series'] = api_data['concepts']['series']
 
-      var concept_1_text = api_data[0]['concepts']['concept_1_text'];
-      var concept_2_text = api_data[0]['concepts']['concept_2_text'];
+      var concept_1_text = api_data['concepts']['concept_1_text'];
+      var concept_2_text = api_data['concepts']['concept_2_text'];
 
       var chartWidth       = 270,
           barHeight        = 45,
@@ -237,6 +238,7 @@ $('#submit_button').on('click', function(evt) {
       for (var j=0; j < data.series.length; j++) {
         zippedData.push(data.series[j].values[0])
       }
+
       // Color scale
       var color = d3.scale.category20();
       var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.series.length;
@@ -253,54 +255,53 @@ $('#submit_button').on('click', function(evt) {
           .scale(y)
           .tickFormat('')
           .tickSize(0)
-          .orient("left");
+          .orient('left');
 
       // Specify the chart area and dimensions
-      var chart = d3.select(".chart")
-          .attr("width", spaceForLabels + chartWidth + spaceForLegend)
-          .attr("height", chartHeight);
+      var chart = d3.select('#results-chart').append('svg')
+          .attr('width', spaceForLabels + chartWidth + spaceForLegend)
+          .attr('height', chartHeight);
 
       // Create bars
-      var bar = chart.selectAll("g")
+      var bar = chart.selectAll('g')
           .data(zippedData)
-          .enter().append("g")
-          .attr("transform", function(d, i) {
-            return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/100))) + ")";
+          .enter().append('g')
+          .attr('transform', function(d, i) {
+            return 'translate(' + spaceForLabels + ',' + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/100))) + ')';
           });
 
       // Create rectangles of the correct width
-      bar.append("rect")
-          .attr("fill", "#7F3CFF")
-          .attr("class", "bar")
-          .attr("width", x)
-          .attr("height", barHeight - 4);
+      bar.append('rect')
+          .attr('fill', '#7F3CFF')
+          .attr('class', 'bar')
+          .attr('width', x)
+          .attr('height', barHeight - 4);
 
       // Add text label in bar
-      bar.append("text")
-          .attr("x", function(d) { return x(d) - 3; })
-          .attr("y", barHeight / 2)
-          .attr("fill", "red")
-          .attr("dy", ".35em")
+      bar.append('text')
+          .attr('x', function(d) { return x(d) - 3; })
+          .attr('y', barHeight / 2)
+          .attr('fill', 'red')
+          .attr('dy', '.35em')
           .text(function(d) { return d; });
 
       // Draw labels
-      bar.append("text")
-          .attr("class", "label")
-          .attr("x", function(d) { return - 10; })
-          .attr("y", 10)
-          .attr("dy", ".35em")
+      bar.append('text')
+          .attr('class', 'label')
+          .attr('x', function(d) { return - 10; })
+          .attr('y', 10)
+          .attr('dy', '.35em')
           .text(function(d,i) {
-            console.log('label!!!', data.series[i].label)
             return data.series[i].label;
             });
 
-      // Draw "super/parent labels on y axis"
+      // Draw 'super/parent labels on y axis'
       var group_number_previous = '';
-      bar.append("text")
-          .attr("class", "parent_label")
-          .attr("x", function(d) { return - 220; })
-          .attr("y", 10)
-          .attr("dy", ".35em")
+      bar.append('text')
+          .attr('class', 'parent_label')
+          .attr('x', function(d) { return - 220; })
+          .attr('y', 10)
+          .attr('dy', '.35em')
           .text(function(d,i) {
             var group_number_current = data.series[i].group;
             if (group_number_current === group_number_previous){
@@ -312,22 +313,19 @@ $('#submit_button').on('click', function(evt) {
             };
             });
 
-      chart.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
+      chart.append('g')
+            .attr('class', 'y axis')
+            .attr('transform', 'translate(' + spaceForLabels + ', ' + -gapBetweenGroups/2 + ')')
             .call(yAxis);
 
 
-      $('.modal-title').html('Mark2Curators said the following about how ' + concept_1_text + ' relates to ' + concept_2_text + ":");
+      $('.modal-title').html('Community Submissions: ' + concept_1_text + ' >> ' + concept_2_text);
       $(modal1).modal();
-
-
 
     });
   }
 
   if(current_selection.get('id')) {
-    console.log(current_relationship['id']);
 
     $.ajax({
       type: 'POST',

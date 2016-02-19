@@ -134,4 +134,4 @@ def fetch_relation_feedback(request, relation_pk):
 
     serializer = RelationFeedbackSerializer([relation], many=True, context={'user': request.user})
 
-    return Response(serializer.data)
+    return Response(serializer.data[0])
