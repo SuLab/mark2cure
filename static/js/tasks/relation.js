@@ -214,11 +214,9 @@ $('#submit_button').on('click', function(evt) {
   function show_results_modal(relation_pk) {
 
     $.getJSON('/task/relation/'+ relation_pk +'/feedback-api/', function(api_data) {
-      console.log(api_data);
 
       $(document).on('hidden.bs.modal', function(e) {
-        $(e.target).removeData('bs.modal').find('.modal-body').empty();
-        $(e.target).find('#results-chart').html('');
+        $(e.target).find('#results-chart').empty();
       });
       data = {};
       data['series'] = api_data['concepts']['series']
@@ -320,7 +318,7 @@ $('#submit_button').on('click', function(evt) {
 
 
       $('.modal-title').html('Community Submissions: ' + concept_1_text + ' >> ' + concept_2_text);
-      $(modal1).modal();
+      $('#modal1').modal();
 
     });
   }
