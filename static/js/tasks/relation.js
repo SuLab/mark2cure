@@ -135,7 +135,9 @@ RelationTaskCollection = Backbone.Collection.extend({
 
     } else {
       /* If no other relations to complete, submit document */
-      $('#task_relation_results').submit();
+      $('#feedback_modal').on('hidden.bs.modal', function (e) {
+        $('#task_relation_results').submit();
+      });
     }
   }
 });
@@ -318,7 +320,7 @@ $('#submit_button').on('click', function(evt) {
 
 
       $('.modal-title').html('Community Submissions: ' + concept_1_text + ' >> ' + concept_2_text);
-      $('#modal1').modal();
+      $('#feedback_modal').modal();
 
     });
   }
