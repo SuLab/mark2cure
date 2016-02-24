@@ -455,6 +455,7 @@ WordView = Backbone.Marionette.ItemView.extend({
    * that that word has been the latest interacted
    * element */
   mousedown : function(evt) {
+    YPet['convoChannel'].trigger('mouse', '');
     evt.stopPropagation();
     if(this.model.get('disabled')) { return; };
     this.model.set({'latest': 1});
@@ -629,6 +630,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
   },
 
   startCapture: function(evt) {
+    YPet['convoChannel'].trigger('mouse', '');
     var closest_view = this.getClosestWord(evt);
     if(closest_view) { closest_view.$el.trigger('mousedown'); }
   },
