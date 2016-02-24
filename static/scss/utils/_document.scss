@@ -56,6 +56,28 @@ p.paragraph {
   border: 6px solid $color_gray_lightest;
 }
 
+@-webkit-keyframes paragraph-box-error-alert {
+  0% {
+    border: 16px solid $color_gray_lightest;
+    background-color: $color_white;
+  }
+  50% {
+    border: 16px solid red;
+    background-color: $color_gray_lightest;
+  }
+  100% {
+    border: 16px solid $color_gray_lightest;
+    background-color: $color_white;
+  }
+}
+
+.paragraph-box-error-alert {
+  -webkit-animation-name: paragraph-box-error-alert;
+  -webkit-animation-duration: 1500ms;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease-in-out;
+}
+
 
 /*
  *

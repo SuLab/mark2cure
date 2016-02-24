@@ -23,9 +23,6 @@ block content
     .row
       .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
         button(id='submit_button', disabled).btn.btn-primary.btn-block.disabled Submit
-    .row
-      .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
-        h4(id='highlight-alert', style='padding: 20px; text-align: center;')
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -128,23 +125,19 @@ block post-footer
         });
       });
 
-      var count_user_clicks = 0;
       var show_alert = _.debounce(function(evt) {
-
-        count_user_clicks += 1;
-        $('#highlight-alert').text('Whoops! This is not highlighting task.').fadeIn().delay(600).fadeOut();
-
+        var $box = $(evt.target).closest('div[class^="paragraph-box"]');
+        if( $box.hasClass('paragraph-box-error-alert') ) {
+          $box.removeClass('paragraph-box-error-alert');
+        } else {
+          $box.addClass('paragraph-box-error-alert');
+        }
       }, 500);
 
-      YPet['convoChannel'].on('mouse', function(obj) {
-        if (count_user_clicks > 2 ) {
-          return true;
-        } else {
-        show_alert();
-        };
-
-
+      YPet['convoChannel'].on('mouse-down', function(evt) {
+        show_alert(evt);
       });
+
     });
     YPet.start();
 
