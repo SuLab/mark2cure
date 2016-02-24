@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from .models import Pubtator
 
 import requests
+import re
 
 
 @receiver(post_save, sender=Pubtator)
@@ -26,6 +27,8 @@ def pubtator_post_save(sender, instance, created, **kwargs):
         except Exception as e:
             raise e
 
-        pubtator.session_id = response.content
+        session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', response.url)[0]
+        pubtator.session_id = session_id
         pubtator.save()
+
 
