@@ -56,6 +56,42 @@ def bioc_as_json(writer):
     except:
         return json.dumps(o)
 
+def pubtator_df_as_writer(writer, df):
+    bioc_doc = writer.collection.documents[0]
+    approved_types = ['Disease', 'Gene', 'Chemical']
+
+    for bioc_passage in bioc_doc.passages:
+        section_pk = bioc_passage.infons['id']
+        offset = int(bioc_passage.offset)
+
+        bioc_passage.annotations = []
+
+        tmp_df = df[ df['offset'] == offset ]
+
+        for row_idx, row in tmp_df.iterrows():
+
+            if row['ann_type'] in approved_types:
+                annotation = BioCAnnotation()
+                annotation.id = str(row_idx)
+                annotation.put_infon('user', 'pubtator')
+                annotation.put_infon('uid', str(row['uid']))
+
+                # (TODO) Map type strings back to 0,1,2
+                annotation.put_infon('type', str(approved_types.index( row['ann_type'] )) )
+
+                location = BioCLocation()
+                loc = row['location'].split(':')
+                location.offset = str(loc[0])
+                location.length = str(loc[1])
+                annotation.add_location(location)
+
+                annotation.text = row['text']
+
+                bioc_passage.add_annotation(annotation)
+
+    return writer
+
+
 
 def apply_bioc_annotations(writer, user=None):
     bioc_doc = writer.collection.documents[0]

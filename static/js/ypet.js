@@ -366,6 +366,12 @@ WordView = Backbone.Marionette.ItemView.extend({
       });
     });
 
+    this.listenTo(this.model, 'change:disabled', function(options) {
+      if(this.model.get('disabled')) {
+        this.$el.css('cursor', 'not-allowed');
+      }
+    });
+
     this.listenTo(this.model, 'change:masked', function(options) {
       if(this.model.get('masked')) {
         this.$el.css({'color': '#000', 'cursor': 'default', 'opacity': '.5'});
@@ -542,6 +548,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       words.each(function(w) {
         w.set('disabled', true);
       });
+      this.$el.css('cursor', 'not-allowed');
     }
 
     if(passage) {

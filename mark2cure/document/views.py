@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from ..common.bioc import BioCReader, BioCWriter
-from ..common.formatter import bioc_writer, bioc_as_json
+from ..common.formatter import bioc_writer, bioc_as_json, pubtator_df_as_writer
 from .models import Document, Pubtator
 
 
@@ -64,4 +64,22 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
         return HttpResponse(writer_json, content_type='application/json')
     else:
         return HttpResponse(writer, content_type='text/xml')
+
+
+def read_pubtator_new_bioc(request, pubmed_id):
+    """
+        A merged file of the multiple Pubtator responses
+        That is not respective of overlaps and serves back as much as possible
+    """
+    # When fetching via pubmed, include no annotaitons
+    doc = get_object_or_404(Document, document_id=pubmed_id)
+
+    writer = bioc_writer(request)
+    bioc_document = doc.as_bioc_with_pubtator_annotations()
+    writer.collection.add_document(bioc_document)
+
+    writer = pubtator_df_as_writer(writer, doc.as_pubtator_annotation_df())
+
+    writer_json = bioc_as_json(writer)
+    return HttpResponse(writer_json, content_type='application/json')
 

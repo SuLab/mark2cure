@@ -26,8 +26,8 @@ block content
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
-        div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").document
-          .paragraphs
+        div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}", style="cursor: not-allowed;").document
+          .paragraphs(style="cursor: not-allowed;")
 
     .row(style="display:none;")
       form(id="task_relation_results", action='{% url "task-relation:results" document_pk=document.pk %}', method='POST')
@@ -101,7 +101,7 @@ block post-footer
 
     YPet.addInitializer(function(options) {
 
-      $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
+      $.getJSON('/document/pubtator-new/'+relation_task_settings.document_pmid+'.json', function( data ) {
         passages = data.collection.document.passage;
         regions = {};
 
