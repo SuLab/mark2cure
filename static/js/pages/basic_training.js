@@ -86,7 +86,7 @@ YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add'
   var model_json = model.toJSON();
 
   /* Unselect wrong answers */
-  if( !_.contains(['Biomedical', 'because I am ready to help'], model_json.text) ) {
+  if( !_.contains(['Biomedical', 'because I am ready to help'], model_json.text) && model.get('words').first() ) {
 
     setTimeout(function() {
       var first_word = model.get('words').first();
