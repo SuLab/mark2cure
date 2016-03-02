@@ -60,7 +60,7 @@ class Base(Configuration):
         'django.contrib.flatpages',
         'django.contrib.webdesign',
         'django.contrib.sitemaps',
-        #'raven.contrib.django.raven_compat',
+        'raven.contrib.django.raven_compat',
 
         'djangoratings',
         'djrill',
@@ -68,7 +68,7 @@ class Base(Configuration):
         'robots',
         'corsheaders',
 
-        #'grappelli',
+        'grappelli',
         'django.contrib.admin',
         'django_extensions',
         'django_nose',
@@ -168,6 +168,7 @@ class Base(Configuration):
         'django.contrib.messages.middleware.MessageMiddleware',
         # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
         'mark2cure.userprofile.activeuser_middleware.ActiveUserMiddleware',
+
         'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 
         'django.middleware.cache.FetchFromCacheMiddleware',
