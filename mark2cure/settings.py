@@ -68,8 +68,7 @@ class Base(Configuration):
         'robots',
         'corsheaders',
 
-        # Uncomment the next line to enable the admin:
-        'grappelli',
+        #'grappelli',
         'django.contrib.admin',
         'django_extensions',
         'django_nose',

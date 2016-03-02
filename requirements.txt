@@ -35,7 +35,7 @@ django-cors-headers==1.1.0
 django-countries==3.4.1
 django-debug-toolbar==1.4
 django-extensions==1.5.7
-django-grappelli==2.7.2
+django-grappelli==2.7.3
 django-kombu==0.9.4
 django-markdown-deux==1.0.5
 django-model-utils==2.3.1

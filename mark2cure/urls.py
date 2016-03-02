@@ -7,13 +7,20 @@ from django.contrib.auth import views as reset_views
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import FlatPageSitemap
 
-
 sitemaps = {
     'flatpages': FlatPageSitemap
 }
 
 
 urlpatterns = patterns('',
+    url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'),
+
+    (r'^robots\.txt$', include('robots.urls')),
+
     # Response / Confirm Changes
     url(r'^reset/done/$',
         reset_views.password_reset_complete,
@@ -64,12 +71,7 @@ urlpatterns = patterns('',
 
     url(r'^api-auth/',
         include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/', include(admin.site.urls)),
 
-    (r'^robots\.txt$', include('robots.urls')),
     url(r'^(?P<url>.*/)$', views.flatpage),
 
-    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
-        name='django.contrib.sitemaps.views.sitemap'),
 )
