@@ -41,8 +41,7 @@ def import_concepts():
         df.dropna(subset=('uid', 'source'), how='any', inplace=True)
         df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
 
-        # (TODO) Inspect for , in IDs and duplicate rows
-        # remove unnecessary prefixes from uids
+        # Remove unnecessary prefixes from uids
         df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("MESH:") else v)
         df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("OMIM:") else v)
         df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[6:] if v.startswith("CHEBI:") else v)
