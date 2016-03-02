@@ -119,8 +119,9 @@ RelationTaskCollection = Backbone.Collection.extend({
         tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
           if(annotation) {
             return _.any(annotation.infon, function(infon) {
-              var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
-              return infon['@key'] == 'uid' && match;
+              return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
+              /* var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
+               * return infon['@key'] == 'uid' && match; */
             });
           } else { return []; }
 
