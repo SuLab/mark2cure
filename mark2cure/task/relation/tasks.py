@@ -47,6 +47,11 @@ def import_concepts():
         df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("OMIM:") else v)
         df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[6:] if v.startswith("CHEBI:") else v)
 
+        # (TODO) Is there an ordering to the UIDs?
+        # (NOTES) After a short inspection, I didn't see an obvious order. -Max 3/2/2016
+        df = df[~df.uid.str.contains(",")]
+        df = df[~df.uid.str.contains("\|")]
+
         # Remove duplicate (uid, source, [not text]) and drop location + offset
         df.drop(['location', 'offset'], axis=1, inplace=True)
         df.drop_duplicates(['uid', 'ann_type', 'text'], inplace=True)
