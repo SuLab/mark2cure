@@ -6,7 +6,7 @@ extends control/base
 
 block content
 
-  .container
+  .container.m-t-lg
     .row
       .col-md-10.col-md-offset-1.m-t-md
         h2.text-center
@@ -59,7 +59,7 @@ block content
                   td
                     form(action='{% url "control:document_reset_pubtator" pk=doc_q_rel.document.pk %}', method='post')
                       - csrf_token
-                      button(type='submit').btn.btn-warning.btn-block
+                      button(type='submit').btn.btn-danger.btn-block
                         | Reset
 
 
