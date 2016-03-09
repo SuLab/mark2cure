@@ -292,7 +292,7 @@ class Base(Configuration):
     EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
     ROBOTS_USE_SITEMAP = True
 
-    BROKER_URL = 'amqp://'
+    BROKER_URL = SecretValue(environ_prefix='MARK2CURE')
     CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
     CELERY_TIMEZONE = 'America/Los_Angeles'
     CELERYBEAT_SCHEDULE = {
