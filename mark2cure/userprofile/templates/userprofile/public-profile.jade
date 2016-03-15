@@ -5,6 +5,7 @@ extends base
 - load group
 
 block header
+  - with headerMessage='User Profile'
     - if user.is_authenticated
       include includes/header
     - else
@@ -109,4 +110,3 @@ block post-footer
     - for group in contributed_groups
         script.
             drawUserFScoreLine("#tab-{{group.stub}} #chart", "{{group.pk}}");
-

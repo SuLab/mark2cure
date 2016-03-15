@@ -7,6 +7,9 @@ extends base
 
 
 block header
+  - with headerMessage='Talk Page'
+    include includes/header
+
   nav(role='navigation').navbar.navbar-default.navbar-static-top
     .container-fluid
       .row
@@ -174,4 +177,3 @@ block post-footer
       });
 
     });
-
