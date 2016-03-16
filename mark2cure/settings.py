@@ -90,6 +90,7 @@ class Base(Configuration):
         'mark2cure.task.entity_recognition',
         'mark2cure.task.relation',
 
+        'mark2cure.score',
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',

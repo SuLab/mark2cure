@@ -17,7 +17,7 @@ nav#header(role='navigation').navbar.navbar-default
               li
                 p {{user}}
               li
-                p Score: <span id='score'>#{user.userprofile.rating_score|intcomma}</span>
+                p Score: <span id='score'>#{user.userprofile.score|intcomma}</span>
               li
                 p Level: #{user.userprofile.highest_level.name}
 

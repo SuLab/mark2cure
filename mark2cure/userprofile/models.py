@@ -12,6 +12,7 @@ from mark2cure.document.models import Annotation, Document, View
 from mark2cure.common.models import Group
 from mark2cure.task.models import Task, UserQuestRelationship
 from mark2cure.analysis.models import Report
+from mark2cure.score.models import Point
 
 from django.utils import timezone
 import pandas as pd
@@ -51,10 +52,11 @@ class Team(models.Model):
         return UserQuestRelationship.objects.filter(user__pk__in=team_user_ids, completed=True)
 
     def total_score(self):
-        from mark2cure.api.views import userprofiles_with_score
-        userprofiles = userprofiles_with_score(days=10000)
-        team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
-        return sum(filter(None, userprofiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
+        # (TODO) user.id vs userprofile.id checks here
+        from mark2cure.api.views import users_with_score
+        userprofiles = users_with_score(days=10000)
+        team_user_pks = self.userprofile_set.values_list('pk', flat=True)
+        return sum(filter(None, userprofiles.filter(pk__in=team_user_pks).values_list('score', flat=True)))
 
     def current_avg_f(self, weighted=True):
         '''
@@ -148,6 +150,9 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
+
+    def score(self):
+        return int(sum(Point.objects.filter(user=self.user).values_list('amount', flat=True)))
 
     def highest_level(self, slug='skill'):
         res = BadgeAward.objects.filter(user=self.user, slug=slug).order_by('-level').first()

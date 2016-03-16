@@ -3,6 +3,7 @@ from ..common.models import Document, Group
 from ..task.models import Task
 
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -23,25 +24,32 @@ class GroupSerializer(serializers.ModelSerializer):
                   'documents')
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
+    quote = serializers.SerializerMethodField()
+    motivation = serializers.SerializerMethodField()
 
-    def get_name(self, profile):
-        return profile.user.username
+    def get_name(self, user):
+        return user.username
 
-    def get_user(self, profile):
-        user = profile.user
+    def get_user(self, user):
         return {'pk': user.pk,
                 'username': user.username}
 
-    def get_score(self, profile):
-        return int(profile.score) if profile.score else 0
+    def get_score(self, user):
+        return int(user.score) if user.score else 0
+
+    def get_quote(self, user):
+        return user.profile.quote
+
+    def get_motivation(self, user):
+        return user.profile.motivation
 
     class Meta:
-        model = UserProfile
+        model = User
         fields = ('user', 'name', 'score', 'quote', 'motivation')
 
 
