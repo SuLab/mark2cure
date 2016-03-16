@@ -1,7 +1,9 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from ..common.models import Group, Task, UserQuestRelationship
+# from ..common.models import Group, Task, UserQuestRelationship
+from ..task.models import Task, UserQuestRelationship
+from ..common.models import Group
 from .tasks import get_pubmed_document
 from .models import Document, Section, Pubtator, Annotation
 from ..test_base.test_base import TestBase

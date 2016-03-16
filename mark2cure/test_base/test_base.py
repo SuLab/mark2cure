@@ -83,9 +83,9 @@ class TestBase(object):
         return doc
 
     def assert_footers_in_html(self, response_content):
-        footers = ['<p><a href="/about/">About Mark2Cure</a>',
-                   '<p><a href="/faq/">FAQ</a>',
-                   '<p><a href="/contact/">Help / Contact</a>',
-                   '<p><a href="/tos/">Terms of Service / Privacy Policy</a>']
+        footers = ['<p>About Mark2Cure</p>',
+                   '<p>FAQ</p>',
+                   '<p>Help / Contact</p>',
+                   '<p>Terms of Service / Privacy Policy</p>']
         for footer in footers:
             self.assertInHTML(footer, response_content)

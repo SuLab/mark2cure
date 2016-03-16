@@ -58,9 +58,9 @@ class TalkViews(TestCase, TestBase):
         response = self.client.get(reverse('talk:recent'))
         self.assertEqual(response.status_code, 200)
         self.assert_footers_in_html(response.content)
-        html_content_list = ['<h2 class="text-center">Document Discussion</h2>',
+        html_content_list = ['<h2>Most Discussed Documents</h2>',
                              '<h2>Recent Annotations</h2>',
                              '<h2>Recent Comments</h2>',
-                             '<p><a href="/talk/">Talk Page</a>']
+                             '<p>Talk Pages</p>']
         for item in html_content_list:
             self.assertInHTML(item, response.content)

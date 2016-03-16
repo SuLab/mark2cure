@@ -12,7 +12,7 @@
         "requires_qualification": 0,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": 1
 },
 {
@@ -28,7 +28,7 @@
         "requires_qualification": 1,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": 2
 },
 {
@@ -44,7 +44,7 @@
         "requires_qualification": 2,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": 3
 },
 {
@@ -60,7 +60,7 @@
         "requires_qualification": 0,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": null
 },
 {
@@ -76,7 +76,7 @@
         "requires_qualification": 0,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": null
 },
 {
@@ -92,7 +92,7 @@
         "requires_qualification": 4,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": null
 },
 {
@@ -108,7 +108,7 @@
         "requires_qualification": 5,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": null
 },
 {
@@ -124,7 +124,7 @@
         "requires_qualification": 6,
         "group": null
     },
-    "model": "common.task",
+    "model": "task.task",
     "pk": null
 }
 ]
