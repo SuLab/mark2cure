@@ -12,7 +12,6 @@ class TalkViews(TestCase, TestBase):
     def test_home(self):
         document = Document.objects.first()
 
-        '''
         # Confirm non-auth'd redirect
         response = self.client.get(reverse('talk:home', kwargs={'pubmed_id': document.document_id}))
         self.assertEqual(response.status_code, 302)
@@ -30,8 +29,6 @@ class TalkViews(TestCase, TestBase):
         # Confirm view online for NON-MODERATOR
         # (TODO) Complete document
         self.client.logout()
-
-        '''
 
     def test_annotation_search(self):
         # Confirm non-auth'd redirect
