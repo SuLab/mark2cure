@@ -325,7 +325,11 @@ class Development(Base):
     if 'test' in sys.argv:
         import dj_database_url
         DATABASES = {'default': dj_database_url.parse('sqlite://' + Base.PROJECT_PATH + '/test_db.sqlite')}
-        SOUTH_TESTS_MIGRATE = False
+        SOUTH_TESTS_MIGRATE = True
+
+        SOUTH_LOGGING_ON = True
+        SOUTH_LOGGING_FILE = Base.PROJECT_PATH + '/asdfasdf'
+
 
     DOMAIN = 'localhost:8000'
     DEBUG_FILENAME = 'mark2cure-local-debug.log'

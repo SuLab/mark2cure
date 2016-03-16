@@ -1,1 +1,19 @@
-[{"fields": {"stub": "test-submissions", "order": "0.999", "enabled": true, "name": "Test Submissions", "description": ""}, "model": "common.group", "pk": 5}, {"fields": {"kind": "q", "updated": "2015-06-23T18:15:05Z", "name": "Task Test 1", "completions": null, "created": "2015-06-23T18:14:45Z", "meta_url": null, "provides_qualification": null, "experiment": null, "requires_qualification": null, "group": 5, "points": 5000}, "model": "task.task", "pk": 305}, {"fields": {"updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1817, "points": 0}, "model": "task.documentquestrelationship", "pk": 3264}, {"fields": {"updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1816, "points": 0}, "model": "task.documentquestrelationship", "pk": 3265}, {"fields": {"updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1815, "points": 0}, "model": "task.documentquestrelationship", "pk": 3266}]
+[{"fields":
+  {"stub": "test-submissions", "order": "0.999", "enabled": true, "name": "Test Submissions", "description": ""},
+  "model": "common.group", "pk": 5},
+
+ {"fields":
+   {"kind": "q", "updated": "2015-06-23T18:15:05Z", "name": "Task Test 1", "completions": null, "created": "2015-06-23T18:14:45Z", "meta_url": null, "provides_qualification": null, "experiment": null, "requires_qualification": null, "group": 5, "points": 5000},
+    "model": "task.task", "pk": 305},
+
+ {"fields": {
+   "updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1817, "points": 0},
+   "model": "task.documentquestrelationship", "pk": 3264},
+
+ {"fields": {
+   "updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1816, "points": 0},
+   "model": "task.documentquestrelationship", "pk": 3265},
+
+ {"fields": {
+   "updated": "2015-06-23T18:16:09Z", "task": 305, "created": "2015-06-23T18:16:09Z", "document": 1815, "points": 0},
+   "model": "task.documentquestrelationship", "pk": 3266}]

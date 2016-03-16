@@ -3,7 +3,8 @@ from django.test import TestCase
 
 from ..test_base.test_base import TestBase
 from ..document.models import Annotation
-from ..common.models import Group, Task
+from ..common.models import Group
+from ..task.models import Task
 
 from .views import group_users_bioc
 
