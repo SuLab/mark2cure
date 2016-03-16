@@ -28,7 +28,6 @@ coverage==4.0.1
 decorator==4.0.4
 dj-database-url==0.3.0
 django-celery==3.1.17
-django-configuration==0.0.3
 django-configurations==0.8
 django-contrib-comments==1.6.1
 django-cors-headers==1.1.0

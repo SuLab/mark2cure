@@ -89,7 +89,7 @@ block content
                 li
                   p Performance: {% widthratio player.userprofile.current_avg_f 1 100 %}%
               li
-                p Score: #{player.userprofile.rating_score|intcomma}
+                p Score: #{player.userprofile.score|intcomma}
               li
                 p Level: #{player.userprofile.highest_level.name}
               - if player.userprofile.team

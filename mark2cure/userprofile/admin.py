@@ -33,7 +33,7 @@ class UserProfileAdmin(admin.ModelAdmin):
             'country', 'referral', 'motivation',
             'quote']
 
-    readonly_fields = ['user', 'team', 'rating',
+    readonly_fields = ['user', 'team',
             'email_notify', 'gender', 'age',
             'occupation', 'education', 'science_education',
             'country', 'referral', 'motivation',

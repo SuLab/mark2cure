@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
+from ..score.models import Point
+
 from .forms import UserProfileForm, TeamForm
 from ..registration.forms import UserNameChangeForm
 
@@ -64,7 +66,7 @@ def user_points(request):
     skill_badge = BadgeAward.objects.filter(user=request.user, slug='skill').last()
 
     return Response({
-        'points': request.user.userprofile.rating_score,
+        'points': sum(Point.objects.filter(user=request.user).values_list('amount', flat=True)),
         'points_level': points_badge.name,
         'skill_level': skill_badge.name
     })

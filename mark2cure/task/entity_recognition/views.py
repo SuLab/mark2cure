@@ -12,6 +12,7 @@ from ...document.models import Document, Section
 from .forms import AnnotationForm
 from ..models import Task, UserQuestRelationship
 from .utils import generate_results, select_best_opponent
+from ...score.models import Point
 
 from brabeion import badges
 import random
@@ -78,8 +79,10 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         # it would make more sense to do that as a valid check of
         # "contribution" effort
 
-        request.user.profile.rating.add(score=1000, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge('points_awarded', user=request.user)
+        from django.contrib.contenttypes.models import ContentType
+        from django.utils import timezone
+        content_type = ContentType.objects.get_for_model(task)
+        Point.objects.create(user=request.user, amount=1000, content_type=content_type, object_id=task.id, created=timezone.now())
         return HttpResponseServerError('points_awarded')
 
     # BioC Writer Response that will serve all partner comparison information
@@ -112,8 +115,10 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     results = generate_results(player_views, opponent_views)
     score = results[0][2] * 1000
     if score > 0:
-        request.user.profile.rating.add(score=score, user=None, ip_address=os.urandom(7).encode('hex'))
-        badges.possibly_award_badge('points_awarded', user=request.user)
+        from django.contrib.contenttypes.models import ContentType
+        from django.utils import timezone
+        content_type = ContentType.objects.get_for_model(task)
+        Point.objects.create(user=request.user, amount=score, content_type=content_type, object_id=task.id, created=timezone.now())
 
     writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
     writer.collection.put_infon('points', str(int(round(score))))
@@ -268,9 +273,10 @@ def quest_submit(request, task, bypass_post=False):
         user_quest_relationship = task.user_relationship(request.user, False)
 
         if not user_quest_relationship.completed:
-            request.user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-            badges.possibly_award_badge("points_awarded", user=request.user)
-            badges.possibly_award_badge("skill_awarded", user=request.user, level=task.provides_qualification)
+            from django.contrib.contenttypes.models import ContentType
+            from django.utils import timezone
+            content_type = ContentType.objects.get_for_model(task)
+            Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
 
         user_quest_relationship.completed = True
         user_quest_relationship.save()

@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 from ..task.models import Task, UserQuestRelationship
+from mark2cure.score.models import Point
 
 from brabeion import badges
 
@@ -58,8 +59,11 @@ def award_training_badges(qualification_level, user):
     task = Task.objects.filter(kind=Task.TRAINING, provides_qualification=qualification_level).first()
     UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
-    user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
-    badges.possibly_award_badge("points_awarded", user=user)
+    from django.contrib.contenttypes.models import ContentType
+    from django.utils import timezone
+    content_type = ContentType.objects.get_for_model(task)
+    Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
+
     badges.possibly_award_badge("skill_awarded", user=user, level=task.provides_qualification, force=True)
 
 

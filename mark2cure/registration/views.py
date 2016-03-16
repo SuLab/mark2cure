@@ -8,6 +8,7 @@ from django.contrib import messages
 
 from ..task.models import Task, UserQuestRelationship
 from mark2cure.userprofile.forms import UserProfileForm
+from mark2cure.score.models import Point
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.views import password_reset, password_reset_confirm
@@ -38,8 +39,14 @@ def user_creation(request):
         # In order to create an account they've already done the
         # first 2 training Tasks
         task = Task.objects.first()
+
         badges.possibly_award_badge('skill_awarded', user=user, level=task.provides_qualification)
-        user.profile.rating.add(score=task.points, user=None, ip_address=os.urandom(7).encode('hex'))
+
+        from django.contrib.contenttypes.models import ContentType
+        from django.utils import timezone
+        content_type = ContentType.objects.get_for_model(task)
+        Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
+
         UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
         # Redirect them back b/c of the UserProfileForm

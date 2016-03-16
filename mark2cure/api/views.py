@@ -2,10 +2,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 
 from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-from .serializers import QuestSerializer, UserProfileSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
+from .serializers import QuestSerializer, UserSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
 from ..common.models import Document, Group
@@ -272,26 +273,25 @@ def group_list(request):
     return Response(serializer.data)
 
 
-def userprofiles_with_score(days=30):
+def users_with_score(days=30):
     today = datetime.datetime.now()
     since = today - datetime.timedelta(days=days)
 
-    return UserProfile.objects.exclude(pk__in=[5, 160]).extra(select={
+    return User.objects.exclude(pk__in=[5, 160]).extra(select={
         "score": """
-            SELECT SUM(djangoratings_vote.score) AS score
-            FROM djangoratings_vote
-            WHERE (djangoratings_vote.content_type_id = 22
-                AND djangoratings_vote.object_id = userprofile_userprofile.id
-                AND djangoratings_vote.date_added > '%s'
-                AND djangoratings_vote.date_added <= '%s')
-            GROUP BY djangoratings_vote.object_id ORDER BY NULL""" % (since, today)
-    }).prefetch_related('user').order_by("-score",)
+            SELECT SUM(score_point.amount) AS score
+            FROM score_point
+            WHERE (score_point.user_id = auth_user.id
+                AND score_point.created > '%s'
+                AND score_point.created <= '%s')
+            GROUP BY score_point.user_id ORDER BY NULL""" % (since, today)
+    }).prefetch_related('userprofile')
 
 
 def get_annotated_teams(days=30):
     # (TODO) This could be smaller by only being UserProfiles that
     # we know are part of a Team
-    userprofiles = userprofiles_with_score(days=days)
+    userprofiles = users_with_score(days=days)
 
     teams = Team.objects.all()
     for team in teams:
@@ -305,9 +305,9 @@ def get_annotated_teams(days=30):
 @login_required
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
-    queryset = list(userprofiles_with_score(days=int(day_window))[:25])
+    queryset = list(users_with_score(days=int(day_window))[:25])
     queryset = [up for up in queryset if up.score is not None]
-    serializer = UserProfileSerializer(queryset, many=True)
+    serializer = UserSerializer(queryset, many=True)
     return Response(serializer.data)
 
 

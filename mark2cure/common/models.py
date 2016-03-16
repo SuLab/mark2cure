@@ -70,7 +70,7 @@ class PointsBadge(Badge):
 
     def award(self, **state):
         user = state["user"]
-        points = user.profile.rating_score
+        points = user.profile.score()
         if points > 500:
             return BadgeAwarded(level=2)
         if points > 50:
