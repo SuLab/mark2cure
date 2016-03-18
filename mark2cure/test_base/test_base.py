@@ -77,7 +77,7 @@ class TestBase(object):
     def get_document_from_response(self, user_name):
         """ If you need one document, arbitrarily use doc from user_name"""
         self.client.login(username=user_name, password='password')
-        url = reverse('common:quest-home', kwargs={'quest_pk': self.task.pk})
+        url = reverse('task-entity-recognition:quest-home', kwargs={'quest_pk': self.task.pk})
         response = self.client.get(url, follow=True)
         doc = response.context['document']
         return doc

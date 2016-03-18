@@ -4,13 +4,11 @@ from django.test import TestCase
 from ...task.models import Task, UserQuestRelationship
 from ...common.models import Group
 from ...document.tasks import get_pubmed_document
-from ...document.models import Document, Section, Pubtator, Annotation
+from ...document.models import Annotation
 from ...test_base.test_base import TestBase
 
 from ...common.bioc import BioCReader
-from Bio import Entrez
-import datetime
-import json
+
 
 class DocumentSubmissionsAPIViews(TestCase, TestBase):
     fixtures = ['tests_documents.json', 'tests_common.json']
@@ -38,7 +36,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
 
         # Ensure no User >> Quest views until after viewed once
         self.assertEqual(UserQuestRelationship.objects.count(), 0)
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
         doc = self.get_document_from_response(self.user_names[0])
@@ -55,7 +53,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         # Submit bogus Annotations as opponent to try match again for player
         self.client.login(username='opponent', password='password')
         self.assertEqual(Annotation.objects.count(), 0)
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
 
@@ -116,7 +114,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.create_new_user_accounts(self.user_names)
         self.assertEqual(Annotation.objects.count(), 0)
         self.client.login(username='player', password='password')
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
 

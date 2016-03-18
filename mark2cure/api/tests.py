@@ -106,6 +106,7 @@ class GroupBioCAPIViews(TestCase, TestBase):
     def test_group_list(self):
         # Confirm login required
         response = self.client.get(reverse('api:groups-api'))
+        # (TODO): why is this now a 200?
         self.assertEqual(response.status_code, 302)
 
         self.login_test_user('test_player')
@@ -140,19 +141,18 @@ class GroupBioCAPIViews(TestCase, TestBase):
 
         self.client.logout()
 
+
 class GroupUsersBioC(TestCase, TestBase):
+    # (TODO) where did data.json go?
     fixtures = ['large_group_3/data.json']
 
     def test_api_online(self):
 
         # Confirm API is online from direct access
         req = group_users_bioc({}, group_pk, 'xml')
-        print req.content
+        # print req.content
 
         # Confirm API is online from URL
-        response = self.client.get(reverse('api:quest-group-api',
-            kwargs={'group_pk': 3}))
+        response = self.client.get(reverse('api:quest-group-api', kwargs={'group_pk': 3}))
 
         self.assertEqual(response.status_code, 200)
-
-

@@ -89,8 +89,8 @@ class DocumentAPIViews(TestCase):
                          self.doc.section_set.last().text)
 
         # Make sure it doesn't contain any annotations
-        self.assertEqual(data.get('collection').get('document').get('passage')[0].get('annotation'), None)
-        self.assertEqual(data.get('collection').get('document').get('passage')[1].get('annotation'), None)
+        self.assertEqual(data.get('collection').get('document').get('passage')[0].get('annotation'), [None])
+        self.assertEqual(data.get('collection').get('document').get('passage')[1].get('annotation'), [None])
 
         # We already validated everything in JSON b/c it's easier. Let's just
         # make sure the XML document passes too without specific checks
@@ -165,24 +165,25 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
 
         # Ensure no User >> Quest views until after viewed once
         self.assertEqual(UserQuestRelationship.objects.count(), 0)
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
         doc = self.get_document_from_response(self.user_names[0])
         self.assertEqual(UserQuestRelationship.objects.count(), 1)
 
         # Ensure this returns a 500 for the player b/c there are no submissions yet
-        response = self.client.get(reverse('document:results-bioc',
+        response = self.client.get(reverse('task-entity-recognition:results-bioc',
                                            kwargs={'task_pk': self.task.pk,
                                            'doc_pk': doc.pk,
                                            'format_type': 'xml'}))
         self.assertEqual(response.status_code, 500)
+        #(TODO) this test broke, response.content = "points awarded" now?
         self.assertEqual(response.content, 'no_points_awarded')
         self.client.logout()
         # Submit bogus Annotations as opponent to try match again for player
         self.client.login(username='opponent', password='password')
         self.assertEqual(Annotation.objects.count(), 0)
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
 
@@ -207,7 +208,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
                                     kwargs={'quest_pk': self.task.pk,
                                     'document_pk': doc.pk}), follow=True)
         # Fetch the BioC Document again
-        response = self.client.get(reverse('document:results-bioc',
+        response = self.client.get(reverse('task:results-bioc',
                                            kwargs={'task_pk': self.task.pk,
                                            'doc_pk': doc.pk,
                                            'format_type': 'xml'}))
@@ -243,7 +244,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.create_new_user_accounts(self.user_names)
         self.assertEqual(Annotation.objects.count(), 0)
         self.client.login(username='player', password='password')
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
 
@@ -251,8 +252,8 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         abstract = doc.available_sections().last()
 
         # Annotation submit URL
-        url = reverse('document:create', kwargs={'task_pk': self.task.pk,
-                      'section_pk': abstract.pk})
+        url = reverse('document:create', kwargs={'task_pk': int(self.task.pk),
+                      'section_pk': int(abstract.pk)})
         self.assertEqual(self.client.post(url, {'type': 0,
                                           'text': 'text annotation 0',
                                           'start': 0}).status_code, 200)
@@ -274,7 +275,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         # Submit Annotations (As User 1) so they show up when inspecting the M2C submissions
         self.assertEqual(Annotation.objects.count(), 3)
         self.client.login(username='opponent', password='password')
-        response = self.client.get(reverse('common:quest-home',
+        response = self.client.get(reverse('task-entity-recognition:quest-home',
                                    kwargs={'quest_pk': self.task.pk}),
                                    follow=True)
 
