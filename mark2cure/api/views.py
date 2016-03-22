@@ -6,13 +6,14 @@ from django.contrib.auth.models import User
 
 
 from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-from .serializers import QuestSerializer, UserSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
+from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import UserProfile, Team
 from ..common.models import Document, Group
 from ..task.models import Task
 from ..task.relation.models import Relation
 from ..document.models import Section, Annotation
+from ..score.models import Point
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -277,15 +278,26 @@ def users_with_score(days=30):
     today = datetime.datetime.now()
     since = today - datetime.timedelta(days=days)
 
-    return User.objects.exclude(pk__in=[5, 160]).extra(select={
-        "score": """
-            SELECT SUM(score_point.amount) AS score
-            FROM score_point
-            WHERE (score_point.user_id = auth_user.id
-                AND score_point.created > '%s'
-                AND score_point.created <= '%s')
-            GROUP BY score_point.user_id ORDER BY NULL""" % (since, today)
-    }).prefetch_related('userprofile')
+    print 'User Search', today, since
+
+    res = Point.objects.raw("""
+        SELECT score_point.id, SUM(score_point.amount) as score, auth_user.username, auth_user.id
+        FROM score_point
+        LEFT OUTER JOIN auth_user
+            ON auth_user.id = score_point.user_id
+        WHERE ( score_point.created > '{since}'
+                AND score_point.created <= '{today}'
+                AND auth_user.id IN ({excluded_users}) )
+        GROUP BY auth_user.id ORDER BY NULL;""".format(
+            since=since,
+            today=today,
+            excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160])
+        ))
+
+    for x in res:
+        print x
+
+    return []
 
 
 def get_annotated_teams(days=30):
@@ -307,7 +319,7 @@ def get_annotated_teams(days=30):
 def leaderboard_users(request, day_window):
     queryset = list(users_with_score(days=int(day_window))[:25])
     queryset = [up for up in queryset if up.score is not None]
-    serializer = UserSerializer(queryset, many=True)
+    serializer = LeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
