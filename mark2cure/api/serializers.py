@@ -24,13 +24,11 @@ class GroupSerializer(serializers.ModelSerializer):
                   'documents')
 
 
-class UserSerializer(serializers.ModelSerializer):
+class LeaderboardSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
-    quote = serializers.SerializerMethodField()
-    motivation = serializers.SerializerMethodField()
 
     def get_name(self, user):
         return user.username
@@ -42,15 +40,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_score(self, user):
         return int(user.score) if user.score else 0
 
-    def get_quote(self, user):
-        return user.profile.quote
-
-    def get_motivation(self, user):
-        return user.profile.motivation
-
     class Meta:
         model = User
-        fields = ('user', 'name', 'score', 'quote', 'motivation')
+        fields = ('user', 'name', 'score',)
 
 
 class TeamLeaderboardSerializer(serializers.ModelSerializer):
