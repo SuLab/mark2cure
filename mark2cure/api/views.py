@@ -278,8 +278,6 @@ def users_with_score(days=30):
     today = datetime.datetime.now()
     since = today - datetime.timedelta(days=days)
 
-    print 'User Search', today, since
-
     res = Point.objects.raw("""
         SELECT score_point.id, SUM(score_point.amount) as score, auth_user.username, auth_user.id
         FROM score_point
@@ -287,28 +285,25 @@ def users_with_score(days=30):
             ON auth_user.id = score_point.user_id
         WHERE ( score_point.created > '{since}'
                 AND score_point.created <= '{today}'
-                AND auth_user.id IN ({excluded_users}) )
+                AND auth_user.id NOT IN ({excluded_users}) )
         GROUP BY auth_user.id ORDER BY NULL;""".format(
             since=since,
             today=today,
             excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160])
         ))
 
-    for x in res:
-        print x
-
-    return []
+    return [row for row in res if row.score is not None]
 
 
 def get_annotated_teams(days=30):
     # (TODO) This could be smaller by only being UserProfiles that
     # we know are part of a Team
-    userprofiles = users_with_score(days=days)
+    users_queryset = users_with_score(days=days)
 
     teams = Team.objects.all()
     for team in teams:
         team_user_profile_pks = team.userprofile_set.values_list('pk', flat=True)
-        team.score = sum(filter(None, userprofiles.filter(pk__in=team_user_profile_pks).values_list('score', flat=True)))
+        team.score = sum(filter(None, [row.score for row in filter(lambda x: x.id in team_user_profile_pks, users_queryset)]))
     teams = list(teams)
     teams.sort(key=lambda x: x.score, reverse=True)
     return teams
@@ -317,8 +312,7 @@ def get_annotated_teams(days=30):
 @login_required
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
-    queryset = list(users_with_score(days=int(day_window))[:25])
-    queryset = [up for up in queryset if up.score is not None]
+    queryset = users_with_score(days=int(day_window))[:25]
     serializer = LeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
