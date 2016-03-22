@@ -195,7 +195,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.assertGreater(Annotation.objects.count(), 3)
 
         # Then submit the document for the Quest
-        response = self.client.post(reverse('common:doc-quest-submit',
+        response = self.client.post(reverse('task-entity-recognition:doc-quest-submit',
                                     kwargs={'quest_pk': self.task.pk,
                                     'document_pk': doc.pk}), follow=True)
         self.client.logout()
@@ -204,7 +204,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.client.login(username='player', password='password')
 
         # Submit this Document without contributing any Annotations
-        response = self.client.post(reverse('common:doc-quest-submit',
+        response = self.client.post(reverse('task-entity-recognition:doc-quest-submit',
                                     kwargs={'quest_pk': self.task.pk,
                                     'document_pk': doc.pk}), follow=True)
         # Fetch the BioC Document again
@@ -252,7 +252,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         abstract = doc.available_sections().last()
 
         # Annotation submit URL
-        url = reverse('document:create', kwargs={'task_pk': int(self.task.pk),
+        url = reverse('task-entity-recognition:create', kwargs={'task_pk': int(self.task.pk),
                       'section_pk': int(abstract.pk)})
         self.assertEqual(self.client.post(url, {'type': 0,
                                           'text': 'text annotation 0',
@@ -266,7 +266,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.assertEqual(Annotation.objects.count(), 3)
 
         # Then submit the document for the Quest
-        response = self.client.post(reverse('common:doc-quest-submit',
+        response = self.client.post(reverse('task-entity-recognition:doc-quest-submit',
                                     kwargs={'quest_pk': self.task.pk,
                                     'document_pk': doc.pk}),
                                     follow=True)
@@ -280,7 +280,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
                                    follow=True)
 
         # Annotation submit URL
-        url = reverse('document:create', kwargs={'task_pk': self.task.pk,
+        url = reverse('task-entity-recognition:create', kwargs={'task_pk': self.task.pk,
                       'section_pk': abstract.pk})
         self.assertEqual(self.client.post(url, {'type': 0,
                                           'text': 'text annotation 3',
@@ -294,14 +294,14 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
         self.assertEqual(Annotation.objects.count(), 6)
 
         # Then submit the document for the Quest
-        response = self.client.post(reverse('common:doc-quest-submit',
+        response = self.client.post(reverse('task-entity-recognition:doc-quest-submit',
                                     kwargs={'quest_pk': self.task.pk,
                                     'document_pk': doc.pk}),
                                     follow=True)
         self.client.logout()
 
         # As Anon user, export the documents submissions
-        res = self.client.get(reverse('document:read-users-bioc',
+        res = self.client.get(reverse('task-entity-recognition:read-users-bioc',
                                       kwargs={'pubmed_id': doc.document_id,
                                       'format_type': 'xml'}), follow=True)
         self.assertEqual(res.status_code, 200)

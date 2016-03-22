@@ -46,7 +46,7 @@ class TestBase(object):
             for section in doc.available_sections():
                 ann_count = random.randint(0, 30)
                 for x in range(ann_count):
-                    url = reverse('document:create',
+                    url = reverse('task-entity-recognition:create',
                                   kwargs={'task_pk': self.task.pk,
                                   'section_pk': section.pk})
                     # user_annotations shall be from the current section text
