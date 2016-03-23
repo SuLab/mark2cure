@@ -272,7 +272,7 @@ def users_with_score(days=30):
         WHERE ( score_point.created > '{since}'
                 AND score_point.created <= '{today}'
                 AND auth_user.id NOT IN ({excluded_users}) )
-        GROUP BY auth_user.id ORDER BY NULL;""".format(
+        GROUP BY auth_user.id ORDER BY score DESC;""".format(
             since=since,
             today=today,
             excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160])
