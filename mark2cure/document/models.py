@@ -3,18 +3,16 @@ from django.contrib.auth.models import User
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader, BioCWriter, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-from django.forms.models import model_to_dict
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from ..task.relation.models import Concept, Relation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 import pandas as pd
 pd.set_option('display.width', 1000)
 import itertools
-
-
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -148,22 +146,21 @@ class Document(models.Model):
         for section in self.available_sections():
             passage = section.as_bioc(passage_offset)
 
-            for ann in Annotation.objects.filter(view__section=section).values('pk', 'start', 'text', 'type', 'view__user__username', 'view__user__pk').all():
+            for ann in EntityRecognitionAnnotation.objects.annotations_for_section_pk(section.pk):
                 annotation = BioCAnnotation()
-                annotation.id = str(ann.get('pk'))
-                annotation.put_infon('user', str(ann.get('view__user__pk')))
-                annotation.put_infon('user_name', str(ann.get('view__user__username')))
+                annotation.id = str(ann.pk)
+                annotation.put_infon('user', str(ann.user_id))
 
                 # (TODO) Map type strings back to 0,1,2
-                annotation.put_infon('type', str(approved_types.index(ann.get('type'))))
-                annotation.put_infon('type_name', str(ann.get('type')))
+                annotation.put_infon('type', str(approved_types.index(ann.type)))
+                annotation.put_infon('type_name', str(ann.type))
 
                 location = BioCLocation()
-                location.offset = str(passage_offset + ann.get('start'))
-                location.length = str(len(ann.get('text')))
+                location.offset = str(passage_offset + ann.start)
+                location.length = str(len(ann.text))
                 annotation.add_location(location)
 
-                annotation.text = ann.get('text')
+                annotation.text = ann.text
                 passage.add_annotation(annotation)
 
             passage_offset += len(passage.text)
@@ -279,7 +276,7 @@ class Document(models.Model):
 
     # Helpers for Talk Page
     def annotations(self):
-        return Annotation.objects.filter(view__section__document=self)
+        return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
 
     def contributors(self):
         user_ids = list(set(View.objects.filter(section__document=self, completed=True).values_list('user', flat=True)))
@@ -468,27 +465,21 @@ class View(models.Model):
 
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
-        ('e', 'Entities'),
-        ('a', 'Attributes'),
-        ('r', 'Relations'),
-        ('t', 'Triggers'),
+        ('e', 'Entity Recognition'),
+        ('r', 'Relation'),
     )
     kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
 
-    # Disease, Gene, Protein, et cetera...
-    ANNOTATION_TYPE_CHOICE = (
-        'disease',
-        'gene_protein',
-        'drug',
-    )
+    #
+    #
+    # (TODO) These are on their way out
+    ANNOTATION_TYPE_CHOICE = ('disease','gene_protein','drug',)
     type = models.CharField(max_length=40, blank=True, null=True, default='disease')
-
     text = models.TextField(blank=True, null=True)
-
-    # (WARNING) Different than BioC
-    # This is always the start position relative
-    # to the section, not the entire document
     start = models.IntegerField(blank=True, null=True)
+    #
+    #
+    #
 
     created = models.DateTimeField(auto_now_add=True)
 
@@ -498,11 +489,6 @@ class Annotation(models.Model):
 
     view = models.ForeignKey(View, blank=True, null=True)
 
-    def is_exact_match(self, comparing_annotation):
-        required_matching_keys = ['kind', 'start', 'text', 'type']
-        self_d = model_to_dict(self)
-        compare_d = model_to_dict(comparing_annotation)
-        return all([True if self_d[k] == compare_d[k] else False for k in required_matching_keys])
 
     def __unicode__(self):
         if self.kind == 'r':

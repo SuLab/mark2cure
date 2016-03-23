@@ -322,7 +322,6 @@ class Development(Base):
 
     DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
-
     '''
     if 'test' in sys.argv:
         import dj_database_url

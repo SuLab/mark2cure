@@ -1,5 +1,6 @@
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
 from ..document.models import Annotation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 import datetime
 import xmltodict
@@ -101,25 +102,25 @@ def apply_bioc_annotations(writer, user=None):
         section_pk = bioc_passage.infons['id']
         offset = int(bioc_passage.offset)
 
-        query_set = Annotation.objects.filter(view__section__pk=section_pk)
         if user:
-            query_set = query_set.filter(view__user=user)
+            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_and_user(section_pk, user.pk)
+        else:
+            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_pk(section_pk)
 
-        for ann in query_set.all():
+        for er_ann in er_ann_query_set:
             annotation = BioCAnnotation()
-            annotation.id = str(ann.pk)
-            annotation.put_infon('user', str(ann.view.user.pk))
-            annotation.put_infon('user_name', str(ann.view.user.username))
+            annotation.id = str(er_ann.id)
+            annotation.put_infon('user', str(er_ann.user_id))
 
             # (TODO) Map type strings back to 0,1,2
-            annotation.put_infon('type', str(approved_types.index(ann.type)))
+            annotation.put_infon('type', str(approved_types.index(er_ann.type)))
 
             location = BioCLocation()
-            location.offset = str(offset + ann.start)
-            location.length = str(len(ann.text))
+            location.offset = str(offset + er_ann.start)
+            location.length = str(len(er_ann.text))
             annotation.add_location(location)
 
-            annotation.text = ann.text
+            annotation.text = er_ann.text
 
             bioc_passage.add_annotation(annotation)
 

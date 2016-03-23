@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 
 from ...document.models import View, Annotation
+from .models import EntityRecognitionAnnotation
 
 import random
 
@@ -49,7 +50,7 @@ def select_best_opponent(task, document, player):
         if quest_relationship.views.filter(section__document=document, completed=True).exists():
             # (TODO) Don't add option of them unless they've submitted 1+ Annotations
             view_ids = quest_relationship.views.filter(section__document=document, completed=True).values_list('pk', flat=True)
-            if Annotation.objects.filter(view__pk__in=view_ids).exists():
+            if Annotation.objects.filter(kind='e', view__pk__in=view_ids).exists():
                 previous_users.append(quest_relationship.user)
 
     if others_quest_relationships.exists() and len(previous_users):
@@ -113,22 +114,28 @@ def generate_results(user_views, gm_views):
      fn  *tn
 
     '''
-    gm_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in gm_views if type(v) is View])
-    user_annotations = Annotation.objects.filter(view__pk__in=[v.pk for v in user_views if type(v) is View])
+    gm_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in gm_views if type(v) is View])
+    user_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in user_views if type(v) is View])
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
+
+    # print 'True Pos', len(true_positives)
+    # print 'User Anns', len(user_annotations)
 
     # Annotations the user submitted that were wrong (the User set without their True Positives)
     # false_positives = user_annotations - true_positives
     false_positives = user_annotations
     for tp in true_positives:
-        false_positives = false_positives.exclude(start=tp.start, text=tp.text)
+        false_positives = filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_positives)
+    # print 'False Positives', len(false_positives)
 
     # # Annotations the user missed (the GM set without their True Positives)
     # false_negatives = gm_annotations - true_positives
+    # (TODO) FN appears to be 1/2 what it should in most cases --Max 3/23/16
     false_negatives = gm_annotations
     for tp in true_positives:
-        false_negatives = false_negatives.exclude(start=tp.start, text=tp.text)
+        false_negatives = filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_negatives)
+    # print 'False Negatives', len(false_negatives)
 
-    score = determine_f(len(true_positives), false_positives.count(), false_negatives.count())
+    score = determine_f(len(true_positives), len(false_positives), len(false_negatives))
     return (score, true_positives, false_positives, false_negatives)

@@ -1,15 +1,14 @@
 from django import forms
+from .models import EntityRecognitionAnnotation
 
-from mark2cure.document.models import Annotation
 
-
-class AnnotationForm(forms.ModelForm):
+class EntityRecognitionAnnotationForm(forms.ModelForm):
     class Meta:
-        model = Annotation
+        model = EntityRecognitionAnnotation
         fields = ['text', 'start', 'type']
 
     def clean_type(self):
         data = self.cleaned_data['type']
         if data.isdigit():
-            data = Annotation.ANNOTATION_TYPE_CHOICE[int(data)]
+            data = EntityRecognitionAnnotation.ANNOTATION_TYPE_CHOICE[int(data)]
         return data

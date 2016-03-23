@@ -8,6 +8,5 @@ def point_post_save(sender, instance, created, **kwargs):
     point = instance
 
     if created and not kwargs.get('raw', False):
-        print 'Badges possibly award via signal', point, point.__dict__
         badges.possibly_award_badge("points_awarded", user=point.user)
 

@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
 from django.shortcuts import get_object_or_404, redirect
@@ -8,8 +9,8 @@ from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
 from ...common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
-from ...document.models import Document, Section
-from .forms import AnnotationForm
+from ...document.models import Document, Section, Annotation
+from .forms import EntityRecognitionAnnotationForm
 from ..models import Task, UserQuestRelationship
 from .utils import generate_results, select_best_opponent
 from ...score.models import Point
@@ -79,7 +80,6 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         # it would make more sense to do that as a valid check of
         # "contribution" effort
 
-        from django.contrib.contenttypes.models import ContentType
         from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
         Point.objects.create(user=request.user, amount=1000, content_type=content_type, object_id=task.id, created=timezone.now())
@@ -115,7 +115,6 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     results = generate_results(player_views, opponent_views)
     score = results[0][2] * 1000
     if score > 0:
-        from django.contrib.contenttypes.models import ContentType
         from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
         Point.objects.create(user=request.user, amount=score, content_type=content_type, object_id=task.id, created=timezone.now())
@@ -146,12 +145,20 @@ def identify_annotations_submit(request, task_pk, section_pk):
     view = user_quest_rel.views.filter(section=section, completed=False).first()
 
     if view:
-        form = AnnotationForm(data=request.POST or None)
 
-        if form.is_valid():
-            ann = form.save(commit=False)
-            ann.view = view
-            ann.save()
+        er_ann_form = EntityRecognitionAnnotationForm(data=request.POST or None)
+
+        if er_ann_form.is_valid():
+            er_ann = er_ann_form.save()
+
+            er_ann_content_type = ContentType.objects.get_for_model(er_ann)
+            Annotation.objects.create(
+                kind='e',
+                type=None,
+                view=view,
+                content_type=er_ann_content_type,
+                object_id=er_ann.id)
+
             return HttpResponse(200)
 
     return HttpResponseServerError()
@@ -273,7 +280,6 @@ def quest_submit(request, task, bypass_post=False):
         user_quest_relationship = task.user_relationship(request.user, False)
 
         if not user_quest_relationship.completed:
-            from django.contrib.contenttypes.models import ContentType
             from django.utils import timezone
             content_type = ContentType.objects.get_for_model(task)
             Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())

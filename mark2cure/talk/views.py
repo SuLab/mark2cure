@@ -7,6 +7,7 @@ from django_comments.models import Comment
 
 from .decorators import doc_completion_required
 from ..document.models import Document, Annotation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 from django.contrib import messages
 from django.utils import timezone
@@ -19,9 +20,9 @@ from datetime import timedelta
 def home(request, pubmed_id):
     document = get_object_or_404(Document, document_id=pubmed_id)
 
-    disease = Counter(document.annotations().filter(type='disease').exclude(text='').values_list('text', flat=True))
-    gene_protein = Counter(document.annotations().filter(type='gene_protein').exclude(text='').values_list('text', flat=True))
-    drug = Counter(document.annotations().filter(type='drug').exclude(text='').values_list('text', flat=True))
+    disease = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'disease'))
+    gene_protein = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'gene_protein'))
+    drug = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'drug'))
 
     ctx = {
         'doc': document,
@@ -37,12 +38,11 @@ def home(request, pubmed_id):
 def annotation_search(request):
     annotation = request.GET.get('q')
     completed_document_pks = request.user.profile.completed_document_pks()
-    queryset = Annotation.objects.filter(
-        text=annotation,
-        view__section__document__pk__in=completed_document_pks
-    ).values_list('view__section__document__pk', flat=True)
 
-    documents = [(group[1], Document.objects.get(pk=group[0])) for group in Counter(queryset).most_common()]
+    # (TODO) Sanitize search param for RAW SQL
+    document_pks = EntityRecognitionAnnotation.objects.document_pks_by_text_and_document_pks(annotation, completed_document_pks)
+
+    documents = [(group[1], Document.objects.get(pk=group[0])) for group in Counter(document_pks).most_common()]
     ctx = {
         'annotation': annotation,
         'documents': documents
@@ -65,9 +65,7 @@ def recent_discussion(request):
         comment_queryset = Comment.objects.filter(
             content_type_id=doc_content_pk)
 
-        annotations = Annotation.objects.filter(
-            created__gte=last_week,
-        ).exclude(text='').values_list('text', flat=True)
+        annotations = EntityRecognitionAnnotation.objects.annotations_texts_by_created(last_week)
 
         comment_documents_pks = Comment.objects.filter(
             content_type_id=doc_content_pk).values_list('object_pk', flat=True)
@@ -77,10 +75,7 @@ def recent_discussion(request):
             content_type_id=doc_content_pk,
             object_pk__in=completed_document_pks)
 
-        annotations = Annotation.objects.filter(
-            created__gte=last_week,
-            view__section__document__pk__in=completed_document_pks
-        ).exclude(text='').values_list('text', flat=True)
+        annotations = EntityRecognitionAnnotation.objects.annotations_texts_by_created_and_document_pks(last_week, completed_document_pks)
 
         comment_documents_pks = Comment.objects.filter(
             content_type_id=doc_content_pk,
