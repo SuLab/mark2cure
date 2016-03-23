@@ -12,6 +12,7 @@ from ..userprofile.models import UserProfile, Team
 from ..common.models import Document, Group
 from ..task.models import Task
 from ..task.relation.models import Relation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..document.models import Section, Annotation
 from ..score.models import Point
 
@@ -186,53 +187,38 @@ def group_users_bioc(request, group_pk, format_type):
     sections = Section.objects.filter(
         document__document_id__in=document_pmids
     ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
-    all_section_pks = [s['pk'] for s in sections]
-
-    # Fetch all the actual annotations using
-    annotations = Annotation.objects.filter(
-        view__section__pk__in=all_section_pks
-    ).values(
-        'pk',
-        'start',
-        'text',
-        'type',
-        'view__user__pk',
-        'view__section__pk',
-        'view__section__document__document_id',
-    ).all()
-    annotations = list(annotations)
 
     # Provide the base of the response
     writer = bioc_writer(request)
 
     for doc_pmid in document_pmids:
-        document_annotations = filter(lambda ann: ann['view__section__document__document_id'] == doc_pmid, annotations)
+        document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid)
 
         document = BioCDocument()
         document.id = str(doc_pmid)
 
         passage_offset = 0
 
-        section_pks = list(set([ann['view__section__pk'] for ann in document_annotations]))
+        section_pks = list(set([ann.section_id for ann in document_annotations]))
         for section_pk in section_pks:
             # Add the Section to the Document
             passage = BioCPassage()
             passage.put_infon('id', str(section_pk))
             passage.offset = str(passage_offset)
 
-            section_annotations = filter(lambda ann: ann['view__section__pk'] == section_pk, document_annotations)
+            section_annotations = filter(lambda ann: ann.section_id == section_pk, document_annotations)
             for ann in section_annotations:
                 annotation = BioCAnnotation()
 
-                annotation.id = str(ann.get('pk'))
-                annotation.put_infon('user', str(ann.get('view__user__pk')))
-                annotation.put_infon('type', ann.get('type'))
+                annotation.id = str(ann.id)
+                annotation.put_infon('user', str(ann.user_id))
+                annotation.put_infon('type', ann.type)
 
                 location = BioCLocation()
-                location.offset = str(passage_offset + ann.get('start'))
-                location.length = str(len(ann.get('text')))
+                location.offset = str(passage_offset + ann.start)
+                location.length = str(len(ann.text))
                 annotation.add_location(location)
-                annotation.text = ann.get('text')
+                annotation.text = ann.text
 
                 passage.add_annotation(annotation)
 

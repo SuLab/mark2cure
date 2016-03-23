@@ -12,6 +12,7 @@ from ..common.bioc import BioCReader
 from ..common.models import Group
 from ..api.views import group_users_bioc
 from ..document.models import Section, Annotation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from .models import Report
 
 from django.contrib.auth.models import User
@@ -37,7 +38,7 @@ def hashed_annotations_df(group_pk, private_api=False,
     '''
 
     hashed_annotations = []  # Creates empty list for the annotations
-    ann_types = Annotation.ANNOTATION_TYPE_CHOICE
+    ann_types = EntityRecognitionAnnotation.ANNOTATION_TYPE_CHOICE
 
     if private_api:
         group = Group.objects.get(pk=group_pk)
@@ -47,39 +48,27 @@ def hashed_annotations_df(group_pk, private_api=False,
         sections = Section.objects.filter(
             document__document_id__in=document_pmids
         ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
-        all_section_pks = [s['pk'] for s in sections]
-
-        # Fetch all the actual annotations using
-        annotations = Annotation.objects.filter(
-            kind='e',
-            view__section__pk__in=all_section_pks
-        ).values(
-            'pk',
-            'start',
-            'text',
-            'type',
-            'view__user__pk',
-            'view__section__pk',
-            'view__section__document__document_id').all()
 
         for doc_pmid in document_pmids:
-            document_annotations = filter(lambda ann: ann['view__section__document__document_id'] == doc_pmid, annotations)
+
+            document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid)
+
             passage_offset = 0
 
-            section_pks = list(set([ann['view__section__pk'] for ann in document_annotations]))
+            section_pks = list(set([ann.section_id for ann in document_annotations]))
             for section_pk in section_pks:
 
-                section_annotations = filter(lambda ann: ann['view__section__pk'] == section_pk, document_annotations)
+                section_annotations = filter(lambda ann: ann.section_id == section_pk, document_annotations)
                 for ann in section_annotations:
                     hashed_annotations.append((
-                        ann.get('view__section__document__document_id'),
-                        str(ann.get('view__user__pk')),
-                        ann_types.index(ann.get('type')),
+                        ann.document_id,
+                        str(ann.user_id),
+                        ann_types.index(ann.type),
 
-                        passage_offset + ann.get('start'),
+                        passage_offset + ann.start,
 
-                        len(ann.get('text')),
-                        ann.get('text')
+                        len(ann.text),
+                        ann.text
                     ))
 
                 section_results = filter(lambda section: section['pk'] == section_pk, sections)
