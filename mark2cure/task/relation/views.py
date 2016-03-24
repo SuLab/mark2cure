@@ -85,7 +85,6 @@ def submit_annotation(request, document_pk, relation_pk):
 
         Annotation.objects.create(
             kind='r',
-            type=None,
             view=view,
             content_type=relation_ann_content_type,
             object_id=relation_ann.id)
