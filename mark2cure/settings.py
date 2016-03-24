@@ -1,5 +1,6 @@
 from celery.schedules import crontab
 from datetime import timedelta
+import raven
 
 import djcelery
 import sys
@@ -29,13 +30,8 @@ class Base(Configuration):
         super(Base, cls).setup()
 
         cls.RAVEN_CONFIG = {
-            'dsn': '{protocol}://{public_key}:{private_key}@{project_domain}/{project_id}'.format(
-                protocol=cls.SENTRY_PROTOCOL,
-                public_key=cls.SENTRY_PUBLIC_KEY,
-                private_key=cls.SENTRY_PRIVATE_KEY,
-                project_domain=cls.SENTRY_PROJECT_DOMAIN,
-                project_id=cls.SENTRY_PROJECT_ID
-            )
+            'dsn': cls.SENTRY_DSN,
+            'release': raven.fetch_git_sha(cls.PROJECT_PATH),
         }
 
     SECRET_KEY = SecretValue(environ_prefix='MARK2CURE')
@@ -103,31 +99,25 @@ class Base(Configuration):
         'gunicorn'
     )
 
-    SENTRY_ENABLED = BooleanValue(True)
-    SENTRY_PROTOCOL = Value('http')
-    SENTRY_PROJECT_DOMAIN = Value('sentry.sulab.org')
-
-    SENTRY_PUBLIC_KEY = SecretValue(environ_prefix='MARK2CURE')
-    SENTRY_PRIVATE_KEY = SecretValue(environ_prefix='MARK2CURE')
-    SENTRY_PROJECT_ID = SecretValue(environ_prefix='MARK2CURE')
-
+    SENTRY_DSN = SecretValue(environ_prefix='MARK2CURE')
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': True,
         'root': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'handlers': ['sentry'],
         },
         'formatters': {
             'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s \
-                        %(process)d %(thread)d %(message)s'
+                'format': '%(levelname)s %(asctime)s %(module)s '
+                          '%(process)d %(thread)d %(message)s'
             },
         },
         'handlers': {
             'sentry': {
-                'level': 'DEBUG',
+                'level': 'ERROR',
                 'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                'tags': {'custom-tag': 'x'},
             },
             'console': {
                 'level': 'DEBUG',

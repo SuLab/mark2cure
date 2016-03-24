@@ -1,4 +1,5 @@
 - load widget_tweaks
+- load raven
 
 !!! 5
 head
@@ -129,7 +130,7 @@ head
           fetchContext: true,
           linesOfContext: 30
         };
-        Raven.config('https://2e8a4df0f5a640409c45630cb43472b4@app.getsentry.com/61810').install()
+        Raven.config('{% sentry_public_dsn %}').install()
 
         Raven.setUser({
           email: "{{ request.user.email }}",
