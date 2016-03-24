@@ -470,17 +470,6 @@ class Annotation(models.Model):
     )
     kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
 
-    #
-    #
-    # (TODO) These are on their way out
-    ANNOTATION_TYPE_CHOICE = ('disease','gene_protein','drug',)
-    type = models.CharField(max_length=40, blank=True, null=True, default='disease')
-    text = models.TextField(blank=True, null=True)
-    start = models.IntegerField(blank=True, null=True)
-    #
-    #
-    #
-
     created = models.DateTimeField(auto_now_add=True)
 
     content_type = models.ForeignKey(ContentType, blank=True, null=True)

@@ -122,15 +122,15 @@ class ViewAdmin(admin.ModelAdmin):
 
 
 class AnnotationAdmin(admin.ModelAdmin):
-    search_fields = ('view__user__username', 'view__section__document__document_id', 'text', 'kind', 'type')
+    search_fields = ('view__user__username', 'view__section__document__document_id')
 
-    list_display = ('text', 'type', 'start',
+    list_display = (
+            'kind',
             'section', 'username', 'pmid',
             'quest', 'group', 'time_ago',
             'created')
 
-    readonly_fields = ('kind', 'type', 'text',
-            'start', 'created', 'view')
+    readonly_fields = ('kind', 'created', 'view')
 
     def section(self, obj):
         if obj.view:
