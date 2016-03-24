@@ -154,7 +154,6 @@ def identify_annotations_submit(request, task_pk, section_pk):
             er_ann_content_type = ContentType.objects.get_for_model(er_ann)
             Annotation.objects.create(
                 kind='e',
-                type=None,
                 view=view,
                 content_type=er_ann_content_type,
                 object_id=er_ann.id)
