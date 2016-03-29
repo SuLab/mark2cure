@@ -54,9 +54,9 @@ class Team(models.Model):
     def total_score(self):
         # (TODO) user.id vs userprofile.id checks here
         from mark2cure.api.views import users_with_score
-        userprofiles = users_with_score(days=10000)
+        users_queryset = users_with_score(days=10000)
         team_user_pks = self.userprofile_set.values_list('pk', flat=True)
-        return sum(filter(None, userprofiles.filter(pk__in=team_user_pks).values_list('score', flat=True)))
+        return sum(filter(None, [row.score for row in filter(lambda x: x.id in team_user_pks, users_queryset)]))
 
     def current_avg_f(self, weighted=True):
         '''
