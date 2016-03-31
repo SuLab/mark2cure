@@ -8,6 +8,27 @@ Progress in biomedical science is all about incrementally building off of the wo
 
 To be successful, we need your help. Mark2Cure works by directly involving crowds of people just like you.
 
+### Please note that as of 3/28/2016 Mark2Cure will be officially hosted on Github instead of Bitbucket.  Issues prior to this date were imported using a script, so read carefully or ask for clarification.
+
+## Citizen Scientist Volunteers:
+
+If you are interested in volunteering as a Mark2Curator to read documents and help expedite our annotation process, please go to [Mark2Cure.org]. The information here is primarily for computer scientists, bioinformaticians and programmers. You may have stumbled upon this accidentally, but we sincerely thank you for your interest in Mark2Cure!
+
+## Developers:
+
+You found this repository because it is open-source!
+
+With that said, we are interested in community contributions. We
+will continue to update our issue tracker to contain labels marked as **quick fix** and/or **help wanted.**
+These issues are the ones "up for grabs."
+
+To work on an issue in our[ issue tracker, ](https://github.com/SuLab/mark2cure/issues)please comment on the issue,
+let us know you want to work on it, give us a rough time line for completion, and we will assign it to you if it makes sense.
+
+If we do not accept a pull request it could be for many reasons. Our schedules fluctuate so also remember that sometimes we respond immediately and sometimes it may take a while.
+
+*Please know that we are very thankful for your help and desire to contribute to this project.*
+
 
 ## Setup
 
@@ -66,12 +87,6 @@ These are instructions, tips, and tricks for how to install **mark2cure** for
 developers with more detail than above, assuming you might be unfamiliar
 with much of this technology. Please feel free to let us know if anything is
 unclear.
-
-By the way, if you are interested in volunteering as a Mark2Curator to read
-documents and help expedite our annotation process, please go to
-[Mark2Cure.org]. The information here is only for computer scientists,
-bioinformaticians and programmers. You may have stumbled upon this accidentally,
-but we thank you for your interest!
 
 Below is the terminal history for installation of **mark2cure** in a
 “clean” brand new Macbook Pro. You will likely have a computer that has already
