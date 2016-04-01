@@ -1,6 +1,6 @@
 # Mark2Cure
 
-[Mark2Cure](http://mark2cure.org/) is a web application concept recognition, relationship extraction and validation tool to generate annotations in fun and exploratory way to help scientific research!
+[Mark2Cure](http://mark2cure.org/) is a web-based concept recognition, relationship extraction and validation tool to annotate text. It is intended to be a fun and exploratory way to help biomedical research, but can readily be extended to other disciplines of study where publication rates far exceed a researcher's ability to consume and incorporate knowledge from the literature.
 
 Scientific communication is broken.
 
@@ -12,20 +12,20 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 ## Citizen Scientist Volunteers:
 
-If you are interested in volunteering as a Mark2Curator to read documents and help expedite our annotation process, please go to [Mark2Cure.org]. The information here is primarily for computer scientists, bioinformaticians and programmers. You may have stumbled upon this accidentally, but we sincerely thank you for your interest in Mark2Cure!
+If you are interested in volunteering as a Mark2Curator to read documents and help expedite our annotation process, please go to [Mark2Cure.org]. The information here is primarily for those with computer science, bioinformatics, and/or programming backgrounds who wish to assist with, develop, or build upon the code. If you stumbled upon this accidentally, we sincerely thank you for your interest in Mark2Cure and ask you to join us at [Mark2Cure.org] instead.
 
 ## Developers:
 
-You found this repository because it is open-source!
+Mark2Cure is open-source and welcomes community contributions! Our issue tracker will soon be updated with issues which are readily "up for grabs" and will be marked as **quick fix** and/or **help wanted.**
 
-With that said, we are interested in community contributions. We
-will continue to update our issue tracker to contain labels marked as **quick fix** and/or **help wanted.**
-These issues are the ones "up for grabs."
+To work on an issue in our[ issue tracker, ](https://github.com/SuLab/mark2cure/issues)please comment on the issue and provide the following information in your comment:
 
-To work on an issue in our[ issue tracker, ](https://github.com/SuLab/mark2cure/issues)please comment on the issue,
-let us know you want to work on it, give us a rough time line for completion, and we will assign it to you if it makes sense.
+1. Your intention to address the issue
+2. A rough time line from completion
 
-If we do not accept a pull request it could be for many reasons. Our schedules fluctuate so also remember that sometimes we respond immediately and sometimes it may take a while.
+That's it! We will assign it to you if it makes sense.
+
+While we will always try to be responsive, our team is very small. We ask for your patience if we do not accept a pull request immediately. Our workloads fluctuate, which translates to inconsistent response times on these matters.
 
 *Please know that we are very thankful for your help and desire to contribute to this project.*
 
