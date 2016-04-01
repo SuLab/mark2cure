@@ -1,0 +1,24 @@
+extends training/relation/part-1/base
+
+block intro-content
+  .row.m-t-md
+    .col-xs-12
+      p In addition to having a relationship or NOT having a relationship, there are three types of relationships currently available:
+      ul
+        li Relationships between Genes Concept and Disease Concept
+        li Relationships between Drug Concept and Disease Concept
+        li Relationships between Gene Concept and Drug Concept
+      p Press ‘start now’ to learn more about the options under each relationship type.
+
+
+  .row.m-t-md
+    .col-xs-12.text-center
+      a(href='{% url "training:relation-training" part_num=3 step_num=2 %}').btn.btn-primary Start Now
+
+
+block interactive
+
+
+
+block navigation
+

@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     url(r'^intro/$',
         views.read, name='index'),
 
+    url(r'^relation/(?P<part_num>\w+)/step/(?P<step_num>\w+)/$', views.relation_training, name='relation-training'),
+
     url(r'', views.route, name='route'),
 )
 

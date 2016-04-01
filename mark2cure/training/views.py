@@ -6,9 +6,11 @@ from django.contrib import messages
 
 from ..task.models import Task, UserQuestRelationship
 from mark2cure.score.models import Point
+from ..task.relation import relation_data
 
 from brabeion import badges
 
+import json
 import os
 
 
@@ -121,3 +123,18 @@ def four(request, step_num):
 
     ctx = {'step_num': step_num}
     return TemplateResponse(request, 'training/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
+
+@login_required
+def relation_training(request, part_num=1, step_num=1):
+    part = int(part_num)
+    step = int(step_num)
+
+    #if part == 3 and step == 25:
+    #    user.givepoints
+
+    ctx = {
+        'relation_data': json.dumps(relation_data)
+    }
+    return TemplateResponse(request, 'training/relation/part-{part_num}/page-{step_num}.jade'.format(part_num=part_num, step_num=step_num), ctx)
+
+

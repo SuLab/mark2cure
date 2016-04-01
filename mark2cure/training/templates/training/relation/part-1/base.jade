@@ -1,0 +1,25 @@
+extends base
+
+block header
+  - with headerMessage='Relation Module'
+    include includes/header-anon
+
+
+block content
+  .container
+
+    block intro-content
+      .row.m-t-md
+        .col-xs-12
+          p There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related--but are they really? If they are, how are they related?  Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill.
+          p Let’s start by learning how the interface for this module works. Click 'start now.'
+
+    block interactive
+
+
+
+    block navigation
+      .row.m-t-md
+        .col-xs-12.text-center
+          a(href='{% url "training:relation-training" part_num=1 step_num=2 %}').btn.btn-primary Start Now
+
