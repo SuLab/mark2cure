@@ -55,12 +55,15 @@ def dashboard(request):
     ctx = {'welcome': welcome}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
-@login_required
+# removed login required here to allow public to see doc set contributions
 def group_view(request, group_stub):
     group = get_object_or_404(Group, stub=group_stub)
-    ctx = {'group': group}
+    # total annotation count here, plus anns
+    top_five, username_list = group.top_five_contributors()
+    ctx = {'group': group,
+           'top_five': top_five,
+           'username_list': username_list}
     return TemplateResponse(request, 'common/group_home.jade', ctx)
-
 
 @login_required
 def group_network(request, group_stub):

@@ -1,3 +1,5 @@
+
+
 extends base
 
 - load widget_tweaks
@@ -6,8 +8,37 @@ extends base
 - load group
 
 block header
-  - with headerMessage=group.name
-    include includes/header
+  - with headerMessage='Doc Set Details'
+      - if user.username
+        include includes/header
+      - else
+        include includes/header-annonymous
+
+  <style>
+  body {
+  position: relative;
+  font-family: "Helvetica Neue", sans-serif;
+  width: 960px;
+  margin: auto;
+  margin-bottom: 1em;
+  margin-top: 20px;
+  }
+  #presets a { border-left: solid #666 1px; padding: 0 10px; }
+  #presets a.first { border-left: none; }
+  #keyword { width: 300px; }
+  #fetcher { width: 500px; }
+  #keyword, #go { font-size: 1.5em; }
+  #text { width: 100%; height: 100px; }
+  p.copy { font-size: small; }
+  #form { font-size: small; position: relative; }
+  hr { border: none; border-bottom: solid #ccc 1px; }
+  a.active { text-decoration: none; color: #000; font-weight: bold; cursor: text; }
+  #angles line, #angles path, #angles circle { stroke: #666; }
+  #angles text { fill: #333; }
+  #angles path.drag { fill: #666; cursor: move; }
+  #angles { text-align: center; margin: 0 auto; width: 350px; }
+  #angles input, #max { width: 42px; }
+  </style>
 
 block content
 
@@ -24,39 +55,111 @@ block content
     .row
       - if group.description
         .col-md-10.col-md-offset-1.m-t-md
+          h2.text-center {{ group.name }}
           p.lead #{group.description}
 
-      .col-md-10.col-md-offset-1.m-t-md
-        - with progress=group.percentage_complete
-          - if progress
-            h4.progress-label Community progress on this set:
+          - if user.username
+            span
+          - else
+            - if group.enabled
+              h4 This doc set needs your help. Please login <a href="/registration/login/">here</a>.
 
-            progress(value="{{ progress }}", max="100").progress
-              .progress
-                span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
+        .col-md-10.col-md-offset-1.m-t-md
+          - with progress=group.percentage_complete
+            - if progress
+              h4.progress-label Community progress on this set:
 
-  #group-network.container-fluid
-    .row
-      .col-xs-4.col-xs-offset-4
-        a
-          h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
+              progress(value="{{ progress }}", max="100").progress
+                .progress
+                  span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
 
-    #network-row(style="height:800px;display:none;").row
-      .col-xs-1
-        .row
-          .col-xs-12
-            i.fa.fa-plus-circle
-          .col-xs-12
-            i.fa.fa-minus-circle
-          .col-xs-12
-            i.fa.fa-rotate-right
-      .col-xs-11
-        #network(style="height:800px;")
+          #group-network.container-fluid
+            .row
+              .col-xs-4.col-xs-offset-4
+                a
+                  h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
 
-  .container
-    .row
-      .col-md-10.col-md-offset-1
-        #group-selection
+            #network-row(style="height:800px;display:none;").row
+              .col-xs-1
+                .row
+                  .col-xs-12
+                    i.fa.fa-plus-circle
+                  .col-xs-12
+                    i.fa.fa-minus-circle
+                  .col-xs-12
+                    i.fa.fa-rotate-right
+              .col-xs-11
+                #network(style="height:800px;")
+
+          - if user.username
+            .container(style="padding-bottom: 20px")
+              .row
+                .col-md-10.col-md-offset-1
+                  #group-selection
+
+          h5 Top five doc set contributors:
+          ul
+            - for name in top_five
+              li
+                p {{ name }}
+
+          h5 Total number of doc set contributors:
+          p {{ group.total_contributors }}
+
+          h5 Total docs in doc set:
+          p {{ group.doc_count }}
+
+          h5 Current average F-Score:
+          p {{ group.current_avg_f|floatformat:3 }}
+
+          h5 Doc set start date:
+          #start-date
+
+          h5 Doc set end date:
+          - if group.enabled
+            p In progress
+          - else
+            #end-date
+
+          h5 Total doc set annotations:
+          p {{ group.total_annotation_count }}
+
+
+          h5 Top contributor word cloud:
+          p
+          <div id="vis"></div>
+          <form id="form" style="display: none">
+          <p id="status"></p>
+          <div>
+          <div id="presets"></div>
+          <div id="custom-area">
+          <p>
+          <p><textarea id="text"> {{ username_list }}
+          </textarea>
+          <button id="go" type="submit"></button>
+          </div>
+          </div>
+          <hr>
+          <div>
+          <p><input type="number" value="250" min="1" id="max">
+          <p><input type="checkbox" id="per-line">
+          <!--<p><label for="colours">Colours:</label> <a href="#" id="random-palette">get random palette</a>-->
+          <p>
+          </div>
+          <p>
+          <input type="radio" name="spiral" id="archimedean" value="archimedean" checked="checked">
+          <input type="radio" name="spiral" id="rectangular" value="rectangular">
+          <p>
+          <input type="radio" name="scale" id="scale-log" value="log" checked="checked">
+          <p><input type="text" id="font" value="Impact">
+          <div id="angles">
+          <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-60" min="-90" max="90"> °
+          <input type="number" id="angle-to" value="60" min="-90" max="90"> °
+          </div>
+          <hr>
+          <p><a href="about/">How the Word Cloud Generator Works</a>.
+          <p style="float: left">Copyright &copy; <a href="http://www.jasondavies.com/">Jason Davies</a> | <a href="../privacy/">Privacy Policy</a>. The generated word clouds may be used for any purpose.
+          </form>
 
 
 
@@ -97,6 +200,12 @@ block post-footer
     </div>
     </script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+
     script.
       pk = #{group.pk};
     script(src='/static/js/pages/group_home.js')
+    <script src="https://www.jasondavies.com/d3.min.js"></script>
+    <script type="text/javascript" src="/static/js/tasks/cloud.js"></script>

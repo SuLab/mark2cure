@@ -1,14 +1,15 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from ..document.models import Document
-from ..task.models import DocumentQuestRelationship, Task
+from ..document.models import Document, View, Annotation
+from ..task.models import DocumentQuestRelationship, Task, UserQuestRelationship
 
 from brabeion.base import Badge, BadgeAwarded
 from brabeion import badges
 from decimal import Decimal
 
 import random
+from collections import Counter
 
 
 class SkillBadge(Badge):
@@ -97,6 +98,35 @@ class Group(models.Model):
     def total_documents(self):
         # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
+
+    def doc_count(self):
+        dqr_count = len(DocumentQuestRelationship.objects.filter(task__group=self))
+        return dqr_count
+
+    def top_five_contributors(self):
+        """returns a user name list for the group"""
+        uqr = UserQuestRelationship.objects.filter(task__group=self)
+        username_list = []
+        for user in uqr:
+            # (TODO) not sure if this is the fastest approach
+            username_list.append(str.encode(str(user.user.username)))
+        counter = Counter(username_list)
+        top_five_users = [tuple_i[0] for tuple_i in counter.most_common(5)]
+        return top_five_users, username_list
+
+    def total_contributors(self):
+        """returns a user name list for the group"""
+        uqr = UserQuestRelationship.objects.filter(task__group=self)
+        username_list = []
+        for user in uqr:
+            # (TODO) not sure if this is the best approach:
+            username_list.append(str.encode(str(user.user.username)))
+        total_contributors = len(set(username_list))
+        return total_contributors
+
+    def total_annotation_count(self):
+        uqrs = UserQuestRelationship.objects.filter(task__group=self)
+        return Annotation.objects.filter(view=View.objects.filter(userquestrelationship=uqrs)).count()
 
     def current_avg_f(self, weighted=True):
         report_qs = self.report_set.filter(report_type=1).order_by('-created')

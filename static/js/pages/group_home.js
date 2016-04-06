@@ -153,3 +153,17 @@ $.ajax({
   }
 });
 
+// This doesn't work yet (TODO)
+jQuery.get('/static/data/group_release_dates.txt', function(data) {
+  var input_text = data;
+  var lines = input_text.split('\n');
+  // note this input text file has a header!
+  for(var i = 1; i < lines.length - 1; i++){
+      var group_list = [];
+      var split_line = lines[i].split("\t");
+//      console.log(split_line);
+  };
+  $(document).ready(function(){
+      $('#start-date').html('TBD');
+  });
+});
