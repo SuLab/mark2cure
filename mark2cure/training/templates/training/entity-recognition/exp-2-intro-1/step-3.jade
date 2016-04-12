@@ -1,0 +1,27 @@
+extends training/entity-recognition/exp-2-intro-1/step-base
+
+block step-instructions
+  h2.text-center Sometimes words like ‘and/or’ will interrupt a disease mention. Include all the terms if it helps to denote a specific form of the disease
+  p In the box below, mark the minimum span needed to cover the specific form of the disease (rule #2)
+
+block paragraph
+  p.paragraph The remaining 3 had inherited and/or type I diabetes mellitus .
+
+block progress
+  progress(value='25' max='100').progress.progress-striped
+    .progress
+      span(style='width: 25%;').progress-bar 25%
+
+block next-link
+  a(href='{% url "training:one" step_num=4 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
+
+block answers
+  script.
+      var help = [
+        {text: 'diabetes', msg: 'You can be more specific, try again!'},
+        {text: 'diabetes mellitus', msg: 'Almost, but you can still be more specific than that. Try again!'},
+        {text: 'type I diabetes', msg: 'Almost, but you can still be more specific than that. Try again!'},
+        {text: 'type I diabetes mellitus', msg: 'So close! You can still be more specific than that. Try again!'},
+        {text: 'inherited', msg: 'The word, "inherited" alone is not a disease. When conjunctions are separated by words like "and/or", include them in the span if they add specificity and don\'t make sense alone'},
+      ];
+      var answers = [{text: 'inherited and/or type I diabetes mellitus', start: 20}];

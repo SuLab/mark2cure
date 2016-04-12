@@ -1,0 +1,29 @@
+extends training/entity-recognition/exp-2-intro-1/step-base
+
+block step-instructions
+  h2.text-center Mark abbreviations of the disease separately from the terms they represent
+  p In the box below, mark the abbreviation (Rule #3) separately from the specific form of the disease, and use the minimum span needed to cover the specific form of the disease (rule #2)
+
+block paragraph
+  p.paragraph We will discuss the effect of different insulin regimen on type 2 diabetes mellitus patients ( ie- T2DM patients ) ...
+
+block progress
+  progress(value='37.5' max='100').progress.progress-striped
+    .progress
+      span(style='width: 37.5%;').progress-bar 37.5%
+
+block next-link
+  a(href='{% url "training:one" step_num=5 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
+
+block answers
+  script.
+      var help = [
+        {text: 'type 2 diabetes mellitus patients ( ie- T2DM patients', msg: 'Do not mark  generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'type 2 diabetes mellitus patients ( ie- T2DM', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'diabetes mellitus patients ( ie- T2DM patients', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'diabetes mellitus patients ( ie- T2DM', msg: 'Do not mark generic terms like, "patients." Whenever possible, do NOT mark abbreviations together with the term they represent'},
+        {text: 'diabetes mellitus patients', msg: 'Almost. You can be more specific than that and be sure to leave out generic terms like, "patients." '},
+        {text: 'diabetes mellitus', msg: 'Almost, but you can be more specific than that. Try again.'},
+        {text: 'mellitus', msg: 'Not quite, you can be more specific than that. Try again.'},
+      ];
+      var answers = [{text: 'type 2 diabetes mellitus', start: 59}, {text: 'T2DM', start: 99}];

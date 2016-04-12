@@ -48,13 +48,13 @@ def read(request):
 
 def introduction(request, step_num):
     if step_num == '1' or step_num is None:
-        return TemplateResponse(request, 'training/exp-2-intro-0/basics.jade')
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/basics.jade')
     if step_num == '2':
-        return TemplateResponse(request, 'training/exp-2-intro-0/step-1.jade')
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-1.jade')
     if step_num == '3':
-        return TemplateResponse(request, 'training/exp-2-intro-0/step-2.jade')
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-2.jade')
     if step_num == '4':
-        return TemplateResponse(request, 'training/exp-2-intro-0/step-3.jade')
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-3.jade')
 
 
 def award_training_badges(qualification_level, user):
@@ -74,14 +74,14 @@ def one(request, step_num):
     if step_num == 'feedback':
         award_training_badges(4, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
-        return TemplateResponse(request, 'training/exp-2-intro-1/feedback-scores.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-1/feedback-scores.jade', ctx)
 
     if step_num == 'complete':
         ctx = {'step_num': step_num}
-        return TemplateResponse(request, 'training/exp-2-intro-1/completed-review.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-1/completed-review.jade', ctx)
 
     ctx = {'step_num': step_num}
-    return TemplateResponse(request, 'training/exp-2-intro-1/step-{step_num}.jade'.format(step_num=step_num), ctx)
+    return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-1/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 
 @login_required
@@ -89,14 +89,14 @@ def two(request, step_num):
     if step_num == 'feedback':
         award_training_badges(5, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
-        return TemplateResponse(request, 'training/exp-2-intro-2/feedback-scores.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-2/feedback-scores.jade', ctx)
 
     if step_num == 'complete':
         ctx = {'step_num': step_num}
-        return TemplateResponse(request, 'training/exp-2-intro-2/completed-review.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-2/completed-review.jade', ctx)
 
     ctx = {'step_num': step_num}
-    return TemplateResponse(request, 'training/exp-2-intro-2/step-{step_num}.jade'.format(step_num=step_num), ctx)
+    return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-2/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 
 @login_required
@@ -104,14 +104,14 @@ def three(request, step_num):
     if step_num == 'feedback':
         award_training_badges(6, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
-        return TemplateResponse(request, 'training/exp-2-intro-3/feedback-scores.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-3/feedback-scores.jade', ctx)
 
     if step_num == 'complete':
         ctx = {'step_num': step_num}
-        return TemplateResponse(request, 'training/exp-2-intro-3/completed-review.jade', ctx)
+        return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-3/completed-review.jade', ctx)
 
     ctx = {'step_num': step_num}
-    return TemplateResponse(request, 'training/exp-2-intro-3/step-{step_num}.jade'.format(step_num=step_num), ctx)
+    return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-3/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 
 @login_required
@@ -122,7 +122,7 @@ def four(request, step_num):
         return redirect('common:dashboard')
 
     ctx = {'step_num': step_num}
-    return TemplateResponse(request, 'training/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
+    return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 @login_required
 def relation_training(request, part_num=1, step_num=1):

@@ -1,0 +1,29 @@
+extends training/entity-recognition/exp-2-intro-0/step-base
+
+block step-instructions
+  h2.text-center Rule #2 – Mark the minimum span needed to capture the entire concept
+  p In the box below, <u>mark every instance of the concept</u> using the shortest span needed to capture the entire concept
+  p In this text, there are three concepts to highlight: the phrase, <strong>can read</strong>; the phrase, <strong> is willing to learn</strong>; and the phrase, <strong>wants to help</strong>.
+
+block paragraph
+  p.paragraph In Mark2Cure , you don’t need a biomedical background to be able to help .  The criteria for a good Mark2Curator is someone who: can read , is willing to learn , and wants to help .
+
+block progress
+  progress(value='66' max='100').progress.progress-striped
+    .progress
+      span(style='width: 66%;').progress-bar 66%
+
+block next-link
+  a(href='{% url "training:introduction" step_num=4 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
+
+block answers
+  script.
+    var help = [
+      {text: 'help', msg: 'The concept has changed.  Mark the phrases mentioned above.'},
+      {text: 'can read , is willing to learn , and wants to help', msg: 'Mark each phrase in a separate span. (ie- leave out the commas)'},
+      {text: 'read', msg: 'mark the whole phrase, eg- "can read"'},
+      {text: 'and wants to help', msg: 'just highlight "wants to help"'},
+      {text: 'willing to learn', msg: 'mark the whole phrase, eg- "is willing to learn"'},
+      {text: 'to learn', msg: 'mark the whole phrase, eg- "is willing to learn"'},
+      {text: 'learn', msg: 'mark the whole phrase, eg- "is willing to learn"'}];
+      var answers = [{text: 'can read', start: 129}, {text: 'is willing to learn', start: 140}, {text: 'wants to help', start: 166}];

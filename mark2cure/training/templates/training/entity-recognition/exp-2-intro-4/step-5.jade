@@ -1,0 +1,77 @@
+extends training/entity-recognition/exp-2-intro-4/step-base-multi
+
+block step-instructions
+  div(id='instructions-p1')
+    h2.text-center Rather than starting from scratch, docs in this campaign may be pre-populated with annotations done by a computer algorithm
+    p Do NOT assume the algorithm’s annotations are correct (Eg- Nitric Oxide is a drug, but was missed).
+    p The machine is just there to (hopefully) reduce the amount of clicking you must do.
+    p Please correct the annotations as you see fit.
+
+  div(id='instructions-p2', style='display:none;')
+    h2 After you submit your markings, you will receive feedback on how well your markings matched those of your partner’s.
+    p Your partner’s markings will use the same color coding, but will be presented as underlines
+
+    .row
+      .col-xs-8.col-xs-offset-2
+        .alert.alert-info
+          .row
+            .col-xs-12
+              p.text-center.lead Good job! Now compare what you marked with what your partner marked. Your partner’s markings will follow the same color coding as yours, but will be represented as underlines. Did you manage to mark everything that needed to be marked? If not, feel free to try again, until you're satisfied with your work
+              .col-xs-4.col-xs-offset-2
+                button(onclick="location.reload()").btn.btn-info.btn-block Refresh
+
+              .col-xs-4.col-xs-offset-0
+                a(href='{% url "training:four" step_num="feedback" %}').btn.btn-block.btn-default.pull-right Submit
+
+block progress
+  progress(value='80' max='100').progress.progress-striped
+    .progress
+      span(style='width: 80%;').progress-bar 80%
+
+block next-link
+  a(href='{% url "training:four" step_num="feedback" %}', id='next').btn.btn-primary.pull-right Next
+
+block ypet
+  script.
+    var self_data;
+    YPet.addInitializer(function(options) {
+
+      /* data fetches the original document and annotations */
+      $.getJSON('/static/bioc/training/exp-2-intro-4/step-5.json', function( data ) {
+          self_data = data;
+          var passages = data.collection.document.passage;
+          var regions = {};
+          _.each(passages, function(passage, passage_idx) {
+            $('#paragraphs').append('<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box"><p class="paragraph"></p></div></div>');
+            regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+          });
+          YPet.addRegions(regions);
+
+          _.each(passages, function(passage, passage_idx) {
+            var p = new Paragraph({'text': passage.text});
+            YPet[''+passage_idx].show( new WordCollectionView({
+              collection: p.get('words'),
+              passage_json: passage,
+              bioc_json: data
+            }) );
+          });
+
+      });
+    });
+    YPet.start();
+
+    $('#next').one('click', function(evt) {
+        evt.preventDefault();
+        window.scrollTo(0,0);
+        $.getJSON('/static/bioc/training/exp-2-intro-4/step-5-partner.json', function( data ) {
+          partner_data = data;
+          var passages = data.collection.document.passage;
+          _.each(passages, function(passage, passage_idx) {
+            YPet[passage_idx].currentView.drawBioC(passage, true);
+          });
+        });
+        $('#instructions-p1').hide();
+        $('#instructions-p2').show();
+        $('#next').html('Next');
+    });
+

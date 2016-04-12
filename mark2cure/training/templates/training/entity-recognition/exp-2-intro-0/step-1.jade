@@ -1,0 +1,24 @@
+extends training/entity-recognition/exp-2-intro-0/step-base
+
+block step-instructions
+  h2.text-center Rule #1 – Mark EVERY mention of the concept in the text
+  p A concept is something that you will be asked to look for in a text. Don’t worry, you will learn how to identify different concepts later.
+  p In the box below, mark every instance of the concept
+  p In this case, the concept is: the word, <strong>‘help’</strong>
+
+
+block paragraph
+  p.paragraph In Mark2Cure , you don’t need a biomedical background to be able to help . The criteria for a good Mark2Curator is someone who: can read , is willing to learn , and wants to help .
+
+block progress
+  progress(value='33' max='100').progress.progress-striped
+    .progress
+      span(style='width: 33%;').progress-bar 33%
+
+block next-link
+  a(href='{% url "training:introduction" step_num=3 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
+
+block answers
+  script.
+      var help = [{text: '*', msg: 'The concept is the word, "help". Just mark the word, "help"'}];
+      var answers = [{text:'help', start: 68}, {text:'help', start: 174}];

@@ -1,0 +1,29 @@
+extends training/entity-recognition/exp-2-intro-1/step-base
+
+block step-instructions
+  h2.text-center A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
+  p In the box below, mark every instance of the disease (rule #1)
+
+block paragraph
+  p.paragraph To assess the management of diabetes , we reviewed the records of 20 diabetes patients .
+
+block progress
+  progress(value='0' max='100').progress.progress-striped
+    .progress
+      span(style='width: 0%;').progress-bar 0%
+
+block next-link
+  a(href='{% url "training:one" step_num=2 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
+
+block answers
+  script.
+      $('#Training1Modal').modal('show');
+      var help = [
+        {text: 'patients', msg: 'Do not mark general terms such as ‘patients’. Just mark the disease'},
+        {text: 'diabetes patients', msg: 'Almost! Do not mark general terms such as ‘patients’. Just mark the disease'}
+      ];
+      var answers = [
+        {text: 'diabetes', start: 28},
+        {text: 'diabetes', start: 69}
+      ];
+
