@@ -10,6 +10,19 @@ block intro-content
         strong Use the menu in the box below to help relate the two concepts:
 
 
+    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
+      .modal-dialog.modal-md
+        .modal-content
+          .modal-body
+            .list-group.text-center
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+              button(type='button', data-dismiss='modal').list-group-item.current
+                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Rules for Relationship Extraction
+              .list-group-item.locked.disabled
+                | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
+
+
 block navigation
 
   .row.m-t-md
@@ -29,6 +42,7 @@ block interactive
 
 
   script.
+
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
 
@@ -43,7 +57,7 @@ block interactive
           "id": "0"
         },
         "c1": {
-          "text": "methylprednisolone",
+          "text": "methyl-prednisolone",
           "type": "c",
           "id": "0"
         }
@@ -81,19 +95,82 @@ block post-footer
   script(src="/static/js/tasks/relation-training.js")
 
   script.
+    var event_counter = 0;
     var passages, regions, tmp_passages;
+
+    Tree['convoChannel'].on('start', function(obj) {
+      if(event_counter==0) {
+        $relates_el = $('ul.list-group a:nth(0)');
+        $relates_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Click on the \'relates to\' box';
+          },
+          placement: 'left'
+        });
+        $relates_el.popover('show');
+      }
+      event_counter++;
+    });
+
+
+    Tree['convoChannel'].on('back', function(obj) {
+      $('.popover').popover('dispose');
+      $relates_el = $('ul.list-group a:nth(0)');
+      $relates_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'Once again, click on the \'relates to\' box';
+        },
+        placement: 'left'
+      });
+      $relates_el.popover('show');
+    });
+
 
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
       if(current_selection.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
-        console.log('Step 1');
+
+        $('.popover').popover('dispose');
+        $treats_el = $('ul.list-group a:nth(1)');
+        $treats_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'When you make a selection, more options may become available. Remember, only select the relationship based on the text below. <br /><strong>Select \'treats\' to continue</strong>';
+          },
+          placement: 'left'
+        });
+        $treats_el.popover('show');
       };
 
       if(current_selection.get('id') == 'jilhvc5p2cy0atls8659a1fggjvvkmahwuspy2kr') {
-        console.log('Step 2');
+        $('.popover').popover('dispose');
         $('#next-button').show();
+        $next_el = $('#next-button');
+        $next_el.popover('hide');
+        $next_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Remember, you can always go back to your previous selection by clicking on the text of your current selection. <br />Click on \'submit\' to continue'
+          },
+          placement: 'top'
+        });
+        $next_el.popover('show');
       }
 
     });
 
+  script.
+    $(window).load(function(){
+      $('#relation-training-progress').modal('show');
+    });

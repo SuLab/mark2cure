@@ -25,6 +25,7 @@ block interactive
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
+    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
@@ -73,3 +74,32 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
+
+  script.
+
+    $el = $('#c1');
+    $el.popover('hide');
+    $el.popover({
+      container: 'body',
+      html: true,
+      animation: false,
+      content: function() {
+          return 'Concepts in green are Genes or Gene Products';
+      },
+      placement: 'top'
+    });
+    $el.popover('show');
+
+    $el2 = $('#c2');
+    $el2.popover('hide');
+    $el2.popover({
+      container: 'body',
+      html: true,
+      animation: false,
+      content: function() {
+          return 'Concepts in blue are disease concepts';
+      },
+      placement: 'top'
+    });
+    $el2.popover('show');
+

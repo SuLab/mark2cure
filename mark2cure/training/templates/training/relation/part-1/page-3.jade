@@ -23,6 +23,7 @@ block interactive
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
+    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
@@ -71,3 +72,18 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
+
+  script.
+
+    $el = $('#c1');
+    $el.popover('hide');
+    $el.popover({
+      container: 'body',
+      html: true,
+      animation: false,
+      content: function() {
+          return 'Concepts in pink are drug concepts';
+      },
+      placement: 'top'
+    });
+    $el.popover('show');

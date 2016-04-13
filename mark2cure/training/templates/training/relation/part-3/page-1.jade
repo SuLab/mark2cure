@@ -16,9 +16,28 @@ block intro-content
       a(href='{% url "training:relation-training" part_num=3 step_num=2 %}').btn.btn-primary Start Now
 
 
+    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
+      .modal-dialog.modal-md
+        .modal-content
+          .modal-body
+            .list-group.text-center
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
+              button(type='button', data-dismiss='modal').list-group-item.current
+                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad
+
+
 block interactive
 
 
 
 block navigation
 
+
+block post-footer
+  script.
+    $(window).load(function(){
+      $('#relation-training-progress').modal('show');
+    });

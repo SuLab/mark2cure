@@ -19,7 +19,21 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=25 %}').btn.btn-primary Next
+      a(id='next-button', style='display:none;', data-toggle='modal', data-target='#relation-training-progress').btn.btn-primary Next
+
+    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
+      .modal-dialog.modal-md
+        .modal-content
+          .modal-body
+            .list-group.text-center
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Learn new relationships: Broad
+              a(href='{% url "common:dashboard" %}').list-group-item.current
+                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Visit the Relationships Dashboard
 
 
 block interactive
