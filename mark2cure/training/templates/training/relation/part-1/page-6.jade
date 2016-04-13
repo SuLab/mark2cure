@@ -15,7 +15,7 @@ block intro-content
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', href='{% url "training:relation-training" part_num=1 step_num=6 %}').btn.btn-primary Next
+      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=2 step_num=1 %}').btn.btn-primary Submit
 
 
 block navigation
@@ -32,7 +32,6 @@ block interactive
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
-    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
@@ -81,3 +80,78 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
+
+  script.
+    var event_counter = 0;
+
+    Tree['convoChannel'].on('start', function(obj) {
+      if(event_counter==0) {
+        $relates_el = $('ul.list-group a:nth(0)');
+        $relates_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Click on the \'relates to\' box';
+          },
+          placement: 'left'
+        });
+        $relates_el.popover('show');
+      }
+      event_counter++;
+    });
+
+    Tree['convoChannel'].on('back', function(obj) {
+      $('.popover').popover('dispose');
+      $relates_el = $('ul.list-group a:nth(0)');
+      $relates_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'Once again, click on the \'relates to\' box';
+        },
+        placement: 'left'
+      });
+      $relates_el.popover('show');
+
+
+    });
+
+    /* When an item is selected */
+    Tree['convoChannel'].on('click', function(obj) {
+      console.log(event_counter);
+      var current_selection = Tree.start.currentView.options.choice;
+      if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+        $('.popover').popover('dispose');
+
+        if (event_counter == 1) {
+          $relation_el = $('#relation');
+          $relation_el.popover({
+            container: 'body',
+            html: true,
+            animation: false,
+            content: function() { return 'In this case, \'Relates to\' has been selected. <strong>Click on the term \'Relates to\' to return to the previous menu.'; },
+            placement: 'top'
+          });
+          $relation_el.popover('show');
+        }
+
+        if (event_counter == 3) {
+          $('#next-button').show();
+
+          $next_el = $('#next-button');
+          $next_el.popover('hide');
+          $next_el.popover({
+            container: 'body',
+            html: true,
+            animation: false,
+            content: function() { return 'Click \'submit\' to submit to confirm your selection'; },
+            placement: 'top'
+          });
+          $next_el.popover('show');
+        }
+
+
+      }
+    });

@@ -1,5 +1,19 @@
 #tree-insert {
 
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 4px solid #e7e7e7;
+  position: relative;
+
+  #tree-cover {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+  }
+
   .list-group {
     .list-group-item {
       color: $color_gray_dark;
@@ -10,12 +24,6 @@
 
 }
 
-#tree-insert {
-  margin-top: 30px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 4px solid #e7e7e7;
-}
 
 #tree {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;

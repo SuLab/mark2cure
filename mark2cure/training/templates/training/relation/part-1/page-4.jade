@@ -14,7 +14,7 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=4 %}').btn.btn-primary Next
+      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=5 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -82,6 +82,43 @@ block post-footer
       var current_selection = Tree.start.currentView.options.choice;
       if(current_selection.get('id') == 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer') {
         $('#next-button').show();
+      };
+    });
+
+    $el = $('#c2');
+    $el.popover('hide');
+    $el.popover({
+      container: 'body',
+      html: true,
+      animation: false,
+      content: function() {
+        return 'BRCA1 is a genes concept, not a disease one.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
+      },
+      placement: 'top'
+    });
+    $el.popover('show');
+
+    var passages, regions, tmp_passages;
+
+    /* When an item is selected */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2') {
+        $('#next-button').show();
+
+        $('.popover').popover('dispose');
+        $next_el = $('#next-button');
+        $next_el.popover('hide');
+        $next_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Click submit to confirm that you are reporting an error';
+          },
+          placement: 'right'
+        });
+        $next_el.popover('show');
+
       };
     });
 

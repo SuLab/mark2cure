@@ -2,6 +2,19 @@ Tree.addInitializer(function(options) {
   Tree.addRegions({'start': '#tree-insert'});
   Backbone.Radio.DEBUG = true;
   Tree['convoChannel'] = Backbone.Radio.channel('convo');
+
+  Tree['start'].onShow = function(m, c) {
+    if(relation_task_settings['fade']) {
+      c.$el.css({'opacity': .25});
+      c.$el.append('<div id="tree-cover"></div>');
+    }
+
+    setTimeout(function() {
+      Tree['convoChannel'].trigger('start', '');
+    }, 500);
+
+  }
+
 });
 
 
@@ -107,6 +120,8 @@ RelationTaskCollection = Backbone.Collection.extend({
         Tree['start'].show(rcv);
         submit_status();
         add_relation_classes(current_relationship);
+
+
       });
 
     } else {
