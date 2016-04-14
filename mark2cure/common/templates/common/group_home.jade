@@ -73,93 +73,98 @@ block content
                 .progress
                   span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
 
-          #group-network.container-fluid
+
+  #group-network.container-fluid
+    .row
+      .col-xs-4.col-xs-offset-4
+        a
+          h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
+
+    #network-row(style="height:800px;display:none;").row
+      .col-xs-1
+        .row
+          .col-xs-12
+            i.fa.fa-plus-circle
+          .col-xs-12
+            i.fa.fa-minus-circle
+          .col-xs-12
+            i.fa.fa-rotate-right
+      .col-xs-11
+        #network(style="height:800px;")
+
+  .container
+    .row
+      .col-md-10.col-md-offset-1.m-t-md
+
+        - if user.username
+          .container(style="padding-bottom: 20px")
             .row
-              .col-xs-4.col-xs-offset-4
-                a
-                  h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
+              .col-md-10.col-md-offset-1
+                #group-selection
 
-            #network-row(style="height:800px;display:none;").row
-              .col-xs-1
-                .row
-                  .col-xs-12
-                    i.fa.fa-plus-circle
-                  .col-xs-12
-                    i.fa.fa-minus-circle
-                  .col-xs-12
-                    i.fa.fa-rotate-right
-              .col-xs-11
-                #network(style="height:800px;")
+        h5 top five doc set contributors:
+        ul
+          - for name in top_five
+            li
+              p {{ name }}
 
-          - if user.username
-            .container(style="padding-bottom: 20px")
-              .row
-                .col-md-10.col-md-offset-1
-                  #group-selection
+        h5 total number of doc set contributors:
+        p {{ group.total_contributors }}
 
-          h5 Top five doc set contributors:
-          ul
-            - for name in top_five
-              li
-                p {{ name }}
+        h5 total docs in doc set:
+        p {{ group.doc_count }}
 
-          h5 Total number of doc set contributors:
-          p {{ group.total_contributors }}
+        h5 current average f-score:
+        p {{ group.current_avg_f|floatformat:3 }}
 
-          h5 Total docs in doc set:
-          p {{ group.doc_count }}
+        h5 doc set start date:
+        #start-date
 
-          h5 Current average F-Score:
-          p {{ group.current_avg_f|floatformat:3 }}
+        h5 doc set end date:
+        - if group.enabled
+          p in progress
+        - else
+          #end-date
 
-          h5 Doc set start date:
-          #start-date
-
-          h5 Doc set end date:
-          - if group.enabled
-            p In progress
-          - else
-            #end-date
-
-          h5 Total doc set annotations:
-          p {{ group.total_annotation_count }}
+        h5 total doc set annotations:
+        p {{ group.total_annotation_count }}
 
 
-          h5 Top contributor word cloud:
-          p
-          <div id="vis"></div>
-          <form id="form" style="display: none">
-          <p id="status"></p>
-          <div>
-          <div id="presets"></div>
-          <div id="custom-area">
-          <p>
-          <p><textarea id="text"> {{ username_list }}
-          </textarea>
-          <button id="go" type="submit"></button>
-          </div>
-          </div>
-          <hr>
-          <div>
-          <p><input type="number" value="250" min="1" id="max">
-          <p><input type="checkbox" id="per-line">
-          <!--<p><label for="colours">Colours:</label> <a href="#" id="random-palette">get random palette</a>-->
-          <p>
-          </div>
-          <p>
-          <input type="radio" name="spiral" id="archimedean" value="archimedean" checked="checked">
-          <input type="radio" name="spiral" id="rectangular" value="rectangular">
-          <p>
-          <input type="radio" name="scale" id="scale-log" value="log" checked="checked">
-          <p><input type="text" id="font" value="Impact">
-          <div id="angles">
-          <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-60" min="-90" max="90"> °
-          <input type="number" id="angle-to" value="60" min="-90" max="90"> °
-          </div>
-          <hr>
-          <p><a href="about/">How the Word Cloud Generator Works</a>.
-          <p style="float: left">Copyright &copy; <a href="http://www.jasondavies.com/">Jason Davies</a> | <a href="../privacy/">Privacy Policy</a>. The generated word clouds may be used for any purpose.
-          </form>
+        h5 top contributor word cloud:
+        p
+        <div id="vis"></div>
+        <form id="form" style="display: none">
+        <p id="status"></p>
+        <div>
+        <div id="presets"></div>
+        <div id="custom-area">
+        <p>
+        <p><textarea id="text"> {{ username_list }}
+        </textarea>
+        <button id="go" type="submit"></button>
+        </div>
+        </div>
+        <hr>
+        <div>
+        <p><input type="number" value="250" min="1" id="max">
+        <p><input type="checkbox" id="per-line">
+        <!--<p><label for="colours">colours:</label> <a href="#" id="random-palette">get random palette</a>-->
+        <p>
+        </div>
+        <p>
+        <input type="radio" name="spiral" id="archimedean" value="archimedean" checked="checked">
+        <input type="radio" name="spiral" id="rectangular" value="rectangular">
+        <p>
+        <input type="radio" name="scale" id="scale-log" value="log" checked="checked">
+        <p><input type="text" id="font" value="impact">
+        <div id="angles">
+        <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-60" min="-90" max="90"> °
+        <input type="number" id="angle-to" value="60" min="-90" max="90"> °
+        </div>
+        <hr>
+        <p><a href="about/">how the word cloud generator works</a>.
+        <p style="float: left">copyright &copy; <a href="http://www.jasondavies.com/">jason davies</a> | <a href="../privacy/">privacy policy</a>. the generated word clouds may be used for any purpose.
+        </form>
 
 
 
