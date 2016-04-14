@@ -62,7 +62,7 @@ block content
             span
           - else
             - if group.enabled
-              h4 This doc set needs your help. Please login <a href="/registration/login/">here</a>.
+              h4 This doc set needs your help. <a href="/registration/login/">Please sign in here</a>.
 
         .col-md-10.col-md-offset-1.m-t-md
           - with progress=group.percentage_complete
@@ -118,13 +118,13 @@ block content
         p {{ group.current_avg_f|floatformat:3 }}
 
         h5 doc set start date:
-        #start-date
+        p {{ start_date }}
 
         h5 doc set end date:
         - if group.enabled
           p in progress
         - else
-          #end-date
+          p {{ end_date }}
 
         h5 total doc set annotations:
         p {{ group.total_annotation_count }}
