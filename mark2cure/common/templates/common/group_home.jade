@@ -9,7 +9,7 @@ extends base
 
 block header
   - with headerMessage='Doc Set Details'
-      - if user.username
+      - if user.is_authenticated
         include includes/header
       - else
         include includes/header-annonymous
@@ -58,7 +58,7 @@ block content
           h2.text-center {{ group.name }}
           p.lead #{group.description}
 
-          - if user.username
+          - if user.is_authenticated
             span
           - else
             - if group.enabled
@@ -96,7 +96,7 @@ block content
     .row
       .col-md-10.col-md-offset-1.m-t-md
 
-        - if user.username
+        - if user.is_authenticated
           .container(style="padding-bottom: 20px")
             .row
               .col-md-10.col-md-offset-1
