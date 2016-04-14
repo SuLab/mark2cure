@@ -63,7 +63,8 @@ class QuestSerializer(serializers.ModelSerializer):
         # Don't pass the 'fields' arg up to the superclass
         context = kwargs.pop('context', {})
         user = context.get('user', None)
-        self.user_highest_level = user.profile.highest_level('skill').level
+        if user.is_authenticated():
+            self.user_highest_level = user.profile.highest_level('skill').level
 
         # Instantiate the superclass normally
         super(QuestSerializer, self).__init__(*args, **kwargs)
@@ -72,8 +73,12 @@ class QuestSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField('get_progress_status')
 
     def get_user_status(self, task):
-        return {'enabled': self.user_highest_level >= task.requires_qualification,
-                'completed': task.user_completed > 0}
+        if hasattr(task, 'user_completed'):
+            return {'enabled': self.user_highest_level >= task.requires_qualification,
+                    'completed': task.user_completed > 0}
+        else:
+            return {'enabled': False,
+                    'completed': False}
 
     def get_progress_status(self, task):
         return {'required': task.completions if task.completions else 10000,

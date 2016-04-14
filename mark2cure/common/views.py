@@ -65,6 +65,8 @@ def group_view(request, group_stub):
            'username_list': username_list}
     return TemplateResponse(request, 'common/group_home.jade', ctx)
 
+
+#(TODO) group_network.jade does not exist. Remove this view?
 @login_required
 def group_network(request, group_stub):
     group = get_object_or_404(Group, stub=group_stub)

@@ -51,8 +51,6 @@ def node_link_data(G, attrs=_attrs):
     return data
 
 
-@login_required
-@cache_page(60 * 60 * 2)
 def group_network(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
@@ -118,19 +116,30 @@ def analysis_group(request, group_pk):
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
-    queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
-        "current_submissions_count": """
-            SELECT COUNT(*) AS current_submissions_count
-            FROM task_userquestrelationship
-            WHERE (task_userquestrelationship.completed = 1
-                AND task_userquestrelationship.task_id = task_task.id)""",
-        "user_completed": """
-            SELECT COUNT(*) AS user_completed
-            FROM task_userquestrelationship
-            WHERE (task_userquestrelationship.completed = 1
-                AND task_userquestrelationship.user_id = %d
-                AND task_userquestrelationship.task_id = task_task.id)""" % (request.user.pk,)
-    }).prefetch_related('documents')
+    # we now allow users to see a group 'home page' for detailed information whether or
+    # not they are logged in
+    if request.user.is_authenticated():
+        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+            "current_submissions_count": """
+                SELECT COUNT(*) AS current_submissions_count
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)""",
+            "user_completed": """
+                SELECT COUNT(*) AS user_completed
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.user_id = %d
+                    AND task_userquestrelationship.task_id = task_task.id)""" % (request.user.pk,)
+        }).prefetch_related('documents')
+    else:
+        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+            "current_submissions_count": """
+                SELECT COUNT(*) AS current_submissions_count
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)"""
+        }).prefetch_related('documents')
 
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
