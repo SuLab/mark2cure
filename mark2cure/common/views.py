@@ -80,15 +80,11 @@ def group_view(request, group_stub):
     "HSPT1": {"invite": "", "public": "", "closed": ""},
     }
 
-    # (TODO) need try/except here if dates aren't in dict above.
     try:
         start_date = group_date_dict[group.stub]['invite']
-    except:
-        start_date = ""
-
-    try:
         end_date = group_date_dict[group.stub]['closed']
     except:
+        start_date = ""
         end_date = ""
 
     ctx = {'group': group,
