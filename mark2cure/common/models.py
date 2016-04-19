@@ -138,7 +138,10 @@ class Group(models.Model):
 
             if weighted:
                 df['wf'] = df['pairings'] * df['f-score']
-                return df['wf'].sum() / df['pairings'].sum()
+                try:
+                    return df['wf'].sum() / df['pairings'].sum()
+                except ZeroDivisionError:
+                    return 0.0
             else:
                 return df['f-score'].mean()
 
