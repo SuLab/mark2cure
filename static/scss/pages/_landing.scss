@@ -361,3 +361,150 @@
     min-height: 80px;
   }
 }
+
+.home-frame {
+
+.container {
+  margin: 0 auto;
+}
+
+
+/* Example wrapper */
+
+.wrap {
+  position: relative;
+  margin: 3em 0;
+}
+
+
+/* Frame */
+
+.frame {
+  height: 250px;
+  line-height: 250px;
+  overflow: hidden;
+}
+
+.frame ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 20px;
+}
+
+.frame ul li {
+  float: left;
+  width: 230px;
+  height: 100%;
+  margin: 0 1px 0 0;
+  padding: 0;
+  color: #ddd;
+  text-align: center;
+  cursor: pointer;
+}
+
+.frame ul li.active {
+  color: #fff;
+  background: #f7f7f9;
+}
+
+
+/* Scrollbar */
+
+.scrollbar {
+  margin: 0 0 1em 0;
+  height: 5px;
+  background: #ccc;
+  line-height: 50px;
+}
+
+.scrollbar .handle {
+  width: 50px;
+  height: 100%;
+  background: #818a91;
+  cursor: pointer;
+}
+
+.scrollbar .handle .mousearea {
+  position: absolute;
+  top: -9px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+
+/* Pages */
+
+.pages {
+  list-style: none;
+  margin: 20px 0;
+  padding: 0;
+  text-align: center;
+}
+
+.pages li {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 4px;
+  text-indent: -999px;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .2);
+}
+
+.pages li:hover {
+  background: #aaa;
+}
+
+.pages li.active {
+  background: #666;
+}
+
+
+/* Controls */
+
+.controls {
+  margin: 25px 0;
+  text-align: center;
+}
+
+
+/* One Item Per Frame example*/
+
+.oneperframe {
+  height: 300px;
+  line-height: 300px;
+}
+
+.oneperframe ul li {
+  width: 1140px;
+}
+
+.oneperframe ul li.active {
+  background: #333;
+}
+
+
+/* Crazy example */
+
+.crazy ul li:nth-child(2n) {
+  width: 100px;
+  margin: 0 4px 0 20px;
+}
+
+.crazy ul li:nth-child(3n) {
+  width: 300px;
+  margin: 0 10px 0 5px;
+}
+
+.crazy ul li:nth-child(4n) {
+  width: 400px;
+  margin: 0 30px 0 2px;
+}
+
+}

@@ -90,6 +90,7 @@ class Group(models.Model):
     order = models.DecimalField(default=0, max_digits=3, decimal_places=3)
 
     enabled = models.BooleanField(default=False)
+    completed = models.BooleanField(default=False)
 
     def get_documents(self):
         # (TODO?) Return for __in of task_ids
