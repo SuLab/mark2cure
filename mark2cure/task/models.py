@@ -3,6 +3,23 @@ from django.db import models
 
 from ..document.models import Document, View
 
+class Level(models.Model):
+    user = models.ForeignKey(User)
+
+    TASK_TYPE_CHOICES= (
+        ('e', 'Entity Recognition'),
+        ('r', 'Relation'),
+    )
+    task_type = models.CharField(max_length=1, choices=TASK_TYPE_CHOICES)
+    level = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    #created = models.DateTimeField()
+
+    class Meta:
+        get_latest_by = 'created'
+        ordering = ('-level', )
+
+
 
 class Task(models.Model):
     name = models.CharField(max_length=200)

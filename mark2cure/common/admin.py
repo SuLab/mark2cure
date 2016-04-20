@@ -9,7 +9,7 @@ class GroupAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description', 'stub']
 
     list_display = ('name', 'order', 'mean_f',
-                    'enabled', 'completed', 'stub', 'description',
+                    'enabled', 'stub', 'description',
                     'tasks', 'total_documents')
 
     def tasks(self, obj):

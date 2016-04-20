@@ -8,6 +8,8 @@ from ..task.models import Task, UserQuestRelationship
 from mark2cure.score.models import Point
 from ..task.relation import relation_data
 
+from ..task.models import Level
+
 from brabeion import badges
 
 import json
@@ -16,11 +18,15 @@ import os
 
 @login_required
 def route(request):
-    user_level = request.user.profile.highest_level('skill').level
+    user_level = Level.objects.filter(user=request.user, task_type='e').first().level
+    print 'asdfasdfasdf', user_level
+
     if user_level <= 3:
         task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
     else:
         task = Task.objects.filter(kind=Task.TRAINING, requires_qualification=user_level).first()
+
+    print task
 
     if task:
         return redirect(task.meta_url)
@@ -36,7 +42,7 @@ def read(request):
 
     tasks = Task.objects.filter(kind=Task.TRAINING).all()
     for task in tasks:
-        setattr(task, 'enabled', profile.highest_level('skill').level >= task.requires_qualification if request.user.is_authenticated() else False)
+        setattr(task, 'enabled', Level.objects.filter(user=request.user, task_type='e').first().level >= task.requires_qualification if request.user.is_authenticated() else False)
         setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists() if request.user.is_authenticated() else False)
 
         if task.pk == 1:
@@ -66,7 +72,7 @@ def award_training_badges(qualification_level, user):
     content_type = ContentType.objects.get_for_model(task)
     Point.objects.create(user=user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
 
-    badges.possibly_award_badge("skill_awarded", user=user, level=task.provides_qualification, force=True)
+    Level.objects.create(user=user, task_type='e', level=task.provides_qualification, created=timezone.now())
 
 
 @login_required
@@ -124,7 +130,6 @@ def four(request, step_num):
     ctx = {'step_num': step_num}
     return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
-@login_required
 def relation_training(request, part_num=1, step_num=1):
     part = int(part_num)
     step = int(step_num)

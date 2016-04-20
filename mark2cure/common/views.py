@@ -8,6 +8,7 @@ from django.contrib.messages import get_messages
 from django.contrib import messages
 
 from ..userprofile.models import UserProfile
+from ..task.models import Level
 from .models import Group
 from .forms import SupportMessageForm
 
@@ -25,9 +26,18 @@ def home(request):
               "Goofing off productively.",
               "Community.", "Science!"]
     random.shuffle(quotes)
-    groups = Group.objects.all().exclude(name='Practice').order_by('completed')
+    groups = Group.objects.all().exclude(name='Practice').order_by('enabled')
     ctx = {'form': form, 'quotes': quotes, 'groups': groups}
     return TemplateResponse(request, 'common/landing2.jade', ctx)
+
+
+def get_started(request):
+    return redirect('training:introduction', step_num=1)
+
+    if Level.objects.filter(level=7, task_type='e').count() > Level.objects.filter(level=7, task_type='r').count():
+        return redirect('training:relation-training', part_num=1, step_num=1)
+    else:
+        return redirect('training:introduction', step_num=1)
 
 
 def beta(request):
@@ -42,7 +52,7 @@ def why_mark2cure(request):
 @login_required
 def dashboard(request):
     # We redirect user to the training route if their skill is not level 7
-    if not request.user.profile.highest_level("skill").level == 7:
+    if not Level.objects.filter(user=request.user, task_type='e', level=7).exists():
         return redirect('training:route')
 
     welcome = False

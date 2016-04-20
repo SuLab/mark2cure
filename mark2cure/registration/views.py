@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
 
-from ..task.models import Task, UserQuestRelationship
+from ..task.models import Level, Task, UserQuestRelationship
 from mark2cure.userprofile.forms import UserProfileForm
 from mark2cure.score.models import Point
 
@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.views import password_reset, password_reset_confirm
 from django.utils.translation import ugettext as _
 
+from django.utils import timezone
 from datetime import datetime
 from urllib import urlencode
 from brabeion import badges
@@ -36,14 +37,11 @@ def user_creation(request):
             password=request.POST['password1'])
         auth_login(request, user)
 
-        # In order to create an account they've already done the
-        # first 2 training Tasks
+        # (TODO) Needs to know what training they're coming from
         task = Task.objects.first()
-
-        badges.possibly_award_badge('skill_awarded', user=user, level=task.provides_qualification)
+        Level.objects.create(user=user, task_type='e', level=task.provides_qualification, created=timezone.now())
 
         from django.contrib.contenttypes.models import ContentType
-        from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
         Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
 

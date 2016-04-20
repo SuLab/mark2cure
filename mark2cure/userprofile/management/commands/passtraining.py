@@ -4,6 +4,8 @@ from mark2cure.common.models import Task, UserQuestRelationship
 from brabeion import badges
 from mark2cure.score.models import Point
 
+from mark2cure.task.models import Level
+
 import os
 
 
@@ -14,26 +16,26 @@ class Command(BaseCommand):
         user = User.objects.get(username=args[0])
         print user
 
-
-        badges.possibly_award_badge("skill_awarded", user=user, level=1)
-
-        task = Task.objects.first()
         # Required importing
         from django.contrib.contenttypes.models import ContentType
         from django.utils import timezone
+
+        Level.objects.create(user=user, task_type='e', level=1, created=timezone.now())
+
+        task = Task.objects.first()
         content_type = ContentType.objects.get_for_model(task)
 
         Point.objects.create(user=user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
         UserQuestRelationship.objects.create(task=task, user=user, completed=True)
-        badges.possibly_award_badge("skill_awarded", user=user, level=2)
+        Level.objects.create(user=user, task_type='e', level=2, created=timezone.now())
 
         task = Task.objects.get(pk=2)
         UserQuestRelationship.objects.create(task=task, user=user, completed=True)
         Point.objects.create(user=user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
-        badges.possibly_award_badge("skill_awarded", user=user, level=3)
+        Level.objects.create(user=user, task_type='e', level=3, created=timezone.now())
 
         task = Task.objects.get(pk=3)
         UserQuestRelationship.objects.create(task=task, user=user, completed=True)
         Point.objects.create(user=user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
-        badges.possibly_award_badge("skill_awarded", user=user, level=4)
+        Level.objects.create(user=user, task_type='e', level=4, created=timezone.now())
 
