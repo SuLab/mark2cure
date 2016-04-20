@@ -5,7 +5,6 @@ block intro-content
     .col-xs-12
       p.text-muted There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related--but are they really? If they are, how are they related?  Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill. 
       p.text-muted You will be presented with two concepts identified by an algorithm
-      p.text-muted The concepts are color-coded. Learn more about the concept types <a href='#'>here</a>.
       p
         strong Sometimes the algorithm will misidentify a concept
 
@@ -14,7 +13,7 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=5 %}').btn.btn-primary Submit
+      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=4 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -31,12 +30,12 @@ block interactive
       "relation_type": "c_d",
       "concepts": {
         "c2": {
-          "text": "BRCA1",
+          "text": "Astrology",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "Ibuprofen",
+          "text": "Citizen Scientists",
           "type": "c",
           "id": "0"
         }
@@ -92,7 +91,7 @@ block post-footer
       html: true,
       animation: false,
       content: function() {
-        return 'BRCA1 is a genes concept, not a disease one.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
+        return 'Astrology is NOT actually a field of science.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
       },
       placement: 'top'
     });
