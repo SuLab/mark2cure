@@ -1,0 +1,43 @@
+extends training/relation/part-1/base
+
+block intro-content
+  .row.m-t-md
+    .col-xs-12
+      p Relationships for three different types of concepts will be presented. The concepts will be color-coded:
+      ul
+        li Disease concept entities will be in blue
+        li Gene/protein concept entities will be in green
+        li Drug concept entities will be in pink
+      p Press ‘Next’ to continue.
+
+
+  .row.m-t-md
+    .col-xs-12.text-center
+      a(href='{% url "training:relation-training" part_num=3 step_num=1b %}').btn.btn-primary Next
+
+
+    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
+      .modal-dialog.modal-md
+        .modal-content
+          .modal-body
+            .list-group.text-center
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
+              button(type='button', data-dismiss='modal').list-group-item.current
+                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad
+
+
+block interactive
+
+
+
+block navigation
+
+
+block post-footer
+  script.
+    $(window).load(function(){
+      $('#relation-training-progress').modal('show');
+    });
