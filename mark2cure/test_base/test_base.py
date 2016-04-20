@@ -5,6 +5,7 @@ from ..document.models import Annotation
 
 from brabeion import badges
 from random import randint
+from django.utils import timezone
 import random
 
 
@@ -63,10 +64,9 @@ class TestBase(object):
     def create_new_user_accounts(self, user_names):
         """ Input is a list of users to initiate first login"""
         for user_name in user_names:
-            user_name = User.objects.create_user(user_name, password='password')
-            badges.possibly_award_badge("skill_awarded",
-                                        user=user_name,
-                                        level=7, force=True)
+            user = User.objects.create_user(user_name, password='password')
+            Level.objects.create(user=user, task_type='e', level=7, created=timezone.now())
+
 
     def login_test_user(self, users_name):
         self.create_new_user_accounts([users_name, ])

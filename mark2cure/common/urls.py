@@ -6,6 +6,8 @@ urlpatterns = patterns('',
     url(r'^$',
         views.home, name='home'),
 
+    url(r'^get-started/$', views.get_started, name='get-started'),
+
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),
 

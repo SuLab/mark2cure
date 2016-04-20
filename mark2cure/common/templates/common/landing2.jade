@@ -75,7 +75,7 @@ html
                     a(href='https://www.ngly1.org/', target='_blank').btn.btn-block.btn-white.btn-outline About NGLY1
 
                   .col-xs-10.col-xs-offset-1.col-sm-8.col-sm-offset-2.col-md-4.col-md-offset-0
-                    a(href='{% url "training:introduction" step_num=1 %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
+                    a(href='{% url "common:get-started" %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
 
                   div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-3.col-md-offset-0
                     a(href="#learnMore").hidden-sm-down
@@ -126,7 +126,6 @@ html
                             h5.text-center {{ group.name }}
                             h5.text-center Total Docs: {{ group.doc_count }}
 
-
             <ul class="pages"></ul>
 
       .container
@@ -165,7 +164,7 @@ html
         .row.push50
           .col-sm-12.text-center
             p.font-purple.medium If you can read you can help.
-            a(href='{% url "training:introduction" step_num=1 %}').push15.btn.btn-large.btn-primary I want to help
+            a(href='{% url "common:get-started" %}').push15.btn.btn-large.btn-primary I want to help
 
       .container.push100
         <hr style="font-size:3px;">

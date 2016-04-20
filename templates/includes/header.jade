@@ -18,8 +18,6 @@ nav#header(role='navigation').navbar.navbar-default
                 p {{user}}
               li
                 p Score: <span id='score'>#{user.userprofile.score|intcomma}</span>
-              li
-                p Level: #{user.userprofile.highest_level.name}
 
           .col-xs-6.col-sm-5
             ul.list-unstyled.site-links

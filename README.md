@@ -268,8 +268,6 @@ Python commands:
 
 ```python
 User.objects.create_user('test_user', password='password') 
-from brabeion import badges
-badges.possibly_award_badge("skill_awarded", user=User.objects.get(username='test_user'), level=7, force=True)
 ```
 
 This does not solve the issue of a "simulated database with real content for
