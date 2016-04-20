@@ -397,15 +397,14 @@
   float: left;
   width: 230px;
   height: 100%;
-  margin: 0 1px 0 0;
+  margin: 0 0 0 0;
   padding: 0;
   color: #ddd;
   text-align: center;
   cursor: pointer;
 }
 
-.frame ul li.active {
-  color: #fff;
+.frame ul li:hover {
   background: #f7f7f9;
 }
 
