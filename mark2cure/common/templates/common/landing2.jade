@@ -112,7 +112,7 @@ html
                 each group in groups
                   li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
                       a(href='/group/{{ group.stub}}/' target='_blank')
-                        - if group.completed
+                        - if group.percentage_complete > 99
                           h2
                             i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
                           h5.text-center(style="color: #818a91") {{ group.name }}
