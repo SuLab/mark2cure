@@ -25,8 +25,7 @@ def home(request):
               "Goofing off productively.",
               "Community.", "Science!"]
     random.shuffle(quotes)
-    groups = Group.objects.all().exclude(name='Practice')
-    groups = sorted(groups, key=lambda group: group.percentage_complete, reverse=True)
+    groups = Group.objects.all().exclude(name='Practice').order_by('-order')
     ctx = {'form': form, 'quotes': quotes, 'groups': groups}
     return TemplateResponse(request, 'common/landing2.jade', ctx)
 
