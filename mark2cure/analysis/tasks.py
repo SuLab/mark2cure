@@ -16,6 +16,7 @@ from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from .models import Report
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 
 from nltk.metrics import scores as nltk_scoring
 from celery import task
@@ -48,10 +49,11 @@ def hashed_annotations_df(group_pk, private_api=False,
         sections = Section.objects.filter(
             document__document_id__in=document_pmids
         ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
+        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
 
         for doc_pmid in document_pmids:
 
-            document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid)
+            document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid, content_type_id)
 
             passage_offset = 0
 

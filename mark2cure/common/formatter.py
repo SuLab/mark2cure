@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
 from ..document.models import Annotation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
@@ -101,11 +103,11 @@ def apply_bioc_annotations(writer, user=None):
     for bioc_passage in bioc_doc.passages:
         section_pk = bioc_passage.infons['id']
         offset = int(bioc_passage.offset)
-
+        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
         if user:
-            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_and_user(section_pk, user.pk)
+            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_and_user(section_pk, user.pk, content_type_id)
         else:
-            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_pk(section_pk)
+            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_pk(section_pk, content_type_id)
 
         for er_ann in er_ann_query_set:
             annotation = BioCAnnotation()

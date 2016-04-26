@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
@@ -199,9 +200,10 @@ def group_users_bioc(request, group_pk, format_type):
 
     # Provide the base of the response
     writer = bioc_writer(request)
+    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
 
     for doc_pmid in document_pmids:
-        document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid)
+        document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid, content_type_id)
 
         document = BioCDocument()
         document.id = str(doc_pmid)

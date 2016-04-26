@@ -143,10 +143,11 @@ class Document(models.Model):
         approved_types = ['disease', 'gene_protein', 'drug']
 
         passage_offset = 0
+        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
         for section in self.available_sections():
             passage = section.as_bioc(passage_offset)
 
-            for ann in EntityRecognitionAnnotation.objects.annotations_for_section_pk(section.pk):
+            for ann in EntityRecognitionAnnotation.objects.annotations_for_section_pk(section.pk, content_type_id):
                 annotation = BioCAnnotation()
                 annotation.id = str(ann.pk)
                 annotation.put_infon('user', str(ann.user_id))
