@@ -279,7 +279,7 @@ class Document(models.Model):
         return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
 
     def contributors(self):
-        user_ids = list(set(View.objects.filter(section__document=self, completed=True).values_list('user', flat=True)))
+        user_ids = list(set(View.objects.filter(section__document=self, completed=True, task_type='cr').values_list('user', flat=True)))
         return user_ids
 
 
