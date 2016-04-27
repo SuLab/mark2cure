@@ -7,10 +7,12 @@ from django.contrib.auth import views as reset_views
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import FlatPageSitemap
 
+from common.accounts.views import signup
+
+
 sitemaps = {
     'flatpages': FlatPageSitemap
 }
-
 
 urlpatterns = patterns('',
     url(r'^grappelli/', include('grappelli.urls')),
@@ -20,6 +22,12 @@ urlpatterns = patterns('',
         name='django.contrib.sitemaps.views.sitemap'),
 
     (r'^robots\.txt$', include('robots.urls')),
+
+    # Password / Account based changes
+    # url(r'^registration/', include('mark2cure.registration.urls', namespace='registration')),
+
+    url(r'^accounts/signup/$', signup, name='account_signup'),
+    url(r'^accounts/', include('allauth.urls')),
 
     # Response / Confirm Changes
     url(r'^reset/done/$',
@@ -62,8 +70,7 @@ urlpatterns = patterns('',
         namespace='team', app_name='team')),
     url(r'u/', include('mark2cure.userprofile.urls',
         namespace='profile', app_name='userprofile')),
-    url(r'^registration/', include('mark2cure.registration.urls',
-        namespace='registration')),
+
 
     url('', include('django.contrib.auth.urls', namespace='auth')),
 

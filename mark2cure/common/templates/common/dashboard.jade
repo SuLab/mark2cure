@@ -39,7 +39,6 @@ block content
                   li Total Quests: #{user.userprofile.quests_count|intcomma}
                   li Total Annotations: #{user.userprofile.annotations_count|intcomma}
                   li Score: #{user.userprofile.score|intcomma}
-                  li Level: #{user.userprofile.highest_level.name}
 
               - if request.user|has_group:"Uxtesters"
                 .card-block

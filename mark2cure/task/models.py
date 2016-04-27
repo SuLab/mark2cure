@@ -6,8 +6,9 @@ from ..document.models import Document, View
 class Level(models.Model):
     user = models.ForeignKey(User)
 
+    ENTITY_RECOGNITION = 'e'
     TASK_TYPE_CHOICES= (
-        ('e', 'Entity Recognition'),
+        (ENTITY_RECOGNITION, 'Entity Recognition'),
         ('r', 'Relation'),
     )
     task_type = models.CharField(max_length=1, choices=TASK_TYPE_CHOICES)
@@ -19,6 +20,13 @@ class Level(models.Model):
         get_latest_by = 'created'
         ordering = ('-level', )
 
+    def get_name(self):
+        if self.task_type == 'e':
+            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert",]
+        else:
+            levels = ["beginner", "Medium", "Expert"]
+
+        return levels[self.level]
 
 
 class Task(models.Model):

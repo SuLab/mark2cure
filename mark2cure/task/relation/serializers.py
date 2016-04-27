@@ -13,7 +13,6 @@ class RelationSerializer(serializers.ModelSerializer):
         # Don't pass the 'fields' arg up to the superclass
         context = kwargs.pop('context', {})
         user = context.get('user', None)
-        #self.user_highest_level = user.profile.highest_level('skill').level
 
         # Instantiate the superclass normally
         super(RelationSerializer, self).__init__(*args, **kwargs)

@@ -5,7 +5,6 @@ from django.conf import settings
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
 
-from brabeion.models import BadgeAward
 from djangoratings.fields import RatingField
 
 from mark2cure.document.models import Annotation, Document, View
@@ -154,10 +153,6 @@ class UserProfile(models.Model):
     def score(self):
         return int(sum(Point.objects.filter(user=self.user).values_list('amount', flat=True)))
 
-    def highest_level(self, slug='skill'):
-        res = BadgeAward.objects.filter(user=self.user, slug=slug).order_by('-level').first()
-        return res if res else BadgeAward(name='', level=0)
-
     def annotations_count(self):
         return Annotation.objects.filter(view__user=self.user).count()
 
@@ -212,7 +207,6 @@ class UserProfile(models.Model):
             Returns: Units of Quests available
 
         '''
-        #level = self.highest_level().level
 
         # Quests which are available and uncompleted
         # by the user, annotated by how many times the community

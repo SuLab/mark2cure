@@ -7,6 +7,7 @@ from django.template.response import TemplateResponse
 from django.contrib.messages import get_messages
 from django.contrib import messages
 
+from .utils.mdetect import UAgentInfo
 from ..userprofile.models import UserProfile
 from ..task.models import Level
 from .models import Group
@@ -34,10 +35,16 @@ def home(request):
 def get_started(request):
     return redirect('training:introduction', step_num=1)
 
+    '''
+    uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    if uai.detectMobileLong():
+        return redirect('training:relation-training', part_num=1, step_num=1)
+
     if Level.objects.filter(level=7, task_type='e').count() > Level.objects.filter(level=7, task_type='r').count():
         return redirect('training:relation-training', part_num=1, step_num=1)
     else:
         return redirect('training:introduction', step_num=1)
+    '''
 
 
 def beta(request):
@@ -64,7 +71,9 @@ def dashboard(request):
     msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
     messages.info(request, msg, extra_tags='safe alert-success')
 
-    ctx = {'welcome': welcome}
+    uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    ctx = {'welcome': welcome,
+           'mobile': uai.detectMobileLong()}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 # removed login required here to allow public to see doc set contributions
