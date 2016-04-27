@@ -9,7 +9,7 @@ class EntityRecognitionAnnotationManager(models.Manager):
                     document_section.document_id as document_id
             FROM entity_recognition_entityrecognitionannotation
             LEFT OUTER JOIN document_annotation
-                ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {1}
+                ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {2}
                 LEFT OUTER JOIN document_view
                     ON document_view.id = document_annotation.view_id
                         LEFT OUTER JOIN document_section
