@@ -35,7 +35,4 @@ block content
                 input(type='submit', value='Sign In').btn.btn-primary.btn-block
               .col-xs-4.col-xs-offset-4
                 p.text-right
-                  a(href='/registration/password_reset/') Forgot password?
-
-                p.text-right
-                  a(href='/training/basics/step/1/') No username? Get started!
+                  a(href='{% url "account_reset_password" %}') Forgot password?
