@@ -10,6 +10,7 @@ from ..score.models import Point
 
 from .forms import UserProfileForm, TeamForm
 from ..registration.forms import UserNameChangeForm
+from ..task.models import Level
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -63,12 +64,11 @@ def settings(request):
 @login_required
 def user_points(request):
     points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
-    skill_badge = BadgeAward.objects.filter(user=request.user, slug='skill').last()
 
     return Response({
         'points': sum(Point.objects.filter(user=request.user).values_list('amount', flat=True)),
         'points_level': points_badge.name,
-        'skill_level': skill_badge.name
+        'skill_level': Level.objects.filter(user=request.user, task_type='e').first().get_name()
     })
 
 

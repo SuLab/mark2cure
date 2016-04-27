@@ -12,7 +12,7 @@ urlpatterns = patterns('',
         name='logout'),
 
     url(r'^create/settings/$', views.user_creation_settings, name='user_creation_settings'),
-    url(r'^create/$', views.user_creation, name='user_creation'),
+    #url(r'^create/$', views.user_creation, name='user_creation'),
 
     #url(r'^request_email_confirmation/$', views.request_email_confirmation,
     #    name='request_email_confirmation'),

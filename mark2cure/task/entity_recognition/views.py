@@ -11,7 +11,7 @@ from django.template.response import TemplateResponse
 from ...common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
 from ...document.models import Document, Section, Annotation
 from .forms import EntityRecognitionAnnotationForm
-from ..models import Task, UserQuestRelationship
+from ..models import Level, Task, UserQuestRelationship
 from .utils import generate_results, select_best_opponent
 from ...score.models import Point
 
@@ -122,7 +122,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
     writer.collection.put_infon('points', str(int(round(score))))
     writer.collection.put_infon('partner', str(opponent.username))
-    writer.collection.put_infon('partner_level', str(opponent.userprofile.highest_level().name))
+    writer.collection.put_infon('partner_level', Level.objects.filter(user=opponent, task_type='e').first().get_name())
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -147,7 +147,6 @@ def identify_annotations_submit(request, task_pk, section_pk):
     if view:
 
         er_ann_form = EntityRecognitionAnnotationForm(data=request.POST or None)
-
         if er_ann_form.is_valid():
             er_ann = er_ann_form.save()
 
@@ -217,7 +216,7 @@ def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type)
     writer = apply_bioc_annotations(writer, user)
 
     writer.collection.put_infon('partner', str(user.username))
-    writer.collection.put_infon('partner_level', str(user.userprofile.highest_level().name))
+    writer.collection.put_infon('partner_level', Level.objects.filter(user=user, task_type='e').first().get_name())
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

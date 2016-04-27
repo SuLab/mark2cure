@@ -27,8 +27,8 @@ html
     link(rel="stylesheet", href="#{STATIC_URL}css/style.css")
 
   body#landing-2
-    include registration/login-modal
-    include registration/subscribe-modal
+    //include registration/login-modal
+    //include registration/subscribe-modal
 
     .case-study
       nav.navbar.navbar-default
@@ -48,7 +48,7 @@ html
               li
                 a(href="/contact/") Contact
               li
-                a(href='{% url "registration:login" %}') Login
+                a(href='{% url "account_login" %}') Login
 
               li.social.hidden-xs-down
                 a(href="http://sulab.org/category/mark2cure/feed")

@@ -1,6 +1,6 @@
 from mark2cure.userprofile.models import UserProfile, Team
 from ..common.models import Document, Group
-from ..task.models import Task
+from ..task.models import Level, Task
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -64,7 +64,7 @@ class QuestSerializer(serializers.ModelSerializer):
         context = kwargs.pop('context', {})
         user = context.get('user', None)
         if user.is_authenticated():
-            self.user_highest_level = user.profile.highest_level('skill').level
+            self.user_highest_level = Level.objects.filter(user=user, task_type='e').first().level
 
         # Instantiate the superclass normally
         super(QuestSerializer, self).__init__(*args, **kwargs)
