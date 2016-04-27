@@ -1,3 +1,5 @@
+- load humanize
+
 html
   head
     meta(charset="utf-8")
@@ -90,7 +92,7 @@ html
           .container-fluid.text-center.cta-bar
             .row
               .col-xs-12
-                <p><a href="http://sulab.org/2015/09/please-help-now/">Over 500,000 annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
+                <p><a href="http://sulab.org/2015/09/please-help-now/">#{ann_count|intcomma} annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
 
 
       .clearfix

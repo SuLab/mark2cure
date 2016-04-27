@@ -66,7 +66,6 @@ class Base(Configuration):
         'djcelery',
         'robots',
         'corsheaders',
-        #'account',
 
         'grappelli',
         'django.contrib.admin',
@@ -336,7 +335,10 @@ class Base(Configuration):
     ACCOUNT_SESSION_REMEMBER = True
     ACCOUNT_TEMPLATE_EXTENSION = 'jade'
     SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
-
+    SOCIALACCOUNT_PROVIDERS = { 'google': {
+                                    'SCOPE': ['profile', 'email'],
+                                    'AUTH_PARAMS': { 'access_type': 'online' }
+                              }}
 
 
 class Development(Base):

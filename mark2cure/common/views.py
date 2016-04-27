@@ -11,6 +11,7 @@ from .utils.mdetect import UAgentInfo
 from ..userprofile.models import UserProfile
 from ..task.models import Level
 from .models import Group
+from ..document.models import Annotation
 from .forms import SupportMessageForm
 
 import random
@@ -28,7 +29,10 @@ def home(request):
               "Community.", "Science!"]
     random.shuffle(quotes)
     groups = Group.objects.all().exclude(name='Practice').order_by('-order')
-    ctx = {'form': form, 'quotes': quotes, 'groups': groups}
+    ctx = {'form': form,
+           'quotes': quotes,
+           'groups': groups,
+           'ann_count': Annotation.objects.count()}
     return TemplateResponse(request, 'common/landing2.jade', ctx)
 
 
