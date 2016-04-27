@@ -19,8 +19,15 @@ block content
         h1.text-center
           a(href='{% url "profile:public-profile" username=player.username %}') #{player.username}
       - if owner
-        .col-xs-6.col-xs-offset-3
-          p.text-center.text-muted
+
+        .col-xs-2.col-xs-offset-4.text-center
+          form(method="post", action='{% url "account_logout" %}')
+            - csrf_token
+            button(type="submit", style='margin:0px;padding:0px;').btn.btn-link
+              p Logout
+
+        .col-xs-2
+          p.text-center.text-muted.text-center
             a(href='{% url "profile:settings" %}') Settings
 
 

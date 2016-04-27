@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     # Password / Account based changes
     # url(r'^registration/', include('mark2cure.registration.urls', namespace='registration')),
 
+    #url(r'^accounts/social/signup/$', social_signup, name='socialaccount_signup'),
     url(r'^accounts/signup/$', signup, name='account_signup'),
     url(r'^accounts/', include('allauth.urls')),
 

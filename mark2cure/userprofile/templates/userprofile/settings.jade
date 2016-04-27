@@ -77,6 +77,3 @@ block content
             .col-sm-3.col-sm-offset-7
               button(type='submit').btn.btn-primary.btn-block.pull-right Update
 
-    form(method="post", action='{% url "account_logout" %}')
-      - csrf_token
-      button(type="submit").btn.btn-default.btn-xs Logout

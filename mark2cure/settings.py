@@ -78,7 +78,7 @@ class Base(Configuration):
         'debug_toolbar',
 
         # Mark2Cure specific apps
-        'mark2cure.registration',
+        #'mark2cure.registration',
         'mark2cure.userprofile',
         'mark2cure.team',
         'mark2cure.instructions',
@@ -314,8 +314,8 @@ class Base(Configuration):
     # Email settings management
     DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
     SERVER_EMAIL = DEFAULT_FROM_EMAIL
-    # MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
-    # EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+    MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
+    EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
     # User account management
     ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
