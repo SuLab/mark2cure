@@ -93,16 +93,15 @@ def group_view(request, group_stub):
     "alacrima": {"invite":"2015.05.21", "public":"2015.05.22", "closed":"2015.06.19"},
     "OGD": {"invite":"2015.05.29","public":"2015.05.29", "closed":"2015.11.13"},
     "FBX": {"invite":"2015.06.25","public":"2015.06.26","closed":"2015.08.14"},
-    "ost": {"invite":"2015.07.31",
-    "public": "2015.08.07","closed": "2016.04.03"},
+    "ost": {"invite":"2015.07.31","public": "2015.08.07","closed": "2016.04.03"},
     "mfold": {"invite":"2015.09.10", "public": "2015.09.11","closed": "2015.11.19"},
     "eeyar": {"invite": "2015.11.04","public":"2015.11.06", "closed":"2015.12.25",},
     "mitomis": {"invite":"2015.11.10", "public": "2015.11.11", "closed": "2016.03.04"},
     "ATGS": {"invite":"2015.12.28", "public": "2015.12.30", "closed": ""},
     "MATG": {"invite":"2016.02.24", "public": "2016.02.26", "closed": ""},
-    "MATGS": {"invite": "", "public": "", "closed": ""},
-    "training": {"invite": "", "public": "", "closed": ""},
-    "HSPT1": {"invite": "", "public": "", "closed": ""},
+    "MATGS": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
+    "training": {"invite": "2015.05.21", "public": "2015.05.21", "closed": ""},
+    "HSPT1": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
     }
 
     try:

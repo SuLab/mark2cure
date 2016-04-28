@@ -11,6 +11,6 @@ nav#header(role='navigation').navbar.navbar-default
     .col-xs-10.col-xs-offset-1.col-sm-6.col-sm-offset-3.col-md-3.col-md-offset-0
 
         h4.text-center
-          a(href='/registration/login/') Sign in
+          a(href='{% url "account_login" %}') Sign in
         h4.text-center
-          a(href='/training/basics/step/1/') Get started
+          a(href='{% url "account_signup" %}') Get started

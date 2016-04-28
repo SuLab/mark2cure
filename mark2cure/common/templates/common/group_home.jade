@@ -62,7 +62,7 @@ block content
             span
           - else
             - if group.enabled and group.percentage_complete < 100
-              h4 This doc set needs your help. <a href="/registration/login/">Please sign in here</a>.
+              h4 This doc set needs your help. <a href='{% url "account_login" %}'>Please sign in here</a>.
 
         .col-md-10.col-md-offset-1.m-t-md
           - with progress=group.percentage_complete
