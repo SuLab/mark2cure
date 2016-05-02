@@ -3,41 +3,49 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p.text-muted There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related--but are they really? If they are, how are they related?  Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill. 
-      p.text-muted You will be presented with two concepts identified by an algorithm
-      p.text-muted The concepts are color-coded. Learn more about the concept types <a href='#'>here</a>.
+      p The text in which the two concepts were found together will be included. The concepts are highlighted in the text so you can easily find their relationship
       p
-        strong Sometimes the algorithm will misidentify a concept
+        strong Select the relationship (or lack thereof) by clicking on the appropriate box
+      p
+        strong Click on the currently selected relationship to return to the previous menu
 
+      p
+        strong The 'submit' button will not be active until a relationship is selected
 
-block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=5 %}').btn.btn-primary Submit
+      a(id='next-button', href='{% url "training:relation-training" part_num=1 step_num=5 %}').btn.btn-primary Next
+
+
+block navigation
 
 
 block interactive
 
   #tree-insert
 
+  p <span class='user_annotated'>Biomedical research</span> literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure, as a <span class='user_annotated_green'>citizen scientist</span>, I am helping to identify relationships between concepts in <span class='user_annotated'>biomedical researchy</span> so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help.
+
+
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
+    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
       "document": 0,
-      "relation_type": "c_d",
+      "relation_type": "g_d",
       "concepts": {
         "c2": {
-          "text": "BRCA1",
+          "text": "Biomedical research",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "Ibuprofen",
-          "type": "c",
+          "text": "citizen scientist",
+          "type": "g",
           "id": "0"
         }
       },
@@ -72,53 +80,3 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
-
-  script.
-
-    /* (TODO) work for incorrects
-    * When an item is selected */
-    Tree['convoChannel'].on('click', function(obj) {
-      console.log('asdf');
-      var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer') {
-        $('#next-button').show();
-      };
-    });
-
-    $el = $('#c2');
-    $el.popover('hide');
-    $el.popover({
-      container: 'body',
-      html: true,
-      animation: false,
-      content: function() {
-        return 'BRCA1 is a genes concept, not a disease one.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
-      },
-      placement: 'top'
-    });
-    $el.popover('show');
-
-    var passages, regions, tmp_passages;
-
-    /* When an item is selected */
-    Tree['convoChannel'].on('error', function(str) {
-      if(str == 'c_2') {
-        $('#next-button').show();
-
-        $('.popover').popover('dispose');
-        $next_el = $('#next-button');
-        $next_el.popover('hide');
-        $next_el.popover({
-          container: 'body',
-          html: true,
-          animation: false,
-          content: function() {
-            return 'Click submit to confirm that you are reporting an error';
-          },
-          placement: 'right'
-        });
-        $next_el.popover('show');
-
-      };
-    });
-

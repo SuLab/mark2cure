@@ -6,14 +6,14 @@ block intro-content
       p.text-muted There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related--but are they really? If they are, how are they related?  Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill. 
       p.text-muted You will be presented with two concepts identified by an algorithm
       p
-        strong The concepts are color-coded. Learn more about the concept types <a href='#'>here</a>.
+        strong Sometimes the algorithm will misidentify a concept
 
 
 block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', href='{% url "training:relation-training" part_num=1 step_num=4 %}').btn.btn-primary Next
+      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=1 step_num=4 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -23,7 +23,6 @@ block interactive
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
-    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
@@ -31,12 +30,12 @@ block interactive
       "relation_type": "c_d",
       "concepts": {
         "c2": {
-          "text": "Alzheimer's disease",
+          "text": "Astrology",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "Ibuprofen",
+          "text": "Citizen Scientists",
           "type": "c",
           "id": "0"
         }
@@ -75,15 +74,50 @@ block post-footer
 
   script.
 
-    $el = $('#c1');
+    /* (TODO) work for incorrects
+    * When an item is selected */
+    Tree['convoChannel'].on('click', function(obj) {
+      console.log('asdf');
+      var current_selection = Tree.start.currentView.options.choice;
+      if(current_selection.get('id') == 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer') {
+        $('#next-button').show();
+      };
+    });
+
+    $el = $('#c2');
     $el.popover('hide');
     $el.popover({
       container: 'body',
       html: true,
       animation: false,
       content: function() {
-          return 'Concepts in pink are drug concepts';
+        return 'Astrology is NOT actually a field of science.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
       },
       placement: 'top'
     });
     $el.popover('show');
+
+    var passages, regions, tmp_passages;
+
+    /* When an item is selected */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2') {
+        $('#next-button').show();
+
+        $('.popover').popover('dispose');
+        $next_el = $('#next-button');
+        $next_el.popover('hide');
+        $next_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Click submit to confirm that you are reporting an error';
+          },
+          placement: 'right'
+        });
+        $next_el.popover('show');
+
+      };
+    });
+

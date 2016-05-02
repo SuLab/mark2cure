@@ -15,7 +15,7 @@ block intro-content
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', href='{% url "training:relation-training" part_num=1 step_num=6 %}').btn.btn-primary Next
+      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=2 step_num=1 %}').btn.btn-primary Submit
 
 
 block navigation
@@ -25,14 +25,13 @@ block interactive
 
   #tree-insert
 
-  p The immune system in <span class='user_annotated'>Duchenne muscular dystrophy</span>: Friend or foe
-  p <span class='user_annotated'>Duchenne muscular dystrophy</span> (DMD) is a genetic disease caused by mutations in the X-linked <span class='user_annotated_green'>dystrophin</span> gene, resulting in reduced or absent protein production, subsequently leading to the structural instability of the dystroglycan complex (DGC), muscle degeneration, and early death in males. Thus, current treatments have been targeting the genetic defect either by bypassing the mutation through exon skipping or replacing the defective gene through gene therapy and stem cell approaches. However, what has been an underappreciated mediator of muscle pathology and, ultimately, of muscle degeneration and fibrotic replacement, is the prominent inflammatory response. Of potentially critical importance, however, is the fact that the elements mediating the inflammatory response also play an essential role in tissue repair.
+  p <span class='user_annotated'>Biomedical research</span> literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure, as a <span class='user_annotated_green'>citizen scientist</span>, I am helping to identify relationships between concepts in <span class='user_annotated'>biomedical researchy</span> so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help.
+
 
 
   script.
     relation_task_settings = {};
     relation_task_settings['data'] = {{ relation_data|safe }};
-    relation_task_settings['fade'] = true;
 
     task_data = [{
       "id": 0,
@@ -40,12 +39,12 @@ block interactive
       "relation_type": "g_d",
       "concepts": {
         "c2": {
-          "text": "Duchenne muscular dystrophy",
+          "text": "Biomedical Research",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "dystrophin",
+          "text": "Citizen Scientist",
           "type": "g",
           "id": "0"
         }
@@ -81,3 +80,78 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
+
+  script.
+    var event_counter = 0;
+
+    Tree['convoChannel'].on('start', function(obj) {
+      if(event_counter==0) {
+        $relates_el = $('ul.list-group a:nth(0)');
+        $relates_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Click on the \'relates to\' box';
+          },
+          placement: 'left'
+        });
+        $relates_el.popover('show');
+      }
+      event_counter++;
+    });
+
+    Tree['convoChannel'].on('back', function(obj) {
+      $('.popover').popover('dispose');
+      $relates_el = $('ul.list-group a:nth(0)');
+      $relates_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'Once again, click on the \'relates to\' box';
+        },
+        placement: 'left'
+      });
+      $relates_el.popover('show');
+
+
+    });
+
+    /* When an item is selected */
+    Tree['convoChannel'].on('click', function(obj) {
+      console.log(event_counter);
+      var current_selection = Tree.start.currentView.options.choice;
+      if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+        $('.popover').popover('dispose');
+
+        if (event_counter == 1) {
+          $relation_el = $('#relation');
+          $relation_el.popover({
+            container: 'body',
+            html: true,
+            animation: false,
+            content: function() { return 'In this case, \'Relates to\' has been selected. <strong>Click on the term \'Relates to\' to return to the previous menu.'; },
+            placement: 'top'
+          });
+          $relation_el.popover('show');
+        }
+
+        if (event_counter == 3) {
+          $('#next-button').show();
+
+          $next_el = $('#next-button');
+          $next_el.popover('hide');
+          $next_el.popover({
+            container: 'body',
+            html: true,
+            animation: false,
+            content: function() { return 'Click \'submit\' to submit to confirm your selection'; },
+            placement: 'top'
+          });
+          $next_el.popover('show');
+        }
+
+
+      }
+    });

@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p.text-muted There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related--but are they really? If they are, how are they related?  Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill. 
+      p.text-muted There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. In this module, you learn how to use the relationship extraction tool to annotate the relationship between different concepts in biomedical text and earn your Relationship Marking Skill. 
 
     .col-xs-12.text-center
       p
@@ -33,12 +33,12 @@ block interactive
       "relation_type": "g_d",
       "concepts": {
         "c2": {
-          "text": "Alzheimer's disease",
+          "text": "Physics",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "Fbs1",
+          "text": "Volunteers",
           "type": "g",
           "id": "0"
         }
@@ -84,7 +84,7 @@ block post-footer
       html: true,
       animation: false,
       content: function() {
-          return 'Concepts in green are Genes or Gene Products';
+          return 'A concept is a category to which a term can be assigned';
       },
       placement: 'top'
     });
@@ -97,7 +97,7 @@ block post-footer
       html: true,
       animation: false,
       content: function() {
-          return 'Concepts in blue are disease concepts';
+          return 'Eg- ‘Physics’ is part of the ‘field of science’ concept';
       },
       placement: 'top'
     });
