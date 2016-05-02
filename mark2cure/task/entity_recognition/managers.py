@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import escape
 
 
 class EntityRecognitionAnnotationManager(models.Manager):
@@ -17,7 +18,7 @@ class EntityRecognitionAnnotationManager(models.Manager):
             WHERE ( document_section.document_id IN ({0})
                     AND entity_recognition_entityrecognitionannotation.text != ''
                     AND entity_recognition_entityrecognitionannotation.text = '{1}')
-        """.format(', '.join('\'' + str(item) + '\'' for item in document_pks), text, content_type_id));
+        """.format(', '.join('\'' + str(item) + '\'' for item in document_pks), escape(text), content_type_id));
         return [x.document_id for x in res]
 
 

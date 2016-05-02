@@ -45,8 +45,12 @@ function draw(t, e) {
         return t.font
     }).style("fill", function(t) {
         return fill(t.text.toLowerCase())
+    }).style("cursor", function(t) {
+        return "pointer";
     }).text(function(t) {
         return t.text
+    }).on("click", function (t) {
+          window.open('https://www.mark2cure.org/u/' + t.text);
     });
     var a = background.append("g").attr("transform", vis.attr("transform")),
         r = a.node();

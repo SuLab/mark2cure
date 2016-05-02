@@ -16,8 +16,7 @@ block content
   .container
     .row
       .col-xs-6.col-xs-offset-3
-        h1.text-center
-          a(href='{% url "profile:public-profile" username=player.username %}') #{player.username}
+        h1.text-center #{player.username}
       - if owner
 
         .col-xs-2.col-xs-offset-4.text-center
