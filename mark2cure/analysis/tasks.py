@@ -288,6 +288,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     pos = nx.spring_layout(G, iterations=spring_force)
 
     # Santize the node colors
+    # if these colors get changed, need to edit group_home.js
     type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
     df['color'] = df['type'].map(type_to_color)
     df['nodes'] = df['clean_text'].map(nodes)

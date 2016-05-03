@@ -58,9 +58,20 @@ sigma.parsers.json('/api/network/'+ pk +'/', s, function() {
 });
 s.refresh();
 s.bind('hoverNode clickNode', function(e) {
-  console.log(e.type, e.data.node.label, e.data.captor);
+//  console.log(e.type, e.data.node.label, e.data.captor);
   if(e.type == 'clickNode') {
-    window.open('https://www.google.com/#safe=off&q='+e.data.node.label,'_blank');
+    var node_color = e.data.node.color;
+    var second_search = '';
+    if (node_color == '#B1FFA8') {
+        second_search = 'gene';
+    } else if (node_color == '#d1f3ff') {
+        second_search = 'disease';
+    } else if (node_color == '#ffd1dc') {
+        second_search = 'drug';
+    } else {
+        second_search = '';
+    };
+    window.open('https://www.google.com/#safe=off&q='+e.data.node.label+'+'+second_search,'_blank');
   }
 });
 
