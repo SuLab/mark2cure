@@ -7,8 +7,6 @@ from django.contrib.auth import views as reset_views
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import FlatPageSitemap
 
-from common.accounts.views import signup
-
 
 sitemaps = {
     'flatpages': FlatPageSitemap
@@ -24,10 +22,6 @@ urlpatterns = patterns('',
     (r'^robots\.txt$', include('robots.urls')),
 
     # Password / Account based changes
-    # url(r'^registration/', include('mark2cure.registration.urls', namespace='registration')),
-
-    #url(r'^accounts/social/signup/$', social_signup, name='socialaccount_signup'),
-    url(r'^accounts/signup/$', signup, name='account_signup'),
     url(r'^accounts/', include('allauth.urls')),
 
     # Response / Confirm Changes

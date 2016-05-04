@@ -11,6 +11,20 @@ from decimal import Decimal
 import random
 from collections import Counter
 
+from allauth.account.signals import user_signed_up
+from django.dispatch import receiver
+from ..task.models import Level
+from django.utils import timezone
+
+
+@receiver(user_signed_up, dispatch_uid='mark2cure.common.allauth.user_signed_up')
+def user_signed_up_(request, user, **kwargs):
+    print '> USER SIGNED UP', request.session.get('initial_training'), kwargs
+
+    if request.session.get('initial_training'):
+        # After loggin them in, assign the first Level training so we know where to route them
+        Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=3, created=timezone.now())
+
 
 class PointsBadge(Badge):
     slug = "points"
