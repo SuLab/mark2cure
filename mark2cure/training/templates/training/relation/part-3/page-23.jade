@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Chemical/Drug-Disease Relationships: One more!
+      p Chemical/Drug-Disease Relationships: Try this one!
 
     .col-xs-12.text-center
       p
@@ -23,7 +23,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function
+      p <span class='user_annotated_green'>Cytochrome P450 (CYP450) 2D6</span> is an important member of the P450 enzyme superfamily and responsible for clearing 25% of clinically important drugs. The aim of this study was to assess the catalytic characteristics of 24 CYP2D6 allelic isoforms found in the Chinese population and their effects on the metabolism of <span class='user_annotated_pink'>risperidone</span> in vitro.
 
 
   script.
@@ -36,12 +36,12 @@ block interactive
       "relation_type": "g_c",
       "concepts": {
         "c2": {
-          "text": "tadalafil",
+          "text": "risperidone",
           "type": "c",
           "id": "0"
         },
         "c1": {
-          "text": "PDE5",
+          "text": "Cytochrome P450 (CYP450) 2D6",
           "type": "g",
           "id": "0"
         }
@@ -84,7 +84,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == '5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy') {
+      if(current_selection.get('id') == 'am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw') {
         $('#next-button').show();
       };
     });

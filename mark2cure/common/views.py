@@ -38,6 +38,7 @@ def home(request):
 
 def get_started(request):
     return redirect('training:introduction', step_num=1)
+    # return redirect('training:relation-training', part_num=1, step_num=1)
 
     '''
     uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))

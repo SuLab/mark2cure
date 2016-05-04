@@ -59,6 +59,16 @@ var add_relation_classes = function(current_relationship) {
     $('#c2').addClass('disease');
     $('#c2 .not_correct_stype').text('is not a disease concept?');
   };
+
+  /* Special for training */
+  if( current_relationship.get('concepts')['c1']['text'] == 'Citizen Scientists' ) {
+    $('#c1 .not_correct_stype').text('is not a group of people?');
+  }
+
+  if( current_relationship.get('concepts')['c2']['text'] == 'Astrology' ) {
+    $('#c2 .not_correct_stype').text('is not a field of science?');
+  }
+
 };
 
 RelationTaskCollection = Backbone.Collection.extend({
