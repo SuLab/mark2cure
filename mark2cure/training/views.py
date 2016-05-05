@@ -114,11 +114,10 @@ def relation_training(request, part_num=1, step_num=1):
     part = int(part_num)
     step = int(step_num)
 
-    #if part == 3 and step == 25:
-    #    user.givepoints
+    json_data = json.dumps(relation_data)
 
     ctx = {
-        'relation_data': json.dumps(relation_data)
+        'relation_data': json_data
     }
     return TemplateResponse(request, 'training/relation/part-{part_num}/page-{step_num}.jade'.format(part_num=part_num, step_num=step_num), ctx)
 

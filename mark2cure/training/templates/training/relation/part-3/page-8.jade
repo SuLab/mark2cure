@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Gene-Disease Relationships: Last one!
+      p Gene-Disease Relationships: Now try this one out!
 
     .col-xs-12.text-center
       p
@@ -24,7 +24,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p Interestingly, some of the main proteins involved in <span class='user_annotated'>Alzheimer Disease</span> (AD), including <span class='user_annotated_green'>amyloid precursor protein</span> (APP) and tau, have recently been shown to be SUMOylated. The post-translational modification by SUMO (small ubiquitin-like modifier) has been shown to regulate APP and tau and may modulate other proteins implicated in AD. 
+      p Altered regulation of <span class='user_annotated_green'>PDK4</span> expression promotes antiestrogen resistance in human <span class='user_annotated'>breast cancer</span> cells.
 
 
   script.
@@ -37,12 +37,12 @@ block interactive
       "relation_type": "g_d",
       "concepts": {
         "c2": {
-          "text": "Alzheimer disease",
+          "text": "Breast cancer",
           "type": "g",
           "id": "0"
         },
         "c1": {
-          "text": "Amyloid precursor protein",
+          "text": "PDK4",
           "type": "g",
           "id": "0"
         }
@@ -85,7 +85,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'rhkmksv5jh0vn7p47uk3fwdior6mlgaubwh1l6ow') {
+      if(current_selection.get('id') == 'u0q779rcrevnu6aki694dqka4fnfwvwqgpl06ybl') {
         $('#next-button').show();
       };
     });

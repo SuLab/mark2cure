@@ -1,0 +1,111 @@
+extends training/relation/part-1/base
+
+block intro-content
+  .row.m-t-md
+    .col-xs-12
+      p Chemical/Drug-Disease Relationships: Last one!
+
+    .col-xs-12.text-center
+      p
+        strong Use the menu in the box below to help relate the two concepts:
+
+
+block navigation
+
+  #next-text(style='display:none;').row.m-t-md
+    .col-xs-12.text-center
+      .alert.alert-info
+        p Remember, you do not have to specify the specific relationship if the text doesn’t say what it is. If there’s some sort of relationship, but it’s not clear what sort of relationship, just submit with 'Relates to'
+
+  .row.m-t-md
+    .col-xs-12.text-center
+      a(id='next-button', style='display:none;', data-toggle='modal', data-target='#relation-training-progress').btn.btn-primary Next
+
+    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
+      .modal-dialog.modal-md
+        .modal-content
+          .modal-body
+            .list-group.text-center
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
+              .list-group-item.completed
+                | <i class='fa fa-check' aria-hidden='true'></i>  Learn new relationships: Broad
+              a(href='{% url "common:dashboard" %}').list-group-item.current
+                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Visit the Relationships Dashboard
+
+
+block interactive
+
+  #tree-insert
+
+  .row.m-t-md
+    .col-xs-12
+      p In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of <span class='user_annotated_green'>EGFR</span> and increased the cell sensitivity to <span class='user_annotated_pink'>erlotinib</span>. In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated <span class='user_annotated_green'>EGFR</span>, and these cells did not respond to <span class='user_annotated_pink'>erlotinib</span>.
+
+
+  script.
+    relation_task_settings = {};
+    relation_task_settings['data'] = {{ relation_data|safe }};
+
+    task_data = [{
+      "id": 0,
+      "document": 0,
+      "relation_type": "g_c",
+      "concepts": {
+        "c2": {
+          "text": "erlotinib",
+          "type": "c",
+          "id": "0"
+        },
+        "c1": {
+          "text": "EGFR",
+          "type": "g",
+          "id": "0"
+        }
+      },
+      "user_completed": false
+    }];
+
+
+block post-footer
+  <script type="html/template" id="tree-template">
+  <div id="tree" class="row text-center">
+
+  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
+  <i id="c1_not_correct" class="fa fa-times-circle"></i>
+  <h3><%= c1.text %></h3>
+  <p class="not_correct_stype"></p>
+  </div>
+
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
+  <h3 id="relation" class="disabled">Select a Relationship below...</h3>
+  <ul class="list-group"></ul>
+  </div>
+
+  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2">
+  <i id="c2_not_correct" class="fa fa-times-circle"></i>
+  <h3><%= c2.text %></h3>
+  <p class="not_correct_stype"></p>
+  </div>
+
+  </script>
+
+
+
+  script(src="/static/js/libs/tree.js")
+  script(src="/static/js/tasks/relation-training.js")
+
+  script.
+    var passages, regions, tmp_passages;
+
+    /* When an item is selected */
+    Tree['convoChannel'].on('click', function(obj) {
+      var current_selection = Tree.start.currentView.options.choice;
+      if(current_selection.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
+        $('#next-text').show();
+        $('#next-button').show();
+      };
+    });
+

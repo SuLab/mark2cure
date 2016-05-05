@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Chemical/Drug-Disease Relationships: Last one!
+      p Chemical/Drug-Disease Relationships: One more!
 
     .col-xs-12.text-center
       p
@@ -12,28 +12,9 @@ block intro-content
 
 block navigation
 
-  #next-text(style='display:none;').row.m-t-md
-    .col-xs-12.text-center
-      .alert.alert-info
-        p Remember, you do not have to specify the specific relationship if the text doesn’t say what it is. If there’s some sort of relationship, but it’s not clear what sort of relationship, just submit with 'Relates to'
-
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', data-toggle='modal', data-target='#relation-training-progress').btn.btn-primary Next
-
-    #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm
-      .modal-dialog.modal-md
-        .modal-content
-          .modal-body
-            .list-group.text-center
-              .list-group-item.completed
-                | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
-              .list-group-item.completed
-                | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
-              .list-group-item.completed
-                | <i class='fa fa-check' aria-hidden='true'></i>  Learn new relationships: Broad
-              a(href='{% url "common:dashboard" %}').list-group-item.current
-                | <i class='fa fa-angle-right' aria-hidden='true'></i>  Visit the Relationships Dashboard
+      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=25 %}').btn.btn-primary Next
 
 
 block interactive
@@ -42,7 +23,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of <span class='user_annotated_green'>EGFR</span> and increased the cell sensitivity to <span class='user_annotated_pink'>erlotinib</span>. In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated <span class='user_annotated_green'>EGFR</span>, and these cells did not respond to <span class='user_annotated_pink'>erlotinib</span>.
+      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function
 
 
   script.
@@ -55,12 +36,12 @@ block interactive
       "relation_type": "g_c",
       "concepts": {
         "c2": {
-          "text": "erlotinib",
+          "text": "tadalafil",
           "type": "c",
           "id": "0"
         },
         "c1": {
-          "text": "EGFR",
+          "text": "PDE5",
           "type": "g",
           "id": "0"
         }
@@ -103,8 +84,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
-        $('#next-text').show();
+      if(current_selection.get('id') == '5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy') {
         $('#next-button').show();
       };
     });

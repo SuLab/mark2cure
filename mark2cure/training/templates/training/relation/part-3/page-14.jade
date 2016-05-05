@@ -3,89 +3,20 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Drug-Disease Relationships: Try it out! Remember, select the relationship based only on the text below.
+      p.text-muted Drug-Disease Relationships: A <strong>drug</strong> is, in the broadest of terms, a <strong>substance</strong> that has known biological effects on humans or other animals. There are five options for how a Drug might relate to a disease:
+      p.text-muted <strong>"exacerbates"</strong> – The chemical or drug worsens the disease or symptoms of the disease in any manner
+      p.text-muted <strong>"treats"</strong> – The chemical or drug improves or treats the disease or symptoms of the disease in any manner
+      p.text-muted <strong>increases risk of disease</strong> – The chemical or drug increases the chances of getting the disease. (Eg- like side effects)
+      p <strong>"may cause"</strong> – The chemical or drug may cause or lead to the disease or symptoms of the disease
+      p <strong>"prevents"</strong> – The chemical or drug prevents the disease or symptoms of the disease
 
-    .col-xs-12.text-center
-      p
-        strong Use the menu in the box below to help relate the two concepts:
-
-
-block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=15 %}').btn.btn-primary Next
+      a(href='{% url "training:relation-training" part_num=3 step_num=15 %}').btn.btn-primary Next
 
 
 block interactive
 
-  #tree-insert
-
-  .row.m-t-md
-    .col-xs-12
-      p Results revealed that risk of <span class='user_annotated'>ADHD</span> significantly increased as a result of exposure to <span class='user_annotated_pink'>alcohol</span> by 1.55 times (95% CI 1.33-1.82), maternal smoking during pregnancy by 2.64 times (95% CI 1.45-4.80), and paternal smoking during pregnancy by 1.17 times (95% CI 1.98-1.39)
-
-
-  script.
-    relation_task_settings = {};
-    relation_task_settings['data'] = {{ relation_data|safe }};
-
-    task_data = [{
-      "id": 0,
-      "document": 0,
-      "relation_type": "c_d",
-      "concepts": {
-        "c2": {
-          "text": "ADHD",
-          "type": "d",
-          "id": "0"
-        },
-        "c1": {
-          "text": "alcohol",
-          "type": "c",
-          "id": "0"
-        }
-      },
-      "user_completed": false
-    }];
-
-
-block post-footer
-  <script type="html/template" id="tree-template">
-  <div id="tree" class="row text-center">
-
-  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
-  <i id="c1_not_correct" class="fa fa-times-circle"></i>
-  <h3><%= c1.text %></h3>
-  <p class="not_correct_stype"></p>
-  </div>
-
-  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
-  <h3 id="relation" class="disabled">Select a Relationship below...</h3>
-  <ul class="list-group"></ul>
-  </div>
-
-  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2">
-  <i id="c2_not_correct" class="fa fa-times-circle"></i>
-  <h3><%= c2.text %></h3>
-  <p class="not_correct_stype"></p>
-  </div>
-
-  </script>
-
-
-
-  script(src="/static/js/libs/tree.js")
-  script(src="/static/js/tasks/relation-training.js")
-
-  script.
-    var passages, regions, tmp_passages;
-
-    /* When an item is selected */
-    Tree['convoChannel'].on('click', function(obj) {
-      var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5') {
-        $('#next-button').show();
-      };
-    });
+block navigation
 

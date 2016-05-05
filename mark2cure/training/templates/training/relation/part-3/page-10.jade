@@ -3,13 +3,19 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Drug-Disease Relationships: A <strong>drug</strong> is, in the broadest of terms, a <strong>substance</strong> that has known biological effects on humans or other animals. There are five options for how a Drug might relate to a disease:
+      p Great Job! Now let’s learn about a different type of relationship.
+
+      p.text-muted In addition to having a relationship or NOT having a relationship, there are three types of relationships currently available:
+      ul
+        li.text-muted Relationships between Genes Concept and Disease Concept
+        li Relationships between Drug Concept and Disease Concept
+        li Relationships between Gene Concept and Drug Concept
+      p Press 'start now' to learn about Drug-Disease Relationships
 
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(href='{% url "training:relation-training" part_num=3 step_num=11 %}').btn.btn-primary Next
-
+      a(href='{% url "training:relation-training" part_num=3 step_num=11 %}').btn.btn-primary Start Now
 
 
 block interactive
