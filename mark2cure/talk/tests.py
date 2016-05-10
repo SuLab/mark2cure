@@ -7,7 +7,7 @@ from ..document.models import Document
 
 class TalkViews(TestCase, TestBase):
 
-    fixtures = ['tests_documents.json', 'fixtures/tests_common.json']
+    fixtures = ['tests_documents.json',]
 
     def test_home(self):
         document = Document.objects.first()

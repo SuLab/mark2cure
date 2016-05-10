@@ -314,8 +314,8 @@ class Base(Configuration):
     # Email settings management
     DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
     SERVER_EMAIL = DEFAULT_FROM_EMAIL
-    # MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
-    # EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+    MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
+    EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
     # User account management
     ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
@@ -354,7 +354,6 @@ class Development(Base):
     if 'test' in sys.argv:
         import dj_database_url
         DATABASES = {'default': dj_database_url.parse('sqlite://' + Base.PROJECT_PATH + '/test_db.sqlite')}
-        SOUTH_TESTS_MIGRATE = True
 
         SOUTH_LOGGING_ON = True
         SOUTH_LOGGING_FILE = Base.PROJECT_PATH + '/south_logging_file'

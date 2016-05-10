@@ -9,33 +9,39 @@ head
     link(rel='shortcut icon', href='#{STATIC_URL}favicon.ico', type='image/x-icon')
     link(rel='icon', href='#{STATIC_URL}favicon.ico', type='image/x-icon')
 
+    //link(rel="apple-touch-icon", href="/static/images/landing/mark2cure-flatbox-logo.jpg")
     link(rel='apple-touch-icon', href='#{STATIC_URL}touch-icon-iphone.png')
     link(rel='apple-touch-icon', sizes='76x76', href='#{STATIC_URL}touch-icon-ipad.png')
     link(rel='apple-touch-icon', sizes='120x120', href='#{STATIC_URL}touch-icon-iphone-retina.png')
     link(rel='apple-touch-icon', sizes='152x152', href='#{STATIC_URL}touch-icon-ipad-retina.png')
 
+    meta(name='description', content='Mark2Cure – Scientific communication is broken')
+    meta(name='keywords', content='mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology')
+
+    meta(name='author', content='Mark2Cure')
+    meta(name='copyright', content='Mark2Cure')
+    meta(name='application-name', content='Mark2Cure')
+
+
+
     block social-tags
-      meta(name='description', content='Mark2Cure – Scientific communication is broken')
-      meta(name='keywords', content='mark2cure, the scripps research institute, max nanis, ben good, andrew su, biology')
-
-      meta(name='author', content='Mark2Cure')
-      meta(name='copyright', content='Mark2Cure')
-      meta(name='application-name', content='Mark2Cure')
-
       meta(property='og:title', content='Mark2Cure')
       meta(property='og:type', content='article')
       meta(property='og:image', content='#{STATIC_URL}static/img/mark2ure.png')
-      meta(property='og:url', content='http://mark2cure.org')
-      meta(property='og:description', content='')
+      //meta(property="og:image", content="/static/images/landing/mark2cure-flatbox-logo.jpg")
+      meta(property="og:url", content="http://mark2cure.org")
+      meta(property="og:description", content="Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.")
 
       meta(name='twitter:card', content='summary')
       meta(name='twitter:title', content='Mark2Cure')
-      meta(name='twitter:description', content='')
+      meta(name="twitter:description", content="Let's help scientists organize biomedical knowledge and uncover hidden links.")
+      //meta(name="twitter:image", content="/static/images/landing/mark2cure-flatbox-logo.jpg")
       meta(name='twitter:image', content='#{STATIC_URL}static/img/profile.jpg')
 
     block head-title
       title Mark2Cure
 
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
     link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
 
   body
@@ -83,6 +89,13 @@ head
       script(src='#{STATIC_URL}js/ypet.js')
       script(src='#{STATIC_URL}js/leaderboard.js')
       script(src='#{STATIC_URL}js/app.js')
+
+      // Homepage specific requirements
+      // Other Various JS libs
+      script(src="/static/js/libs/jquery-ui.min.js")
+      script(src="/static/js/libs/sly.min.js")
+      // Using sly lib (for 'completed/incomplete document carousel')
+      script(src="/static/js/pages/landing2.js")
 
 
       a#support-icon(data-toggle="modal", data-target="#support-modal")

@@ -137,56 +137,6 @@
     line-height: 140%;
   }
 
-  .navbar {
-    min-height: 120px;
-    font-family: $font_helvetica;
-    font-size: 16px;
-    z-index: 1000;
-  }
-  .navbar-nav {
-    margin-top: 35px;
-  }
-  .navbar-default,
-  .navbar-default .navbar-nav > .active > a {
-    background-color: transparent;
-    border-color: transparent;
-  }
-  .navbar-default .navbar-nav > .active > a {
-    background-image: none;
-    background-repeat: none;
-    filter: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-  }
-  .navbar-brand,
-  .navbar-nav > li > a {
-    text-shadow: none;
-    color: $color_white;
-  }
-  .navbar-default .navbar-collapse,
-  .navbar-default .navbar-form {
-    border-color: transparent;
-  }
-  .navbar-default .navbar-toggle .icon-bar {
-    background-color: $color_white;
-  }
-  .navbar-default .navbar-nav > .active > a,
-  .navbar-default .navbar-nav > .active > a:hover,
-  .navbar-default .navbar-nav > .active > a:focus {
-    color: $color_purple;
-    background-color: transparent;
-  }
-  .nav > li.social > a {
-    padding-left: 10px;
-    padding-right: 0;
-  }
-  .case-study .navbar-default .navbar-nav > .active > a,
-  .case-study .navbar-default .navbar-nav > .active > a:hover,
-  .case-study .navbar-default .navbar-nav > .active > a:focus,
-  .case-study .navbar-default .navbar-nav > li > a {
-    color: $color_white;
-    background-color: transparent;
-  }
   .modal-content {
     border-radius: 0;
   }
@@ -196,7 +146,7 @@
   }
   #bg-case-study .container,
   #bg-light .container {
-    margin-top: 130px;
+    margin-top: 100px;
   }
   .cta #bg-light h1 {
     line-height: 150%;
@@ -246,29 +196,9 @@
       width: 100%;
       background: rgba(0, 204, 255, 0.5);
       color: $color_white;
+      height: 4em;
     }
   }
-
-
-  #landing-footer {
-    margin-top: 40px;
-    padding-bottom: 30px;
-
-    .text-muted a {
-      color: #999999;
-    }
-    .participate {
-      float: right;
-    }
-    .participate p {
-      display: inline;
-    }
-    .participate p .fa {
-      font-size: 20px;
-      margin-left: 10px;
-    }
-  }
-
 
 
   .light .sci-comm {
@@ -281,10 +211,6 @@
 
 
 @media (max-width: 768px) {
-  #landing-footer .participate {
-    float: none;
-  }
-
   .sci-comm-cs {
     margin-top: 500px;
   }
@@ -293,48 +219,6 @@
     margin-top: 50px;
   }
 
-  .navbar-brand img {
-    width: 50px;
-  }
-  .navbar-toggle {
-    margin-top: 20px;
-  }
-  .navbar-nav {
-    text-align: center;
-    width: 100%;
-  }
-  .navbar-collapse {
-    background: $color_white;
-    min-height: 100vh;
-  }
-  .navbar-header {
-    padding-bottom: 15px;
-  }
-  .case-study .navbar-default .navbar-nav > li > a {
-    color: $color_purple;
-  }
-  .light .navbar-collapse {
-    background: $color_purple;
-  }
-  .light .navbar-default .navbar-toggle .icon-bar {
-    background-color: $color_purple;
-  }
-  .light .navbar-default .navbar-toggle {
-    border-color: $color_purple;
-  }
-  .light .navbar-default .navbar-nav > li > a {
-    color: $color_white;
-  }
-  .container > .navbar-collapse,
-  .container > .navbar-header {
-    margin-right: -16px;
-    margin-left: -16px;
-  }
-
-  #bg-case-study .container,
-  #bg-light .container {
-    margin-top: 100px;
-  }
   .cta p {
     font-size: 15px;
   }
@@ -356,11 +240,6 @@
   }
 }
 
-@media (max-width: 991px) {
-  .navbar {
-    min-height: 80px;
-  }
-}
 
 .home-frame {
 
