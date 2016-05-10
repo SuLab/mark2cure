@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Drug-Disease Relationships: Try this one!
+      p Drug-Disease Relationships: Try it out! Remember, select the relationship based only on the text below.
 
     .col-xs-12.text-center
       p
@@ -23,7 +23,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p <span class='user_annotated_pink'>Ligustrazine</span> prevents <span class='user_annotated'>alcohol-induced liver disease</span> by attenuating hepatic steatosis and oxidative stress
+      p Results revealed that risk of <span class='user_annotated'>ADHD</span> significantly increased as a result of exposure to <span class='user_annotated_pink'>alcohol</span> by 1.55 times (95% CI 1.33-1.82), maternal smoking during pregnancy by 2.64 times (95% CI 1.45-4.80), and paternal smoking during pregnancy by 1.17 times (95% CI 1.98-1.39)
 
 
   script.
@@ -36,12 +36,12 @@ block interactive
       "relation_type": "c_d",
       "concepts": {
         "c2": {
-          "text": "Alcohol-induced liver disease",
+          "text": "ADHD",
           "type": "d",
           "id": "0"
         },
         "c1": {
-          "text": "Ligustrazine",
+          "text": "alcohol",
           "type": "c",
           "id": "0"
         }
@@ -84,7 +84,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'lt18qfxd1ehj7ymxb29wrv6qa41mocwe6eor9dna') {
+      if(current_selection.get('id') == 'yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5') {
         $('#next-button').show();
       };
     });

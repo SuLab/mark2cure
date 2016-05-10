@@ -1,3 +1,5 @@
+- load humanize
+
 html
   head
     meta(charset="utf-8")
@@ -27,8 +29,8 @@ html
     link(rel="stylesheet", href="#{STATIC_URL}css/style.css")
 
   body#landing-2
-    include registration/login-modal
-    include registration/subscribe-modal
+    //include registration/login-modal
+    //include registration/subscribe-modal
 
     .case-study
       nav.navbar.navbar-default
@@ -48,7 +50,7 @@ html
               li
                 a(href="/contact/") Contact
               li
-                a(href='{% url "registration:login" %}') Login
+                a(href='{% url "account_login" %}') Login
 
               li.social.hidden-xs-down
                 a(href="http://sulab.org/category/mark2cure/feed")
@@ -90,7 +92,7 @@ html
           .container-fluid.text-center.cta-bar
             .row
               .col-xs-12
-                <p><a href="http://sulab.org/2015/09/please-help-now/">Over 500,000 annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
+                <p><a href="http://sulab.org/2015/09/please-help-now/">#{ann_count|intcomma} annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
 
 
       .clearfix
@@ -100,36 +102,31 @@ html
 
       .container
         .row
+          .col-sm-12.text-center
+            h2 Current <span class="font-red text-uppercase">missions.</span>
+
+      .container-fluid
+        .row
           .home-frame
-            <div class="wrap">
 
-            <div class="scrollbar">
-            <div class="handle">
-            <div class="mousearea"></div>
-            </div>
-
-            </div>
-
-            <div class="frame" id="basic">
-            ul.clearfix
-              each group in groups
-                li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
-                    a(href='/group/{{ group.stub}}/' target='_blank')
-                      - if group.enabled
-                        h2
-                          <i class="fa fa-check" aria-hidden="true" style="color: #b2f270"></i>
-                        h5.text-center(style="color: #818a91") {{ group.name }}
-                        h5.text-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
-
-                      - else
-                        h2
-                          <i class="fa fa-pencil" aria-hidden="true"></i>
-                        h5.text-center {{ group.name }}
-                        h5.text-center Total Docs: {{ group.doc_count }}
-
-            </ul>
-            </div>
-
+            div.frame#basic
+              ul.clearfix
+                each group in groups
+                  - if group.enabled == False and group.percentage_complete < 100
+                    pass
+                  - else
+                    li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
+                        a(href='/group/{{ group.stub}}/' target='_blank')
+                          - if group.percentage_complete > 99
+                            h2
+                              i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
+                            h5.text-center(style="color: #818a91") {{ group.name }}
+                            h5.text-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
+                          - else
+                            h2
+                              i.fa.fa-pencil(aria-hidden="true")
+                            h5.text-center {{ group.name }}
+                            h5.text-center Total Docs: {{ group.doc_count }}
             <ul class="pages"></ul>
 
       .container

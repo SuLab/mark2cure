@@ -1,0 +1,37 @@
+{% extends 'base.jade' %}
+
+{% block head-title %}
+  <title>{{ flatpage.title }}</title>
+{% endblock %}
+
+
+    {% block content %}
+    <div id="error" class="container m-y-lg">
+        <div class="row">
+            <div class="col-sm-12 codl-sm-offset-1">
+                <div class="row">
+
+                    <div class="col-md-6 col-lg-7">
+                        <h1 class="text-mega-big bold">Opps!</h1>
+                        <h2 class="disp_light">We can't seem to find the page you're looking for.</h2>
+                        <h6 class="text-muted">Error code: 404</h6>
+                        <ul class="list-unstyled">
+                            <li>Here are some helpful links instead:</li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/accounts/signup/">Sign Up</a></li>
+                            <li><a href="/accounts/login/">Login</a></li>
+                            <li><a href="/help/">Help</a></li>
+                            <li><a href="/help/getting-started/">Getting Started</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-lg-5">
+                        <img src="/static/img/404-burning-money.gif"  class="img-404" alt="404">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+

@@ -1,0 +1,38 @@
+extends base
+
+- load as_vertical_form from bootstrap
+
+block header
+
+block content
+
+    .row.m-t-md
+      .col-xs-12
+        h1.text-center Sign In
+
+    .row.m-t-md
+      .col-xs-4.col-xs-offset-4
+        - if form.errors
+          p Your username and password didn't match. Please try again.
+
+      .col-xs-6.col-xs-offset-3
+        form(method='post')
+          - csrf_token
+
+          .form-group
+            .row
+              .col-xs-6.col-xs-offset-3
+                #{form.login|as_vertical_form}
+
+          .form-group
+            .row
+              .col-xs-6.col-xs-offset-3
+                #{form.password|as_vertical_form}
+
+          .form-group.m-t-md
+            .row
+              .col-xs-4.col-xs-offset-4
+                input(type='submit', value='Sign In').btn.btn-primary.btn-block
+              .col-xs-4.col-xs-offset-4
+                p.text-right
+                  a(href='{% url "account_reset_password" %}') Forgot password?

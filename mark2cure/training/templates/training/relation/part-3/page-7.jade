@@ -3,7 +3,8 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Gene-Disease Relationships: Now try this one out!
+      p Gene-Disease Relationships: Try it out!  Remember, don’t use outside information for <strong>the relationship between</strong> TTR and Familial amyloidotic polyneuropathy, but you’re welcome to look up anything else (Eg- TTR, crest syndrome, multiple myeloma, etc.)
+
 
     .col-xs-12.text-center
       p
@@ -24,8 +25,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p Altered regulation of <span class='user_annotated_green'>PDK4</span> expression promotes antiestrogen resistance in human <span class='user_annotated'>breast cancer</span> cells.
-
+      p Together with a case presenting in a patient with multiple myeloma, we describe 2 unique presentations including 1 associated with CREST syndrome in a patient with a previous history of breast carcinoma and another, also associated with cancer, with transthyretin deposits in a woman with a <span class='user_annotated_green'>TTR</span> gene mutation and a family history of <span class='user_annotated'>familial amyloidotic polyneuropathy</span>.
 
   script.
     relation_task_settings = {};
@@ -37,12 +37,12 @@ block interactive
       "relation_type": "g_d",
       "concepts": {
         "c2": {
-          "text": "Breast cancer",
+          "text": "Familial amyloidotic polyneuropathy",
           "type": "g",
           "id": "0"
         },
         "c1": {
-          "text": "PDK4",
+          "text": "TTR",
           "type": "g",
           "id": "0"
         }
@@ -85,7 +85,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'u0q779rcrevnu6aki694dqka4fnfwvwqgpl06ybl') {
+      if(current_selection.get('id') == '04110gzdcxz8niuv83ev08ut7lv0xep4iym5sxm5') {
         $('#next-button').show();
       };
     });

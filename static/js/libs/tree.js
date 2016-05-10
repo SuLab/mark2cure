@@ -156,6 +156,13 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
       } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
         this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
 
+        /* Training specific
+         * (TODO) get out of here
+         */
+        if(concepts['c2']['text'] == 'Astrology') {
+          this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
+        };
+
       } else {
         this.ui.relation.removeClass('disabled').text( choice.get('text') );
       };

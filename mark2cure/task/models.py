@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from ..document.models import Document, View
 
 class Level(models.Model):
     user = models.ForeignKey(User)
 
+    ENTITY_RECOGNITION = 'e'
     TASK_TYPE_CHOICES= (
-        ('e', 'Entity Recognition'),
+        (ENTITY_RECOGNITION, 'Entity Recognition'),
         ('r', 'Relation'),
     )
     task_type = models.CharField(max_length=1, choices=TASK_TYPE_CHOICES)
@@ -19,6 +19,13 @@ class Level(models.Model):
         get_latest_by = 'created'
         ordering = ('-level', )
 
+    def get_name(self):
+        if self.task_type == 'e':
+            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert",]
+        else:
+            levels = ["beginner", "Medium", "Expert"]
+
+        return levels[self.level]
 
 
 class Task(models.Model):
@@ -34,7 +41,7 @@ class Task(models.Model):
 
     # If no completions defined, allow infinity K value
     completions = models.IntegerField(default=10, blank=True, null=True)
-    documents = models.ManyToManyField(Document, through='DocumentQuestRelationship', blank=True)
+    documents = models.ManyToManyField('document.Document', through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
     points = models.IntegerField(max_length=6, blank=True, default=0)
     experiment = models.IntegerField(blank=True, null=True)
@@ -77,6 +84,7 @@ class Task(models.Model):
         if user_quest_rel_views.filter(section__document=document).count() < document.count_available_sections():
 
             for sec in document.available_sections():
+                from ..document.models import View
                 view = View.objects.create(section=sec, user=user)
                 user_quest_rel_views.add(view)
 
@@ -103,7 +111,7 @@ class UserQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
     user = models.ForeignKey(User)
 
-    views = models.ManyToManyField(View)
+    views = models.ManyToManyField('document.View')
 
     completed = models.BooleanField(default=False, blank=True)
     score = models.IntegerField(max_length=7, blank=True, default=5)
@@ -131,7 +139,7 @@ class UserQuestRelationship(models.Model):
 
 class DocumentQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
-    document = models.ForeignKey(Document)
+    document = models.ForeignKey('document.Document')
 
     points = models.IntegerField(max_length=7, blank=True, default=0)
 

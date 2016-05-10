@@ -11,6 +11,20 @@ from decimal import Decimal
 import random
 from collections import Counter
 
+from allauth.account.signals import user_signed_up
+from django.dispatch import receiver
+from ..task.models import Level
+from django.utils import timezone
+
+
+@receiver(user_signed_up, dispatch_uid='mark2cure.common.allauth.user_signed_up')
+def user_signed_up_(request, user, **kwargs):
+    print '> USER SIGNED UP', request.session.get('initial_training'), kwargs
+
+    if request.session.get('initial_training'):
+        # After loggin them in, assign the first Level training so we know where to route them
+        Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=3, created=timezone.now())
+
 
 class PointsBadge(Badge):
     slug = "points"
@@ -53,7 +67,6 @@ class PointsBadge(Badge):
 badges.register(PointsBadge)
 
 
-
 class Group(models.Model):
     '''Describe a non-task specific selection of documents (1-n) that curator defined'''
 
@@ -63,7 +76,6 @@ class Group(models.Model):
     order = models.DecimalField(default=0, max_digits=3, decimal_places=3)
 
     enabled = models.BooleanField(default=False)
-    #completed = models.BooleanField(default=False)
 
     def get_documents(self):
         # (TODO?) Return for __in of task_ids
@@ -79,22 +91,24 @@ class Group(models.Model):
 
     def top_five_contributors(self):
         """returns a user name list for the group"""
-        uqr = UserQuestRelationship.objects.filter(task__group=self)
+        uqrs = UserQuestRelationship.objects.filter(task__group=self)
         username_list = []
-        for user in uqr:
-            # (TODO) not sure if this is the fastest approach
-            username_list.append(str.encode(str(user.user.username)))
+        for uqr in uqrs:
+            if uqr.completed:
+                # (TODO) not sure if this is the fastest approach
+                username_list.append(str.encode(str(uqr.user.username)))
         counter = Counter(username_list)
         top_five_users = [tuple_i[0] for tuple_i in counter.most_common(5)]
         return top_five_users, username_list
 
     def total_contributors(self):
         """returns a user name list for the group"""
-        uqr = UserQuestRelationship.objects.filter(task__group=self)
+        uqrs = UserQuestRelationship.objects.filter(task__group=self)
         username_list = []
-        for user in uqr:
-            # (TODO) not sure if this is the best approach:
-            username_list.append(str.encode(str(user.user.username)))
+        for uqr in uqrs:
+            if uqr.completed:
+                # (TODO) not sure if this is the best approach:
+                username_list.append(str.encode(str(uqr.user.username)))
         total_contributors = len(set(username_list))
         return total_contributors
 

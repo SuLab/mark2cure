@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 
 from ...document.models import View, Annotation
 from .models import EntityRecognitionAnnotation
@@ -114,8 +115,9 @@ def generate_results(user_views, gm_views):
      fn  *tn
 
     '''
-    gm_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in gm_views if type(v) is View])
-    user_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in user_views if type(v) is View])
+    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
+    gm_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in gm_views if type(v) is View], content_type_id)
+    user_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in user_views if type(v) is View], content_type_id)
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 

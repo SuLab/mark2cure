@@ -25,10 +25,6 @@ nav#header(role='navigation').navbar.navbar-default
               li
                 a(href='{% url "profile:public-profile" username=user.username %}')
                   p Profile
-              li
-                a(href='{% url "registration:logout" %}')
-                  p Logout
-
 
   .row
     .col-xs-10.col-xs-offset-1

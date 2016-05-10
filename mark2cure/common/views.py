@@ -7,9 +7,11 @@ from django.template.response import TemplateResponse
 from django.contrib.messages import get_messages
 from django.contrib import messages
 
+from .utils.mdetect import UAgentInfo
 from ..userprofile.models import UserProfile
 from ..task.models import Level
 from .models import Group
+from ..document.models import Annotation
 from .forms import SupportMessageForm
 
 import random
@@ -26,18 +28,28 @@ def home(request):
               "Goofing off productively.",
               "Community.", "Science!"]
     random.shuffle(quotes)
-    groups = Group.objects.all().exclude(name='Practice').order_by('enabled')
-    ctx = {'form': form, 'quotes': quotes, 'groups': groups}
+    groups = Group.objects.all().exclude(name='Practice').order_by('-order')
+    ctx = {'form': form,
+           'quotes': quotes,
+           'groups': groups,
+           'ann_count': Annotation.objects.count()}
     return TemplateResponse(request, 'common/landing2.jade', ctx)
 
 
 def get_started(request):
     return redirect('training:introduction', step_num=1)
+    # return redirect('training:relation-training', part_num=1, step_num=1)
+
+    '''
+    uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    if uai.detectMobileLong():
+        return redirect('training:relation-training', part_num=1, step_num=1)
 
     if Level.objects.filter(level=7, task_type='e').count() > Level.objects.filter(level=7, task_type='r').count():
         return redirect('training:relation-training', part_num=1, step_num=1)
     else:
         return redirect('training:introduction', step_num=1)
+    '''
 
 
 def beta(request):
@@ -64,7 +76,9 @@ def dashboard(request):
     msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
     messages.info(request, msg, extra_tags='safe alert-success')
 
-    ctx = {'welcome': welcome}
+    uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    ctx = {'welcome': welcome,
+           'mobile': uai.detectMobileLong()}
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 # removed login required here to allow public to see doc set contributions
@@ -80,16 +94,15 @@ def group_view(request, group_stub):
     "alacrima": {"invite":"2015.05.21", "public":"2015.05.22", "closed":"2015.06.19"},
     "OGD": {"invite":"2015.05.29","public":"2015.05.29", "closed":"2015.11.13"},
     "FBX": {"invite":"2015.06.25","public":"2015.06.26","closed":"2015.08.14"},
-    "ost": {"invite":"2015.07.31",
-    "public": "2015.08.07","closed": "2016.04.03"},
+    "ost": {"invite":"2015.07.31","public": "2015.08.07","closed": "2016.04.03"},
     "mfold": {"invite":"2015.09.10", "public": "2015.09.11","closed": "2015.11.19"},
     "eeyar": {"invite": "2015.11.04","public":"2015.11.06", "closed":"2015.12.25",},
     "mitomis": {"invite":"2015.11.10", "public": "2015.11.11", "closed": "2016.03.04"},
     "ATGS": {"invite":"2015.12.28", "public": "2015.12.30", "closed": ""},
     "MATG": {"invite":"2016.02.24", "public": "2016.02.26", "closed": ""},
-    "MATGS": {"invite": "", "public": "", "closed": ""},
-    "training": {"invite": "", "public": "", "closed": ""},
-    "HSPT1": {"invite": "", "public": "", "closed": ""},
+    "MATGS": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
+    "training": {"invite": "2015.05.21", "public": "2015.05.21", "closed": ""},
+    "HSPT1": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
     }
 
     try:

@@ -3,17 +3,18 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p In addition to having a relationship or NOT having a relationship, there are three types of relationships currently available:
+      p Relationships for three different types of concepts will be presented. The concepts will be color-coded:
       ul
-        li Relationships between Genes Concept and Disease Concept
-        li Relationships between Drug Concept and Disease Concept
-        li Relationships between Gene Concept and Drug Concept
-      p Press ‘start now’ to learn more about the options under each relationship type.
+        li <span class='user_annotated'>Disease concept</span> entities will be in <span class='user_annotated'>blue</span>
+        li <span class='user_annotated_green'>Gene/protein concept</span> entities will be in <span class='user_annotated_green'>green</span>
+        li <span class='user_annotated_pink'>Drug concept</span> entities will be in <span class='user_annotated_pink'>pink</span>
+        li Learn more about the concept types <a href='#'>here</a>
+      p Press ‘Next’ to continue.
 
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(href='{% url "training:relation-training" part_num=3 step_num=2 %}').btn.btn-primary Start Now
+      a(href='{% url "training:relation-training" part_num=3 step_num=2 %}').btn.btn-primary Next
 
 
     #relation-training-progress(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true", show='true').modal.fade.bd-example-modal-sm

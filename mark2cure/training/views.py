@@ -19,37 +19,16 @@ import os
 @login_required
 def route(request):
     user_level = Level.objects.filter(user=request.user, task_type='e').first().level
-    print 'asdfasdfasdf', user_level
 
     if user_level <= 3:
         task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
     else:
         task = Task.objects.filter(kind=Task.TRAINING, requires_qualification=user_level).first()
 
-    print task
-
     if task:
         return redirect(task.meta_url)
     else:
         return redirect('common:dashboard')
-
-
-@login_required
-def read(request):
-    tasks = []
-    if request.user.is_authenticated():
-        profile = request.user.profile
-
-    tasks = Task.objects.filter(kind=Task.TRAINING).all()
-    for task in tasks:
-        setattr(task, 'enabled', Level.objects.filter(user=request.user, task_type='e').first().level >= task.requires_qualification if request.user.is_authenticated() else False)
-        setattr(task, 'completed', UserQuestRelationship.objects.filter(task=task, user=request.user, completed=True).exists() if request.user.is_authenticated() else False)
-
-        if task.pk == 1:
-            setattr(task, 'enabled', True)
-
-    ctx = {'tasks': tasks}
-    return TemplateResponse(request, 'training/read.jade', ctx)
 
 
 def introduction(request, step_num):
@@ -60,6 +39,7 @@ def introduction(request, step_num):
     if step_num == '3':
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-2.jade')
     if step_num == '4':
+        request.session['initial_training'] = 'e'
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-3.jade')
 
 
@@ -134,11 +114,10 @@ def relation_training(request, part_num=1, step_num=1):
     part = int(part_num)
     step = int(step_num)
 
-    #if part == 3 and step == 25:
-    #    user.givepoints
+    json_data = json.dumps(relation_data)
 
     ctx = {
-        'relation_data': json.dumps(relation_data)
+        'relation_data': json_data
     }
     return TemplateResponse(request, 'training/relation/part-{part_num}/page-{step_num}.jade'.format(part_num=part_num, step_num=step_num), ctx)
 

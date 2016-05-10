@@ -40,8 +40,6 @@ class Base(Configuration):
     SITE_ID = 1
     INTERNAL_IPS = ('127.0.0.1',)
 
-    ACCOUNT_ACTIVATION_DAYS = 7
-
     # Application definition
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -57,6 +55,11 @@ class Base(Configuration):
         'django.contrib.webdesign',
         'django.contrib.sitemaps',
         'raven.contrib.django.raven_compat',
+
+        'allauth',
+        'allauth.account',
+        'allauth.socialaccount',
+        'allauth.socialaccount.providers.google',
 
         'djangoratings',
         'djrill',
@@ -75,7 +78,7 @@ class Base(Configuration):
         'debug_toolbar',
 
         # Mark2Cure specific apps
-        'mark2cure.registration',
+        #'mark2cure.registration',
         'mark2cure.userprofile',
         'mark2cure.team',
         'mark2cure.instructions',
@@ -144,9 +147,14 @@ class Base(Configuration):
         },
     }
 
+    # AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
     AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
+
+        # `allauth` specific authentication methods, such as login by e-mail
+        'allauth.account.auth_backends.AuthenticationBackend',
     )
+
 
     MIDDLEWARE_CLASSES = (
         'django.middleware.cache.UpdateCacheMiddleware',
@@ -163,6 +171,9 @@ class Base(Configuration):
         'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 
         'django.middleware.cache.FetchFromCacheMiddleware',
+
+        #'account.middleware.LocaleMiddleware',
+        #'account.middleware.TimezoneMiddleware',
     )
 
     ROOT_URLCONF = 'mark2cure.urls'
@@ -201,7 +212,7 @@ class Base(Configuration):
         'django.core.context_processors.request',
 
         'mark2cure.common.context_processors.support_form',
-        'mark2cure.registration.context_processors.inject_signup_forms',
+        #'mark2cure.registration.context_processors.inject_signup_forms',
     )
 
     MEDIA_URL = 'media/'
@@ -276,12 +287,6 @@ class Base(Configuration):
     # User is online if they've been last seen 5min ago
     USER_ONLINE_TIMEOUT = 300
 
-    # Email Settings
-    DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
-    SERVER_EMAIL = DEFAULT_FROM_EMAIL
-    MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
-    EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
-    ROBOTS_USE_SITEMAP = True
 
     BROKER_URL = SecretValue(environ_prefix='MARK2CURE')
     CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
@@ -301,6 +306,40 @@ class Base(Configuration):
         },
     }
 
+    LOGIN_URL = 'account_login'
+    # LOGOUT_URL = '/registration/logout/'
+    # LOGIN_REDIRECT_URL = '/'
+    ROBOTS_USE_SITEMAP = True
+
+    # Email settings management
+    DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+    # MANDRILL_API_KEY = SecretValue(environ_prefix='MARK2CURE')
+    # EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+
+    # User account management
+    ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = ' (TODO) '
+    ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 30
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_SIGNUP_PASSWORD_VERIFICATION = True
+    ACCOUNT_UNIQUE_EMAIL = True
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+    ACCOUNT_USERNAME_MIN_LENGTH = 5
+    ACCOUNT_USERNAME_BLACKLIST = ['admin', 'owner', 'user']
+    ACCOUNT_USERNAME_REQUIRED = True
+    ACCOUNT_PASSWORD_MIN_LENGTH = 6
+    ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+    ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+    ACCOUNT_SESSION_REMEMBER = True
+    ACCOUNT_TEMPLATE_EXTENSION = 'jade'
+    SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
+    SOCIALACCOUNT_PROVIDERS = { 'google': {
+                                    'SCOPE': ['profile', 'email'],
+                                    'AUTH_PARAMS': { 'access_type': 'online' }
+                              }}
+
 
 class Development(Base):
     LOCAL = True
@@ -312,15 +351,13 @@ class Development(Base):
 
     DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
-    '''
     if 'test' in sys.argv:
         import dj_database_url
         DATABASES = {'default': dj_database_url.parse('sqlite://' + Base.PROJECT_PATH + '/test_db.sqlite')}
         SOUTH_TESTS_MIGRATE = True
 
         SOUTH_LOGGING_ON = True
-        SOUTH_LOGGING_FILE = Base.PROJECT_PATH + '/asdfasdf'
-    '''
+        SOUTH_LOGGING_FILE = Base.PROJECT_PATH + '/south_logging_file'
 
 
     DOMAIN = 'localhost:8000'
