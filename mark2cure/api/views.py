@@ -161,6 +161,16 @@ def relation_list(request):
                 AND document_view.completed = 1
                 AND document_section.document_id = document_document.id)""",
 
+        "task_count": """
+            SELECT COUNT(*) AS task_count
+            FROM relation_relation
+            WHERE relation_relation.document_id = document_document.id""",
+
+        "concepts": """
+            SELECT COUNT(*) AS task_count
+            FROM relation_relation
+            WHERE relation_relation.document_id = document_document.id""",
+
         # How many times has this Document Task View been completed (should only be 0 or 1)
         "user_completed_count": """
             SELECT COUNT(*) AS user_completed_count
@@ -172,7 +182,7 @@ def relation_list(request):
                 AND document_view.completed = 1
                 AND document_view.user_id = %d
         AND document_section.document_id = document_document.id)""" % (request.user.pk,)
-    })[:100]
+    })[:30]
 
 
     serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
@@ -276,18 +286,21 @@ def users_with_score(days=30):
     since = today - datetime.timedelta(days=days)
 
     res = Point.objects.raw("""
-        SELECT score_point.id, SUM(score_point.amount) as score, auth_user.username, auth_user.id
-        FROM score_point
-        LEFT OUTER JOIN auth_user
-            ON auth_user.id = score_point.user_id
-        WHERE ( score_point.created > '{since}'
-                AND score_point.created <= '{today}'
-                AND auth_user.id NOT IN ({excluded_users}) )
-        GROUP BY auth_user.id ORDER BY score DESC;""".format(
-            since=since,
-            today=today,
-            excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160])
-        ))
+        SELECT  ANY_VALUE(`score_point`.`id`) as `id`,
+                SUM(score_point.amount) as score,
+                `auth_user`.`username`,
+                `auth_user`.`id`
+        FROM `score_point`
+        LEFT OUTER JOIN `auth_user`
+            ON `auth_user`.`id` = `score_point`.`user_id`
+        WHERE ( `score_point`.`created` > '{since}'
+                AND `score_point`.`created` <= '{today}'
+                AND `auth_user`.`id` NOT IN ({excluded_users}) )
+        GROUP BY `auth_user`.`id` ORDER BY score DESC;""".format(
+        since=since,
+        today=today,
+        excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160]))
+    )
 
     return [row for row in res if row.score is not None]
 
