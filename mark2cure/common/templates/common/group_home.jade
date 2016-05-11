@@ -158,11 +158,10 @@ block content
         <input type="radio" name="scale" id="scale-log" value="log" checked="checked">
         <p><input type="text" id="font" value="impact">
         <div id="angles">
-        <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-60" min="-90" max="90"> °
-        <input type="number" id="angle-to" value="60" min="-90" max="90"> °
+        <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-30" min="-30" max="30"> °
+        <input type="number" id="angle-to" value="30" min="-30" max="30"> °
         </div>
         <hr>
-        <p><a href="about/">how the word cloud generator works</a>.
         <p style="float: left">copyright &copy; <a href="http://www.jasondavies.com/">jason davies</a> | <a href="../privacy/">privacy policy</a>. the generated word clouds may be used for any purpose.
         </form>
 
@@ -207,6 +206,14 @@ block post-footer
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
+    script.
+      $( document ).ready(function() {
+          setTimeout(
+            function()
+            {
+              $('#go').click();
+            }, 5);
+      });
 
 
     script.
