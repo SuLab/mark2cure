@@ -30,7 +30,7 @@ DocumentView = Backbone.Marionette.ItemView.extend({
 });
 
 DocumentCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<div class="relations-container-inside"><div class="relations-title">Document Relation Tasks</div><div id="relation-list"></div></div>'),
+  template: _.template('<div class="relations-container-inside"><div id="relation-list"></div></div>'),
   childView  : DocumentView,
   childViewContainer: "#relation-list",
 

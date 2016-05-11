@@ -1,6 +1,63 @@
 @import 'sections/group_selection';
 @import 'sections/leaderboard';
 
+.task-score {
+  border: solid 16px tint($color_bootstrap_blue, 90);
+
+  .row.sep {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  hr {
+    border: 0;
+    margin: 0px;
+    height: 1px;
+    background: $color_gray_lighter;
+    background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
+  }
+
+  .row {
+    margin-top: 2px;
+    margin-bottom: 2px;
+
+    .task-value {
+      font-size: 1.25em;
+      line-height: 1.25em;
+
+      text-align: right;
+      color: $color_gray_dark;
+    }
+
+    .task-label {
+      font-size: 1.25em;
+      line-height: 1.25em;
+
+      text-align: left;
+      color: $color_gray_light;
+    }
+
+    ul.list-inline {
+      margin: 2px;
+    }
+
+  }
+}
+
+.unlock-icon i {
+  color: $color_gray;
+}
+
+.card.my-stats {
+  .card-block {
+    padding: 1rem;
+
+    ol {
+      margin: 0px;
+    }
+  }
+}
+
 .relations-container{
   border: solid 1px #d9d9d9;
   border-bottom: none;
@@ -52,17 +109,20 @@
   background-clip: initial;
   background-position: initial;
   background-repeat: initial;
+
+  transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+  
 }
 .relation-item-container:hover{
   background: rgba(0, 0, 0, 0.0980392);
+  cursor: pointer;
 }
 .relations-container-inside hr{
-  margin:0;
-  margin-top:-1px;
-  margin-left:72px;
-  height:1px;
-  border:none;
-  background-color:#e0e0e0;
+    border: 0;
+    margin: 0px;
+    height: 1px;
+    background: $color_gray_lighter;
+    background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
 }
 
 .relation-item{

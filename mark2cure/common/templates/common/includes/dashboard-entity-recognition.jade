@@ -1,2 +1,45 @@
-.relations-title Entity Recognition Tasks
+.row
+  .col-xs-12
+    .relations-title Entity Recognition Tasks
+
+.row
+  .col-xs-12.col-md-10.col-md-offset-1.task-score
+    .row.sep
+      .col-xs-4.task-value
+        | #{task_stats.entity_recognition.total_score}
+      .col-xs-8.task-label
+        | task score
+    hr
+
+    .row.sep
+      .col-xs-4.task-value
+        | #{task_stats.entity_recognition.quests_completed}
+      .col-xs-8.task-label
+        | doc sets done
+    hr
+
+    .row.sep
+      .col-xs-4.task-value
+        | #{task_stats.entity_recognition.annotations}
+      .col-xs-8.task-label
+        | task annotations
+    hr
+
+    .row
+      .col-xs-12.text-center
+        ul.list-inline
+          li
+            a(href='#')
+              | Tutorials
+
+          li
+            a(href='#')
+              | Practice
+
+          li
+            a(href='#')
+              | Rules
+
+
+
 #group-selection

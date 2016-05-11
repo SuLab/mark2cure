@@ -1,21 +1,24 @@
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.messages import get_messages
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
+
+from ..userprofile.models import UserProfile
+from ..document.models import Annotation, Document, View
+from ..task.models import Level
+from ..task.relation.models import Relation, RelationAnnotation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..score.models import Point
 
 from .utils.mdetect import UAgentInfo
-from ..userprofile.models import UserProfile
-
-from .models import Group
-from ..document.models import Annotation, Document
-from ..task.models import Level
-from ..task.relation.models import Relation
-
 from .forms import SupportMessageForm
+from .models import Group
 
 import random
 
@@ -72,14 +75,19 @@ def dashboard(request):
     for message in storage:
         if message.message == 'dashboard-unlock-success':
             welcome = True
+    '''
     msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
     messages.info(request, msg, extra_tags='safe alert-success')
+    '''
 
     uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
     document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))
 
     er_level = Level.objects.filter(user=request.user, task_type='e').first()
     r_level = Level.objects.filter(user=request.user, task_type='r').first()
+
+    er_content_type_id = ContentType.objects.get_for_model(RelationAnnotation).pk
+    r_content_type_id = ContentType.objects.get_for_model(EntityRecognitionAnnotation).pk
 
     ctx = {'welcome': welcome,
            'mobile': uai.detectMobileLong(),
@@ -88,6 +96,18 @@ def dashboard(request):
            'training_levels': {
                'entity_recognition': er_level.level if er_level else 0,
                'relation': r_level.level if r_level else 0
+           },
+           'task_stats': {
+               'entity_recognition': {
+                   'total_score': sum(Point.objects.filter(user=request.user, content_type=er_content_type_id).values_list('amount', flat=True)),
+                   'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='cr').count(),
+                   'annotations': Annotation.objects.filter(kind='e', view__user=request.user).count()
+               },
+               'relation': {
+                   'total_score': sum(Point.objects.filter(user=request.user, content_type=r_content_type_id).values_list('amount', flat=True)),
+                   'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='r').count(),
+                   'annotations': Annotation.objects.filter(kind='r', view__user=request.user).count()
+               }
            }
            }
 

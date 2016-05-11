@@ -4,7 +4,7 @@
 
 .row
   .col-xs-12.col-xs-offset-0
-    .card
+    .card.my-stats
       .card-header
         | My Stats
       .card-block
@@ -12,14 +12,6 @@
           li Total Quests: #{user.userprofile.quests_count|intcomma}
           li Total Annotations: #{user.userprofile.annotations_count|intcomma}
           li Score: #{user.userprofile.score|intcomma}
-
-      - if request.user|has_group:"Uxtesters"
-        .card-block
-          a(href='{% url "task-relation:home" %}')
-            | Interested in trying the new relation identification module?
-
-    .card-footer.text-center
-      a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile
 
 .row
   .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
