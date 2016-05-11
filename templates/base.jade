@@ -22,8 +22,6 @@ head
     meta(name='copyright', content='Mark2Cure')
     meta(name='application-name', content='Mark2Cure')
 
-
-
     block social-tags
       meta(property='og:title', content='Mark2Cure')
       meta(property='og:type', content='article')
@@ -41,8 +39,9 @@ head
     block head-title
       title Mark2Cure
 
-    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
-    link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
+    block css-libs
+      link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
+      link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
 
   body
     block header
@@ -54,6 +53,7 @@ head
     block footer
       include includes/footer
 
+    block js-libs
       // Generic Requirements
       script(src="#{STATIC_URL}js/libs/jquery-1.11.2.min.js")
 
@@ -77,8 +77,7 @@ head
       script(src='#{STATIC_URL}js/libs/intro.min.js')
       script(src='#{STATIC_URL}js/libs/odometer.min.js')
       script(src='#{STATIC_URL}js/libs/modernizr.custom.js')
-      script(src='//cdn.ravenjs.com/1.1.18/backbone,jquery,native/raven.min.js')
-      script(src='https://cdn.ravenjs.com/2.0.1/raven.min.js')
+      script(src='//cdn.ravenjs.com/2.0.1/raven.min.js')
 
       // Network Requirements
       script(src='#{STATIC_URL}js/libs/sigma.min.js')
@@ -87,89 +86,80 @@ head
 
       // Custom Application JS Requirements
       script(src='#{STATIC_URL}js/ypet.js')
-      script(src='#{STATIC_URL}js/leaderboard.js')
       script(src='#{STATIC_URL}js/app.js')
 
-      // Homepage specific requirements
-      // Other Various JS libs
-      script(src="/static/js/libs/jquery-ui.min.js")
-      script(src="/static/js/libs/sly.min.js")
-      // Using sly lib (for 'completed/incomplete document carousel')
-      script(src="/static/js/pages/landing2.js")
+    a#support-icon(data-toggle="modal", data-target="#support-modal")
+      img(src='#{STATIC_URL}images/support-icon.png')
 
+    include instructions/multi-concept-instructions-modal
+    .modal.fade#support-modal
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h2.modal-title.text-center Contact Support
+            p.text-center.m-t-md Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to you as soon as possible.
+            - if not request.user.is_authenticated
+              h5.text-center Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).
 
-      a#support-icon(data-toggle="modal", data-target="#support-modal")
-        img(src='#{STATIC_URL}images/support-icon.png')
+          .modal-body
+            form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
+              - csrf_token
+              - if request.user.is_authenticated
+                input(type='hidden', name='user', value='{{user.pk}}')
+              input(type='hidden', name='referral', value='{{request.path}}')
+              .form-group
+                label Message
+                textarea(name='text').form-control
 
-      include instructions/multi-concept-instructions-modal
-      .modal.fade#support-modal
-        .modal-dialog
-          .modal-content
-            .modal-header
-              h2.modal-title.text-center Contact Support
-              p.text-center.m-t-md Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to you as soon as possible.
-              - if not request.user.is_authenticated
-                h5.text-center Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).
+          .modal-footer
+            button(type="button", data-dismiss="modal").btn.btn-primary Cancel
+            button(type="button").btn.btn-primary.modal-form-submit Submit
 
-            .modal-body
-              form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
-                - csrf_token
-                - if request.user.is_authenticated
-                  input(type='hidden', name='user', value='{{user.pk}}')
-                input(type='hidden', name='referral', value='{{request.path}}')
-                .form-group
-                  label Message
-                  textarea(name='text').form-control
+    script.
+      var raven_options = {
+        logger: 'js-logger',
+        whitelistUrls: [/mark2cure\.org/, /localhost/],
+        fetchContext: true,
+        linesOfContext: 30
+      };
+      Raven.config('{% sentry_public_dsn %}').install()
 
-            .modal-footer
-              button(type="button", data-dismiss="modal").btn.btn-primary Cancel
-              button(type="button").btn.btn-primary.modal-form-submit Submit
+      Raven.setUser({
+        email: "{{ request.user.email }}",
+        id: "{{ request.user.pk }}"
+      });
 
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-43341013-1']);
+      _gaq.push(['_setDomainName', 'mark2cure.org']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    .modal.fade#touch-modal
+      .modal-dialog
+        .modal-content
+          .modal-header
+            h2.modal-title On a touch screen?
+
+          .modal-body
+            p.lead At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
+            p.lead.text-center Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
+
+          .modal-footer
+            button(type="button", data-dismiss="modal").btn.btn-primary Okay
+
+    script.
+      $('#touch-modal').on('hidden.bs.modal', function () {
+        $.post('{% url "userprofile:alert" %}', {'csrfmiddlewaretoken': '{{csrf_token}}'});
+      });
+
+    - if not request.session.block_alert
       script.
-        var raven_options = {
-          logger: 'js-logger',
-          whitelistUrls: [/mark2cure\.org/, /localhost/],
-          fetchContext: true,
-          linesOfContext: 30
-        };
-        Raven.config('{% sentry_public_dsn %}').install()
-
-        Raven.setUser({
-          email: "{{ request.user.email }}",
-          id: "{{ request.user.pk }}"
-        });
-
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-43341013-1']);
-        _gaq.push(['_setDomainName', 'mark2cure.org']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-
-      .modal.fade#touch-modal
-        .modal-dialog
-          .modal-content
-            .modal-header
-              h2.modal-title On a touch screen?
-
-            .modal-body
-              p.lead At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
-              p.lead.text-center Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
-
-            .modal-footer
-              button(type="button", data-dismiss="modal").btn.btn-primary Okay
-
-      script.
-        $('#touch-modal').on('hidden.bs.modal', function () {
-          $.post('{% url "userprofile:alert" %}', {'csrfmiddlewaretoken': '{{csrf_token}}'});
-        });
-
-      - if not request.session.block_alert
-        script.
-          if(Modernizr.touch) { $('#touch-modal').modal('show'); }
+        if(Modernizr.touch) { $('#touch-modal').modal('show'); }
 
 
     block post-footer

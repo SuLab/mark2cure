@@ -34,6 +34,8 @@
   border-bottom: 1px solid $color_gray_lightest;
   border-right: 1px solid $color_gray_lightest;
 
+  transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+
   a p {
     margin-top: 8px;
     margin-bottom: -2px;

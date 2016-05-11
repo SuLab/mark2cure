@@ -1,0 +1,81 @@
+.row
+  .col-xs-12.text-center
+    .relations-title Entity Recognition Tasks
+
+    i(aria-hidden='true').fa.fa-lock.fa-5x
+
+    p
+      small Complete the following training steps to unlock an entire new task!
+
+  #relation-training-progress.col-xs-12
+    .list-group.dashboard.text-center
+
+      - if training_levels.entity_recognition == 2
+        a(href='{% url "training:introduction" step_num=1 %}').list-group-item.current
+          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+        a(href='{% url "training:one" step_num=1 %}').list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Diseases
+        a(href='{% url "training:two" step_num=1 %}').list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
+        a(href='{% url "training:three" step_num=1 %}').list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+        a(href='{% url "training:four" step_num=1 %}').list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+
+      - if training_levels.entity_recognition == 3
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+        a(href='{% url "training:one" step_num=1 %}').list-group-item.current
+          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Diseases
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+
+      - if training_levels.entity_recognition == 4
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+        a(href='{% url "training:two" step_num=1 %}').list-group-item.current
+          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Genes
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+
+      - if training_levels.entity_recognition == 5
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+        .list-group-item.completed
+          | <i class='fa fa-check aria-hidden='true'></i>  Genes
+        a(href='{% url "training:three" step_num=1 %}').list-group-item.current
+          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Treatments
+        .list-group-item.locked.disabled
+          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+
+      - if training_levels.entity_recognition == 6
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Genes
+        .list-group-item.completed
+          | <i class='fa fa-check' aria-hidden='true'></i>  Treatments
+        a(href='{% url "training:four" step_num=1 %}').list-group-item.current
+          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Multi-Marking
+
+
+
+
+
+
+
+
+
+

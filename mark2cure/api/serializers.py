@@ -105,6 +105,15 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField('get_user_status')
     progress = serializers.SerializerMethodField('get_progress_status')
 
+    task_count = serializers.SerializerMethodField()
+    concepts = serializers.SerializerMethodField()
+
+    def get_concepts(self, document):
+        return 'foo'
+
+    def get_task_count(self, document):
+        return document.task_count
+
     def get_user_status(self, document):
         return {'enabled': True,
                 'completed': True if document.user_completed_count > 0 else False}
@@ -117,5 +126,5 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = ('id', 'title', 'document_id',
-                  'user', 'progress')
+                  'user', 'progress', 'task_count', 'concepts')
 

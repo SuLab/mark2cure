@@ -46,7 +46,7 @@ class RelationSerializer(serializers.ModelSerializer):
         model = Relation
         fields = ('id', 'document', 'relation_type',
                   'concepts',
-                  'user_completed')
+                  'user_completed',)
 
 
 class RelationFeedbackSerializer(serializers.ModelSerializer):

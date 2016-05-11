@@ -7,11 +7,11 @@ from django_countries.fields import CountryField
 
 from djangoratings.fields import RatingField
 
-from mark2cure.document.models import Annotation, Document, View
-from mark2cure.common.models import Group
-from mark2cure.task.models import Task, UserQuestRelationship
-from mark2cure.analysis.models import Report
-from mark2cure.score.models import Point
+from ..document.models import Annotation, Document, View
+from ..common.models import Group
+from ..task.models import Task, UserQuestRelationship, Level
+from ..analysis.models import Report
+from ..score.models import Point
 
 from django.utils import timezone
 import pandas as pd
@@ -66,7 +66,7 @@ class Team(models.Model):
         team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
         team_user_profile_pks = [str(u) for u in team_user_profile_pks]
 
-        dataframes = [r.dataframe[r.dataframe['user'].isin(team_user_profile_pks)] for r in reports ]
+        dataframes = [r.dataframe[r.dataframe['user'].isin(team_user_profile_pks)] for r in reports]
 
         try:
             team_df = pd.concat(dataframes)
@@ -153,6 +153,16 @@ class UserProfile(models.Model):
     def score(self):
         return int(sum(Point.objects.filter(user=self.user).values_list('amount', flat=True)))
 
+    def unlocked_tasks(self):
+        arr = []
+        if Level.objects.filter(user=self.user, task_type='e', level=7).exists():
+            arr.append('entity_recognition')
+
+        if Level.objects.filter(user=self.user, task_type='r', level=3).exists():
+            arr.append('relation')
+
+        return arr
+
     def annotations_count(self):
         return Annotation.objects.filter(view__user=self.user).count()
 
@@ -164,8 +174,8 @@ class UserProfile(models.Model):
 
     def contributed_groups(self):
         views = View.objects.filter(
-                user=self.user,
-                completed=True).values_list('userquestrelationship__task__group', flat=True)
+            user=self.user,
+            completed=True).values_list('userquestrelationship__task__group', flat=True)
         group_pks = list(set(views))
         group_pks = [x for x in group_pks if x is not None]
         return Group.objects.filter(pk__in=group_pks).all()
@@ -175,7 +185,7 @@ class UserProfile(models.Model):
             Return back the weighted mean (pairings count) f-score
         '''
         reports = Report.objects.filter(report_type=1).order_by('-created')[:Group.objects.count()]
-        dataframes = [r.dataframe[r.dataframe['user']==str(self.user.pk)] for r in reports ]
+        dataframes = [r.dataframe[r.dataframe['user'] == str(self.user.pk)] for r in reports]
 
         try:
             user_df = pd.concat(dataframes)
@@ -186,7 +196,6 @@ class UserProfile(models.Model):
                 return user_df['f-score'].mean()
         except:
             return 0.0
-
 
     def online(self):
         if self.last_seen:
@@ -214,23 +223,22 @@ class UserProfile(models.Model):
         queryset = Task.objects.filter(
             kind=Task.QUEST,
             group__enabled=True,
+        ).extra(select={
+            "community_submission_count": """
+                SELECT COUNT(*) AS cummunity_submission_count
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)""",
 
-            ).extra(select={
-                "community_submission_count": """
-                    SELECT COUNT(*) AS cummunity_submission_count
-                    FROM task_userquestrelationship
-                    WHERE (task_userquestrelationship.completed = 1
-                        AND task_userquestrelationship.task_id = task_task.id)""",
-
-                "user_completed": """
-                    SELECT COUNT(*) AS user_completed
-                    FROM task_userquestrelationship
-                    WHERE (task_userquestrelationship.completed = 1
-                        AND task_userquestrelationship.user_id = %d
-                        AND task_userquestrelationship.task_id = task_task.id)""" % (self.user.pk,)
+            "user_completed": """
+                SELECT COUNT(*) AS user_completed
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.user_id = %d
+                    AND task_userquestrelationship.task_id = task_task.id)""" % (self.user.pk,)
 
         }).values('id', 'community_submission_count', 'user_completed', 'completions',)
-        uncompleted_quests = [task for task in queryset if task['user_completed'] == 0 and (task['completions'] is None or task['community_submission_count'] < task['completions'])  ]
+        uncompleted_quests = [task for task in queryset if task['user_completed'] == 0 and (task['completions'] is None or task['community_submission_count'] < task['completions'])]
         return len(uncompleted_quests)
 
 
