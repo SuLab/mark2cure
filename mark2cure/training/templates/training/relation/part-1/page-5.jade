@@ -83,6 +83,7 @@ block post-footer
 
   script.
     var event_counter = 0;
+    var back_flag = false;
 
     Tree['convoChannel'].on('start', function(obj) {
       if(event_counter==0) {
@@ -118,14 +119,36 @@ block post-footer
 
     });
 
+    var user_arr = [];
+    var ideal_arr = [];
+
+    function validate_arr(ideal_arr, user_arr) {
+      if (ideal_arr === user_arr)
+        return true;
+      if (ideal_arr == null || user_arr == null)
+        return false;
+      if (ideal_arr.length != user_arr.length)
+        return false;
+      for (var i = 0; i < ideal_arr.length; ++i) {
+        if (ideal_arr[i] !== user_arr[i]) return false;
+      }
+      return true;
+    }
+
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
-      console.log(event_counter);
       var current_selection = Tree.start.currentView.options.choice;
+      user_arr.push(current_selection.get('id'));
+
+      Tree['convoChannel'].on('back', function() {
+        user_arr = [];
+      });
+
       if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
         $('.popover').popover('dispose');
 
-        if (event_counter == 1) {
+        if (back_flag == false && validate_arr(['qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j'], user_arr)) {
+          back_flag = true;
           $relation_el = $('#relation');
           $relation_el.popover({
             container: 'body',
@@ -137,7 +160,11 @@ block post-footer
           $relation_el.popover('show');
         }
 
-        if (event_counter == 3) {
+        else if (event_counter >= 3 && validate_arr(['qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j'], user_arr)) {
+          if (back_flag == true) {
+            $relation_el = $('#relation');
+            $relation_el.popover('dispose');
+          };
           $('#next-button').show();
 
           $next_el = $('#next-button');
@@ -152,6 +179,8 @@ block post-footer
           $next_el.popover('show');
         }
 
-
+      } else {
+        $('.popover').popover('dispose');
+        $('#next-button').hide();
       }
     });
