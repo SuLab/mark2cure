@@ -182,5 +182,14 @@ block post-footer
       } else {
         $('.popover').popover('dispose');
         $('#next-button').hide();
+        $relation_el = $('#relation');
+        $relation_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() { return 'In this case, an incorrect relationship has been selected. <strong>Click here to return to the previous menu.'; },
+          placement: 'top'
+        });
+        $relation_el.popover('show');
       }
     });
