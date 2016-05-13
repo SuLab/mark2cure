@@ -28,7 +28,7 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=1 %}').btn.btn-primary Next
+      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=1 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -99,6 +99,24 @@ block post-footer
     var event_counter = 0;
     var passages, regions, tmp_passages;
 
+    /* instruct users to use back button for better answer */
+    /* hide next button, hide misc popovers and make helper popover appear*/
+    function better_answer() {
+      $('.popover').popover('dispose');
+      $('#next-button').hide();
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'There is a better answer. Try again!';
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
     Tree['convoChannel'].on('start', function(obj) {
       if(event_counter==0) {
         $relates_el = $('ul.list-group a:nth(0)');
@@ -136,8 +154,16 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
 
+      Tree['convoChannel'].on('back', function() {
+        $('#next-button').hide()
+      });
+
+      if(current_selection.get('id') != '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn' || current_selection.get('id') != 'jilhvc5p2cy0atls8659a1fggjvvkmahwuspy2kr') {
+        better_answer();
+      };
+
+      if(current_selection.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
         $('.popover').popover('dispose');
         $treats_el = $('ul.list-group a:nth(1)');
         $treats_el.popover({
@@ -145,7 +171,7 @@ block post-footer
           html: true,
           animation: false,
           content: function() {
-            return 'When you make a selection, more options may become available. Remember, only select the relationship based on the text below. <br /><strong>Select \'treats\' to continue</strong>';
+            return 'When you make a selection, more options may become available. Remember, only select the relationship based on the text below. <br /><strong>Select \'(may) treat(s)\' to continue</strong>';
           },
           placement: 'bottom'
         });
@@ -170,6 +196,13 @@ block post-footer
       }
 
     });
+
+     /* When incorrect concepts are selected but it's not time to report errors */
+      Tree['convoChannel'].on('error', function(str) {
+        if(str == 'c_2' || str == 'c_1') {
+          better_answer();
+        }
+      });
 
   script.
     $(window).load(function(){

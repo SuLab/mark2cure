@@ -11,7 +11,7 @@
 
   "c_d": [{
     "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",
-    "text": "(may) relate(s) to",
+    "text": "relates to",
     "desc": "The drug has some type of relation to the disease.",
     "example": "Evidence indicates that Amblyomin-X could be a promising candidate for cancer therapy.",
     "children": [{
@@ -55,7 +55,7 @@
 
   "g_d": [{
     "id": "qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j",
-    "text": "(may) relate(s) to",
+    "text": "relates to",
     "desc": "The gene is related to the disease in some manner.",
     "example": "The gene responsible for Triple A syndrome, AAAS, has recently been identified.",
     "children": [{
@@ -88,7 +88,7 @@
 
   "g_c": [{
     "id": "txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7",
-    "text": "(may) relate(s) to",
+    "text": "relates to",
 
     "children": [{
       "id": "am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw",
