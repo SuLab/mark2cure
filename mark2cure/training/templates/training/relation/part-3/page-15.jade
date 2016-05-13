@@ -84,8 +84,16 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
+
+      /* don't show next button when menu is reset */
+      Tree['convoChannel'].on('back', function() {
+        $('#next-button').hide()
+      });
+
       if(current_selection.get('id') == 'yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5') {
         $('#next-button').show();
+      } else {
+        $('#next-button').hide();
       };
     });
 
