@@ -23,7 +23,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function
+      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function.
 
 
   script.
@@ -84,8 +84,16 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
+
+      /* don't show next button when menu is reset */
+      Tree['convoChannel'].on('back', function() {
+        $('#next-button').hide()
+      });
+
       if(current_selection.get('id') == '5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy') {
         $('#next-button').show();
+      } else {
+        $('#next-button').hide();
       };
     });
 
