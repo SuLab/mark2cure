@@ -85,6 +85,31 @@ block post-footer
     var event_counter = 0;
     var back_flag = false;
 
+    /* instruct users to use back button for better answer */
+    /* hide next button, hide misc popovers and make helper popover appear*/
+    function better_answer() {
+      $('.popover').popover('dispose');
+      $('#next-button').hide();
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'There is a better answer. Try again!';
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
+    /* When incorrect concepts are selected but it's not time to report errors */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2' || str == 'c_1') {
+        better_answer();
+      }
+    });
+
     Tree['convoChannel'].on('start', function(obj) {
       if(event_counter==0) {
         $relates_el = $('ul.list-group a:nth(0)');

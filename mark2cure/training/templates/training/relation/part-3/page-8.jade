@@ -14,7 +14,7 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=9 %}').btn.btn-primary Next
+      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=9 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -98,3 +98,9 @@ block post-footer
       };
     });
 
+    /* When the user presses the 'incorrect concept' buttons in error, hide submit button */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2' || str == 'c_1') {
+        $('#next-button').hide();
+      }
+    });
