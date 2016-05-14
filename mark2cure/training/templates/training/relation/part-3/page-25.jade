@@ -12,11 +12,6 @@ block intro-content
 
 block navigation
 
-  #next-text(style='display:none;').row.m-t-md
-    .col-xs-12.text-center
-      .alert.alert-info
-        p Remember, you do not have to specify the specific relationship if the text doesn’t say what it is. If there’s some sort of relationship, but it’s not clear what sort of relationship, just submit with 'Relates to'
-
   .row.m-t-md
     .col-xs-12.text-center
       a(id='next-button', style='display:none;', data-toggle='modal', data-target='#relation-training-progress').btn.btn-primary Submit
@@ -100,12 +95,18 @@ block post-footer
   script.
     var passages, regions, tmp_passages;
 
+    /* don't show next button when menu is reset */
+    Tree['convoChannel'].on('back', function() {
+      $('#next-button').hide()
+    });
+
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-      if(current_selection.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
-        $('#next-text').show();
+      if(current_selection.get('id') == 'xdnolju6wacvakqnmz6237zwbh0ta3ftw8mdcp50') {
         $('#next-button').show();
+      } else {
+        $('#next-button').hide();
       };
     });
 
@@ -113,6 +114,5 @@ block post-footer
     Tree['convoChannel'].on('error', function(str) {
       if(str == 'c_2' || str == 'c_1') {
         $('#next-button').hide();
-        $('#next-text').hide()
       }
     });
