@@ -1,4 +1,4 @@
-from mark2cure.userprofile.models import UserProfile, Team
+from mark2cure.userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Level, Task
 
@@ -121,7 +121,7 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
     def get_progress_status(self, task):
         return {'required': 15,
                 'current': task.current_completed_count,
-                'completed': task.current_completed_count >= 15 }
+                'completed': task.current_completed_count >= 15}
 
     class Meta:
         model = Document

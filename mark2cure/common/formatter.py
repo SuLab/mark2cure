@@ -1,7 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
-from ..document.models import Annotation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 import datetime
@@ -59,17 +58,17 @@ def bioc_as_json(writer):
     except:
         return json.dumps(o)
 
+
 def pubtator_df_as_writer(writer, df):
     bioc_doc = writer.collection.documents[0]
     approved_types = ['Disease', 'Gene', 'Chemical']
 
     for bioc_passage in bioc_doc.passages:
-        section_pk = bioc_passage.infons['id']
         offset = int(bioc_passage.offset)
 
         bioc_passage.annotations = []
 
-        tmp_df = df[ df['offset'] == offset ]
+        tmp_df = df[df['offset'] == offset]
 
         for row_idx, row in tmp_df.iterrows():
 
@@ -80,7 +79,7 @@ def pubtator_df_as_writer(writer, df):
                 annotation.put_infon('uid', str(row['uid']))
 
                 # (TODO) Map type strings back to 0,1,2
-                annotation.put_infon('type', str(approved_types.index( row['ann_type'] )) )
+                annotation.put_infon('type', str(approved_types.index(row['ann_type'])))
 
                 location = BioCLocation()
                 loc = row['location'].split(':')
@@ -93,7 +92,6 @@ def pubtator_df_as_writer(writer, df):
                 bioc_passage.add_annotation(annotation)
 
     return writer
-
 
 
 def apply_bioc_annotations(writer, user=None):

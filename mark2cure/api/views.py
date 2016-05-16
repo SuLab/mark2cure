@@ -1,20 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 
 
 from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
-from ..userprofile.models import UserProfile, Team
+from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
 from ..task.relation.models import Relation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
-from ..document.models import Section, Annotation
+from ..document.models import Section
 from ..score.models import Point
 
 from rest_framework.decorators import api_view
@@ -112,7 +110,7 @@ def analysis_group(request, group_pk):
     return Response(response)
 
 
-#@login_required
+# @login_required
 @api_view(['GET'])
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
@@ -144,6 +142,7 @@ def quest_group_list(request, group_pk):
 
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
+
 
 @login_required
 @api_view(['GET'])
@@ -184,7 +183,6 @@ def relation_list(request):
         AND document_section.document_id = document_document.id)""" % (request.user.pk,)
     })[:30]
 
-
     serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
@@ -195,6 +193,7 @@ def group_users_bioc(request, group_pk, format_type):
         Returns the BioC document for all user
         annotations accross the group
     '''
+    # (TODO) What is this content var all about?
     content = False
     if not type(request) == dict:
         content = request.GET.get('content', False)
@@ -273,7 +272,7 @@ def group_pubtator_bioc(request, group_pk, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-#@login_required
+# @login_required
 @api_view(['GET'])
 def group_list(request):
     queryset = Group.objects.all().order_by('-order')

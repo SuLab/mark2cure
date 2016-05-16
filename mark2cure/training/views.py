@@ -10,10 +10,7 @@ from ..task.relation import relation_data
 
 from ..task.models import Level
 
-from brabeion import badges
-
 import json
-import os
 
 
 @login_required
@@ -110,11 +107,10 @@ def four(request, step_num):
     ctx = {'step_num': step_num}
     return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
-def relation_training(request, part_num=1, step_num=1):
-    part = int(part_num)
-    step = int(step_num)
 
+def relation_training(request, part_num=1, step_num=1):
     json_data = json.dumps(relation_data)
+    request.session['initial_training'] = 'r'
 
     ctx = {
         'relation_data': json_data

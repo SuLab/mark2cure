@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
+from allauth.account.forms import UserForm
 from ..score.models import Point
 
 from .forms import UserProfileForm, TeamForm
-from ..registration.forms import UserNameChangeForm
 from ..task.models import Level
 
 from rest_framework.decorators import api_view
@@ -35,7 +35,8 @@ def settings(request):
         Use this endpoint for strict user setting modifications
         like password (auth.user)
     '''
-    user_change_form = UserNameChangeForm(instance=request.user, data=request.POST or None)
+    user_change_form = UserForm(user=request.user, data=request.POST or None)
+
     user_profile_form = UserProfileForm(instance=request.user.profile, data=request.POST or None)
     team_form = TeamForm(instance=None, data=request.POST or None)
 

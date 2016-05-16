@@ -6,7 +6,6 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.messages import get_messages
-from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
 from ..userprofile.models import UserProfile
@@ -75,10 +74,6 @@ def dashboard(request):
     for message in storage:
         if message.message == 'dashboard-unlock-success':
             welcome = True
-    '''
-    msg = '<p class="lead text-center">Click on one of the quest numbers below to start the quest. Your contributions are important so complete as many quests as you can.</p>'
-    messages.info(request, msg, extra_tags='safe alert-success')
-    '''
 
     uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
     document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))

@@ -21,5 +21,4 @@ urlpatterns = patterns('',
     url(r'^gene-drug-relation/$',
         views.gene_drug_relation, name='gene-drug-relation'),
 
-
 )

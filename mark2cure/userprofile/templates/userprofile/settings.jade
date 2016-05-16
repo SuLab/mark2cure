@@ -49,8 +49,16 @@ block content
           .row
             .col-sm-8
               fieldset
-                #{user_change_form.first_name|as_horizontal_form}
-                #{user_change_form.last_name|as_horizontal_form}
+                .first_name.form-group
+                  .row
+                    label(for="id_first_name").col-sm-2.control-label First name
+                    .col-sm-10
+                      input(id="id_first_name", maxlength="30", name="first_name", type="text",value="Max", disabled).form-control
+                .last_name.form-group
+                  .row
+                    label(for="id_last_name").col-sm-2.control-label Last name
+                    .col-sm-10
+                      input(id="id_last_name", maxlength="30", name="last_name", type="text",value="Nanis", disabled).form-control
 
             .col-sm-2.col-sm-offset-1.col-xs-offset-1.col-xs-10
               #{user_profile_form.team|as_vertical_form}
