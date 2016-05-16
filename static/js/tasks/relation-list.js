@@ -11,9 +11,13 @@ DocumentList = Backbone.Collection.extend({
  * Views
  */
 DocumentView = Backbone.Marionette.ItemView.extend({
-  template: _.template('<p><%= title %></p>'),
+  template: '#template',
+  tagName: 'a',
+
+  /*template: _.template('<p><%= title %></p>'),
   tagName: 'a',
   className: 'list-group-item',
+  */
 
   onRender : function() {
     this.$el.attr('href', '/task/relation/'+ this.model.get('id') +'/')
@@ -26,9 +30,10 @@ DocumentView = Backbone.Marionette.ItemView.extend({
 });
 
 DocumentCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<ol class="list-unstyled list-group"></ol>'),
+  template: _.template('<div class="relations-container-inside"><div id="relation-list"></div></div>'),
   childView  : DocumentView,
-  childViewContainer: "ol",
+  childViewContainer: "#relation-list",
+
 
   initialize : function(options) {
     this.collection.fetch();

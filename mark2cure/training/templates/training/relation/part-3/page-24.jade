@@ -3,7 +3,7 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p Chemical/Drug-Disease Relationships: One more!
+      p Gene-Chemical/Drug Relationships: One more!
 
     .col-xs-12.text-center
       p
@@ -14,7 +14,7 @@ block navigation
 
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=25 %}').btn.btn-primary Next
+      a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=25 %}').btn.btn-primary Submit
 
 
 block interactive
@@ -23,7 +23,7 @@ block interactive
 
   .row.m-t-md
     .col-xs-12
-      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function
+      p Due to these data, we performed a study to investigate the effect of the specific <span class='user_annotated_green'>PDE5</span> inhibitor, <span class='user_annotated_pink'>tadalafil</span>, on dystrophic skeletal muscle function.
 
 
   script.
@@ -84,8 +84,22 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
+
+      /* don't show next button when menu is reset */
+      Tree['convoChannel'].on('back', function() {
+        $('#next-button').hide()
+      });
+
       if(current_selection.get('id') == '5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy') {
         $('#next-button').show();
+      } else {
+        $('#next-button').hide();
       };
     });
 
+    /* When the user presses the 'incorrect concept' buttons in error, hide submit button */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2' || str == 'c_1') {
+        $('#next-button').hide();
+      }
+    });

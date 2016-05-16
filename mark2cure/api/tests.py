@@ -149,7 +149,7 @@ class GroupUsersBioC(TestCase, TestBase):
     def test_api_online(self):
 
         # Confirm API is online from direct access
-        req = group_users_bioc({}, group_pk, 'xml')
+        # req = group_users_bioc({}, group_pk, 'xml')
         # print req.content
 
         # Confirm API is online from URL

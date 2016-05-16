@@ -1,20 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth.models import User
 
 
 from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..common.formatter import bioc_writer, bioc_as_json
-from ..userprofile.models import UserProfile, Team
+from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
 from ..task.relation.models import Relation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
-from ..document.models import Section, Annotation
+from ..document.models import Section
 from ..score.models import Point
 
 from rest_framework.decorators import api_view
@@ -112,7 +110,7 @@ def analysis_group(request, group_pk):
     return Response(response)
 
 
-#@login_required
+# @login_required
 @api_view(['GET'])
 def quest_group_list(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
@@ -145,6 +143,7 @@ def quest_group_list(request, group_pk):
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
+
 @login_required
 @api_view(['GET'])
 def relation_list(request):
@@ -161,6 +160,16 @@ def relation_list(request):
                 AND document_view.completed = 1
                 AND document_section.document_id = document_document.id)""",
 
+        "task_count": """
+            SELECT COUNT(*) AS task_count
+            FROM relation_relation
+            WHERE relation_relation.document_id = document_document.id""",
+
+        "concepts": """
+            SELECT COUNT(*) AS task_count
+            FROM relation_relation
+            WHERE relation_relation.document_id = document_document.id""",
+
         # How many times has this Document Task View been completed (should only be 0 or 1)
         "user_completed_count": """
             SELECT COUNT(*) AS user_completed_count
@@ -172,8 +181,7 @@ def relation_list(request):
                 AND document_view.completed = 1
                 AND document_view.user_id = %d
         AND document_section.document_id = document_document.id)""" % (request.user.pk,)
-    })[:100]
-
+    })[:30]
 
     serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
@@ -185,6 +193,7 @@ def group_users_bioc(request, group_pk, format_type):
         Returns the BioC document for all user
         annotations accross the group
     '''
+    # (TODO) What is this content var all about?
     content = False
     if not type(request) == dict:
         content = request.GET.get('content', False)
@@ -263,7 +272,7 @@ def group_pubtator_bioc(request, group_pk, format_type):
         return HttpResponse(writer, content_type='text/xml')
 
 
-#@login_required
+# @login_required
 @api_view(['GET'])
 def group_list(request):
     queryset = Group.objects.all().order_by('-order')
@@ -276,18 +285,21 @@ def users_with_score(days=30):
     since = today - datetime.timedelta(days=days)
 
     res = Point.objects.raw("""
-        SELECT score_point.id, SUM(score_point.amount) as score, auth_user.username, auth_user.id
-        FROM score_point
-        LEFT OUTER JOIN auth_user
-            ON auth_user.id = score_point.user_id
-        WHERE ( score_point.created > '{since}'
-                AND score_point.created <= '{today}'
-                AND auth_user.id NOT IN ({excluded_users}) )
-        GROUP BY auth_user.id ORDER BY score DESC;""".format(
-            since=since,
-            today=today,
-            excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160])
-        ))
+        SELECT  ANY_VALUE(`score_point`.`id`) as `id`,
+                SUM(score_point.amount) as score,
+                `auth_user`.`username`,
+                `auth_user`.`id`
+        FROM `score_point`
+        LEFT OUTER JOIN `auth_user`
+            ON `auth_user`.`id` = `score_point`.`user_id`
+        WHERE ( `score_point`.`created` > '{since}'
+                AND `score_point`.`created` <= '{today}'
+                AND `auth_user`.`id` NOT IN ({excluded_users}) )
+        GROUP BY `auth_user`.`id` ORDER BY score DESC;""".format(
+        since=since,
+        today=today,
+        excluded_users=', '.join('\'' + str(item) + '\'' for item in [5, 160]))
+    )
 
     return [row for row in res if row.score is not None]
 

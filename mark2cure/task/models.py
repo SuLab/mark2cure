@@ -6,14 +6,14 @@ class Level(models.Model):
     user = models.ForeignKey(User)
 
     ENTITY_RECOGNITION = 'e'
-    TASK_TYPE_CHOICES= (
+    RELATION = 'r'
+    TASK_TYPE_CHOICES = (
         (ENTITY_RECOGNITION, 'Entity Recognition'),
-        ('r', 'Relation'),
+        (RELATION, 'Relation'),
     )
     task_type = models.CharField(max_length=1, choices=TASK_TYPE_CHOICES)
     level = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
-    #created = models.DateTimeField()
 
     class Meta:
         get_latest_by = 'created'
@@ -21,7 +21,7 @@ class Level(models.Model):
 
     def get_name(self):
         if self.task_type == 'e':
-            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert",]
+            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert"]
         else:
             levels = ["beginner", "Medium", "Expert"]
 

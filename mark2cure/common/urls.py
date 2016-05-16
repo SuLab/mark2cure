@@ -11,13 +11,10 @@ urlpatterns = patterns('',
     url(r'^dashboard/$',
         views.dashboard, name='dashboard'),
 
-    url(r'^beta/$',
-        views.beta, name='beta'),
-
     url(r'^why-i-mark2cure/$',
         views.why_mark2cure, name='why-mark2cure'),
 
-    #(TODO) this link is broken. Can url routing be removed?
+    # (TODO) this link is broken. Can url routing be removed?
     url(r'^group/(?P<group_stub>\w+)/network/$',
         views.group_network, name='group-network'),
 

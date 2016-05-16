@@ -11,7 +11,7 @@
 from ..common.bioc import BioCReader
 from ..common.models import Group
 from ..api.views import group_users_bioc
-from ..document.models import Section, Annotation
+from ..document.models import Section
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from .models import Report
 

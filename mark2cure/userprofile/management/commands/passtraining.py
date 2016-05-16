@@ -1,12 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from mark2cure.common.models import Task, UserQuestRelationship
-from brabeion import badges
 from mark2cure.score.models import Point
 
 from mark2cure.task.models import Level
-
-import os
 
 
 class Command(BaseCommand):

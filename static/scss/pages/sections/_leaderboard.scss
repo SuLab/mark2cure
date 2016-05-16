@@ -1,5 +1,10 @@
 #leaderboard {
-  margin-top: 60px;
+  margin-top: 20px;
+
+  a p {
+    color: $color_gray_dark
+  }
+
   p {
     letter-spacing: 2px;
     margin: 0px;

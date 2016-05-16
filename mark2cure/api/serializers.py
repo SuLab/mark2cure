@@ -1,4 +1,4 @@
-from mark2cure.userprofile.models import UserProfile, Team
+from mark2cure.userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Level, Task
 
@@ -105,6 +105,15 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField('get_user_status')
     progress = serializers.SerializerMethodField('get_progress_status')
 
+    task_count = serializers.SerializerMethodField()
+    concepts = serializers.SerializerMethodField()
+
+    def get_concepts(self, document):
+        return 'foo'
+
+    def get_task_count(self, document):
+        return document.task_count
+
     def get_user_status(self, document):
         return {'enabled': True,
                 'completed': True if document.user_completed_count > 0 else False}
@@ -112,10 +121,10 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
     def get_progress_status(self, task):
         return {'required': 15,
                 'current': task.current_completed_count,
-                'completed': task.current_completed_count >= 15 }
+                'completed': task.current_completed_count >= 15}
 
     class Meta:
         model = Document
         fields = ('id', 'title', 'document_id',
-                  'user', 'progress')
+                  'user', 'progress', 'task_count', 'concepts')
 

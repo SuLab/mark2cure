@@ -2,7 +2,6 @@ extends base
 
 - load widget_tweaks
 - load brabeion_tags
-- load humanize
 - load group
 
 block header
@@ -21,45 +20,53 @@ block content
                 {{ message|safe }}
 
 
-  #dashboard.container-fluid
+  #dashboard.container-fluid.m-t-md
     .row
-      .col-sm-8.col-sm-offset-0.col-lg-7.col-lg-offset-1
-        block dashboard-content
-          #group-selection
+      - if not mobile
 
+        - if available_tasks|length > 1
+          .col-xs-10.col-xs-offset-1.col-sm-6.col-sm-offset-0.col-md-5.col-md-offset-1.col-lg-4.col-lg-offset-1
+            include common/includes/dashboard-entity-recognition
 
-      .col-sm-4.col-sm-offset-0.col-lg-3.col-lg-offset-0
-        .row
-          .col-xs-12.col-xs-offset-0
-            .card
-              .card-header
-                | My Stats
-              .card-block
-                ol.list-unstyled
-                  li Total Quests: #{user.userprofile.quests_count|intcomma}
-                  li Total Annotations: #{user.userprofile.annotations_count|intcomma}
-                  li Score: #{user.userprofile.score|intcomma}
+          .col-xs-10.col-xs-offset-1.col-sm-6.col-sm-offset-0.col-md-5.col-md-offset-0.col-lg-4.col-lg-offset-0
+            include common/includes/dashboard-relation
 
-              - if request.user|has_group:"Uxtesters"
-                .card-block
-                  a(href='{% url "task-relation:home" %}')
-                    | Interested in trying the new relation identification module?
+          .hidden-md-down.col-lg-2.col-lg-offset-0
+            include common/includes/dashboard-sidebar
 
-            .card-footer.text-center
-              a(href='{% url "userprofile:public-profile" username=user.username %}').text-muted View Profile
+        - else
+          - if 'entity_recognition'|is_in:available_tasks
+            .col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-1.col-lg-6.col-lg-offset-1
+              include common/includes/dashboard-entity-recognition
 
-        .row
-          .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
-            #leaderboard
+            .col-xs-10.col-xs-offset-1.col-md-1.col-md-offset-0.col-lg-2.col-lg-offset-0
+              include common/includes/dashboard-unlock-relation
 
-  include common/includes/welcome-modal
+            .hidden-md-down.col-lg-2.col-lg-offset-0
+              include common/includes/dashboard-sidebar
+
+          - if 'relation'|is_in:available_tasks
+            .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-1.col-lg-2.col-lg-offset-1
+              include common/includes/dashboard-unlock-entity-recognition
+
+            .col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-0.col-lg-6.col-lg-offset-0
+              include common/includes/dashboard-relation
+
+            .hidden-md-down.col-lg-2.col-lg-offset-0
+              include common/includes/dashboard-sidebar
+
+      - else
+        .col-xs-12.col-xs-offset-0.col-md-7.col-md-offset-1
+          include common/includes/dashboard-relation
+        .clearfix.hidden-sm-up
+        .col-sm-4.col-sm-offset-0.col-md-3.col-md-offset-0.hidden-sm-down
+          include common/includes/dashboard-sidebar
+
 
 block post-footer
-    #fb-root
-    - if welcome
-      script.
-        $('#dashboardWelcomeModal').modal('show');
+  {{ block.super }}
 
+  block post-footer-entity-recognition
     script.
       var draw_dashboard = function(group, quests) {
         $('#group-'+ group.pk).html('');
@@ -123,6 +130,47 @@ block post-footer
         }
       });
 
+
+  block post-footer-relation
+    <script type="text/template" id="template">
+    <span class="relation-item-container">
+    <div>
+    <div class="relation-item">
+    <div class="time pull-right"><%= task_count %> steps</div>
+
+    <p>
+    <span class="main-text"><%= title %></span>
+    </p>
+
+    <progress value='<%- (progress.current/progress.required)*100 %>' max='100' class='progress'>
+    <div class='progress'>
+    <span style='width: <%- (progress.current/progress.required)*100 %>%;' class='progress-bar'>
+    <%- progress.current %> Completions
+    </span>
+    </div>
+    </progress>
+
+    </div>
+    </div>
+
+    </span>
+    <hr />
+    </script>
+
+    script(src='#{STATIC_URL}js/tasks/relation-list.js')
+    script.
+      DocumentRelationBoard.addInitializer(function(options) {
+        DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
+        var docs = new DocumentList();
+        DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
+      });
+      DocumentRelationBoard.start();
+
+
+
+
+  block post-footer-sidebar
+    script(src='#{STATIC_URL}js/leaderboard.js')
     script.
       LeaderBoard.addInitializer(function(options) {
         LeaderBoard.addRegions({'leaderboard': '#leaderboard'});

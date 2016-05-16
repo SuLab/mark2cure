@@ -1,0 +1,29 @@
+#header-generic
+  nav.navbar.navbar-default
+    div.container
+      div.navbar-header
+        a.navbar-brand(href="/")
+          img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
+
+      div(id="navbar")
+        ul.list-inline.nav.navbar-nav.pull-right
+          li.active
+            a(href="/about/") About
+          li
+            a(href="/faq/") FAQ
+          li
+            a(href="http://sulab.org/category/mark2cure/", target='_blank') Blog
+          li
+            a(href="/contact/") Contact
+          li
+            a(href='{% url "account_login" %}') Login
+
+          li.social.hidden-xs-down
+            a(href="http://sulab.org/category/mark2cure/feed", target='_blank')
+              <i class="fa fa-rss-square"></i>
+          li.social.hidden-xs-down
+            a(href="https://www.facebook.com/pages/Mark2Cure/586806781439862", target='_blank')
+              <i class="fa fa-facebook-square"></i>
+          li.social.hidden-xs-down
+            a(href="https://twitter.com/Mark2Cure", target='_blank')
+              <i class="fa fa-twitter-square"></i>

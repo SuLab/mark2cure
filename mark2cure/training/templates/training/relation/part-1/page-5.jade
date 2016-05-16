@@ -83,6 +83,32 @@ block post-footer
 
   script.
     var event_counter = 0;
+    var back_flag = false;
+
+    /* instruct users to use back button for better answer */
+    /* hide next button, hide misc popovers and make helper popover appear*/
+    function better_answer() {
+      $('.popover').popover('dispose');
+      $('#next-button').hide();
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'There is a better answer. Try again!';
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
+    /* When incorrect concepts are selected but it's not time to report errors */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2' || str == 'c_1') {
+        better_answer();
+      }
+    });
 
     Tree['convoChannel'].on('start', function(obj) {
       if(event_counter==0) {
@@ -118,14 +144,36 @@ block post-footer
 
     });
 
+    var user_arr = [];
+    var ideal_arr = [];
+
+    function validate_arr(ideal_arr, user_arr) {
+      if (ideal_arr === user_arr)
+        return true;
+      if (ideal_arr == null || user_arr == null)
+        return false;
+      if (ideal_arr.length != user_arr.length)
+        return false;
+      for (var i = 0; i < ideal_arr.length; ++i) {
+        if (ideal_arr[i] !== user_arr[i]) return false;
+      }
+      return true;
+    }
+
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
-      console.log(event_counter);
       var current_selection = Tree.start.currentView.options.choice;
+      user_arr.push(current_selection.get('id'));
+
+      Tree['convoChannel'].on('back', function() {
+        user_arr = [];
+      });
+
       if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
         $('.popover').popover('dispose');
 
-        if (event_counter == 1) {
+        if (back_flag == false && validate_arr(['qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j'], user_arr)) {
+          back_flag = true;
           $relation_el = $('#relation');
           $relation_el.popover({
             container: 'body',
@@ -137,7 +185,11 @@ block post-footer
           $relation_el.popover('show');
         }
 
-        if (event_counter == 3) {
+        else if (event_counter >= 3 && validate_arr(['qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j'], user_arr)) {
+          if (back_flag == true) {
+            $relation_el = $('#relation');
+            $relation_el.popover('dispose');
+          };
           $('#next-button').show();
 
           $next_el = $('#next-button');
@@ -152,6 +204,17 @@ block post-footer
           $next_el.popover('show');
         }
 
-
+      } else {
+        $('.popover').popover('dispose');
+        $('#next-button').hide();
+        $relation_el = $('#relation');
+        $relation_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() { return 'There is a better answer. Try again!'; },
+          placement: 'top'
+        });
+        $relation_el.popover('show');
       }
     });

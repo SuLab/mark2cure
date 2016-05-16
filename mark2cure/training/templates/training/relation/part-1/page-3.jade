@@ -53,7 +53,6 @@ block post-footer
   <h3><%= c1.text %></h3>
   <p class="not_correct_stype"></p>
   </div>
-
   <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
   <h3 id="relation" class="disabled">Select a Relationship below...</h3>
   <ul class="list-group"></ul>
@@ -74,27 +73,41 @@ block post-footer
 
   script.
 
+    function show_astro_popup() {
+      $el = $('#c2');
+      $el.popover('hide');
+      $el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'Astrology is NOT actually a field of science.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
+        },
+        placement: 'top'
+      });
+      $el.popover('show');
+    };
+
+    show_astro_popup();
+
+    Tree['convoChannel'].on('back', function() {
+        $('#next-button').hide();
+        $('#next-button').popover('dispose');
+        show_astro_popup();
+    });
+
     /* (TODO) work for incorrects
     * When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
       if(current_selection.get('id') == 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer') {
         $('#next-button').show();
-      };
+      } else {
+        $('#next-button').hide();
+        $('#next-button').popover('dispose');
+        show_astro_popup();
+      }
     });
-
-    $el = $('#c2');
-    $el.popover('hide');
-    $el.popover({
-      container: 'body',
-      html: true,
-      animation: false,
-      content: function() {
-        return 'Astrology is NOT actually a field of science.<br /> <strong>Click the <i class="fa fa-times-circle"></i> to report the error</strong>';
-      },
-      placement: 'top'
-    });
-    $el.popover('show');
 
     var passages, regions, tmp_passages;
 

@@ -1,18 +1,17 @@
 from __future__ import absolute_import
+from django.conf import settings
 
-import os
-
+from configurations import importer
 from celery import Celery
 
-from django.conf import settings
 import logging
+import os
 logger = logging.getLogger(__name__)
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mark2cure.settings')
 os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
 
-from configurations import importer
 importer.install()
 
 app = Celery('mark2cure')

@@ -1,7 +1,6 @@
-from django.db import models
-from django.conf import settings
-
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.conf import settings
+from django.db import models
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
