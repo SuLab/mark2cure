@@ -15,9 +15,7 @@ from ..models import Level, Task, UserQuestRelationship
 from .utils import generate_results, select_best_opponent
 from ...score.models import Point
 
-from brabeion import badges
 import random
-import os
 
 
 def read_users_bioc(request, pubmed_id, format_type):
@@ -82,7 +80,11 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
 
         from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
-        Point.objects.create(user=request.user, amount=1000, content_type=content_type, object_id=task.id, created=timezone.now())
+        Point.objects.create(user=request.user,
+                             amount=settings.ENTITY_RECOGNITION_DOC_POINTS,
+                             content_type=content_type,
+                             object_id=task.id,
+                             created=timezone.now())
         return HttpResponseServerError('points_awarded')
 
     # BioC Writer Response that will serve all partner comparison information
@@ -113,7 +115,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         player_view.save()
 
     results = generate_results(player_views, opponent_views)
-    score = results[0][2] * 1000
+    score = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
     if score > 0:
         from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
@@ -206,8 +208,8 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
 @login_required
 def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type):
-    # (TODO) remove task, why was this passed?
-    task = get_object_or_404(Task, pk=quest_pk)
+    # Check pass just for url santization reasons
+    get_object_or_404(Task, pk=quest_pk)
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 

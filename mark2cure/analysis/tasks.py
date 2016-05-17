@@ -8,15 +8,16 @@
     other user as the gold standard for each pairing.
 '''
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
+from django.conf import settings
+
 from ..common.bioc import BioCReader
 from ..common.models import Group
 from ..api.views import group_users_bioc
 from ..document.models import Section
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from .models import Report
-
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 
 from nltk.metrics import scores as nltk_scoring
 from celery import task
@@ -202,7 +203,7 @@ def generate_reports(group_pk, private_api=False,
             dataframe=avg_user_f, args=args)
 
 
-def hashed_annotations_graph_process(group_pk, min_thresh=15):
+def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGNITION_K):
     df = hashed_annotations_df(group_pk, private_api=True)
 
     # (TODO) This can be wayyy faster and better
