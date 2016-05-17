@@ -40,14 +40,19 @@ def introduction(request, step_num):
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/step-3.jade')
 
 
-def award_training_badges(qualification_level, user):
+def award_training(qualification_level, user):
     task = Task.objects.filter(kind=Task.TRAINING, provides_qualification=qualification_level).first()
     UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
     from django.contrib.contenttypes.models import ContentType
     from django.utils import timezone
-    content_type = ContentType.objects.get_for_model(task)
-    Point.objects.create(user=user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
+
+    # Assign points to a the specific training level
+    Point.objects.create(user=user,
+                         amount=task.points,
+                         content_type=ContentType.objects.get_for_model(task),
+                         object_id=task.id,
+                         created=timezone.now())
 
     Level.objects.create(user=user, task_type='e', level=task.provides_qualification, created=timezone.now())
 
@@ -55,7 +60,7 @@ def award_training_badges(qualification_level, user):
 @login_required
 def one(request, step_num):
     if step_num == 'feedback':
-        award_training_badges(4, request.user)
+        award_training(4, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-1/feedback-scores.jade', ctx)
 
@@ -70,7 +75,7 @@ def one(request, step_num):
 @login_required
 def two(request, step_num):
     if step_num == 'feedback':
-        award_training_badges(5, request.user)
+        award_training(5, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-2/feedback-scores.jade', ctx)
 
@@ -85,7 +90,7 @@ def two(request, step_num):
 @login_required
 def three(request, step_num):
     if step_num == 'feedback':
-        award_training_badges(6, request.user)
+        award_training(6, request.user)
         ctx = {'next_path': reverse('training:two', kwargs={'step_num': 'complete'})}
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-3/feedback-scores.jade', ctx)
 
@@ -100,7 +105,7 @@ def three(request, step_num):
 @login_required
 def four(request, step_num):
     if step_num == 'feedback':
-        award_training_badges(7, request.user)
+        award_training(7, request.user)
         messages.success(request, 'dashboard-unlock-success')
         return redirect('common:dashboard')
 

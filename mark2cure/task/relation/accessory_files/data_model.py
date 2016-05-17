@@ -18,8 +18,10 @@ from collections import defaultdict
 from lingpipe.file_util import read_file
 from lingpipe.split_sentences import split_abstract
 
+
 def is_MeSH_id(uid):
     return len(uid) == 7 and uid[0] in ["C", "D"]
+
 
 class Annotation:
     """
@@ -53,6 +55,7 @@ class Annotation:
         """
         if hasattr(other, "start"):
             return self.start.__cmp__(other.start)
+
 
 class Sentence:
     """
@@ -93,7 +96,7 @@ class Sentence:
         """
         return ((chemical.stop < disease.start)
             and (disease.start - chemical.stop <= 15)
-            and ("induce" in self.text[chemical.stop - self.start :
+            and ("induce" in self.text[chemical.stop - self.start:
                 disease.start - self.start].lower())
         )
 
@@ -128,6 +131,7 @@ class Sentence:
         all_relations[False] -= all_relations[True]
         assert all_relations[False].isdisjoint(all_relations[True])
         return all_relations
+
 
 class Relation:
     """
@@ -181,6 +185,7 @@ class Relation:
         return "<{0}>: {1}".format(
             self.__class__.__name__, self.uid)
 
+
 class Paper:
     """
     A single academic publication.
@@ -210,7 +215,7 @@ class Paper:
             equal the number of unique chemical IDs times
             the number of unique disease IDs.
     """
-    def __init__(self, pmid, title, abstract, annotations, gold_relations = []):
+    def __init__(self, pmid, title, abstract, annotations, gold_relations=[]):
         self.pmid = int(pmid)
         self.title = title
         self.abstract = abstract
@@ -218,7 +223,7 @@ class Paper:
         self.annotations = sorted(annotations)
         assert self.has_correct_annotations()
 
-        self.gold_relations = gold_relations # may be empty when not parsing gold
+        self.gold_relations = gold_relations  # may be empty when not parsing gold
 
         self.chemicals, self.diseases = self.get_unique_concepts()
 
@@ -241,7 +246,7 @@ class Paper:
         """
         text = "{0} {1}".format(self.title, self.abstract)
         for annotation in self.annotations:
-            assert text[annotation.start : annotation.stop] == annotation.text, (
+            assert text[annotation.start: annotation.stop] == annotation.text, (
                 "Annotation {0} in PMID {1} does not match the text.".format(annotation, self.pmid))
 
         return True
@@ -281,8 +286,8 @@ class Paper:
 
         full_text = "{0} {1}".format(self.title, self.abstract)
 
-        sent_idx = 0 # starting index of current sentence
-        annot_idx = 0 # index of annotation that is within current sentence
+        sent_idx = 0  # starting index of current sentence
+        annot_idx = 0  # index of annotation that is within current sentence
 
         res = []
         M = len(self.annotations)
@@ -303,9 +308,9 @@ class Paper:
 
             # should be one past
             res.append(Sentence(self.pmid, i, sentence,
-                sent_idx, sent_stop, self.annotations[start_annot : annot_idx]))
+                sent_idx, sent_stop, self.annotations[start_annot: annot_idx]))
 
-            sent_idx += len(sentence) + 1 # all sentences separated by one space
+            sent_idx += len(sentence) + 1  # all sentences separated by one space
 
         return res
 
@@ -360,7 +365,8 @@ class Paper:
         """
         return potential_relation in self.gold_relations
 
-def parse_input(loc, fname, is_gold = True, return_format = "list"):
+
+def parse_input(loc, fname, is_gold=True, return_format="list"):
     """
     Reads a given file and returns a list of Paper
     objects.
@@ -393,7 +399,7 @@ def parse_input(loc, fname, is_gold = True, return_format = "list"):
                 vals = line.split('\t')
 
             if counter == 0:
-                assert vals[1] == "t", i+1
+                assert vals[1] == "t", i + 1
                 pmid = int(vals[0])
                 title = vals[2]
             elif counter == 1:

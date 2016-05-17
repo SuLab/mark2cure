@@ -23,7 +23,7 @@ class Level(models.Model):
         if self.task_type == 'e':
             levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert"]
         else:
-            levels = ["beginner", "Medium", "Expert"]
+            levels = ["Beginner", "Medium", "Expert"]
 
         return levels[self.level]
 

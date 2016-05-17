@@ -1,3 +1,5 @@
+- load humanize
+
 .row
   .col-xs-12
     .relations-title Entity Recognition Tasks
@@ -6,21 +8,21 @@
   .col-xs-12.col-md-10.col-md-offset-1.task-score
     .row.sep
       .col-xs-4.task-value
-        | #{task_stats.entity_recognition.total_score}
+        | #{task_stats.entity_recognition.total_score|intcomma}
       .col-xs-8.task-label
         | task score
     hr
 
     .row.sep
       .col-xs-4.task-value
-        | #{task_stats.entity_recognition.quests_completed}
+        | #{task_stats.entity_recognition.quests_completed|intcomma}
       .col-xs-8.task-label
         | doc sets done
     hr
 
     .row.sep
       .col-xs-4.task-value
-        | #{task_stats.entity_recognition.annotations}
+        | #{task_stats.entity_recognition.annotations|intcomma}
       .col-xs-8.task-label
         | task annotations
     hr

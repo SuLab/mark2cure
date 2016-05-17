@@ -11,7 +11,7 @@ class Point(models.Model):
 
     from django.contrib.contenttypes.models import ContentType
     content_type = models.ForeignKey(ContentType)
-    object_id = models.IntegerField()
+    object_id = models.IntegerField(blank=True, null=True)
     job = GenericForeignKey('content_type', 'object_id')
 
     amount = models.FloatField()

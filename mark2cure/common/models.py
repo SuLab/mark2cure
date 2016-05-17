@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from ..document.models import Document, View, Annotation
@@ -156,7 +157,7 @@ class Group(models.Model):
         else:
             return 0
 
-    def assign(self, documents, smallest_bin=5, largest_bin=5, completions=15):
+    def assign(self, documents, smallest_bin=5, largest_bin=5, completions=settings.ENTITY_RECOGNITION_K):
         # Insert the other Documents
         document_set = list(documents.values_list('id', flat=True))
         random.shuffle(document_set)
