@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.db.models import Q
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -94,12 +95,12 @@ def dashboard(request):
            },
            'task_stats': {
                'entity_recognition': {
-                   'total_score': sum(Point.objects.filter(user=request.user, content_type=er_content_type_id).values_list('amount', flat=True)),
+                   'total_score': int(sum(Point.objects.filter(user=request.user).filter(Q(object_id__isnull=True) | Q(content_type=er_content_type_id)).values_list('amount', flat=True))),
                    'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='cr').count(),
                    'annotations': Annotation.objects.filter(kind='e', view__user=request.user).count()
                },
                'relation': {
-                   'total_score': sum(Point.objects.filter(user=request.user, content_type=r_content_type_id).values_list('amount', flat=True)),
+                   'total_score': int(sum(Point.objects.filter(user=request.user, content_type=r_content_type_id).values_list('amount', flat=True))),
                    'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='r').count(),
                    'annotations': Annotation.objects.filter(kind='r', view__user=request.user).count()
                }
