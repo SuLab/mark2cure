@@ -13,20 +13,24 @@ nav#header-auth-generic(role='navigation').navbar.navbar-default
 
       .col-xs-10.col-xs-offset-1.col-sm-6.col-sm-offset-3.col-md-3.col-md-offset-0
         #site-nav.collapse.navbar-toggleable-xs
-          .row
-            .col-xs-6.col-sm-7
-              ul.list-unstyled.user-info
-                li
-                  p {{user}}
+          - if user.is_authenticated
+            .row
+              .col-xs-6.col-sm-7
+                ul.list-unstyled.user-info
+                  li
+                    a(href='{% url "profile:public-profile" username=user.username %}')
+                      p {{user}}
 
-            .col-xs-6.col-sm-5
-              ul.list-unstyled.site-links
-                li
-                  a(href='{% url "talk:recent" %}')
-                    p Talk Pages
-                li
-                  a(href='{% url "profile:public-profile" username=user.username %}')
-                    p Profile
+              .col-xs-6.col-sm-5
+                ul.list-unstyled.site-links
+                  li
+                    a(href='{% url "talk:recent" %}')
+                      p Talk Pages
+
+                  block header-instructions
+                    li
+                      a(href='{% url "instructions:home" %}')
+                        p Instructions
 
     .row
       .col-xs-10.col-xs-offset-1
