@@ -1,7 +1,30 @@
 #instructions {
 
-  h4 a {
-    color: $color_black !important;
+  .breadcrumb {
+    background-color: $color_gray_lighter;
+    background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
+  }
+
+  #sidebar-navigation {
+    border-right: 8px solid $color_gray_lightest;
+
+    h4 a {
+      color: $color_black !important;
+    }
+
+    hr {
+      border: 0;
+      margin: 0px;
+      height: 4px;
+      background: $color_gray_lighter;
+    }
+
+  }
+
+  @include media-breakpoint-down(sm) {
+    #sidebar-navigation {
+      border-right: none;
+    }
   }
 
 }
@@ -45,5 +68,4 @@ div.tooltip.instructions-content {
   border-radius: 8px;
   pointer-events: none;
 }
-
 

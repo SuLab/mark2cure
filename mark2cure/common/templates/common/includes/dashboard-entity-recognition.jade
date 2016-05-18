@@ -17,7 +17,14 @@
       .col-xs-4.task-value
         | #{task_stats.entity_recognition.quests_completed|intcomma}
       .col-xs-8.task-label
-        | doc sets done
+        | quests completed
+    hr
+
+    .row.sep
+      .col-xs-4.task-value
+        | #{task_stats.entity_recognition.papers_reviewed|intcomma}
+      .col-xs-8.task-label
+        | papers reviewed
     hr
 
     .row.sep
@@ -31,15 +38,11 @@
       .col-xs-12.text-center
         ul.list-inline
           li
-            a(href='#')
-              | Tutorials
-
-          li
-            a(href='#')
+            a(href='{% url "common:group" group_stub="training" %}')
               | Practice
 
           li
-            a(href='#')
+            a(href='{% url "instructions:entity-recognition" %}')
               | Rules
 
 

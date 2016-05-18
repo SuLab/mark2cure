@@ -3,12 +3,6 @@ extends includes/header
 
 block header-instructions
   li
-    a(data-toggle="modal", data-target="#relationshipInstructionsModal", style="cursor:pointer;")
+    a(href='{% url "instructions:relation" %}', target='_blank')
       p Instructions
 
-
-include instructions/relation-instructions-modal
-include instructions/concept-definitions-relation-modal
-include instructions/disease-definitions-relation-modal
-include instructions/gene-definitions-relation-modal
-include instructions/drug-definitions-relation-modal

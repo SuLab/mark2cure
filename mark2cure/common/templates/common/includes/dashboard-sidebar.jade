@@ -5,12 +5,11 @@
 .row
   .col-xs-12.col-xs-offset-0
     .card.my-stats
-      .card-header
+      .card-header.text-center
         | My Stats
       .card-block
         ol.list-unstyled
-          li Total Quests: #{user.userprofile.quests_count|intcomma}
-          li Total Annotations: #{user.userprofile.annotations_count|intcomma}
+          li Total Annotations: #{user.userprofile.all_annotations.count|intcomma}
           li Total Score: #{user.userprofile.score|intcomma}
 
 .row

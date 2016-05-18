@@ -2,7 +2,7 @@ extends instructions/home
 
 
 block header
-  - with headerMessage='Drug > Disease'
+  - with headerMessage='Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease'
     include includes/header
 
 
@@ -10,7 +10,7 @@ block breadcrumb
   li
     a(href='{% url "instructions:relation" %}') Relation Task
   li.active Relationships
-  li.active Drug > Disease
+  li.active Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease
 
 
 block js-libs

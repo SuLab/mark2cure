@@ -65,12 +65,14 @@ def user_training(request, format_type="html"):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def user_quest_availability(request, format_type="html"):
+    # (TODO) Broken with task changes and notions of quest completions with Relation app
+    return
+
     arr = []
     users = User.objects.exclude(userprofile__isnull=True).all()
     for u in users.values('pk', 'username'):
         try:
             profile = UserProfile.objects.get(user__pk=u['pk'])
-            arr.append((u['username'], profile.quests_count(), profile.available_quests()))
         except Exception as e:
             pass
 

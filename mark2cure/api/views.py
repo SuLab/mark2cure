@@ -275,7 +275,7 @@ def group_pubtator_bioc(request, group_pk, format_type):
 # @login_required
 @api_view(['GET'])
 def group_list(request):
-    queryset = Group.objects.all().order_by('-order')
+    queryset = Group.objects.exclude(stub='training').order_by('-order')
     serializer = GroupSerializer(queryset, many=True)
     return Response(serializer.data)
 
