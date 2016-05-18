@@ -131,6 +131,7 @@ block post-footer
     /* When an item is selected */
     Tree['convoChannel'].on('error', function(str) {
       if(str == 'c_1') {
+        $('.popover').popover('dispose');
         look_right();
       }
       else if (str == 'c_2') {
