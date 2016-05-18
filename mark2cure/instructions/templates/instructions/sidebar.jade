@@ -1,0 +1,35 @@
+h4.text-center.m-t-md
+  a(href='{% url "instructions:entity-recognition" %}')
+    | Entity Recognition Task
+
+.list-group
+  a(href='{% url "instructions:entity-recognition-diseases" %}').list-group-item
+    | Diseases
+  a(href='{% url "instructions:entity-recognition-genes" %}').list-group-item
+    | Genes
+  a(href='{% url "instructions:entity-recognition-treatments" %}').list-group-item
+    | Treatments
+
+h4.text-center.m-t-md
+  a(href='{% url "instructions:relation" %}')
+    | Relation Task
+
+.list-group
+  a(href='{% url "instructions:relation-definition-disease" %}').list-group-item
+    | Disease Definition
+
+  a(href='{% url "instructions:relation-definition-gene" %}').list-group-item
+    | Gene Definition
+
+  a(href='{% url "instructions:relation-definition-drug" %}').list-group-item
+    | Drug Definition
+
+  hr
+  a(href='{% url "instructions:relation-gene-disease" %}').list-group-item
+    | Gene > Disease
+
+  a(href='{% url "instructions:relation-drug-disease" %}').list-group-item
+    | Drug > Disease
+
+  a(href='{% url "instructions:relation-gene-drug" %}').list-group-item
+    | Gene > Drug

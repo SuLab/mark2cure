@@ -1,0 +1,27 @@
+extends instructions/home
+
+
+block header
+  - with headerMessage='Disease Definition'
+    include includes/header
+
+
+block breadcrumb
+  li
+    a(href='{% url "instructions:relation" %}') Relation Task
+  li.active Definitions
+  li.active Disease
+
+
+block instructions-content
+  .modal-body
+    .panel
+      .panel-body
+        p.lead <span style='background-color:rgb(209, 243, 255);'>Disease</span> concepts include:
+        ol(style='margin-left: 8px;').list-unstyled
+          li <strong>Disease</strong> – a particular abnormal, pathological condition that affects part or all of an organism
+          li <strong>Disease Class</strong> – a specific category of similar but different diseases
+          li <strong>Symptom</strong> – the physical manifestations of a disease
+          li <strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.
+          p <br>When in doubt, search online resources like: <a href='http://www.diseasesdatabase.com/begin.asp' target='_blank'>http://www.diseasesdatabase.com/begin.asp</a> and <a href='http://www.ncbi.nlm.nih.gov/mesh/' target='_blank'>http://www.ncbi.nlm.nih.gov/mesh/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Diseases_Concept_Help' target='_blank'>new Wikia forum for help</a>.
+

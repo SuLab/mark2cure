@@ -1,0 +1,49 @@
+#instructions {
+
+  h4 a {
+    color: $color_black !important;
+  }
+
+}
+
+#instructions-content {
+  .node rect {
+    cursor: pointer;
+    fill: #fff;
+    fill-opacity: 0.7;
+    stroke: #333;
+    stroke-width: 2px;
+  }
+
+  .node text {
+    font: 22px sans-serif;
+    pointer-events: none;
+  }
+
+  path.link {
+    fill: none;
+    /*stroke: #333;*/
+    stroke-width: 2px;
+  }
+
+  p.paragraph span.user_annotated_green,
+  span.user_annotated_green {
+    background-color: #B1FFA8;
+  }
+
+}
+
+div.tooltip.instructions-content {
+  position: absolute;
+  text-align: left;
+  width: 500px;
+  /*height: 120px;*/
+  padding: 20px;
+  font: 20px sans-serif;
+  background: #ddd;
+  border: solid 4px #aaa;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+
