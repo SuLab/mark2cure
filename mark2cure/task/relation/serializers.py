@@ -1,20 +1,14 @@
-import json
-from pprint import pprint
 from collections import Counter
 
-from .models import Relation, Concept, ConceptText, ConceptDocumentRelationship, RelationAnnotation
+from .models import Relation, ConceptDocumentRelationship, RelationAnnotation
+from . import relation_data
 
 from rest_framework import serializers
-from django.conf import settings
 
 
 class RelationSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        # Don't pass the 'fields' arg up to the superclass
-        context = kwargs.pop('context', {})
-        user = context.get('user', None)
-
         # Instantiate the superclass normally
         super(RelationSerializer, self).__init__(*args, **kwargs)
 
@@ -53,17 +47,11 @@ class RelationSerializer(serializers.ModelSerializer):
 class RelationFeedbackSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        context = kwargs.pop('context', {})
-        user = context.get('user', None)
-
         super(RelationFeedbackSerializer, self).__init__(*args, **kwargs)
 
     concepts = serializers.SerializerMethodField()
 
     def get_concepts(self, relation):
-
-        with open(settings.PROJECT_PATH + '/static/js/tasks/relation-data.json') as data_file:
-            json_data = json.load(data_file)
 
         def check_for_children(dict_item):
             try:
@@ -89,12 +77,12 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
         cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
         cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
 
-        def get_label_and_group_from_json(json_data):
+        def get_label_and_group_from_json(relation_data):
 
                 answer_tally = Counter(relation_answer_list)
                 parent_series_dict_list = []
                 children_series_dict_list = []
-                for key, value in json_data.items():
+                for key, value in relation_data.items():
                     dict_list = create_list(value)
 
                     for dict_item in dict_list:
@@ -130,7 +118,7 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
                 series_dict_list = parent_series_dict_list + children_series_dict_list
                 return series_dict_list
 
-        series_dict_list = get_label_and_group_from_json(json_data)
+        series_dict_list = get_label_and_group_from_json(relation_data)
 
         return {
             'series': series_dict_list,

@@ -1,21 +1,21 @@
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
+from django.conf import settings
 
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from ...common.formatter import bioc_as_json
-from ...common.bioc import BioCReader
-from ...common.models import Group
-from ...document.models import Document, Section, Pubtator, View, Annotation
+from ...score.models import Point
+from ...document.models import Document, View, Annotation
 
-from .models import Relation, Concept, RelationAnnotation
+from .models import Relation, RelationAnnotation
 from .serializers import RelationSerializer, RelationFeedbackSerializer
 
 
@@ -88,6 +88,13 @@ def submit_annotation(request, document_pk, relation_pk):
             view=view,
             content_type=relation_ann_content_type,
             object_id=relation_ann.id)
+
+        # Assign a point to the specific Relation Annotation
+        Point.objects.create(user=request.user,
+                             amount=settings.RELATION_DOC_POINTS,
+                             content_type=relation_ann_content_type,
+                             object_id=relation_ann.id,
+                             created=timezone.now())
 
         return HttpResponse(200)
 

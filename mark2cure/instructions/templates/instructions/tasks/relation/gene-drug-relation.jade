@@ -1,0 +1,54 @@
+extends instructions/tasks/relation/relation-base
+
+
+block header
+  - with headerMessage='Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Drug'
+    include includes/header
+
+
+block breadcrumb
+  li
+    a(href='{% url "instructions:relation" %}') Relation Task
+  li.active Relationships
+  li.active Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Drug
+
+
+block js-libs
+  {{block.super}}
+
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js")
+  script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+
+
+block instructions-content
+  #instructions-content
+
+  script.
+    root = {
+      "id": "1-1-1-1-1-1",
+      "text": "Gene + drug relationship",
+      "desc": "Gene + drug relationship definitions",
+      "example": "Hover over items for more information.",
+      "children": [{
+        "id": "1",
+        "text": "Relates to",
+        "desc": "The gene is related to the drug in some manner.",
+        "example": "The drug ACTH was given to a patient with a mutation in NGLY1 and had adverse effects.",
+        "children": [{
+          "id": "1-1",
+          "text": "Affects",
+          "desc": "The gene affects the activity of the drug.",
+          "example": "Codeine is metabolized by CYP2D6 to its active metabolite, morphine",
+          }, {
+          "id": "1-2",
+          "text": "Is affected by",
+          "desc": "Gene expression is induced or inhibited by the drug.",
+          "example": "Saint-John's wort, a common herbal remedy inhibits CYP1A1.",
+          }]}, {
+        "id": "2",
+        "text": "Has no relation to",
+        "desc": "The gene does not relate to the drug.",
+        "example": "The drug ACTH was given to a patient with a mutation in NGLY1."
+      }]
+    }
+

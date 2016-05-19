@@ -1,11 +1,14 @@
-#instructionsModal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
-  .modal-dialog
-    .modal-content
-      .modal-header
-        button(type="button", data-dismiss="modal").close
-          span(aria-hidden="true") &times;
-          span.sr-only Close
-        h4#myModalLabel.modal-title Quest Instructions
+extends instructions/home
+
+
+block header
+  - with headerMessage='Entity Recognition'
+    include includes/header
+
+block breadcrumb
+  li.active Entity Recognition Task
+
+block instructions-content
 
       .modal-body
         .panel
@@ -16,18 +19,20 @@
               li <strong>Disease Class</strong> – a specific category of similar but different diseases
               li <strong>Symptom</strong> – the physical manifestations of a disease
               li <strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.
-            a(href='{% url "instructions:disease-marking" %}')
+            a(href='{% url "instructions:entity-recognition-diseases" %}')
               p.text-center Review the rules for Disease Marking
 
+        hr
         .panel
           .panel-body
             p.lead Gene Marking Skill: the ability to identify and mark gene concepts such as:
             ol(style='margin-left: 8px;').list-unstyled
               li <strong>Genes</strong> – a molecular unit of heredity in an organism, and is usually referred to in biomedical literature by their gene name, gene symbol, or both.
               li <strong>Gene Products</strong> – usually a protein or microRNA that is encoded by the gene and will sometimes have the same name/symbol as the gene.
-            a(href='{% url "instructions:gene-marking" %}')
+            a(href='{% url "instructions:entity-recognition-genes" %}')
               p.text-center Review the rules for Gene Marking
 
+        hr
         .panel
           .panel-body
             p.lead Treatment Marking Skill: the ability to identify and mark treatment concepts such as:
@@ -35,9 +40,6 @@
               li <strong>Drug</strong> – a substance that has biological effects on humans or other animals, and can be at different stages of development and have multiple names
               li <strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action
               li <strong>Non-Drug Treatment</strong> – Non-drug-based means of mitigating a disease or symptoms of a disease
-            a(href='{% url "instructions:treatment-marking" %}')
+            a(href='{% url "instructions:entity-recognition-treatments" %}')
               p.text-center Review the rules for Treatment Marking
-
-      .modal-footer
-        button(type="button", data-dismiss="modal").btn.btn-default Close
 

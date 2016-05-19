@@ -1,11 +1,8 @@
-from ...common.bioc import BioCReader
-from ...document.models import Document, Pubtator
+from ...document.models import Document
 from .models import Concept, ConceptText, ConceptDocumentRelationship, Relation
 
-import re
 import itertools
 from celery import task
-import pandas as pd
 
 """
 # makes concept lists for only documents that have at least two dictionaries
@@ -19,6 +16,7 @@ stype_hash = {
     'Disease': 'd',
     'Gene': 'g'
 }
+
 
 @task()
 def import_concepts():
@@ -63,7 +61,7 @@ def import_concepts():
             ct, created = ConceptText.objects.get_or_create(concept_id=row['uid'], text=row['text'])
             # (TODO) Consider ann_type in addition to source
             # agree with this comment. 'source' is too variable. Just use ann_type -JF
-            cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype= stype_hash.get(row['ann_type'], None) )
+            cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype=stype_hash.get(row['ann_type'], None))
 
 
 @task()
@@ -99,7 +97,7 @@ def compute_relationships():
 
             if relation_type in approved_relationship_types:
                 Relation.objects.get_or_create(
-                    document_id = document_id,
-                    relation_type = relation_type,
-                    concept_1_id = uid_a,
-                    concept_2_id = uid_b )
+                    document_id=document_id,
+                    relation_type=relation_type,
+                    concept_1_id=uid_a,
+                    concept_2_id=uid_b)

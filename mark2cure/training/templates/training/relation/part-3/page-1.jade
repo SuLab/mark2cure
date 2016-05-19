@@ -5,10 +5,10 @@ block intro-content
     .col-xs-12
       p Relationships for three different types of concepts will be presented. The concepts will be color-coded:
       ul
-        li <span class='user_annotated'>Disease concept</span> entities will be in <span class='user_annotated'>blue</span>
-        li <span class='user_annotated_green'>Gene/protein concept</span> entities will be in <span class='user_annotated_green'>green</span>
-        li <span class='user_annotated_pink'>Drug concept</span> entities will be in <span class='user_annotated_pink'>pink</span>
-        li Learn more about the concept types <a href='#'>here</a>
+        li <span class='user_annotated'>Disease concept</span> entities will be in <span class='user_annotated'>blue</span>. <a href='{% url "instructions:relation-definition-disease" %}' target='_blank'><small>Learn more.</small></a>
+        li <span class='user_annotated_green'>Gene/protein concept</span> entities will be in <span class='user_annotated_green'>green</span>.  <a href='{% url "instructions:relation-definition-gene" %}' target='_blank'><small>Learn more.</small></a>
+        li <span class='user_annotated_pink'>Drug concept</span> entities will be in <span class='user_annotated_pink'>pink</span>. <a href='{% url "instructions:relation-definition-drug" %}' target='_blank'><small>Learn more.</small></a>
+        li Learn more about the concept types <a href='{% url "instructions:relation" %}' target="_blank">here</a>
       p Press ‘Next’ to continue.
 
 

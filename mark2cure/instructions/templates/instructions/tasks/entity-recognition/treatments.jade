@@ -1,0 +1,38 @@
+extends instructions/home
+
+
+block header
+  - with headerMessage='Treatment Concept Marking Rules'
+    include includes/header
+
+block breadcrumb
+  li
+    a(href='{% url "instructions:entity-recognition" %}') Entity Recognition Task
+  li.active Treatments
+
+
+block instructions-content
+  ol
+    li
+      p Mark every instance of a drug class, non-drug treatment, or drug
+      p Eg- <span class='user_annotated_pink'>monoamine oxidase inhibitors</span class='user_annotated_pink'>
+      p Eg- <span class='user_annotated_pink'>pancreatic resection</span class='user_annotated_pink'>, <span class='user_annotated_pink'>speech therapy</span class='user_annotated_pink'>
+      p Eg- compound <span class='user_annotated_pink'>PS-341</span class='user_annotated_pink'>, <span class='user_annotated_pink'>bortezomib</span class='user_annotated_pink'>, or <span class='user_annotated_pink'>Velcade</span class='user_annotated_pink'>
+      p --Keep in mind, drugs can have many different names
+
+    li
+      p Use the minimum span needed to encompass multiple terms of a Drug, drug class or Non-Drug Treatment.
+      p -- For drug therapies or regiments, just mark the drug name. Do not include the terms ‘therapy’ or ‘treatment’
+      p Eg- Mark: <span class='user_annotated_pink'>Penicillin</span class='user_annotated_pink'> regimen, NOT <span class='user_annotated_pink'>Penicillin regimen</span class='user_annotated_pink'>
+      p --For other treatments, include the terms ‘therapy’ or ‘treatment’ only if they are part of the treatment name
+      p Eg- Mark: <span class='user_annotated_pink'>graduated exposure therapy</span class='user_annotated_pink'>, NOT <span class='user_annotated_pink'>graduated exposure</span class='user_annotated_pink'> therapy
+
+    li
+      p Mark each instance of a drug, drug class, or non-drug therapy separately or in a separate span.
+      p Eg- Mark: compound <span class='user_annotated_pink'>PS-341</span class='user_annotated_pink'> or <span class='user_annotated_pink'>Velcade</span class='user_annotated_pink'> NOT compound <span class='user_annotated_pink'>PS-341 or Velcade</span class='user_annotated_pink'>
+
+    li
+      p Mark each instance of an abbreviation of a drug, drug class, or non-drug therapy
+
+    li
+      p If you suspect an unfamiliar term of being a drug but are unsure, check here: <a href='http://www.drugbank.ca/' target='_blank'>drugbank.ca</a> or on Google or Wikipedia (for drugs under development) or or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Treatments_Concept_Help' target='_blank'>new Wikia forum for help</a>

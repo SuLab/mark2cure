@@ -1,4 +1,6 @@
-from mark2cure.userprofile.models import Team
+from django.conf import settings
+
+from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Level, Task
 
@@ -95,10 +97,6 @@ class QuestSerializer(serializers.ModelSerializer):
 class DocumentRelationSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        # Don't pass the 'fields' arg up to the superclass
-        context = kwargs.pop('context', {})
-        user = context.get('user', None)
-
         # Instantiate the superclass normally
         super(DocumentRelationSerializer, self).__init__(*args, **kwargs)
 
@@ -119,9 +117,9 @@ class DocumentRelationSerializer(serializers.ModelSerializer):
                 'completed': True if document.user_completed_count > 0 else False}
 
     def get_progress_status(self, task):
-        return {'required': 15,
+        return {'required': settings.ENTITY_RECOGNITION_K,
                 'current': task.current_completed_count,
-                'completed': task.current_completed_count >= 15}
+                'completed': task.current_completed_count >= settings.ENTITY_RECOGNITION_K}
 
     class Meta:
         model = Document

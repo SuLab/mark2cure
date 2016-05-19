@@ -1,0 +1,24 @@
+extends base
+
+block header
+  - with headerMessage='Instructions'
+    include includes/header
+
+block content
+  #instructions.container.m-t-md.m-b-lg
+    .row
+
+      ol.breadcrumb
+        li
+          a(href='{% url "instructions:home" %}') Instructions
+        block breadcrumb
+
+    .row
+      #sidebar-navigation.col-md-3
+        include instructions/sidebar
+
+      .col-md-9
+        block instructions-content
+
+          p.lead.text-center.m-t-lg There are many rules to follow in Mark2Cure, the instructions portal is intended to provide an up to date reference guide for how to properly perform Mark2Cure tasks.
+

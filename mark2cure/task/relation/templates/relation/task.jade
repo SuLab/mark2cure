@@ -6,15 +6,19 @@ extends base
 
 block header
   - with headerMessage=task.name
-    include includes/header-relation
+    include includes/header-task-relation
 
 
 block content
 
   .container-fluid
     #quest-guide.row
-      .col-xs-12.col-md-10.col-md-offset-1
+      .col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-1.col-lg-8.col-lg-offset-1
         ul#progress-bar.list-unstyled.list-inline
+
+      .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
+        p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
+
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -36,16 +40,16 @@ block content
     .row.m-t-md
       .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
         div(role="group").btn-group-vertical
-          a(data-toggle="modal", data-target="#relationshipInstructionsModal", style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
+          a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
             | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
 
-          a(data-toggle="modal", data-target="#diseaseDefinitionsModal", style='background-color: #d1f3ff;').btn.btn-default
+          a(href='{% url "instructions:relation-definition-disease" %}', style='background-color: #d1f3ff;').btn.btn-default
             | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
 
-          a(data-toggle="modal", data-target="#geneDefinitionsModal", style='background-color:rgb(177, 255, 168);').btn.btn-default
+          a(href='{% url "instructions:relation-definition-gene" %}', style='background-color:rgb(177, 255, 168);').btn.btn-default
             | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
 
-          a(data-toggle="modal", data-target="#drugDefinitionsModal", style='background-color:rgb(255, 209, 220);').btn.btn-default
+          a(href='{% url "instructions:relation-definition-drug" %}', style='background-color:rgb(255, 209, 220);').btn.btn-default
             | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
 
     #feedback_modal.modal.fade.tree-results

@@ -38,7 +38,7 @@ block interactive
       "concepts": {
         "c2": {
           "text": "Familial amyloidotic polyneuropathy",
-          "type": "g",
+          "type": "d",
           "id": "0"
         },
         "c1": {
@@ -82,25 +82,46 @@ block post-footer
   script.
     var passages, regions, tmp_passages;
 
+    /* instruct users to use back button for better answer */
+    /* hide next button, hide misc popovers and make helper popover appear*/
+    function better_answer() {
+      $('.popover').popover('dispose');
+      $('#next-button').hide();
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'There is a better answer. Try again!';
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
+    /* When incorrect concepts are selected but it's not time to report errors */
+    Tree['convoChannel'].on('error', function(str) {
+      if(str == 'c_2' || str == 'c_1') {
+        better_answer();
+      }
+    });
+
+    Tree['convoChannel'].on('back', function(obj) {
+      $('.popover').popover('dispose');
+      $('#next-button').hide();
+    });
+
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
-
-      /* don't show next button when menu is reset */
-      Tree['convoChannel'].on('back', function() {
-        $('#next-button').hide()
-      });
-
       if(current_selection.get('id') == '04110gzdcxz8niuv83ev08ut7lv0xep4iym5sxm5') {
         $('#next-button').show();
+        $('.popover').popover('dispose');
+      } else if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+        $('#next-button').hide();
+        $('.popover').popover('dispose');
       } else {
-        $('#next-button').hide();
+        better_answer();
       };
-    });
-
-    /* When the user presses the 'incorrect concept' buttons in error, hide next button */
-    Tree['convoChannel'].on('error', function(str) {
-      if(str == 'c_2' || str == 'c_1') {
-        $('#next-button').hide();
-      }
     });

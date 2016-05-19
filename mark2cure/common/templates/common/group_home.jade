@@ -1,5 +1,3 @@
-
-
 extends base
 
 - load widget_tweaks
@@ -7,12 +5,11 @@ extends base
 - load humanize
 - load group
 
+
 block header
   - with headerMessage='Doc Set Details'
-      - if user.is_authenticated
-        include includes/header
-      - else
-        include includes/header-annonymous
+    include includes/header
+
 
   <style>
   body {

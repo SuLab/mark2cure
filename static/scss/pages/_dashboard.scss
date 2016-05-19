@@ -1,6 +1,15 @@
 @import 'sections/group_selection';
 @import 'sections/leaderboard';
 
+#dashboard {
+  margin-top: 1rem;
+
+  .card-header {
+    padding: 0.5rem 1.25rem;
+  }
+
+}
+
 .task-score {
   border: solid 16px tint($color_bootstrap_blue, 90);
 

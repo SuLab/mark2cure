@@ -1,0 +1,55 @@
+extends instructions/home
+
+
+block header
+  - with headerMessage='Relation'
+    include includes/header
+
+
+block breadcrumb
+  li.active Relation Task
+
+block instructions-content
+  .modal-body
+    .panel
+      .panel-body
+        p.lead Relation Identification Skill: the ability to identify a relation between two scientific concepts:
+
+        p.lead Review the relation rules for:
+
+        a(href='{% url "instructions:relation-gene-disease" %}')
+          p.text-center Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Disease
+        a(href='{% url "instructions:relation-drug-disease" %}')
+          p.text-center Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease
+        a(href='{% url "instructions:relation-gene-drug" %}')
+          p.text-center Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Drug
+
+  hr
+  .modal-body
+    .panel
+      .panel-body
+        p.lead Disease concepts include:
+        ol(style='margin-left: 8px;').list-unstyled
+          li <strong>Disease</strong> – a particular abnormal, pathological condition that affects part or all of an organism
+          li <strong>Disease Class</strong> – a specific category of similar but different diseases
+          li <strong>Symptom</strong> – the physical manifestations of a disease
+          li <strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.
+          p <br>When in doubt, search online resources like: <a href='http://www.diseasesdatabase.com/begin.asp' target='_blank'>diseasesdatabase.com</a> and <a href='http://www.ncbi.nlm.nih.gov/mesh/' target='_blank'>ncbi.nlm.nih.gov/mesh/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Diseases_Concept_Help' target='_blank'>new Wikia forum for help</a>.
+
+    .panel
+      .panel-body
+        p.lead Gene concepts include:
+        ol(style='margin-left: 8px;').list-unstyled
+          li <strong>Genes</strong> – a molecular unit of heredity in an organism, and is usually referred to in biomedical literature by their gene name, gene symbol, or both.
+          li <strong>Gene Products</strong> – usually a protein or microRNA that is encoded by the gene and will sometimes have the same name/symbol as the gene.
+          p <br>If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>genenames.org/</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>ncbi.nlm.nih.gov/gene/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Genes_Concept_Help' target='_blank'>new Wikia forum for help</a>
+
+    .panel
+      .panel-body
+        p.lead Drug concepts include:
+        ol(style='margin-left: 8px;').list-unstyled
+          li <strong>Drug</strong> – a substance that has biological effects on humans or other animals, and can be at different stages of development and have multiple names
+          li <strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action
+          p <br>If you suspect an unfamiliar term of being a drug but are unsure, check here: <a href='http://www.drugbank.ca/' target='_blank'>drugbank.ca</a> or on Google or Wikipedia (for drugs under development) or or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Treatments_Concept_Help' target='_blank'>new Wikia forum for help</a>
+
+

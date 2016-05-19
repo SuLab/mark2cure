@@ -2,7 +2,7 @@ extends base
 
 block header
   - with headerMessage='Training 2 - Learning a new concept: Genes'
-    include includes/header-anon
+    include includes/header
 
 block content
   #Training2Modal(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true").modal.fade
@@ -61,7 +61,6 @@ block content
 
 block post-footer
   include training/entity-recognition/includes/intro-1-js
-  include instructions/multi-concept-instructions-modal
 
   block answers
 

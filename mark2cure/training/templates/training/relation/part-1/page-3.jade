@@ -72,6 +72,22 @@ block post-footer
   script(src="/static/js/tasks/relation-training.js")
 
   script.
+    var passages, regions, tmp_passages;
+
+    function look_right() {
+      $('#next-button').hide();
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return 'Follow the directions on the right.';
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
 
     function show_astro_popup() {
       $el = $('#c2');
@@ -93,6 +109,7 @@ block post-footer
     Tree['convoChannel'].on('back', function() {
         $('#next-button').hide();
         $('#next-button').popover('dispose');
+        $('.popover').popover('dispose');
         show_astro_popup();
     });
 
@@ -105,15 +122,19 @@ block post-footer
       } else {
         $('#next-button').hide();
         $('#next-button').popover('dispose');
+        $('.popover').popover('dispose');
+        look_right();
         show_astro_popup();
       }
     });
 
-    var passages, regions, tmp_passages;
-
     /* When an item is selected */
     Tree['convoChannel'].on('error', function(str) {
-      if(str == 'c_2') {
+      if(str == 'c_1') {
+        $('.popover').popover('dispose');
+        look_right();
+      }
+      else if (str == 'c_2') {
         $('#next-button').show();
 
         $('.popover').popover('dispose');

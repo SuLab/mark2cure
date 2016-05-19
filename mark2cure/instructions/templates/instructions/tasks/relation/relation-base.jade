@@ -1,0 +1,72 @@
+extends instructions/home
+
+
+block js-libs
+  {{block.super}}
+
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js')
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+
+
+block instructions-content
+  #instructions-content
+
+
+block post-footer
+  script.
+    var i = 0,
+        duration = 550,
+        root;
+
+    var tree = d3.layout.tree()
+        .nodeSize([0, 20]);
+
+    var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.y, d.x]; });
+
+    var canvas = d3.select('#instructions-content')
+
+
+    function column_class(d) {
+      var my_string = d.id;
+      if (my_string.length === 1) {
+        indent = 'col-xs-10 col-xs-offset-2';
+      } else if (my_string.length === 3) {
+        indent = 'col-xs-9 col-xs-offset-3';
+      } else if (my_string.length === 5) {
+        indent = 'col-xs-8 col-xs-offset-4';
+      } else {
+        indent = 'col-xs-11 col-xs-offset-1';
+      }
+      return indent;
+    };
+
+    function color(d) {
+      var my_string = d.id;
+      if (my_string.length === 1) {
+        return '#9e9ac8';
+      } else if (my_string.length === 3) {
+          return '#6a51a3';
+      } else if (my_string.length === 5) {
+          return '#3f007d';
+      } else {
+        return '#dadaeb';
+      }
+    };
+
+    /* Compute the flattened node list. TODO use d3.layout.hierarchy. */
+    var nodes = tree.nodes(root);
+
+    /* Update the nodes… */
+    var node = canvas.selectAll('div')
+      .data(nodes, function(d) { return d.pid || (d.pid = ++i); })
+      .enter()
+      .append('div')
+        .attr('class', 'row relationship-description')
+          .append('div')
+            .attr('class', function(d) { return column_class(d)+' m-t-md text-box'; })
+            .style('border-left', function(d) { return '12px solid '+color(d)  })
+            .style('background-color', '#eceeef')
+
+            .html(function(d) { return '<div class="col-xs-12"><p class="lead">'+d.text+'</p></div><div class="col-xs-12"><hr /><small>'+d.desc+'</small></div><div class="col-xs-12"><small>'+d.example+'</small></div>' });
+

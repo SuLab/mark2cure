@@ -331,6 +331,14 @@ class Base(Configuration):
         'AUTH_PARAMS': {'access_type': 'online'}
     }}
 
+    # Mark2Cure Project Settings
+    ENTITY_RECOGNITION_K = 15
+    RELATION_K = 15
+    ENTITY_RECOGNITION_DOC_POINTS = 1000
+
+    RELATION_REL_POINTS = 75
+    RELATION_DOC_POINTS = 1000
+
 
 class Development(Base):
     LOCAL = True

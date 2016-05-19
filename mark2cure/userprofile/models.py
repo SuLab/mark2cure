@@ -163,8 +163,8 @@ class UserProfile(models.Model):
 
         return arr
 
-    def annotations_count(self):
-        return Annotation.objects.filter(view__user=self.user).count()
+    def all_annotations(self):
+        return Annotation.objects.filter(view__user=self.user)
 
     def quests_count(self):
         return UserQuestRelationship.objects.filter(user=self.user, completed=True).count()

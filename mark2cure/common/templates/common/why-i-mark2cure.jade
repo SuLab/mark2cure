@@ -1,10 +1,9 @@
 extends base
 
+
 block header
-    - if user.is_authenticated
-      include includes/header
-    - else
-      include includes/header-anon
+  include includes/header-generic
+
 
 block content
   .container.m-t-md

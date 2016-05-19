@@ -1,12 +1,13 @@
 extends base
 
 - load widget_tweaks
-- load brabeion_tags
 - load comments
+
 
 block header
   - with headerMessage=task.name
-    include includes/header-quest
+    include includes/header-task-entity-recognition
+
 
 block content
   .container-fluid
@@ -26,7 +27,7 @@ block content
             - else
               li.uncompleted &#8226;
 
-      .col-xs-6.col-xs-offset-3.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
+      .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
         p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
 
     #partner-results(style='display:none;').row
@@ -65,11 +66,11 @@ block content
     .row.m-t-md
       .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
         div(role="group").btn-group-vertical
-          a(href='{% url "instructions:disease-marking" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
+          a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
             | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:gene-marking" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
+          a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
             | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:treatment-marking" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
+          a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
             | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
 
       // Init all submission events
