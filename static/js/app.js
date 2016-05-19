@@ -180,6 +180,7 @@ $(document).ready(function() {
     // $(this).closest('form').submit();
   });
 
+  /*
   $('.selectize-basic').selectize();
   $('.selectize-occupation').selectize({
     valueField: 'name',
@@ -218,5 +219,6 @@ $(document).ready(function() {
     create: true,
     maxItems: 5,
   })
+  */
 
 });
