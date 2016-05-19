@@ -23,9 +23,10 @@ nav#header-auth-generic(role='navigation').navbar.navbar-default
 
               .col-xs-6.col-sm-5
                 ul.list-unstyled.site-links
-                  li
-                    a(href='{% url "talk:recent" %}')
-                      p Talk Pages
+                  - if user.profile.unlocked_tasks|length > 1
+                      li
+                        a(href='{% url "talk:recent" %}')
+                          p Talk Pages
 
                   block header-instructions
                     li

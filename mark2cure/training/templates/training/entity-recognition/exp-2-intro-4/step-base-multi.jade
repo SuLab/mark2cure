@@ -2,7 +2,7 @@ extends base
 
 block header
   - with headerMessage='Training 4 - Multi-Marking Mode'
-    include includes/header-anon
+    include includes/header
 
 
 block content
@@ -44,13 +44,13 @@ block content
           h2 Key
         .col-xs-3.m-t-md
           #btn-type-list(role="group").btn-group-vertical
-            a(href='{% url "instructions:disease-marking" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
+            a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
               | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
 
-            a(href='{% url "instructions:gene-marking" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-info
+            a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-info
               | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
 
-            a(href='{% url "instructions:treatment-marking" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-info
+            a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-info
               | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
 
     .row.m-t-md
@@ -63,5 +63,4 @@ block content
 
 
 block post-footer
-  include instructions/multi-concept-instructions-modal
   block ypet
