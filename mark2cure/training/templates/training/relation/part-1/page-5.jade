@@ -3,13 +3,13 @@ extends training/relation/part-1/base
 block intro-content
   .row.m-t-md
     .col-xs-12
-      p The text in which the two concepts were found together will be included. The concepts are highlighted in the text so you can easily find their relationship
-      p
+      p.text-muted The text in which the two concepts were found together will be included. The concepts are highlighted in the text so you can easily find their relationship
+      p.text-muted
         strong Select the relationship (or lack thereof) by clicking on the appropriate box
-      p
+      p.text-muted
         strong Click on the currently selected relationship to return to the previous menu
 
-      p
+      p.text-muted
         strong The 'submit' button will not be active until a relationship is selected
 
 
@@ -199,7 +199,7 @@ block post-footer
             html: true,
             animation: false,
             content: function() { return 'Click \'submit\' to submit to confirm your selection'; },
-            placement: 'top'
+            placement: 'bottom'
           });
           $next_el.popover('show');
         }
