@@ -141,9 +141,10 @@ head
 
     - if not request.session.block_alert
       script.
+        var reln_placement_spot = 'left';
         if(Modernizr.touch) {
-          <!--(TODO) Redirect to the relationship app-->
-        }
+          reln_placement_spot = 'bottom';
+        };
 
 
     block post-footer
