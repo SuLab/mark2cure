@@ -18,6 +18,7 @@ from ..api.views import group_users_bioc
 from ..document.models import Section
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from .models import Report
+from . import synonyms_dict
 
 from nltk.metrics import scores as nltk_scoring
 from celery import task
@@ -217,7 +218,6 @@ def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGN
     # Capitalize all annotation text
     df['text'] = df['text'].map(lambda x: x.upper())
     # Hard coded synonym cleaner
-    synonyms_dict = pd.read_csv('scripts/synonym_dictionary.txt', sep='\t', names=['dirty', 'clean'], index_col='dirty').to_dict()['clean']
     df['clean_text'] = df['text'].map(lambda text_str: str(synonyms_dict.get(text_str, text_str))).apply(str)
 
     # Add field to deterine if hash meets minimum count
