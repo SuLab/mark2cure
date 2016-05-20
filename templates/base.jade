@@ -138,27 +138,12 @@ head
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
 
-    .modal.fade#touch-modal
-      .modal-dialog
-        .modal-content
-          .modal-header
-            h2.modal-title On a touch screen?
-
-          .modal-body
-            p.lead At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
-            p.lead.text-center Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
-
-          .modal-footer
-            button(type="button", data-dismiss="modal").btn.btn-primary Okay
-
-    script.
-      $('#touch-modal').on('hidden.bs.modal', function () {
-        $.post('{% url "userprofile:alert" %}', {'csrfmiddlewaretoken': '{{csrf_token}}'});
-      });
 
     - if not request.session.block_alert
       script.
-        if(Modernizr.touch) { $('#touch-modal').modal('show'); }
+        if(Modernizr.touch) {
+          <!--(TODO) Redirect to the relationship app-->
+        }
 
 
     block post-footer
