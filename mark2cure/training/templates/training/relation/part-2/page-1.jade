@@ -117,6 +117,21 @@ block post-footer
       $relation_el.popover('show');
     };
 
+    function correct_answer() {
+      $('.popover').popover('dispose');
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return "Correct, click 'submit' at the bottom of this page.";
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
     Tree['convoChannel'].on('start', function(obj) {
       if(event_counter==0) {
         $relates_el = $('ul.list-group a:nth(0)');
@@ -180,6 +195,7 @@ block post-footer
 
       if(current_selection.get('id') == 'jilhvc5p2cy0atls8659a1fggjvvkmahwuspy2kr') {
         $('.popover').popover('dispose');
+        correct_answer();
         $('#next-button').show();
         $next_el = $('#next-button');
         $next_el.popover('hide');

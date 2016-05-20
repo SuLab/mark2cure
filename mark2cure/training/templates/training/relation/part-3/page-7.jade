@@ -100,6 +100,21 @@ block post-footer
       $relation_el.popover('show');
     };
 
+    function correct_answer() {
+      $('.popover').popover('dispose');
+      $relation_el = $('#relation');
+      $relation_el.popover({
+        container: 'body',
+        html: true,
+        animation: false,
+        content: function() {
+          return "Correct, click 'submit' at the bottom of this page.";
+        },
+        placement: 'top'
+      });
+      $relation_el.popover('show');
+    };
+
     /* When incorrect concepts are selected but it's not time to report errors */
     Tree['convoChannel'].on('error', function(str) {
       if(str == 'c_2' || str == 'c_1') {
@@ -116,8 +131,9 @@ block post-footer
     Tree['convoChannel'].on('click', function(obj) {
       var current_selection = Tree.start.currentView.options.choice;
       if(current_selection.get('id') == '04110gzdcxz8niuv83ev08ut7lv0xep4iym5sxm5') {
-        $('#next-button').show();
         $('.popover').popover('dispose');
+        correct_answer();
+        $('#next-button').show();
       } else if(current_selection.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
         $('#next-button').hide();
         $('.popover').popover('dispose');
