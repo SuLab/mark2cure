@@ -555,7 +555,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
     }
 
     if(passage) {
-      //console.log('drawBioC #1', passage);
 
       /*
        * Make selections if Annotations are present
@@ -563,8 +562,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       var annotations = _.compact(_.flatten([passage.annotation]));
       var passage_offset = +passage.offset;
       if(annotations.length) {
-
-        //console.log('drawBioC', annotations);
 
         var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
         if(user_ids.length != 1) { console.log('throw error'); }
@@ -586,8 +583,6 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
               if (starts) { start_match = true; }
               return starts || ( word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
             });
-
-            console.log('SELECTED', selected);
 
             if(selected.length) {
               if(opponent) {

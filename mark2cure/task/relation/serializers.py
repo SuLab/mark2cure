@@ -97,11 +97,12 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
                             pass
                         elif key != relation.relation_type:
                             continue
+
                         try:
-                            value = [answer_tally[dict_item['id']]]
+                            value = answer_tally[dict_item['id']]
                         except:
-                            value = [0]
-                        parent_series_dict_list.append({'label': label, 'values': value, 'group': group})
+                            value = 0
+                        parent_series_dict_list.append({'label': label, 'value': value, 'group': group})
 
                         children = check_for_children(dict_item)
                         if children is not None:
@@ -110,10 +111,10 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
                                 # group = 'Relates to'
                                 group = ''
                                 try:
-                                    value = [answer_tally[dict_in_children['id']]]
+                                    value = answer_tally[dict_in_children['id']]
                                 except:
-                                    value = [0]
-                                children_series_dict_list.append({'label': label, 'values': value, 'group': group})
+                                    value = 0
+                                children_series_dict_list.append({'label': label, 'value': value, 'group': group})
 
                 series_dict_list = parent_series_dict_list + children_series_dict_list
                 return series_dict_list
@@ -121,7 +122,7 @@ class RelationFeedbackSerializer(serializers.ModelSerializer):
         series_dict_list = get_label_and_group_from_json(relation_data)
 
         return {
-            'series': series_dict_list,
+            'data': series_dict_list,
             'concept_1_text': cdr1.concept_text.text,
             'concept_2_text': cdr2.concept_text.text
         }

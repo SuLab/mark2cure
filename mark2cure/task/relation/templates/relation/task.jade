@@ -19,53 +19,46 @@ block content
       .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
         p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
 
-
-    .row
+    #feedback-next-action-area(style='display:none;').row
       .col-xs-12.col-md-10.col-md-offset-1
-        #tree-insert
+        #chart
 
-    .row
       .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
-        button(id='submit_button', disabled).btn.btn-primary.btn-block.disabled Submit
+        button(id='next_button').btn.btn-primary.btn-block Next
 
-    .row
-      .col-xs-12.col-md-10.col-md-offset-1
-        div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}", style="cursor: not-allowed;").document
-          .paragraphs(style="cursor: not-allowed;")
+    #tree-action-area
+      .row.top-tree-div
+        .col-xs-12.col-md-10.col-md-offset-1
+          #tree-insert
 
-    .row(style="display:none;")
-      form(id="task_relation_results", action='{% url "task-relation:results" document_pk=document.pk %}', method='POST')
-        - csrf_token
+      .row.bottom-tree-div
+        .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
+          button(id='submit_button', disabled).btn.btn-primary.btn-block.disabled Submit
 
-    .row.m-t-md
-      .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
-        div(role="group").btn-group-vertical
-          a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
-            | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
+    #document-action-area
+      .row
+        .col-xs-12.col-md-10.col-md-offset-1
+          div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}", style="cursor: not-allowed;").document
+            .paragraphs(style="cursor: not-allowed;")
 
-          a(href='{% url "instructions:relation-definition-disease" %}', style='background-color: #d1f3ff;').btn.btn-default
-            | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
+      .row(style="display:none;")
+        form(id="task_relation_results", action='{% url "task-relation:results" document_pk=document.pk %}', method='POST')
+          - csrf_token
 
-          a(href='{% url "instructions:relation-definition-gene" %}', style='background-color:rgb(177, 255, 168);').btn.btn-default
-            | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
+      .row.m-t-md
+        .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
+          div(role="group").btn-group-vertical
+            a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
+              | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
 
-          a(href='{% url "instructions:relation-definition-drug" %}', style='background-color:rgb(255, 209, 220);').btn.btn-default
-            | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
+            a(href='{% url "instructions:relation-definition-disease" %}', style='background-color: #d1f3ff;').btn.btn-default
+              | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
 
-    #feedback_modal.modal.fade.tree-results
-      .modal-dialog
-        .modal-content
-          .modal-header
-            button(type="button", data-dismiss="modal", aria-label="Close").close
-              span(aria-hidden="true") &times;
-            h3.modal-title.text-center
+            a(href='{% url "instructions:relation-definition-gene" %}', style='background-color:rgb(177, 255, 168);').btn.btn-default
+              | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
 
-          .modal-body
-            #results-chart
-
-          .modal-footer
-            button(type="button", data-dismiss="modal").btn.btn-primary
-              | Ok
+            a(href='{% url "instructions:relation-definition-drug" %}', style='background-color:rgb(255, 209, 220);').btn.btn-default
+              | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
 
 
 block post-footer
@@ -86,6 +79,7 @@ block post-footer
         i#c2_not_correct.fa.fa-times-circle
         h3 <%= c2.text %>
         p.not_correct_stype
+
 
   script.
     var relation_task_settings = {
