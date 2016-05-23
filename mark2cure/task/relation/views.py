@@ -5,7 +5,6 @@ from django.conf import settings
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
-from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
@@ -17,22 +16,6 @@ from ...document.models import Document, View, Annotation
 
 from .models import Relation, RelationAnnotation
 from .serializers import RelationSerializer, RelationFeedbackSerializer
-
-
-@login_required
-def relation_list(request):
-    '''
-      Find documents that still have remaining relationships to complete for the user
-    '''
-    document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))
-
-    msg = '<p class="lead text-center">Select one of the following papers to help us further define chemical/disease relations.</p>'
-    messages.info(request, msg, extra_tags='safe alert-success')
-
-    ctx = {
-        'documents': Document.objects.filter(id__in=document_ids)[:100]
-    }
-    return TemplateResponse(request, 'relation/list.jade', ctx)
 
 
 @login_required
@@ -134,7 +117,8 @@ def fetch_document_relations(request, document_pk):
 @login_required
 @api_view(['GET'])
 def fetch_relation_feedback(request, relation_pk):
-    """API for returning total number of answers for a relation.
+    """
+        API for returning total number of answers for a relation.
     """
     relation = get_object_or_404(Relation, pk=relation_pk)
 

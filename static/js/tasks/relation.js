@@ -17,15 +17,6 @@ RelationTask = Backbone.Model.extend({
     }
 });
 
-// submit button status changes accordingly
-var submit_status = function() {
-  if( Tree.start.currentView.options.choice ) {
-    $('#submit_button').attr('disabled', false).removeClass('disabled');
-  } else {
-    $('#submit_button').attr('disabled', true).addClass('disabled');
-  };
-};
-
 var add_relation_classes = function(current_relationship) {
   var relation_type = current_relationship.get('relation_type');
   if (relation_type == 'g_c') {
@@ -119,7 +110,7 @@ RelationTaskCollection = Backbone.Collection.extend({
         tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
           if(annotation) {
             return _.any(annotation.infon, function(infon) {
-              return infon['@key'] == "uid" && _.contains(concept_uids, infon['#text']);
+              return infon['@key'] == 'uid' && _.contains(concept_uids, infon['#text']);
               /* var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
                * return infon['@key'] == 'uid' && match; */
             });
@@ -212,125 +203,111 @@ $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', functi
 });
 
 
+var submit_status = function() {
+  /* Submit button status changes accordingly */
+  if( Tree.start.currentView.options.choice ) {
+    $('#submit_button').attr('disabled', false).removeClass('disabled');
+  } else {
+    $('#submit_button').attr('disabled', true).addClass('disabled');
+  };
+};
+
+
+function show_results(relation_pk) {
+  $('#tree-action-area').hide();
+
+  $.getJSON('/task/relation/'+ relation_pk +'/feedback-api/', function(api_data) {
+
+    data = api_data.concepts.data;;
+    data = data.filter(function(d) { return d['value'] > 0; })
+    data = _.sortBy(data, function(d) { return -d['value'] });
+
+    var chart = document.getElementById('chart'),
+        axisMargin = 20,
+        margin = 20,
+        width = chart.offsetWidth,
+        height = (50 * data.length) + (axisMargin*3);
+
+    var max = d3.max(data.map(function(i){ return i['value']; }));
+    var scale = d3.scale.linear()
+      .domain([0, max])
+      .range([0, width - margin*2]);
+
+    /* Setup HTML required for bars / text explaination */
+    var html = d3.select(chart)
+      .append('div')
+        .attr('class', 'html-chart')
+        .attr('width', width)
+        .attr('height', height);
+
+    html.selectAll('div')
+      .data(data)
+      .enter()
+      .append('div')
+        .attr('class', 'relationship-description')
+          .append('div')
+            .attr('class', 'relationship-freq-bar')
+            .style('width', function(d){
+              return scale(d['value'])+'px';
+            }).
+            html(function(d) { return '<p class="lead">'+d.label+'</p>' });
+
+    /* Setup SVG required for axis */
+    var xAxis = d3.svg.axis()
+      .scale(scale)
+      .tickSize(-height + 2*margin + axisMargin)
+      .ticks(max)
+      .orient('bottom');
+
+    var svg = d3.select(chart)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    svg.insert('g',':first-child')
+     .attr('class', 'axis')
+     .attr('transform', 'translate(' + margin + ','+ (height - axisMargin - margin)+')')
+     .call(xAxis);
+
+    d3.select(window).on('resize', resize);
+
+    function resize() {
+      width = parseInt($('#chart').width(), 10);
+      scale.range([0, width - margin*2]);
+      svg.attr('width', width)
+
+      html.select('.relationship-freq-bar')
+        .style('width', function(d){
+          return scale(d['value'])+'px';
+        });
+
+      svg.selectAll('.axis')
+       .attr('transform', 'translate(' + margin + ','+ (height - axisMargin - margin)+')')
+       .call(xAxis);
+    }
+    $('#feedback-next-action-area').addClass('shown').slideDown('fast', function() { resize(); });
+  });
+}
+
+$('#next_button').on('click', function(evt) {
+  /* Causes the next to load */
+  var current_relationship = collection.findWhere({'current': true});
+  current_relationship.set('user_completed', true);
+  submit_status();
+  $('#feedback-next-action-area').hide();
+  $('#chart').empty()
+  $('#tree-action-area').show();
+});
+
 var incorrect_flag_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 $('#submit_button').on('click', function(evt) {
+  /* When a user is confirming their Tree choice selection */
+
   var current_selection = Tree.start.currentView.options.choice;
   var current_relationship = collection.findWhere({'current': true});
 
-  function show_results_modal(relation_pk) {
-
-    $.getJSON('/task/relation/'+ relation_pk +'/feedback-api/', function(api_data) {
-
-      $(document).on('hidden.bs.modal', function(e) {
-        $(e.target).find('#results-chart').empty();
-      });
-      data = {};
-      data['series'] = api_data['concepts']['series']
-
-      var concept_1_text = api_data['concepts']['concept_1_text'];
-      var concept_2_text = api_data['concepts']['concept_2_text'];
-
-      var chartWidth       = 270,
-          barHeight        = 45,
-          gapBetweenGroups = 1,
-          spaceForLabels   = 310,
-          spaceForLegend   = 0;
-
-      // Zip the series data together (first values, second values, etc.)
-      var zippedData = [];
-
-      for (var j=0; j < data.series.length; j++) {
-        zippedData.push(data.series[j].values[0])
-      }
-
-      // Color scale
-      var color = d3.scale.category20();
-      var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.series.length;
-
-      var x = d3.scale.linear()
-          .domain([0, d3.max(zippedData)])
-          .range([0, chartWidth]);
-
-
-      var y = d3.scale.linear()
-          .range([chartHeight + gapBetweenGroups, 0]);
-
-      var yAxis = d3.svg.axis()
-          .scale(y)
-          .tickFormat('')
-          .tickSize(0)
-          .orient('left');
-
-      // Specify the chart area and dimensions
-      var chart = d3.select('#results-chart').append('svg')
-          .attr('width', spaceForLabels + chartWidth + spaceForLegend)
-          .attr('height', chartHeight);
-
-      // Create bars
-      var bar = chart.selectAll('g')
-          .data(zippedData)
-          .enter().append('g')
-          .attr('transform', function(d, i) {
-            return 'translate(' + spaceForLabels + ',' + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/100))) + ')';
-          });
-
-      // Create rectangles of the correct width
-      bar.append('rect')
-          .attr('fill', '#7F3CFF')
-          .attr('class', 'bar')
-          .attr('width', x)
-          .attr('height', barHeight - 4);
-
-      // Add text label in bar
-      bar.append('text')
-          .attr('x', function(d) { return x(d) - 3; })
-          .attr('y', barHeight / 2)
-          .attr('fill', 'red')
-          .attr('dy', '.35em')
-          .text(function(d) { return d; });
-
-      // Draw labels
-      bar.append('text')
-          .attr('class', 'label')
-          .attr('x', function(d) { return - 10; })
-          .attr('y', 10)
-          .attr('dy', '.35em')
-          .text(function(d,i) {
-            return data.series[i].label;
-            });
-
-      // Draw 'super/parent labels on y axis'
-      var group_number_previous = '';
-      bar.append('text')
-          .attr('class', 'parent_label')
-          .attr('x', function(d) { return - 220; })
-          .attr('y', 10)
-          .attr('dy', '.35em')
-          .text(function(d,i) {
-            var group_number_current = data.series[i].group;
-            if (group_number_current === group_number_previous){
-              group_number_previous = group_number_current;
-              return '';
-            } else {
-              group_number_previous = group_number_current;
-              return group_number_current;
-            };
-            });
-
-      chart.append('g')
-            .attr('class', 'y axis')
-            .attr('transform', 'translate(' + spaceForLabels + ', ' + -gapBetweenGroups/2 + ')')
-            .call(yAxis);
-
-
-      $('.modal-title').html('Community Submissions: ' + concept_1_text + ' >> ' + concept_2_text);
-      $('#feedback_modal').modal();
-
-    });
-  }
-
   if(current_selection.get('id')) {
-
+    /* Submit the data from the current selection to the server */
     $.ajax({
       type: 'POST',
       url: '/task/relation/'+ relation_task_settings.document_pk +'/'+ current_relationship.id +'/submit/',
@@ -339,22 +316,21 @@ $('#submit_button').on('click', function(evt) {
       cache: false,
       success: function() {
 
-
+        /* If they flag a concept as incorrect, remove it from the
+         * availability pool of tasks for this relationship document */
         if( _.contains(incorrect_flag_arr, current_selection.get('id')) ) {
           var incorrect_key = 'c'+(1+incorrect_flag_arr.indexOf(current_selection.get('id')));
           var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
-
           collection.each(function(relation) {
             var concepts = relation.get('concepts');
             if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
               relation.set('available', false);
             }
           });
-
         }
-        current_relationship.set('user_completed', true);
-        show_results_modal(current_relationship['id']);
-        submit_status();
+
+        /* Have them review the community's answers */
+        show_results(current_relationship['id']);
 
       },
       error: function() { alert('Please refresh your browswer and try again.') },

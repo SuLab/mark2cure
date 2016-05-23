@@ -20,6 +20,4 @@ urlpatterns = patterns('',
     url(r'^(?P<document_pk>\d+)/$',
         views.relation_task_home, name='task'),
 
-    url(r'', views.relation_list, name='home'),
-
 )

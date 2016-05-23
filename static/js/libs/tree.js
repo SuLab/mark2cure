@@ -24,7 +24,6 @@ Relation = Backbone.RelationalModel.extend({
   get_selected: function() {
     /* Try to find an instance of 'this' model type in the store */
     var model = Backbone.Relational.store.find( this, {"selected": true});
-    // console.log('model:', model);
 
     if ( !model && _.isObject( attributes ) ) {
       var coll = Backbone.Relational.store.getCollection( this );

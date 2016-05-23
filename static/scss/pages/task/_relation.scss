@@ -1,53 +1,97 @@
-#tree-insert {
+#feedback-next-action-area.shown {
+  border-bottom: 8px solid $color_gray_lightest;
+}
 
-  margin-top: 30px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 4px solid #e7e7e7;
-  position: relative;
+#feedback-next-action-area {
 
-  #tree-cover {
-    height: 100%;
-    width: 100%;
+  .html-chart {
     position: absolute;
-    z-index: 9999;
-    top: 0;
+    top: 20px;
+    left: 35px;
   }
 
-  .list-group {
-    .list-group-item {
-      color: $color_gray_dark;
-      cursor: pointer;
+  .relationship-description {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    .relationship-freq-bar {
+      min-height: 40px;
+
+      background: $color_gray_lightest;
+      background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
+
+      p.lead {
+        padding: 4px;
+        margin: 0px
+      }
     }
 
   }
 
+  svg {
+    shape-rendering: crispEdges;
+
+    .axis {
+      path {
+        fill: none;
+      }
+      .tick line {
+        stroke-width: 1;
+        stroke: rgba(0,0,0,0.1);
+      }
+      font-size: 12px;
+    }
+  }
+
+  button {
+    margin-bottom: 20px;
+  }
 }
+
+
+#tree-action-area {
+
+  #tree-insert {
+    margin-top: 30px;
+    padding-bottom: 20px;
+    position: relative;
+
+    #tree-cover {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      z-index: 9999;
+      top: 0;
+    }
+
+    .list-group {
+      .list-group-item {
+        color: $color_gray_dark;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .bottom-tree-div {
+    padding-bottom: 20px;
+    border-bottom: 8px solid $color_gray_lightest;
+  }
+
+}
+
+
 
 
 #tree {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 
-  #c1 {
-    text-align: right;
-  }
+  #c1 { text-align: right; }
+  #c2 { text-align: left; }
 
-  #c2 {
-    text-align: left;
-  }
-
-  .gene {
-    border: 16px solid $color_gene;
-  }
-
-  .disease {
-    border: 16px solid $color_disease;
-  }
-
-  .chemical {
-    border: 16px solid $color_treatment;
-  }
+  .gene { border: 16px solid $color_gene; }
+  .disease { border: 16px solid $color_disease; }
+  .chemical { border: 16px solid $color_treatment; }
 
   .concept.incorrect {
     border: 16px solid red;
@@ -153,56 +197,4 @@ p.doc {
 
 .btn.btn-default {
   border: 2px solid black;
-}
-
-#credits {
-  position: fixed;
-  bottom: 6px;
-  left: 20px;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-weight: 300;
-}
-
-.tree-results {
-
-  .modal-dialog {
-    width: 90%;
-
-    .modal-content {
-      .modal-title {
-        color: $color_black;
-      }
-    }
-  }
-
-  #results-chart {
-    margin: 0 auto;
-    text-align: center;
-
-    text {
-      fill: white;
-      font: 14px sans-serif;
-      text-anchor: end;
-    }
-    .label {
-      fill: black;
-      font: 14px sans-serif;
-      text-anchor: end;
-    }
-    .parent_label {
-      fill: black;
-      font: 16px sans-serif;
-      text-anchor: end;
-      text-decoration: underline;
-    }
-    .bar:hover {
-    }
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #000;
-      shape-rendering: crispEdges;
-    }
-  }
-
 }
