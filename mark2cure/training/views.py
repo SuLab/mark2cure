@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 
 from ..task.models import Task, UserQuestRelationship
 from mark2cure.score.models import Point
@@ -10,6 +11,7 @@ from ..task.relation import relation_data
 
 from ..task.models import Level
 
+from django.utils import timezone
 import json
 
 
@@ -43,9 +45,6 @@ def introduction(request, step_num):
 def award_training(qualification_level, user):
     task = Task.objects.filter(kind=Task.TRAINING, provides_qualification=qualification_level).first()
     UserQuestRelationship.objects.create(task=task, user=user, completed=True)
-
-    from django.contrib.contenttypes.models import ContentType
-    from django.utils import timezone
 
     # Assign points to a the specific training level
     Point.objects.create(user=user,
@@ -116,6 +115,15 @@ def four(request, step_num):
 def relation_training(request, part_num=1, step_num=1):
     json_data = json.dumps(relation_data)
     request.session['initial_training'] = 'r'
+
+    if part_num == '2' and step_num == '1':
+        Level.objects.create(user=request.user, task_type='r', level=1, created=timezone.now())
+
+    if part_num == '3' and step_num == '1':
+        Level.objects.create(user=request.user, task_type='r', level=2, created=timezone.now())
+
+    if part_num == '3' and step_num == '25':
+        Level.objects.create(user=request.user, task_type='r', level=3, created=timezone.now())
 
     ctx = {
         'relation_data': json_data
