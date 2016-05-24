@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.conf import settings
 
@@ -32,7 +32,7 @@ def relation_task_home(request, document_pk):
 
 
 @login_required
-def show_document_results(request, document_pk):
+def submit_document_set(request, document_pk):
     document = get_object_or_404(Document, pk=document_pk)
 
     if request.method == 'POST':
@@ -42,10 +42,15 @@ def show_document_results(request, document_pk):
         view.completed = True
         view.save()
 
-        ctx = {
-            'document': document,
-        }
-        return TemplateResponse(request, 'relation/results.jade', ctx)
+        view_content_type = ContentType.objects.get_for_model(view)
+
+        Point.objects.create(user=request.user,
+                             amount=settings.RELATION_DOC_POINTS,
+                             content_type=view_content_type,
+                             object_id=view.id,
+                             created=timezone.now())
+
+        return redirect('common:dashboard')
 
 
 @login_required
@@ -74,7 +79,7 @@ def submit_annotation(request, document_pk, relation_pk):
 
         # Assign a point to the specific Relation Annotation
         Point.objects.create(user=request.user,
-                             amount=settings.RELATION_DOC_POINTS,
+                             amount=settings.RELATION_REL_POINTS,
                              content_type=relation_ann_content_type,
                              object_id=relation_ann.id,
                              created=timezone.now())

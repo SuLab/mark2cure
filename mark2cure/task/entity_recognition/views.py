@@ -15,6 +15,8 @@ from ..models import Level, Task, UserQuestRelationship
 from .utils import generate_results, select_best_opponent
 from ...score.models import Point
 
+from django.utils import timezone
+
 import random
 
 
@@ -78,7 +80,6 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         # it would make more sense to do that as a valid check of
         # "contribution" effort
 
-        from django.utils import timezone
         content_type = ContentType.objects.get_for_model(task)
         Point.objects.create(user=request.user,
                              amount=settings.ENTITY_RECOGNITION_DOC_POINTS,
@@ -117,9 +118,12 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     results = generate_results(player_views, opponent_views)
     score = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
     if score > 0:
-        from django.utils import timezone
-        content_type = ContentType.objects.get_for_model(task)
-        Point.objects.create(user=request.user, amount=score, content_type=content_type, object_id=task.id, created=timezone.now())
+        Point.objects.create(
+            user=request.user,
+            amount=score,
+            content_type=ContentType.objects.get_for_model(task),
+            object_id=task.id,
+            created=timezone.now())
 
     writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
     writer.collection.put_infon('points', str(int(round(score))))
@@ -280,9 +284,12 @@ def quest_submit(request, task, bypass_post=False):
         user_quest_relationship = task.user_relationship(request.user, False)
 
         if not user_quest_relationship.completed:
-            from django.utils import timezone
-            content_type = ContentType.objects.get_for_model(task)
-            Point.objects.create(user=request.user, amount=task.points, content_type=content_type, object_id=task.id, created=timezone.now())
+            Point.objects.create(
+                user=request.user,
+                amount=task.points,
+                content_type=ContentType.objects.get_for_model(task),
+                object_id=task.id,
+                created=timezone.now())
 
         user_quest_relationship.completed = True
         user_quest_relationship.save()
