@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
 from allauth.account.forms import UserForm
-from ..score.models import Point
 
 from .forms import UserProfileForm, TeamForm
 from ..task.models import Level
@@ -67,7 +66,7 @@ def user_points(request):
     points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
 
     return Response({
-        'points': sum(Point.objects.filter(user=request.user).values_list('amount', flat=True)),
+        'points': request.user.profile.score(),
         'points_level': points_badge.name,
         'skill_level': Level.objects.filter(user=request.user, task_type='e').first().get_name()
     })

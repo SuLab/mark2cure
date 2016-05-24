@@ -130,9 +130,7 @@ RelationTaskCollection = Backbone.Collection.extend({
 
     } else {
       /* If no other relations to complete, submit document */
-      $('#feedback_modal').on('hidden.bs.modal', function (e) {
-        $('#task_relation_results').submit();
-      });
+      $('#task_relation_submit_document_set').submit();
     }
   }
 });
@@ -331,6 +329,7 @@ $('#submit_button').on('click', function(evt) {
 
         /* Have them review the community's answers */
         show_results(current_relationship['id']);
+        update_score();
 
       },
       error: function() { alert('Please refresh your browswer and try again.') },

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.db.models import Q
 
 from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
@@ -10,6 +12,8 @@ from djangoratings.fields import RatingField
 from ..document.models import Annotation, Document, View
 from ..common.models import Group
 from ..task.models import Task, UserQuestRelationship, Level
+from ..task.relation.models import RelationAnnotation
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
 from ..score.models import Point
 
@@ -150,8 +154,45 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
 
-    def score(self):
-        return int(sum(Point.objects.filter(user=self.user).values_list('amount', flat=True)))
+    def score(self, task=None):
+
+        if task:
+            if 'entity' in task:
+                val = sum(Point.objects.filter(user=self.user).filter(
+                    Q(object_id__isnull=True) | Q(content_type=ContentType.objects.get_for_model(EntityRecognitionAnnotation))
+                ).values_list('amount', flat=True))
+                print val
+
+                # These are being assigned to Tasks
+                # (TODO) This whole thing is fucked up, need to get away from Tasks and
+                # find clear way to allocate units complete and points for multi-game system
+                quest_task_pks = Task.objects.filter(kind='q').values_list('pk', flat=True)
+                val += sum(Point.objects.filter(
+                    user=self.user,
+                    content_type=ContentType.objects.get_for_model(Task),
+                    object_id__in=quest_task_pks
+                ).values_list('amount', flat=True))
+
+            if 'relation' in task:
+
+                # Points for submitting individual relation steps
+                val = sum(Point.objects.filter(
+                    user=self.user,
+                    content_type=ContentType.objects.get_for_model(RelationAnnotation)
+                ).values_list('amount', flat=True))
+
+                # Points for submitting relation sets
+                completed_relation_view_pks = View.objects.filter(user=self.user, task_type='ri').values_list('pk', flat=True)
+                val += sum(Point.objects.filter(
+                    user=self.user,
+                    content_type=ContentType.objects.get_for_model(View),
+                    object_id__in=completed_relation_view_pks
+                ).values_list('amount', flat=True))
+
+        else:
+            val = sum(Point.objects.filter(user=self.user).values_list('amount', flat=True))
+
+        return int(val)
 
     def unlocked_tasks(self):
         arr = []

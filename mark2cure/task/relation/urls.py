@@ -8,8 +8,8 @@ urlpatterns = patterns('',
     url(r'^(?P<document_pk>\d+)/(?P<relation_pk>\d+)/submit/$',
         views.submit_annotation, name='submit-annotation'),
 
-    url(r'^(?P<document_pk>\d+)/results/$',
-        views.show_document_results, name='results'),
+    url(r'^(?P<document_pk>\d+)/submit/$',
+        views.submit_document_set, name='submit-set'),
 
     url(r'^(?P<document_pk>\d+)/api/$',
         views.fetch_document_relations, name='fetch-document-relations'),
