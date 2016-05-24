@@ -55,11 +55,29 @@ block content
               include common/includes/dashboard-sidebar
 
       - else
-        .col-xs-12.col-xs-offset-0.col-md-7.col-md-offset-1
-          include common/includes/dashboard-relation
-        .clearfix.hidden-sm-up
-        .col-sm-4.col-sm-offset-0.col-md-3.col-md-offset-0.hidden-sm-down
-          include common/includes/dashboard-sidebar
+        // Mobile dashboard
+        - if available_tasks|length > 1
+
+          .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1
+            include common/includes/dashboard-relation
+
+          .hidden-md-down.col-lg-2.col-lg-offset-0
+            include common/includes/dashboard-sidebar
+
+        - else
+          - if 'entity_recognition'|is_in:available_tasks
+            .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1
+              include common/includes/dashboard-unlock-relation
+
+            .hidden-md-down.col-lg-2.col-lg-offset-0
+              include common/includes/dashboard-sidebar
+
+          - if 'relation'|is_in:available_tasks
+            .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1
+              include common/includes/dashboard-relation
+
+            .hidden-md-down.col-lg-2.col-lg-offset-0
+              include common/includes/dashboard-sidebar
 
 
 block post-footer
