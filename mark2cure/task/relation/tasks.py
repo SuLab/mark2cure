@@ -31,7 +31,7 @@ def import_concepts():
         per UID
     """
 
-    for document in RelationGroup.objects.get(pk=2).documents.all().count():
+    for document in RelationGroup.objects.get(pk=2).documents.all():
 
         df = document.as_pubtator_annotation_df()
         # We need annotations with at least a UID and Source
