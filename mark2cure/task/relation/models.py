@@ -53,3 +53,19 @@ class RelationAnnotation(models.Model):
     relation = models.ForeignKey(Relation)
     answer = models.CharField(max_length=40)
 
+
+class RelationGroup(models.Model):
+    '''
+        Strictly from an organizational level. Groups are not intended to
+        limit the number of times individual documents have been annotated
+    '''
+
+    name = models.CharField(max_length=200)
+    stub = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    order = models.DecimalField(default=0, max_digits=3, decimal_places=3)
+
+    enabled = models.BooleanField(default=False)
+
+    documents = models.ManyToManyField('document.Document')
+
