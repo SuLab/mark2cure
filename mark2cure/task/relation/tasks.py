@@ -1,5 +1,4 @@
-from ...document.models import Document
-from .models import Concept, ConceptText, ConceptDocumentRelationship, Relation
+from .models import Concept, ConceptText, ConceptDocumentRelationship, Relation, RelationGroup
 
 import itertools
 from celery import task
@@ -32,7 +31,7 @@ def import_concepts():
         per UID
     """
 
-    for document in Document.objects.all():
+    for document in RelationGroup.objects.get(pk=2).documents.all().count():
 
         df = document.as_pubtator_annotation_df()
         # We need annotations with at least a UID and Source

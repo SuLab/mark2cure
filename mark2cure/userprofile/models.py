@@ -161,7 +161,6 @@ class UserProfile(models.Model):
                 val = sum(Point.objects.filter(user=self.user).filter(
                     Q(object_id__isnull=True) | Q(content_type=ContentType.objects.get_for_model(EntityRecognitionAnnotation))
                 ).values_list('amount', flat=True))
-                print val
 
                 # These are being assigned to Tasks
                 # (TODO) This whole thing is fucked up, need to get away from Tasks and

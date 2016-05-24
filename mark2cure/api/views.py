@@ -10,7 +10,6 @@ from ..common.formatter import bioc_writer, bioc_as_json
 from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
-from ..task.relation.models import Relation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..document.models import Section
 from ..score.models import Point
@@ -148,8 +147,7 @@ def quest_group_list(request, group_pk):
 @api_view(['GET'])
 def relation_list(request):
 
-    document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))
-    queryset = Document.objects.filter(id__in=document_ids).extra(select={
+    queryset = Document.objects.filter(relationgroup__stub='alacrima').extra(select={
         "current_completed_count": """
             SELECT COUNT(*) AS user_completed_count
             FROM document_view
@@ -181,7 +179,10 @@ def relation_list(request):
                 AND document_view.completed = 1
                 AND document_view.user_id = %d
         AND document_section.document_id = document_document.id)""" % (request.user.pk,)
-    })[:30]
+    })
+
+    queryset = [x for x in queryset if x.task_count > 0]
+    queryset = [x for x in queryset if x.task_count < 20]
 
     serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
