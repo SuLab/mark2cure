@@ -1,37 +1,19 @@
-{% extends 'base.jade' %}
+{% extends 'flatpages/default.html' %}
+
 
 {% block head-title %}
-  <title>{{ flatpage.title }}</title>
+  <title>404</title>
 {% endblock %}
 
-
-    {% block content %}
-    <div id="error" class="container m-y-lg">
-        <div class="row">
-            <div class="col-sm-12 codl-sm-offset-1">
-                <div class="row">
-
-                    <div class="col-md-6 col-lg-7">
-                        <h1 class="text-mega-big bold">Opps!</h1>
-                        <h2 class="disp_light">We can't seem to find the page you're looking for.</h2>
-                        <h6 class="text-muted">Error code: 404</h6>
-                        <ul class="list-unstyled">
-                            <li>Here are some helpful links instead:</li>
-                            <li><a href="/">Home</a></li>
-                            <li><a href="/accounts/signup/">Sign Up</a></li>
-                            <li><a href="/accounts/login/">Login</a></li>
-                            <li><a href="/help/">Help</a></li>
-                            <li><a href="/help/getting-started/">Getting Started</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 col-lg-5">
-                        <img src="/static/img/404-burning-money.gif"  class="img-404" alt="404">
-                    </div>
-
-                </div>
-            </div>
-        </div>
+{% block content %}
+  <div class="container m-y-lg">
+    <div class="row">
+      <div class="col-xs-12">
+        <h1 class="text-center">We're sorry, we both might be lost.</h1>
+      </div>
+      <div class="col-xs-12">
+        <video autoplay="" muted="" style="max-width:100%;min-height:383px;" loop="" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif"><source type="video/webm" src="//i.imgur.com/w64sJZ9.webm" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.0"><source type="video/mp4" src="//i.imgur.com/w64sJZ9.mp4" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.1"><object type="application/x-shockwave-flash" data="//s.imgur.com/include/flash/gifplayer.swf?imgur_video=http://i.imgur.com/w64sJZ9.mp4&amp;imgur_width=1280&amp;imgur_height=720imgur_url=" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif"><param name="movie" value="//s.imgur.com/include/flash/gifplayer.swf?imgur_video=http://i.imgur.com/w64sJZ9.mp4&amp;imgur_width=1280&amp;imgur_height=720imgur_url=" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$movie"><param name="allowscriptaccess" value="never" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$allowscriptaccess"><param name="version" value="0" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$version"><param name="scale" value="scale" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$scale"><param name="salign" value="tl" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$salign"><param name="wmode" value="opaque" data-reactid=".3.0:$w64sJZ9.1.1.$w64sJZ9=1gif.$w64sJZ9=1gif.$wmode"></object></video>
+      </div>
     </div>
-
-    {% endblock %}
-
+  </div>
+{% endblock %}
