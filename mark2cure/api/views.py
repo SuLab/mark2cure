@@ -183,6 +183,7 @@ def relation_list(request):
 
     queryset = [x for x in queryset if x.task_count > 0]
     queryset = [x for x in queryset if x.task_count < 20]
+    queryset = [x for x in queryset if x.user_completed_count == 0]
 
     serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
