@@ -67,8 +67,9 @@ def pubtator_df_as_writer(writer, df):
         offset = int(bioc_passage.offset)
 
         bioc_passage.annotations = []
-
-        tmp_df = df[df['offset'] == offset]
+        # (TODO) Abstract offset is less than offset in the input df; odd
+        # my solution is to not create a smaller tmp df; not really necessary
+        tmp_df = df
 
         for row_idx, row in tmp_df.iterrows():
 
