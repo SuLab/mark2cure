@@ -237,7 +237,7 @@ function show_results(relation_pk) {
       .data(data)
       .enter()
         .append('li')
-          .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p><strong>'+ (d['value']/max)*100 + '%</strong> – ' + d['label'] + '</p>'; });
+          .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p><strong>'+ ((d['value']/max)*100).toFixed() + '%</strong> – ' + d['label'] + '</p>'; });
 
     $('#feedback-next-action-area').addClass('shown').slideDown('fast');
   });
