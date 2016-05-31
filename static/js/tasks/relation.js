@@ -249,7 +249,8 @@ $('#next_button').on('click', function(evt) {
   current_relationship.set('user_completed', true);
   submit_status();
   $('#feedback-next-action-area').hide();
-  $('#chart').empty()
+  $('#chart').empty();
+  $('#chart-list').empty();
   $('#tree-action-area').show();
 });
 
