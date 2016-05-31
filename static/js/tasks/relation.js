@@ -220,70 +220,26 @@ function show_results(relation_pk) {
     data = data.filter(function(d) { return d['value'] > 0; })
     data = _.sortBy(data, function(d) { return -d['value'] });
 
-    var chart = document.getElementById('chart'),
-        axisMargin = 20,
-        margin = 20,
-        width = chart.offsetWidth,
-        height = (50 * data.length) + (axisMargin*3);
+    var max = d3.sum(data.map(function(i){ return i['value']; }));
+    var color = d3.scale.category20c();
 
-    var max = d3.max(data.map(function(i){ return i['value']; }));
-    var scale = d3.scale.linear()
-      .domain([0, max])
-      .range([0, width - margin*2]);
-
-    /* Setup HTML required for bars / text explaination */
-    var html = d3.select(chart)
-      .append('div')
-        .attr('class', 'html-chart')
-        .attr('width', width)
-        .attr('height', height);
-
-    html.selectAll('div')
+    var chart = d3.select('#chart').style('width', '100%');
+    var bar = chart.selectAll('div')
       .data(data)
       .enter()
-      .append('div')
-        .attr('class', 'relationship-description')
-          .append('div')
-            .attr('class', 'relationship-freq-bar')
-            .style('width', function(d){
-              return scale(d['value'])+'px';
-            }).
-            html(function(d) { return '<p class="lead">'+d.label+'</p>' });
+        .append('div')
+          .attr('class', 'bar-component')
+          .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
+          .style('background-color', function(d, i) { return color(i); });
 
-    /* Setup SVG required for axis */
-    var xAxis = d3.svg.axis()
-      .scale(scale)
-      .tickSize(-height + 2*margin + axisMargin)
-      .ticks(max)
-      .orient('bottom');
+    var list = d3.select('#chart-list');
+    var bar = list.selectAll('li')
+      .data(data)
+      .enter()
+        .append('li')
+          .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p><strong>'+ ((d['value']/max)*100).toFixed() + '%</strong> – ' + d['label'] + '</p>'; });
 
-    var svg = d3.select(chart)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
-
-    svg.insert('g',':first-child')
-     .attr('class', 'axis')
-     .attr('transform', 'translate(' + margin + ','+ (height - axisMargin - margin)+')')
-     .call(xAxis);
-
-    d3.select(window).on('resize', resize);
-
-    function resize() {
-      width = parseInt($('#chart').width(), 10);
-      scale.range([0, width - margin*2]);
-      svg.attr('width', width)
-
-      html.select('.relationship-freq-bar')
-        .style('width', function(d){
-          return scale(d['value'])+'px';
-        });
-
-      svg.selectAll('.axis')
-       .attr('transform', 'translate(' + margin + ','+ (height - axisMargin - margin)+')')
-       .call(xAxis);
-    }
-    $('#feedback-next-action-area').addClass('shown').slideDown('fast', function() { resize(); });
+    $('#feedback-next-action-area').addClass('shown').slideDown('fast');
   });
 }
 

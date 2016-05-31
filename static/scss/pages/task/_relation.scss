@@ -4,42 +4,23 @@
 
 #feedback-next-action-area {
 
-  .html-chart {
-    position: absolute;
-    top: 20px;
-    left: 35px;
-  }
-
-  .relationship-description {
-    margin-top: 5px;
-    margin-bottom: 5px;
-
-    .relationship-freq-bar {
-      min-height: 40px;
-
-      background: $color_gray_lightest;
-      background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
-
-      p.lead {
-        padding: 4px;
-        margin: 0px
-      }
+  #chart {
+    .bar-component {
+      float: left;
+      margin: 10px 0px;
+      height: 25px;
     }
-
   }
 
-  svg {
-    shape-rendering: crispEdges;
+  ul#chart-list {
+    li {
+      .box {
+        float: left;
+        height: 20px;
+        width: 20px;
+        margin: 2px 10px;
+      }
 
-    .axis {
-      path {
-        fill: none;
-      }
-      .tick line {
-        stroke-width: 1;
-        stroke: rgba(0,0,0,0.1);
-      }
-      font-size: 12px;
     }
   }
 
