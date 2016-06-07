@@ -18,6 +18,8 @@ RelationTask = Backbone.Model.extend({
 });
 
 var add_relation_classes = function(current_relationship) {
+  if (!current_relationship) { return; }
+
   var relation_type = current_relationship.get('relation_type');
   if (relation_type == 'g_c') {
     $('#c1').addClass('gene');
@@ -167,38 +169,6 @@ var ProgressView = Backbone.Marionette.CollectionView.extend({
   childView: ProgressItem
 });
 
-
-/* Initalize the page by loading all relation tasks
- * and fetching all required data */
-var collection;
-$.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', function(data) {
-  if(relation_task_settings) {
-
-    /* Initalize the Application, but load events later */
-    Tree.start();
-
-    /* Onload request all relation tasks to complete */
-    collection = new RelationTaskCollection(data);
-    // Sort the collection by C1 on initial data load:
-    var new_collection = _.sortBy(collection.models, function(c) {
-      return c.attributes.concepts.c1.text;
-    });
-    collection.models = new_collection;
-    collection.next();
-
-    var current_relationship = collection.findWhere({'current': true});
-    add_relation_classes(current_relationship);
-    /* Init Progressbar event listner */
-    (new ProgressView({
-      collection: collection,
-      el: '#progress-bar'
-    })).render();
-
-  } else {
-    /* There were no relation tasks to complete for this document (scoped to this user) */
-    alert('Sorry, there was a problem.');
-  }
-});
 
 
 var submit_status = function() {

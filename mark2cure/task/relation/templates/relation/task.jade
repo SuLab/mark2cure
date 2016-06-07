@@ -65,6 +65,9 @@ block content
 
 block post-footer
 
+  script(src="/static/js/libs/tree.js")
+  script(src="/static/js/tasks/relation.js")
+
   script(type="html/template", id="tree-template")
     div#tree.row.text-center
 
@@ -93,6 +96,7 @@ block post-footer
       relation_task_settings['data'] = data;
     });
 
+    var collection;
     var passages, regions, tmp_passages;
 
     YPet.addInitializer(function(options) {
@@ -102,6 +106,8 @@ block post-footer
 
 
       $.getJSON('/document/pubtator-new/'+relation_task_settings.document_pmid+'.json', function( data ) {
+        /* The Annotation information has been returned from the server at this point
+           it is now safe to start YPET */
         passages = data.collection.document.passage;
         regions = {};
 
@@ -119,6 +125,42 @@ block post-footer
           }) );
           YPet[''+passage_idx].currentView.drawBioC(null, true);
         });
+
+        /* The Annotation information has been returned from the server at this point
+           it is now safe to start Tree */
+
+        /* Initalize the page by loading all relation tasks
+         * and fetching all required data */
+        $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', function(data) {
+          if(relation_task_settings) {
+
+            /* Initalize the Application, but load events later */
+            Tree.start();
+
+            /* Onload request all relation tasks to complete */
+            collection = new RelationTaskCollection(data);
+            // Sort the collection by C1 on initial data load:
+            var new_collection = _.sortBy(collection.models, function(c) {
+              return c.attributes.concepts.c1.text;
+            });
+            collection.models = new_collection;
+            collection.next();
+
+            var current_relationship = collection.findWhere({'current': true});
+            add_relation_classes(current_relationship);
+            /* Init Progressbar event listner */
+            (new ProgressView({
+              collection: collection,
+              el: '#progress-bar'
+            })).render();
+
+          } else {
+            /* There were no relation tasks to complete for this document (scoped to this user) */
+            alert('Sorry, there was a problem.');
+          }
+        });
+
+
       });
 
       var show_alert = _.debounce(function(evt) {
@@ -138,5 +180,3 @@ block post-footer
     YPet.start();
 
 
-  script(src="/static/js/libs/tree.js")
-  script(src="/static/js/tasks/relation.js")
