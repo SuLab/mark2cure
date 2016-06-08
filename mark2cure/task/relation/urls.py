@@ -14,8 +14,10 @@ urlpatterns = patterns('',
     url(r'^(?P<document_pk>\d+)/api/$',
         views.fetch_document_relations, name='fetch-document-relations'),
 
-    url(r'^(?P<relation_pk>\d+)/feedback-api/$',
-        views.fetch_relation_feedback, name='fetch-relation-feedback'),
+    url(r'^(?P<document_pk>\d+)/analysis/(?P<relation_pk>)/$',
+        views.document_analysis, name='document-analysis-specific'),
+    url(r'^(?P<document_pk>\d+)/analysis/$',
+        views.document_analysis, name='document-analysis'),
 
     # View user endpoints
     url(r'^(?P<document_pk>\d+)/complete/$',
@@ -24,4 +26,7 @@ urlpatterns = patterns('',
     url(r'^(?P<document_pk>\d+)/$',
         views.relation_task_home, name='task'),
 
+    # Deprecated
+    url(r'^(?P<relation_pk>\d+)/feedback-api/$',
+        views.fetch_relation_feedback, name='fetch-relation-feedback'),
 )

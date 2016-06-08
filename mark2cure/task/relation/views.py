@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.conf import settings
+from django.db import connection
 
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -15,7 +16,7 @@ from ...score.models import Point
 from ...document.models import Document, View, Annotation
 
 from .models import Relation, RelationAnnotation
-from .serializers import RelationSerializer, RelationFeedbackSerializer
+from .serializers import RelationSerializer, RelationFeedbackSerializer, RelationCereal
 
 
 @login_required
@@ -134,12 +135,96 @@ def fetch_document_relations(request, document_pk):
 
 @login_required
 @api_view(['GET'])
+def document_analysis(request, document_pk, relation_pk=None):
+    """
+        API for returning analysis details for Document
+        Relation task completions
+    """
+    document = get_object_or_404(Document, pk=document_pk)
+
+    # If a relation was specified, only show results for that
+    if relation_pk:
+        relation = get_object_or_404(Relation, pk=relation_pk)
+
+    # Start the DB Connection
+    c = connection.cursor()
+
+    cmd_str = """
+        SELECT  `relation_relation`.`id` as `relationship_id`,
+                `relation_relation`.`document_id`,
+                `relation_relation`.`relation_type`,
+                `relation_relation`.`concept_1_id`,
+                `relation_relation`.`concept_2_id`,
+
+                # ANY_VALUE(`concept_relationship_1`.`stype`) as `concept_1_stype`,
+                ANY_VALUE(`concept_text_1`.`text`) as `concept_1_text`,
+
+                # ANY_VALUE(`concept_relationship_2`.`stype`) as `concept_2_stype`,
+                ANY_VALUE(`concept_text_2`.`text`) as `concept_2_text`
+
+        FROM `relation_relation`
+
+        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_1`
+            ON `concept_relationship_1`.`document_id` = `relation_relation`.`document_id`
+            INNER JOIN `relation_concepttext` as `concept_text_1`
+                    ON `concept_text_1`.`concept_id` = `relation_relation`.`concept_1_id`
+
+        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_2`
+            ON `concept_relationship_2`.`document_id` = `relation_relation`.`document_id`
+            INNER JOIN `relation_concepttext` as `concept_text_2`
+                    ON `concept_text_2`.`concept_id` = `relation_relation`.`concept_2_id`
+
+        WHERE `relation_relation`.`document_id` = {document_id}
+        GROUP BY `relation_relation`.`id`
+    """.format(document_id=document.pk)
+
+    c.execute(cmd_str)
+    rel_tasks = []
+    for x in c.fetchall():
+        rel_tasks.append(x)
+
+    cmd_str = """
+        SELECT  `document_document`.`id` as `doc_pk`,
+                `document_document`.`document_id` as `pmid`,
+                `relation_relationannotation`.`relation_id` as `relationship_id`,
+                `relation_relationannotation`.`answer` as `relationship_answer`,
+                `document_annotation`.`created`,
+                `document_view`.`user_id`
+
+        FROM `relation_relationannotation`
+
+        INNER JOIN `document_annotation`
+            ON `document_annotation`.`object_id` = `relation_relationannotation`.`id` AND `document_annotation`.`kind` = 'r'
+
+            INNER JOIN `document_view`
+                ON `document_annotation`.`view_id` = `document_view`.`id`
+
+                INNER JOIN `document_section`
+                    ON `document_section`.`id` = `document_view`.`section_id`
+
+                INNER JOIN `document_document`
+                    ON `document_document`.`id` = `document_section`.`document_id`
+
+        WHERE `document_document`.`id` =  {document_id}
+    """.format(document_id=document.pk)
+    c.execute(cmd_str)
+
+    rel_submissions = []
+    for x in c.fetchall():
+        rel_submissions.append(x)
+
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for obj in rel_submissions:
+        groups[obj[2]].append(obj)
+
+    serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups})
+    return Response(serializer.data)
+
+
+@login_required
+@api_view(['GET'])
 def fetch_relation_feedback(request, relation_pk):
-    """
-        API for returning total number of answers for a relation.
-    """
     relation = get_object_or_404(Relation, pk=relation_pk)
-
     serializer = RelationFeedbackSerializer([relation], many=True, context={'user': request.user})
-
     return Response(serializer.data[0])

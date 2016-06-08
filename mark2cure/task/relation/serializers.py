@@ -6,6 +6,39 @@ from . import relation_data
 from rest_framework import serializers
 
 
+class RelationCereal(serializers.BaseSerializer):
+    def __init__(self, *args, **kwargs):
+        context = kwargs.pop('context', {})
+        self.sub_dict = context.get('sub_dict', None)
+        # Instantiate the superclass normally
+        super(RelationCereal, self).__init__(*args, **kwargs)
+
+    def to_representation(self, obj):
+
+        answers = []
+        for x in self.sub_dict[obj[0]]:
+            answers.append({
+                'user_id': x[5],
+                'answer': x[3],
+                'self': False
+            })
+
+        return {
+            'id': obj[0],
+            'document': obj[1],
+            'kind': obj[2],
+            'concept_a': {
+                'id': obj[3],
+                'text': obj[5]
+            },
+            'concept_b': {
+                'id': obj[4],
+                'text': obj[6]
+            },
+            'answers': answers
+        }
+
+
 class RelationSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
