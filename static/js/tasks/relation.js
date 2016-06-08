@@ -131,7 +131,10 @@ RelationTaskCollection = Backbone.Collection.extend({
       });
 
     } else {
-      /* If no other relations to complete, submit document */
+      /* If no other relations to complete, submit document
+      * This condition should be accounted for earlier, but
+      * keeping here just incase */
+      $('#tree-action-area').hide();
       $('#task_relation_submit_document_set').submit();
     }
   }
@@ -216,12 +219,21 @@ function show_results(relation_pk) {
 $('#next_button').on('click', function(evt) {
   /* Causes the next to load */
   var current_relationship = collection.findWhere({'current': true});
-  current_relationship.set('user_completed', true);
-  submit_status();
-  $('#feedback-next-action-area').hide();
-  $('#chart').empty();
-  $('#chart-list').empty();
-  $('#tree-action-area').show();
+  var next_relationship = collection.findWhere({user_completed: false, available: true});
+  console.log('Next Relationship:', next_relationship);
+
+  if (next_relationship) {
+    current_relationship.set('user_completed', true);
+    submit_status();
+    $('#feedback-next-action-area').hide();
+    $('#tree-action-area').show();
+    $('#chart').empty();
+    $('#chart-list').empty();
+  } else {
+    $('#tree-action-area').hide();
+    $('#task_relation_submit_document_set').submit();
+  }
+
 });
 
 var incorrect_flag_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
