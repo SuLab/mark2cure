@@ -1,3 +1,13 @@
+#task-complete {
+  hr {
+    border: 0;
+    margin: 6px 0px;
+    height: 1px;
+    background: $color_gray_lighter;
+    background-image: linear-gradient(to right, $color_white, $color_gray_lighter, $color_gray_lightest);
+  }
+}
+
 #feedback-next-action-area.shown {
   border-bottom: 8px solid $color_gray_lightest;
 }

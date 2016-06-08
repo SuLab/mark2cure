@@ -154,9 +154,26 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username
 
-    def score(self, task=None):
+    def score(self, task=None, view=None):
+        if view:
+            # If they want to get back all the specific points they earned for a view
 
-        if task:
+            # Points for submitting individual relation steps
+            relation_ann_pks = view.annotation_set.values_list('object_id', flat=True)
+            val = sum(Point.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(RelationAnnotation),
+                object_id__in=relation_ann_pks
+            ).values_list('amount', flat=True))
+
+            # Points for submitting the relation set
+            val += sum(Point.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(view),
+                object_id=view.pk
+            ).values_list('amount', flat=True))
+
+        elif task:
             if 'entity' in task:
                 val = sum(Point.objects.filter(user=self.user).filter(
                     Q(object_id__isnull=True) | Q(content_type=ContentType.objects.get_for_model(EntityRecognitionAnnotation))
@@ -209,7 +226,9 @@ class UserProfile(models.Model):
     def quests_count(self):
         return UserQuestRelationship.objects.filter(user=self.user, completed=True).count()
 
-    def completed_document_pks(self):
+    def completed_document_pks(self, task=None):
+        # Returns completed documents regardless of the type of task that was completed
+        # (TODO) Add task level refinement optional arg
         return list(set(View.objects.filter(user=self.user, completed=True).values_list('section__document', flat=True)))
 
     def contributed_groups(self):

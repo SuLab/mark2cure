@@ -32,6 +32,19 @@ def relation_task_home(request, document_pk):
 
 
 @login_required
+def relation_task_complete(request, document_pk):
+    document = get_object_or_404(Document, pk=document_pk)
+    first_section = document.section_set.first()
+    view = get_object_or_404(View, task_type='ri', completed=True, section=first_section, user=request.user)
+
+    ctx = {
+        'document': document,
+        'points': request.user.profile.score(view=view)
+    }
+    return TemplateResponse(request, 'relation/task-complete.jade', ctx)
+
+
+@login_required
 def submit_document_set(request, document_pk):
     document = get_object_or_404(Document, pk=document_pk)
 
@@ -50,7 +63,7 @@ def submit_document_set(request, document_pk):
                              object_id=view.id,
                              created=timezone.now())
 
-        return redirect('common:dashboard')
+        return redirect('task-relation:task-complete', document_pk=document.pk)
 
 
 @login_required

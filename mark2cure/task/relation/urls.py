@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = patterns('',
 
-
+    # AJAX Endpoints
     url(r'^(?P<document_pk>\d+)/(?P<relation_pk>\d+)/submit/$',
         views.submit_annotation, name='submit-annotation'),
 
@@ -16,6 +16,10 @@ urlpatterns = patterns('',
 
     url(r'^(?P<relation_pk>\d+)/feedback-api/$',
         views.fetch_relation_feedback, name='fetch-relation-feedback'),
+
+    # View user endpoints
+    url(r'^(?P<document_pk>\d+)/complete/$',
+        views.relation_task_complete, name='task-complete'),
 
     url(r'^(?P<document_pk>\d+)/$',
         views.relation_task_home, name='task'),
