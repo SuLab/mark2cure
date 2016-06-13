@@ -218,7 +218,7 @@ def document_analysis(request, document_pk, relation_pk=None):
     for obj in rel_submissions:
         groups[obj[2]].append(obj)
 
-    serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups})
+    serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
     return Response(serializer.data)
 
 

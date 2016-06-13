@@ -4,12 +4,14 @@ from .models import Relation, ConceptDocumentRelationship, RelationAnnotation
 from . import relation_data
 
 from rest_framework import serializers
+from . import relation_data_flat
 
 
 class RelationCereal(serializers.BaseSerializer):
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
         self.sub_dict = context.get('sub_dict', None)
+        self.user = context.get('user', None)
         # Instantiate the superclass normally
         super(RelationCereal, self).__init__(*args, **kwargs)
 
@@ -19,8 +21,8 @@ class RelationCereal(serializers.BaseSerializer):
         for x in self.sub_dict[obj[0]]:
             answers.append({
                 'user_id': x[5],
-                'answer': x[3],
-                'self': False
+                'answer': filter(lambda d: d['id'] == x[3], relation_data_flat)[0],
+                'self': x[5] == self.user.pk
             })
 
         return {
