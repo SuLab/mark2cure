@@ -142,6 +142,7 @@ def document_analysis(request, document_pk, relation_pk=None):
     """
     document = get_object_or_404(Document, pk=document_pk)
 
+    relation = None
     # If a relation was specified, only show results for that
     if relation_pk:
         relation = get_object_or_404(Relation, pk=relation_pk)
@@ -174,9 +175,11 @@ def document_analysis(request, document_pk, relation_pk=None):
             INNER JOIN `relation_concepttext` as `concept_text_2`
                     ON `concept_text_2`.`concept_id` = `relation_relation`.`concept_2_id`
 
-        WHERE `relation_relation`.`document_id` = {document_id}
+        WHERE `relation_relation`.`document_id` = {document_id} {relation_logic}
         GROUP BY `relation_relation`.`id`
-    """.format(document_id=document.pk)
+    """.format(
+        document_id=document.pk,
+        relation_logic=' AND `relation_relation`.`id` = {0}'.format(relation.pk) if relation else '')
 
     c.execute(cmd_str)
     rel_tasks = []
@@ -228,3 +231,4 @@ def fetch_relation_feedback(request, relation_pk):
     relation = get_object_or_404(Relation, pk=relation_pk)
     serializer = RelationFeedbackSerializer([relation], many=True, context={'user': request.user})
     return Response(serializer.data[0])
+
