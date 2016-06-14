@@ -154,7 +154,7 @@ Annotation = Backbone.RelationalModel.extend({
   toggleType : function() {
     /* Removes (if only 1 Annotation type) or changes
      * the Annotation type when clicked after existing */
-    if( this.get('type') == YPet.AnnotationTypes.length-1 ) {
+    if( this.get('type') == YPet.AnnotationTypes.length-1 || this.get('text') == "") {
       this.destroy();
     } else {
       this.set('type', this.get('type')+1 );
@@ -349,7 +349,7 @@ WordView = Backbone.Marionette.ItemView.extend({
     this.listenTo(this.model, 'change:neighbor', this.render);
     this.listenTo(this.model, 'change:latest', function(model, value, options) {
       if(this.model.get('latest')) {
-        this.model.trigger('highlight', {'color': '#e7e7e7'});
+        this.model.trigger('highlight', {'color': '#D1F3FF'});
       }
       if(options.force) {
         this.model.trigger('highlight', {'color': '#fff'});

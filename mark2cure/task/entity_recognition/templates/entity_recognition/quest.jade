@@ -208,15 +208,18 @@ block post-footer
 
         /* Iterate over each of the annotations within that section */
         _.each(annotations, function(annotation) {
-          $.ajax({
-            type: 'POST',
-            url: url,
-            data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, annotation),
-            cache: false,
-            async: false,
-            success: function() { counter++; },
-            error: function() { alert('There was a problem submitting this document. Please try another.'); },
-          });
+          /* Do not save data if the annotation is empty */
+          if (annotation.text != "") {
+            $.ajax({
+              type: 'POST',
+              url: url,
+              data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, annotation),
+              cache: false,
+              async: false,
+              success: function() { counter++; },
+              error: function() { alert('There was a problem submitting this document. Please try another.'); },
+            });
+          };
         });
       });
 
