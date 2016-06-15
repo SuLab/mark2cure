@@ -158,7 +158,7 @@ Tree.start();
 
 /* Onload request all relation tasks to complete */
 collection = new RelationTaskCollection(task_data);
-// Sort the collection by C1 on initial data load:
+/* Sort the collection by C1 on initial data load */
 var new_collection = _.sortBy(collection.models, function(c) {
   return c.attributes.concepts.c1.text;
 });
