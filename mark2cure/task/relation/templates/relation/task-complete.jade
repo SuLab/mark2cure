@@ -30,8 +30,8 @@ block content
         - for reln in reln_ann_list
           #feedback-next-action-area
             div(id="relation-{{ reln.relation_id }}" style="display:none") {{ reln.relation_id }}
-              div(id="chart-{{ reln.relation_id }}") chart-id... not showing
-              div(id="chart-list-{{ reln.relation_id }}" class="list-unstyled") chart-list-id
+              div(id="chart-{{ reln.relation_id }}")
+              div(id="chart-list-{{ reln.relation_id }}" class="list-unstyled")
               {% with reln_ann_list|index:forloop.counter0 as relationship_answer %}
               div You said {{ relationship_answer.answer }} about the relation
               {% endwith %}
@@ -73,4 +73,3 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation.js")
-  script(src="/static/js/tasks/relation-synopsis.js")

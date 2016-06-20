@@ -38,7 +38,25 @@ def relation_task_complete(request, document_pk):
     first_section = document.section_set.first()
     view = get_object_or_404(View, task_type='ri', completed=True, section=first_section, user=request.user)
 
+    # (TODO) This should be changed from 'r' to concept type
+    anns_user_doc_list = Annotation.objects.filter(kind='r', view_id__user_id=request.user.id,
+                                                   view_id__section__document_id=document_pk)
+
+    reln_id_list = []
+    relation_list = []
+    reln_ann_list = []
+    for ann in anns_user_doc_list:
+
+        reln_ann = RelationAnnotation.objects.get(id=ann.object_id)
+        reln = Relation.objects.get(id=reln_ann.relation_id)
+        if reln.id not in reln_id_list:
+            relation_list.append(reln)
+            reln_ann_list.append(reln_ann)
+        reln_id_list.append(reln.id)
+
     ctx = {
+        'document_pk': document.pk,
+        'reln_ann_list': reln_ann_list,
         'document': document,
         'points': request.user.profile.score(view=view)
     }
