@@ -1,4 +1,5 @@
 extends base
+{% load index %}
 
 - load humanize
 - load widget_tweaks
@@ -17,6 +18,25 @@ block content
       .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
         p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
 
+  .container-fluid
+    .col-xs-12.col-md-10.col-md-offset-2
+      h3 Hover over the circles to get feedback for this document's relationships
+
+      - for reln in reln_ann_list
+        span(class="relation-circle", id="relation-circle-{{ reln.relation_id }}", style="font-size:50px;") &#8226;
+
+      .row
+
+        - for reln in reln_ann_list
+          #feedback-next-action-area
+            div(id="relation-{{ reln.relation_id }}" style="display:none") {{ reln.relation_id }}
+              div(id="chart-{{ reln.relation_id }}") chart-id... not showing
+              div(id="chart-list-{{ reln.relation_id }}" class="list-unstyled") chart-list-id
+              {% with reln_ann_list|index:forloop.counter0 as relationship_answer %}
+              div You said {{ relationship_answer.answer }} about the relation
+              {% endwith %}
+
+              div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
 
 
   #task-complete.container
@@ -53,3 +73,4 @@ block post-footer
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation.js")
+  script(src="/static/js/tasks/relation-synopsis.js")
