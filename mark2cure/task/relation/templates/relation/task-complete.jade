@@ -18,27 +18,6 @@ block content
       .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
         p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
 
-  .container-fluid
-    .col-xs-12.col-md-10.col-md-offset-2
-      h3 Hover over the circles to get feedback for this document's relationships
-
-      - for reln in reln_ann_list
-        span(class="relation-circle", id="relation-circle-{{ reln.relation_id }}", style="font-size:50px;") &#8226;
-
-      .row
-
-        - for reln in reln_ann_list
-          #feedback-next-action-area
-            div(id="relation-{{ reln.relation_id }}" style="display:none") {{ reln.relation_id }}
-              div(id="chart-{{ reln.relation_id }}")
-              div(id="chart-list-{{ reln.relation_id }}" class="list-unstyled")
-              {% with reln_ann_list|index:forloop.counter0 as relationship_answer %}
-              div You said {{ relationship_answer.answer }} about the relation
-              {% endwith %}
-
-              div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
-
-
   #task-complete.container
     .row.m-t-lg
       .col-xs-8.col-xs-offset-2
@@ -49,18 +28,34 @@ block content
 
         p.lead.text-center You earned #{points|intcomma} points!
 
-        hr
+    .container-fluid
+      .row.m-t-lg
+        .col-xs-8.col-xs-offset-2
+          p.lead.text-center Click on the circles to see how your answers compared to the community's.
 
-        p.text-center You've now unlocked the talk page for the document. See what other people are saying about it!
+          - for reln in reln_ann_list
+            span(class="relation-circle", id="relation-circle-{{ reln.relation_id }}", style="font-size:50px;") &#8226;
 
-        .row.text-center
-          .col-xs-10.col-xs-offset-1.col-md-4.col-md-offset-2.m-t-md
-            a(href='{% url "talk:home" document.document_id %}').btn.btn-default
-              | Yes, Let's Talk
+          - for reln in reln_ann_list
+            #feedback-next-action-area
+              div(id="relation-{{ reln.relation_id }}" style="display:none")
+                div(id="chart-{{ reln.relation_id }}")
+                div(id="chart-list-{{ reln.relation_id }}").list-unstyled
 
-          .col-xs-10.col-xs-offset-1.col-md-4.m-t-md
-            a(href='{% url "common:dashboard" %}').btn.btn-primary
-              | Return Home
+                div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
+
+      hr
+
+      p.text-center You've now unlocked the talk page for the document. See what other people are saying about it!
+
+      .row.text-center
+        .col-xs-10.col-xs-offset-1.col-md-4.col-md-offset-2.m-t-md
+          a(href='{% url "talk:home" document.document_id %}').btn.btn-default
+            | Yes, Let's Talk
+
+        .col-xs-10.col-xs-offset-1.col-md-4.m-t-md
+          a(href='{% url "common:dashboard" %}').btn.btn-primary
+            | Return Home
 
 
 block post-footer
@@ -72,4 +67,4 @@ block post-footer
     };
 
   script(src="/static/js/libs/tree.js")
-  script(src="/static/js/tasks/relation.js")
+  script(src="/static/js/tasks/relation-synopsis.js")
