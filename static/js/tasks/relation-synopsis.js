@@ -13,7 +13,6 @@ $( document ).ready(function(document_pk) {
             for(var i = 0; i < doc_api_data.length; i++) {
                 var answer_counts;
                 var obj = doc_api_data[i];
-                console.log(obj);
                 var relation_specific_answers = _.filter(doc_api_data, {id: obj.id});
                 var answers = relation_specific_answers[0]['answers']
                 var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
@@ -42,7 +41,6 @@ $( document ).ready(function(document_pk) {
                 circle_dict[obj['id']] = circle;
 
                 $('#relation-circle-' + obj['id']).css('color', circle_dict[obj['id']]);
-                console.log(obj["concept_a"]);
                 $('#c1-word-' + obj['id'] ).html("Concept 1: " + obj["concept_a"]["text"]);
                 $('#c2-word-' + obj['id'] ).html("Concept 2: " + obj["concept_b"]["text"]);
 
