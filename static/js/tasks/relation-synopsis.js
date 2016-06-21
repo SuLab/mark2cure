@@ -7,6 +7,48 @@ $( document ).ready(function(document_pk) {
     $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/analysis/', function(document_api_data) {
         doc_api_data = document_api_data;
 
+        /* color circles */
+        function color_the_circles(doc_api_data) {
+            circle_dict = {};
+            for(var i = 0; i < doc_api_data.length; i++) {
+                var answer_counts;
+                var obj = doc_api_data[i];
+                console.log(obj);
+                var relation_specific_answers = _.filter(doc_api_data, {id: obj.id});
+                var answers = relation_specific_answers[0]['answers']
+                var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
+                var user_answer = _.filter(answers, {self: true });
+
+                answer_count_nums = _.sortBy(answer_counts, function(d) { return -d['value'] });
+                var sum = _.reduce(answer_count_nums, function(memo, num){ return memo + num; }, 0);
+
+                var arr = Object.keys( answer_counts ).map(function ( key ) { return answer_counts[key] });
+                var majority_total_votes = Math.max.apply( null, arr );
+                majority_answer_id = Object.keys(answer_counts).filter(function(x){ return answer_counts[x] == majority_total_votes; })[0];
+                user_answer_id = user_answer[0]['answer']['id']
+
+                percent_of_total = majority_total_votes/sum;
+
+                /* color circles yellow unless the following applies */
+                circle = 'yellow';
+
+                /* you match majority and enough data to give green */
+                if (user_answer_id == majority_answer_id && percent_of_total >= 0.51){
+                    circle = 'green';
+                /* you do not match majority and majority did pretty well */
+                } else if ( user_answer_id != majority_answer_id && percent_of_total >= 0.51 ) {
+                    circle = 'red';
+                }
+                circle_dict[obj['id']] = circle;
+
+                $('#relation-circle-' + obj['id']).css('color', circle_dict[obj['id']]);
+                console.log(obj["concept_a"]);
+                $('#c1-word-' + obj['id'] ).html("Concept 1: " + obj["concept_a"]["text"]);
+                $('#c2-word-' + obj['id'] ).html("Concept 2: " + obj["concept_b"]["text"]);
+
+             }
+        };
+        circle_dict = color_the_circles(doc_api_data);
 
         // Click method option
         $( ".relation-circle" ).hover(function () {
@@ -33,7 +75,7 @@ $( document ).ready(function(document_pk) {
             current_id = get_id;
             relation_pk = current_id;
             function show_results(document_pk, relation_pk, doc_api_data) {
-                relation_specific_answers = _.filter(doc_api_data, {id: parseInt(relation_pk)})
+                var relation_specific_answers = _.filter(doc_api_data, {id: parseInt(relation_pk)})
                 var answers = relation_specific_answers[0]['answers']
                 var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
                 var answer_text = {};
@@ -95,5 +137,8 @@ $( document ).ready(function(document_pk) {
         })
     });
 });
+
+
+
 
 

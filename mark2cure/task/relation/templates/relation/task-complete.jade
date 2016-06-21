@@ -39,6 +39,8 @@ block content
           - for reln in reln_ann_list
             #feedback-next-action-area
               div(id="relation-{{ reln.relation_id }}" style="display:none")
+                div(id="c1-word-{{ reln.relation_id }}")
+                div(id="c2-word-{{ reln.relation_id }}")
                 div(id="chart-{{ reln.relation_id }}")
                 div(id="chart-list-{{ reln.relation_id }}").list-unstyled
 
