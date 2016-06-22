@@ -30,21 +30,7 @@ block content
     .container-fluid
       .row.m-t-lg
         .col-xs-8.col-xs-offset-2
-          p.lead.text-center Click on the circles to see how your answers compared to the community's.
-
-          - for reln in reln_ann_list
-            span(class="relation-circle", id="relation-circle-{{ reln.relation_id }}", style="font-size:50px;") &#8226;
-
-          - for reln in reln_ann_list
-            #feedback-next-action-area
-              div(id="relation-{{ reln.relation_id }}" style="display:none")
-                div(id="c1-word-{{ reln.relation_id }}")
-                div(id="c2-word-{{ reln.relation_id }}")
-                div(id="chart-{{ reln.relation_id }}")
-                div(id="chart-list-{{ reln.relation_id }}").list-unstyled
-
-                div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
-
+          #relation-synopsis-insert
       hr
 
       p.text-center You've now unlocked the talk page for the document. See what other people are saying about it!
@@ -66,6 +52,25 @@ block post-footer
       'document_pk': "{{ document.pk }}",
       'document_pmid': "{{ document.document_id }}"
     };
+
+  script(type='html/template', id='relation-synopsis-template')
+    p.lead.text-center Click on the circles to see how your answers compared to the community's.
+
+    ul#relation-synopsis-bar.list-unstyled.list-inline
+
+    #feedback-next-action-area
+
+    ul#chart-list.list-unstyled
+
+  script(type='html/template', id='relation-synopsis-feedback-template')
+    div(id="c1-word-{{ reln.relation_id }}")
+    div(id="c2-word-{{ reln.relation_id }}")
+
+    div(id="chart-{{ reln.relation_id }}")
+    div(id="chart-list-{{ reln.relation_id }}").list-unstyled
+
+    div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
+
 
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-synopsis.js")
