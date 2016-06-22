@@ -1,9 +1,11 @@
 #relation-synopsis-insert {
   ul#relation-synopsis-bar {
+    text-align: center;
     li {
       font-size: 4em;
       line-height: .5em;
       cursor: pointer;
+      margin: 0px 2px;
     }
   }
 }

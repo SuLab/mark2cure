@@ -1,13 +1,24 @@
-RelDoc = Backbone.RelationalModel.extend({});
+RelDoc = Backbone.RelationalModel.extend({
+  defaults:{
+    'focus': false,
+  }
+});
 Relations = Backbone.Collection.extend({
   model: RelDoc,
   url: '/task/relation/'+relation_task_settings.document_pk+'/analysis/',
 });
 
+var color_scale = d3.scale.linear()
+    .domain([0, 1])
+    .range(['red', 'green']);
 
 RelationItem = Backbone.Marionette.ItemView.extend({
   template: _.template('&#8226;'),
   tagName: 'li',
+
+  initialize: function(){
+    this.listenTo(this.model, 'change:focus', this.render);
+  },
 
   events : {
     'mouseenter': 'triggerDisplay',
@@ -15,6 +26,13 @@ RelationItem = Backbone.Marionette.ItemView.extend({
   },
 
   triggerDisplay: function(evt) {
+    var self = this;
+    this.model.set('focus', true);
+    this.model.collection.each(function(m) {
+      if(self.model.id != m.id) {
+        m.set({'focus': false});
+      }
+    });
     Synopsis['convoChannel'].trigger('triggerDisplay', {'model': this.model});
   },
 
@@ -30,16 +48,22 @@ RelationItem = Backbone.Marionette.ItemView.extend({
     var majority_total_votes = Math.max.apply( null, arr );
     var majority_answer_id = Object.keys(answer_counts).filter(function(x){ return answer_counts[x] == majority_total_votes; })[0];
 
-    var color = 'yellow';
+    var score = .5;
     /* you match majority and enough data to give green */
     if (user_answer_id == majority_answer_id && majority_total_votes/sum >= 0.51){
-      color = 'green';
+      score = 1;
 
     /* you do not match majority and majority did pretty well */
     } else if ( user_answer_id != majority_answer_id && majority_total_votes/sum >= 0.51 ) {
-      color = 'red';
+      score = 0;
     }
-    this.$el.css({'color': color});
+    this.$el.css({'color': color_scale(score)});
+
+    if(this.model.get('focus') == true) {
+      this.$el.css({'borderBottom': '4px solid gray'});
+    } else {
+      this.$el.css({'borderBottom': 'none'});
+    }
   }
 });
 
