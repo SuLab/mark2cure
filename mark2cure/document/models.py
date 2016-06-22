@@ -164,7 +164,9 @@ class Document(models.Model):
                 annotation.text = ann.text
                 passage.add_annotation(annotation)
 
-            passage_offset += len(passage.text)
+            # (WARNING) Addresses Github Issue #133 & #183
+            # Unclear how pubtator will behave with 3+ section documents
+            passage_offset += len(passage.text) + 1
             document.add_passage(passage)
 
         return document
