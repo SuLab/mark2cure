@@ -7,12 +7,11 @@ from mark2cure.common.bioc import BioCReader, BioCWriter, BioCDocument, BioCPass
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-from ..task.relation.models import Concept, Relation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 import pandas as pd
 pd.set_option('display.width', 1000)
-import itertools
+
 
 class Document(models.Model):
     document_id = models.IntegerField(blank=True)
@@ -111,10 +110,10 @@ class Document(models.Model):
                                 uid_type = key
                                 uid = infons.get(uid_type, None)
 
-                        #print infons.keys()
-                        #print infons
-                        #print uid_type, uid, '('+str(annotation_type)+')'
-                        #print ' - '*40
+                        # print infons.keys()
+                        # print infons
+                        # print uid_type, uid, '('+str(annotation_type)+')'
+                        # print ' - '*40
 
                         pubtator_arr.append({
                             'uid': uid,
@@ -127,17 +126,17 @@ class Document(models.Model):
                             'location': str(annotation.locations[0])
                         })
 
-                pubtator_dfs.append( pd.DataFrame(pubtator_arr, columns=df_columns) )
+                pubtator_dfs.append(pd.DataFrame(pubtator_arr, columns=df_columns))
 
         if len(pubtator_dfs):
             return pd.concat(pubtator_dfs)
         else:
             return pd.DataFrame([], columns=df_columns)
 
-
     def as_bioc_with_user_annotations(self, request=None):
         '''
-            Get the user annotations for a Document
+            BioC file with every contributed user annotation for that document
+            User's annotations span all experience, agreement, accounts, etc. - there is no filtration
         '''
         document = self.as_bioc()
         approved_types = ['disease', 'gene_protein', 'drug']
@@ -252,7 +251,6 @@ class Document(models.Model):
 
         return reader.collection.documents[0]
 
-
     def as_writer(self, request=None):
         from mark2cure.common.formatter import bioc_writer
         writer = bioc_writer(request)
@@ -284,8 +282,6 @@ class Document(models.Model):
     def contributors(self):
         user_ids = list(set(View.objects.filter(section__document=self, completed=True, task_type='cr').values_list('user', flat=True)))
         return user_ids
-
-
 
     class Meta:
         ordering = ('-created',)
@@ -331,7 +327,6 @@ class Pubtator(models.Model):
             # If one of them doesn't validate leave
             return False
 
-
     def as_writer(self, request=None):
         r = BioCReader(source=self.content)
         r.read()
@@ -340,7 +335,6 @@ class Pubtator(models.Model):
         bioc_writer.collection = r.collection
 
         return bioc_writer
-
 
     def count_annotations(self):
         if self.valid():
@@ -354,8 +348,6 @@ class Pubtator(models.Model):
 
         else:
             return 0
-
-
 
 
 class Section(models.Model):
@@ -480,7 +472,6 @@ class Annotation(models.Model):
     metadata = GenericForeignKey('content_type', 'object_id')
 
     view = models.ForeignKey(View, blank=True, null=True)
-
 
     def __unicode__(self):
         if self.kind == 'r':

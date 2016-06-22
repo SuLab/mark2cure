@@ -40,8 +40,8 @@ def read_specific_pubtator_bioc(request, pub_pk, format_type):
 
     # writer = bioc_writer(request)
     # bioc_document = doc.as_bioc_with_pubtator_annotations()
-    #writer.collection.add_document(bioc_document)
-    #return HttpResponse(200);
+    # writer.collection.add_document(bioc_document)
+    # return HttpResponse(200);
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

@@ -177,7 +177,7 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
                                            'doc_pk': doc.pk,
                                            'format_type': 'xml'}))
         self.assertEqual(response.status_code, 500)
-        #(TODO) this test broke, response.content = "points awarded" now?
+        # (TODO) this test broke, response.content = "points awarded" now?
         self.assertEqual(response.content, 'no_points_awarded')
         self.client.logout()
         # Submit bogus Annotations as opponent to try match again for player
