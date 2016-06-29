@@ -146,7 +146,7 @@ def pubtator_actions(request, pk):
         pubtator.delete()
         doc.init_pubtator()
 
-    return redirect(reverse('control:document', doc.pk))
+    return redirect(reverse('control:document', kwargs={'pk': doc.pk}))
 
 
 @login_required

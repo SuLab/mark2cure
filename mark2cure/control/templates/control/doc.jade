@@ -13,7 +13,7 @@ block content
           .col-xs-12
             h2 Pubtator Details (<a href='{% url "document:read-pubtator-bioc" pubmed_id=doc.document_id format_type="xml" %}'>BioC</a>)
           .col-xs-6.col-xs-offset-3.hide
-            form(action='', method='post')
+            form(action='{% url "control:document_reset_pubtator" pk=doc.pk %}', method='post')
               - csrf_token
               button.btn.btn-warning.btn-block
                 | Reset All
