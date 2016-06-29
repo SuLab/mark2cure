@@ -39,19 +39,15 @@ def home(request):
 
 
 def get_started(request):
-    return redirect('training:introduction', step_num=1)
-    # return redirect('training:relation-training', part_num=1, step_num=1)
-
-    '''
-    uai = UAgentInfo( request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
     if uai.detectMobileLong():
         return redirect('training:relation-training', part_num=1, step_num=1)
 
-    if Level.objects.filter(level=7, task_type='e').count() > Level.objects.filter(level=7, task_type='r').count():
-        return redirect('training:relation-training', part_num=1, step_num=1)
     else:
-        return redirect('training:introduction', step_num=1)
-    '''
+        if random.random() <= .1:
+            return redirect('training:relation-training', part_num=1, step_num=1)
+        else:
+            return redirect('training:introduction', step_num=1)
 
 
 def why_mark2cure(request):

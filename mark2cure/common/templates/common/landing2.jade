@@ -139,21 +139,6 @@ block content
             button(type="button", data-dismiss="modal").btn.btn-default Cancel
             button(type="button").btn.btn-default.modal-form-submit Submit
 
-    #touch-modal.modal.fade
-      .modal-dialog
-        .modal-content
-          .modal-header
-            h2.modal-title On a touch screen?
-
-          .modal-body
-            p.lead
-              | At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
-            p.lead.text-center
-              | Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
-
-          .modal-footer
-            button(type="button", data-dismiss="modal").btn.btn-default
-              | Okay
 
 block js-libs
   {{ block.super }}
@@ -164,7 +149,6 @@ block js-libs
   script(src="/static/js/libs/sly.min.js")
   // Using sly lib (for 'completed/incomplete document carousel')
   script(src="/static/js/pages/landing2.js")
-
 
 
 block post-footer
@@ -184,8 +168,3 @@ block post-footer
       });
     });
 
-
-  script.
-    if(Modernizr.touch) {
-      $('#touch-modal').modal('show');
-    }

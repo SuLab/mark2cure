@@ -93,7 +93,6 @@ head
       script(src='#{STATIC_URL}js/libs/selectize.js')
       script(src='#{STATIC_URL}js/libs/intro.min.js')
       script(src='#{STATIC_URL}js/libs/odometer.min.js')
-      script(src='#{STATIC_URL}js/libs/modernizr.custom.js')
       script(src='//cdn.ravenjs.com/2.0.1/raven.min.js')
 
       // Network Requirements
@@ -154,14 +153,6 @@ head
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
-
-
-    - if not request.session.block_alert
-      script.
-        var reln_placement_spot = 'left';
-        if(Modernizr.touch) {
-          reln_placement_spot = 'bottom';
-        };
 
 
     block post-footer

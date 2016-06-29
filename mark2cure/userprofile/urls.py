@@ -10,9 +10,6 @@ urlpatterns = patterns('',
     url(r'^points/$',
         views.user_points, name='points'),
 
-    url(r'^alert/$',
-        views.alert, name='alert'),
-
     # Public routes
     url(r'^(?P<username>[\w.@+-]+)/edit/',
         views.settings, name='settings'),

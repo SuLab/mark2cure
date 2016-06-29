@@ -178,7 +178,6 @@ html
     <script src="/static/js/libs/selectize.js"></script>
     <script src="/static/js/libs/intro.min.js"></script>
     <script src="/static/js/libs/odometer.min.js"></script>
-    <script src="/static/js/libs/modernizr.custom.js"></script>
     <script src="/static/js/ypet.js"></script>
     <script src="/static/js/app.js"></script>
     <script src="//cdn.ravenjs.com/1.1.2/jquery,native/raven.min.js"></script>
@@ -260,24 +259,3 @@ html
 
     <script>Raven.config('http://2320ff9e35d04e7888cddfbaf516c6c4@sentry.sulab.org/4', {  whitelistUrls: [/mark2cure\.org/]}).install();var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-43341013-1']);_gaq.push(['_setDomainName', 'mark2cure.org']);_gaq.push(['_trackPageview']);(function() {  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
     </script>
-
-    #touch-modal.modal.fade
-      .modal-dialog
-        .modal-content
-          .modal-header
-            h2.modal-title On a touch screen?
-
-          .modal-body
-            p.lead
-              | At the moment, Mark2Cure is best accessed with some sort of computer or laptop and not a mobile device.
-            p.lead.text-center
-              | Please use a computer or laptop (<strong>preferably with a mouse</strong>) when joining Mark2Cure.
-
-          .modal-footer
-            button(type="button", data-dismiss="modal").btn.btn-default
-              | Okay
-
-    script.
-      if(Modernizr.touch) {
-        $('#touch-modal').modal('show');
-      }

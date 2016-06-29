@@ -1,4 +1,3 @@
-from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.models import User
@@ -70,11 +69,3 @@ def user_points(request):
         'points_level': points_badge.name,
         'skill_level': Level.objects.filter(user=request.user, task_type='e').first().get_name()
     })
-
-
-def alert(request):
-    if not request.is_ajax() or not request.method == 'POST':
-        return HttpResponseNotAllowed(['POST'])
-
-    request.session['block_alert'] = True
-    return HttpResponse()
