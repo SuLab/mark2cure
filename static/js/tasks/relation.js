@@ -182,6 +182,12 @@ var submit_status = function() {
   };
 };
 
+var lookup_kinds = {
+  'g': 'gene',
+  'd': 'disease',
+  'c': 'drug'
+}
+
 function show_results(document_pk, relation_pk) {
   $('#tree-action-area').hide();
 
@@ -194,6 +200,9 @@ function show_results(document_pk, relation_pk) {
     var answer_text = {};
     var personal_ann = '';
 
+    var c_1_broken = "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy";
+    var c_2_broken = "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer";
+
     _.each(answers, function(a) {
       answer_text[a.answer.id] = a.answer.text;
       if(a['self']) { personal_ann = a.answer.id; }
@@ -201,10 +210,18 @@ function show_results(document_pk, relation_pk) {
 
     var data = [];
     _.each(_.keys(answer_counts), function(answer_key) {
+
+      var label = answer_text[answer_key];
+      if(answer_key == c_1_broken) {
+        label = api_data[0]['concept_a']['text'] + label + lookup_kinds[api_data[0]['kind'][0]] + ' concept';
+      } else if(answer_key == c_2_broken) {
+        label = api_data[0]['concept_b']['text'] + label + lookup_kinds[api_data[0]['kind'][2]] + ' concept';
+      }
+
       data.push({
         'id': answer_key,
         'value': answer_counts[answer_key],
-        'label': answer_text[answer_key],
+        'label': label,
         'self': answer_key == personal_ann
       });
     });
@@ -224,7 +241,6 @@ function show_results(document_pk, relation_pk) {
           .style('background-color', function(d, i) { return color(i); });
 
     var bold = function(d, i) {
-      console.log(i, d);
       if( i == 1 && d['self'] ) {
         return '<strong>';
       } else if( i == 2 && d['self'] ) {

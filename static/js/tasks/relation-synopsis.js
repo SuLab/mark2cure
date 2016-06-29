@@ -9,8 +9,8 @@ Relations = Backbone.Collection.extend({
 });
 
 var color_scale = d3.scale.linear()
-    .domain([0, 1])
-    .range(['red', 'green']);
+    .domain([0, .5, 1])
+    .range(['red', 'yellow', 'green']);
 
 RelationItem = Backbone.Marionette.ItemView.extend({
   template: _.template('&#8226;'),
@@ -67,6 +67,12 @@ RelationItem = Backbone.Marionette.ItemView.extend({
   }
 });
 
+var lookup_kinds = {
+  'g': 'gene',
+  'd': 'disease',
+  'c': 'drug'
+}
+
 SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
   template: '#relation-synopsis-template',
   childView: RelationItem,
@@ -77,6 +83,7 @@ SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
   },
   initialize: function(evt) {
     var self = this;
+
     Synopsis['convoChannel'].on('triggerDisplay', function(opts) {
       var model = opts.model;
       self.ui.feedback.html('');
@@ -87,6 +94,9 @@ SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
       var answer_text = {};
       var personal_ann = '';
 
+      var c_1_broken = "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy";
+      var c_2_broken = "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer";
+
       _.each(answers, function(a) {
         answer_text[a.answer.id] = a.answer.text;
         if(a['self']) { personal_ann = a.answer.id; }
@@ -94,10 +104,19 @@ SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
 
       var data = [];
       _.each(_.keys(answer_counts), function(answer_key) {
+
+        var label = answer_text[answer_key];
+
+        if(answer_key == c_1_broken) {
+          label = model.get('concept_a')['text'] + label + lookup_kinds[model.get('kind'[0])] + ' concept';
+        } else if(answer_key == c_2_broken) {
+          label = model.get('concept_b')['text'] + label + lookup_kinds[model.get('kind')[2]] + ' concept';
+        }
+
         data.push({
           'id': answer_key,
           'value': answer_counts[answer_key],
-          'label': answer_text[answer_key],
+          'label': label,
           'self': answer_key == personal_ann
         });
       });
