@@ -88,7 +88,10 @@ SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
   childViewContainer: 'ul#relation-synopsis-bar',
   ui: {
     'feedback': '#feedback-next-action-area',
-    'feedback_list': '#chart-list'
+    'feedback_list': '#chart-list',
+    'context': '#chart-context',
+    'concept_a': '#concept-a',
+    'concept_b': '#concept-b',
   },
   initialize: function(evt) {
     var self = this;
@@ -97,6 +100,10 @@ SynopsisCompositeView = Backbone.Marionette.CompositeView.extend({
       var model = opts.model;
       self.ui.feedback.html('');
       self.ui.feedback_list.html('');
+
+      self.ui.concept_a.html(model.get('concept_a')['text']);
+      self.ui.concept_b.html(model.get('concept_b')['text']);
+      self.ui.context.show();
 
       var answers = model.get('answers');
       var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
