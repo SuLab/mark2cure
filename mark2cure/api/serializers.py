@@ -65,8 +65,10 @@ class QuestSerializer(serializers.ModelSerializer):
         # Don't pass the 'fields' arg up to the superclass
         context = kwargs.pop('context', {})
         user = context.get('user', None)
-        if user.is_authenticated():
+        if user.is_authenticated() and Level.objects.filter(user=user, task_type='e').exists():
             self.user_highest_level = Level.objects.filter(user=user, task_type='e').first().level
+        else:
+            self.user_highest_level = 0
 
         # Instantiate the superclass normally
         super(QuestSerializer, self).__init__(*args, **kwargs)

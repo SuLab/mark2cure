@@ -17,8 +17,16 @@ import json
 
 @login_required
 def route(request):
-    user_level = Level.objects.filter(user=request.user, task_type='e').first().level
+    # Prioritize relation training over Entity Recognition for routing
+    if Level.objects.filter(user=request.user, task_type='r').exists():
+        relation_level = Level.objects.filter(user=request.user, task_type='r').first()
 
+        if relation_level.level == 1:
+            return redirect(reverse('training:relation-training', kwargs={'part_num': 2, 'step_num': 1}))
+        elif relation_level.level == 2:
+            return redirect(reverse('training:relation-training', kwargs={'part_num': 3, 'step_num': 1}))
+
+    user_level = Level.objects.filter(user=request.user, task_type='e').first().level
     if user_level <= 3:
         task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
     else:
@@ -117,13 +125,15 @@ def relation_training(request, part_num=1, step_num=1):
     request.session['initial_training'] = 'r'
 
     if part_num == '2' and step_num == '1':
-        Level.objects.create(user=request.user, task_type='r', level=1, created=timezone.now())
+        if request.user.is_authenticated():
+            Level.objects.get_or_create(user=request.user, task_type='r', level=1, created=timezone.now())
 
     if part_num == '3' and step_num == '1':
-        Level.objects.create(user=request.user, task_type='r', level=2, created=timezone.now())
+        if request.user.is_authenticated():
+            Level.objects.get_or_create(user=request.user, task_type='r', level=2, created=timezone.now())
 
     if part_num == '3' and step_num == '25':
-        Level.objects.create(user=request.user, task_type='r', level=3, created=timezone.now())
+        Level.objects.get_or_create(user=request.user, task_type='r', level=3, created=timezone.now())
 
     ctx = {
         'relation_data': json_data

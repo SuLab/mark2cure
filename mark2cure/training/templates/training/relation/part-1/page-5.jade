@@ -12,10 +12,12 @@ block intro-content
       p.text-muted
         strong The 'submit' button will not be active until a relationship is selected
 
-
   .row.m-t-md
     .col-xs-12.text-center
-      a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=2 step_num=1 %}').btn.btn-primary Submit
+      - if user.is_authenticated
+        a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=2 step_num=1 %}').btn.btn-primary Submit
+      - else
+        a(id='next-button', style='display: none;', href='{% url "account_signup" %}').btn.btn-primary Submit
 
 
 block navigation
