@@ -63,8 +63,8 @@ RelationItem = Backbone.Marionette.ItemView.extend({
     var agree = _.filter(answers, function(obj) { return obj['answer']['id'] == user_answer_id }).length
     var score = agree / responses;
     var color = '#45BF55';
-    if(score < .5) { color = '#FFE11A'; }
-    if(score < .25) { color = '#B9121B'; }
+    if(score <= .5) { color = '#FFE11A'; }
+    if(score <= .25) { color = '#B9121B'; }
 
     this.$el.css({'color': color});
 
