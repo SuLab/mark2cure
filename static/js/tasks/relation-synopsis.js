@@ -37,27 +37,36 @@ RelationItem = Backbone.Marionette.ItemView.extend({
   },
 
   onRender: function(evt) {
+    /*
+      # Responses, # Agree, Color, %
+      1, 1, Green, 100
+      2, 2, Green, 100
+      2, 1, Yellow, 50
+      3, 3, Green, 100
+      3, 2, Green, 66.666,
+      3, 1, Yellow, 33
+      4, 1, Red, 25
+      5, 5, Green, 100
+      5, 4, Green, 80
+      5, 3, Green, 60
+      5, 2, Yellow, 40
+      5, 1, Red, 20
+
+      Red = 0 - 25
+      Yellow = 26 - 50
+      Green = 51 - 100
+    */
     var answers = this.model.get('answers');
-    var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
+
+    var responses = answers.length;
     var user_answer_id = _.findWhere(answers, {self: true })['answer']['id'];
+    var agree = _.filter(answers, function(obj) { return obj['answer']['id'] == user_answer_id }).length
+    var score = agree / responses;
+    var color = '#45BF55';
+    if(score < .5) { color = '#FFE11A'; }
+    if(score < .25) { color = '#B9121B'; }
 
-    var answer_count_nums = _.sortBy(answer_counts, function(d) { return -d['value'] });
-    var sum = _.reduce(answer_count_nums, function(memo, num){ return memo + num; }, 0);
-
-    var arr = Object.keys( answer_counts ).map(function ( key ) { return answer_counts[key] });
-    var majority_total_votes = Math.max.apply( null, arr );
-    var majority_answer_id = Object.keys(answer_counts).filter(function(x){ return answer_counts[x] == majority_total_votes; })[0];
-
-    var score = .5;
-    /* you match majority and enough data to give green */
-    if (user_answer_id == majority_answer_id && majority_total_votes/sum >= 0.51){
-      score = 1;
-
-    /* you do not match majority and majority did pretty well */
-    } else if ( user_answer_id != majority_answer_id && majority_total_votes/sum >= 0.51 ) {
-      score = 0;
-    }
-    this.$el.css({'color': color_scale(score)});
+    this.$el.css({'color': color});
 
     if(this.model.get('focus') == true) {
       this.$el.css({'borderBottom': '4px solid gray'});
