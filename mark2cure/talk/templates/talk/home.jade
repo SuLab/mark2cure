@@ -22,22 +22,36 @@ block content
   .container-fluid.talk
     .row
       .col-xs-10.col-xs-offset-1
-
-        .row
-          .col-xs-12.foot-space
-            h2.pull-left #{doc}
-            a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{doc.document_id}}', target='_blank', style='margin-top: 10px; margin-left: 10px;').btn.btn-info
-              | PUBMED  <i class="fa fa-external-link fa-lg"></i>
+        h4(style='color:black;').text-center #{doc}
 
         .row
           .col-xs-12
-            p.text-muted Mouseover to see other users' annotations:
-            ul.pagination
-              - for user_pk in doc.contributors
-                li
-                  a(data-userpk='{{user_pk}}') #{user_pk}
+            ul(role='tablist').nav.nav-tabs
+              li.nav-item
+                a(data-toggle="tab", href="#er-results", role="tab").nav-link.active Entity Recognition
+              li.nav-item
+                a(data-toggle="tab", href="#r-results", role="tab").nav-link Relation
+              li.nav-item
+                a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{doc.document_id}}', target='_blank').nav-link PubMed  <i class="fa fa-external-link"></i>
 
-            .paragraphs.micro
+
+            div.tab-content
+              div(id="er-results", role="tabpanel").tab-pane.active
+                .row.m-t-md
+                  .col-xs-10.col-xs-offset-1
+                    p.text-muted Mouseover to see other users' annotations:
+                    ul.pagination
+                      - for user_pk in doc.contributors
+                        li
+                          a(data-userpk='{{user_pk}}') #{user_pk}
+
+                    .paragraphs.micro
+
+              div(id="r-results", role="tabpanel").tab-pane
+                .row(style='min-height: 300px;').m-t-md
+                  .col-xs-10.col-xs-offset-1
+                    #relation-synopsis-insert
+
 
     .row
       .col-xs-12
@@ -124,6 +138,18 @@ block content
                     input(type="submit", name="submit", value="Post").btn.btn-primary.pull-right
 
 block post-footer
+  script(type='html/template', id='relation-synopsis-template')
+    p.lead.text-center Click on the circles to see how your answers compared to the community's.
+    ul#relation-synopsis-bar.list-unstyled.list-inline
+    #feedback-next-action-area
+    ul#chart-list.list-unstyled
+
+  script.
+    var relation_task_settings = {
+      'document_pk': "{{ doc.pk }}",
+    };
+  script(src="/static/js/tasks/relation-synopsis.js")
+
   script.
     var self_data, passages, regions;
 
