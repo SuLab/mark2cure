@@ -24,6 +24,15 @@
   border-bottom: 8px solid $color_gray_lightest;
 }
 
+li {
+  .box {
+    float: left;
+    height: 20px;
+    width: 20px;
+    margin: 2px 10px;
+  }
+}
+
 #feedback-next-action-area {
 
   .bar-component {
