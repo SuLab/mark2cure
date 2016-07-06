@@ -17,9 +17,7 @@ class Point(models.Model):
     amount = models.FloatField()
 
     updated = models.DateTimeField(auto_now=True)
-    # (TODO) Put back into place
-    # created = models.DateTimeField(auto_now_add=True)
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('-updated',)

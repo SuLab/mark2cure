@@ -55,11 +55,10 @@ def award_training(qualification_level, user):
     UserQuestRelationship.objects.create(task=task, user=user, completed=True)
 
     # Assign points to a the specific training level
-    Point.objects.create(user=user,
-                         amount=task.points,
-                         content_type=ContentType.objects.get_for_model(task),
-                         object_id=task.id,
-                         created=timezone.now())
+    Point.objects.get_or_create(user=user,
+                                amount=task.points,
+                                content_type=ContentType.objects.get_for_model(task),
+                                object_id=task.id)
 
     Level.objects.create(user=user, task_type='e', level=task.provides_qualification, created=timezone.now())
 
