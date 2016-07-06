@@ -129,38 +129,35 @@ block content
 
         h5 top contributor word cloud:
         p
-        <div id="vis"></div>
-        <form id="form" style="display: none">
-        <p id="status"></p>
-        <div>
-        <div id="presets"></div>
-        <div id="custom-area">
-        <p>
-        <p><textarea id="text"> {{ username_list }}
-        </textarea>
-        <button id="go" type="submit"></button>
-        </div>
-        </div>
-        <hr>
-        <div>
-        <p><input type="number" value="250" min="1" id="max">
-        <p><input type="checkbox" id="per-line">
-        <!--<p><label for="colours">colours:</label> <a href="#" id="random-palette">get random palette</a>-->
-        <p>
-        </div>
-        <p>
-        <input type="radio" name="spiral" id="archimedean" value="archimedean" checked="checked">
-        <input type="radio" name="spiral" id="rectangular" value="rectangular">
-        <p>
-        <input type="radio" name="scale" id="scale-log" value="log" checked="checked">
-        <p><input type="text" id="font" value="impact">
-        <div id="angles">
-        <p><input type="number" id="angle-count" value="30" min="1"> <label for="angle-count">orientations</label><input type="number" id="angle-from" value="-0" min="-0" max="0"> °
-        <input type="number" id="angle-to" value="0" min="-0" max="0"> °
-        </div>
-        <hr>
-        <p style="float: left">copyright &copy; <a href="http://www.jasondavies.com/">jason davies</a> | <a href="../privacy/">privacy policy</a>. the generated word clouds may be used for any purpose.
-        </form>
+
+        #vis
+
+        form#form(style="display: none")
+          p#status
+          div
+            #presets
+            #custom-area
+              p
+                textarea#text {{ username_list }}
+              button#go(type="submit")
+          hr
+          div
+            p
+              input#max(type="number", value="250", min="1")
+            p
+              input#per-line(type="checkbox")
+
+          p
+            input(type="radio", name="spiral", id="archimedean", value="archimedean", checked="checked")
+            input(type="radio", name="spiral", id="rectangular", value="rectangular")
+            input(type="radio", name="scale", id="scale-log", value="log", checked="checked")
+            input(type="text", id="font", value="impact")
+          #angles
+            p
+              input(type="number", id="angle-count", value="30", min="1")
+              label(for="angle-count") orientations
+              input(type="number", id="angle-from", value="-0", min="-0", max="0") °
+              input(type="number", id="angle-to", value="0", min="-0", max="0") °
 
 
 block post-footer
