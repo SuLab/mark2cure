@@ -100,7 +100,7 @@ li {
   .chemical { border: 16px solid $color_treatment; }
 
   .concept.incorrect {
-    border: 16px solid red;
+    border: 16px solid $color_error_red;
   }
 
   .concept {
