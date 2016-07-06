@@ -82,6 +82,8 @@ block content
               #{user_profile_form.quote|as_vertical_form}
 
           .row
-            .col-sm-3.col-sm-offset-7
-              button(type='submit').btn.btn-primary.btn-block.pull-right Update
+            .col-xs-6.col-xs-offset-0.col-sm-3.col-sm-offset-6.col-md-2
+              a(href='{% url "userprofile:public-profile" username=user.username %}').btn.btn-default.btn-block Cancel
+            .col-xs-6.col-xs-offset-0.col-sm-3.col-sm-offset-0.col-md-2
+              button(type='submit').btn.btn-primary.btn-block Update
 
