@@ -63,7 +63,7 @@ block content
                   pass
                 - else
                   li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
-                        a(href='/group/{{ group.stub}}/' target='_blank')
+                    a(href='{% url "common:group" group_stub=group.stub %}' target='_blank')
                           - if group.percentage_complete > 99
                             h2
                               i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
@@ -145,10 +145,10 @@ block js-libs
 
   // Homepage specific requirements
   // Other Various JS libs
-  script(src="/static/js/libs/jquery-ui.min.js")
-  script(src="/static/js/libs/sly.min.js")
+  script(src='#{STATIC_URL}js/libs/jquery-ui.min.js')
+  script(src='#{STATIC_URL}js/libs/sly.min.js')
   // Using sly lib (for 'completed/incomplete document carousel')
-  script(src="/static/js/pages/landing2.js")
+  script(src='#{STATIC_URL}js/pages/landing2.js')
 
 
 block post-footer
