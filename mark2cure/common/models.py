@@ -93,6 +93,7 @@ class Group(models.Model):
         return dqr_count
 
     def top_five_contributors(self):
+        # (TODO) have this return a query set of User models
         """returns a user name list for the group"""
         uqrs = UserQuestRelationship.objects.filter(task__group=self)
         username_list = []

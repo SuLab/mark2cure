@@ -16,6 +16,10 @@ $color_red:             #E85997;
 $color_error_red:       #E64C66;
 $color_yellow:          #FEFF02;
 
+// var color = '#45BF55';
+// if(score <= .5) { color = '#FFE11A'; }
+// if(score <= .25) { color = '#B9121B'; }
+
 $color_disease:         #D1F3FF;
 $color_gene:            #B1FFA8;
 $color_treatment:       #FFD1DC;
@@ -40,6 +44,7 @@ $color_treatment:       #FFD1DC;
 @import 'pages/dashboard';
 @import 'pages/svg/shared';
 @import 'pages/instructions';
+@import 'pages/group_home';
 
 @import 'pages/task/relation';
 @import 'pages/training/relation/general';

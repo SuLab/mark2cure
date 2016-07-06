@@ -292,8 +292,8 @@ var unicodePunctuationRe = "!#%-*,/:;?\\[\\]{}\xa1\xa7\xab\xb6\xb7\xbb\xbf\u037e
     w.fillStyle = "red", w.textAlign = "center", t.cloud = e
 }("undefined" == typeof exports ? d3.layout || (d3.layout = {}) : exports);
 var fill = d3.scale.category20b(),
-    w = 960,
-    h = 600,
+    w = 600,
+    h = 400,
     words = [],
     max, scale = 1,
     complete = 0,

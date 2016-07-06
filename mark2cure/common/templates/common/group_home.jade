@@ -11,32 +11,6 @@ block header
     include includes/header
 
 
-  <style>
-  body {
-  position: relative;
-  font-family: "Helvetica Neue", sans-serif;
-  width: 960px;
-  margin: auto;
-  margin-bottom: 1em;
-  margin-top: 20px;
-  }
-  #presets a { border-left: solid #666 1px; padding: 0 10px; }
-  #presets a.first { border-left: none; }
-  #keyword { width: 300px; }
-  #fetcher { width: 500px; }
-  #keyword, #go { font-size: 1.5em; }
-  #text { width: 100%; height: 100px; }
-  p.copy { font-size: small; }
-  #form { font-size: small; position: relative; }
-  hr { border: none; border-bottom: solid #ccc 1px; }
-  a.active { text-decoration: none; color: #000; font-weight: bold; cursor: text; }
-  #angles line, #angles path, #angles circle { stroke: #666; }
-  #angles text { fill: #333; }
-  #angles path.drag { fill: #666; cursor: move; }
-  #angles { text-align: center; margin: 0 auto; width: 350px; }
-  #angles input, #max { width: 42px; }
-  </style>
-
 block content
 
   .container
@@ -99,102 +73,110 @@ block content
               .col-md-10.col-md-offset-1
                 #group-selection
 
-        h5 top five doc set contributors:
-        ul
-          - for name in top_five
-            li
-              p {{ name }}
+    .row
+      .col-md-5.col-md-offset-1
+        .card
+          .card-header
+            | Top doc set contributors:
 
-        h5 total number of doc set contributors:
-        p {{ group.total_contributors }}
+          .card-block
+            ul
+              - for name in top_five
+                li
+                  p {{ name }}
 
-        h5 total docs in doc set:
-        p {{ group.doc_count }}
+      .col-md-5
+        .card
+          .card-header
+            | Group Statistics
 
-        h5 current average f-score:
-        p {{ group.current_avg_f|floatformat:3 }}
+          .card-block
+            ol.list-unstyled
+              li
+                p Total number of contributors: {{ group.total_contributors }}
 
-        h5 doc set start date:
-        p {{ start_date }}
+              li
+                p Total documents: {{ group.doc_count }}
 
-        h5 doc set end date:
-        - if group.enabled
-          p in progress
-        - else
-          p {{ end_date }}
+              li
+                p Current average f-score: {{ group.current_avg_f|floatformat:3 }}
 
-        h5 total doc set annotations:
-        p {{ group.total_annotation_count }}
+              li
+                p Start date: {{ start_date }}
+
+              li
+                p End date:
+                  - if group.enabled
+                    |  in progress
+                  - else
+                    |  {{ end_date }}
+
+              li
+                p Total annotations: {{ group.total_annotation_count }}
 
 
-        h5 top contributor word cloud:
-        p
+    .row
+      .col-md-10.col-md-offset-1.m-t-md
+        p.lead Top contributor word cloud:
 
         #vis
 
-        form#form(style="display: none")
-          p#status
-          div
-            #presets
-            #custom-area
-              p
-                textarea#text {{ username_list }}
-              button#go(type="submit")
-          hr
-          div
-            p
-              input#max(type="number", value="250", min="1")
-            p
-              input#per-line(type="checkbox")
+        form#form(style='display:none;')
+          #custom-area
+            textarea#text {{ username_list }}
+            button#go(type="submit").btn.btn-default Go
 
-          p
-            input(type="radio", name="spiral", id="archimedean", value="archimedean", checked="checked")
-            input(type="radio", name="spiral", id="rectangular", value="rectangular")
-            input(type="radio", name="scale", id="scale-log", value="log", checked="checked")
-            input(type="text", id="font", value="impact")
-          #angles
-            p
-              input(type="number", id="angle-count", value="30", min="1")
-              label(for="angle-count") orientations
-              input(type="number", id="angle-from", value="-0", min="-0", max="0") °
-              input(type="number", id="angle-to", value="0", min="-0", max="0") °
+          div.form-group
+            input#max(type="number", value="250", min="1").form-control
+            input#per-line(type="checkbox").form-control
+
+          div.form-group
+            input#archimedean(type="radio", name="spiral", value="archimedean", checked="checked")
+            input#rectangular(type="radio", name="spiral", value="rectangular")
+            input#scale-log(type="radio", name="scale", value="log", checked="checked")
+            input#font(type="text", value="impact")
+
+          #angles.form-group
+            input(type="number", id="angle-count", value="30", min="1")
+            label(for="angle-count") orientations
+            input(type="number", id="angle-from", value="-0", min="-0", max="0") °
+            input(type="number", id="angle-to", value="0", min="-0", max="0") °
 
 
 block post-footer
     #fb-root
-    <script id='quest-icon-template' type='text/template'>
-    <div class='row'>
-    <div class='col-xs-12 text-center'>
-    <% if(d.progress.completed) { %>
-    <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
-    <% } else if (d.user.completed) { %>
-    <span class='fa fa-check' title='You have completed this Quest.'></span>
-    <% } else if (!d.user.enabled) { %>
-    <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
-    <% } else { %>
-    <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
-    <% } %>
-    </div>
-    </div>
-    <% if(d.user.enabled) { %>
-    <div class='row'>
-    <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
-    <progress value='<%- progress %>' max='100' class='progress'>
-    <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
-    </progress>
-    </div>
-    </div>
-    <% } %>
-    </script>
 
-    <script id='group-template' type='text/template'>
-    <h3><%- name %></h3>
-    <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-    <div class='col-xs-12 text-center'>
-    <h2 class='quest-loading'>Loading...</h2>
-    </div>
-    </div>
-    </script>
+    script#quest-icon-template(type='text/template')
+      <div class='row'>
+      <div class='col-xs-12 text-center'>
+      <% if(d.progress.completed) { %>
+      <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
+      <% } else if (d.user.completed) { %>
+      <span class='fa fa-check' title='You have completed this Quest.'></span>
+      <% } else if (!d.user.enabled) { %>
+      <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
+      <% } else { %>
+      <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
+      <% } %>
+      </div>
+      </div>
+      <% if(d.user.enabled) { %>
+      <div class='row'>
+      <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
+      <progress value='<%- progress %>' max='100' class='progress'>
+      <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
+      </progress>
+      </div>
+      </div>
+      <% } %>
+
+    script#group-template(type='text/template')
+      <h3><%- name %></h3>
+      <div id='group-<%- pk %>' class='row head-space paragraph-box'>
+      <div class='col-xs-12 text-center'>
+      <h2 class='quest-loading'>Loading...</h2>
+      </div>
+      </div>
 
     script.
       $( document ).ready(function() {
@@ -206,5 +188,5 @@ block post-footer
       });
       pk = #{group.pk};
 
-    script(src='/static/js/pages/group_home.js')
-    script(src='/static/js/tasks/cloud.js')
+    script(src='#{STATIC_URL}js/pages/group_home.js')
+    script(src='#{STATIC_URL}js/pages/cloud.js')
