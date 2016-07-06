@@ -21,14 +21,14 @@ $color_gene:            #B1FFA8;
 $color_treatment:       #FFD1DC;
 
 
-@import "compass/css3";
-@import "compass/utilities";
-@import "compass";
+@import 'compass/css3';
+@import 'compass/utilities';
+@import 'compass';
 
-@import "font-awesome";
+@import 'font-awesome';
 @import 'fonts';
 
-@import "bootstrap/bootstrap";
+@import 'bootstrap/bootstrap';
 
 @import 'includes/header';
 @import 'includes/footer';
