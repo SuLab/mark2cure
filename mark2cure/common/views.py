@@ -55,8 +55,10 @@ def why_mark2cure(request):
     return TemplateResponse(request, 'common/why-i-mark2cure.jade', {'profiles': query})
 
 
-@login_required
 def dashboard(request):
+    if not request.user.is_authenticated():
+        return redirect('common:home')
+
     # We redirect user to the training route if their skill is not level 7
     available_tasks = request.user.profile.unlocked_tasks()
     if len(available_tasks) == 0:
