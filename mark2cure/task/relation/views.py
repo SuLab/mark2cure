@@ -15,8 +15,8 @@ from rest_framework.response import Response
 from ...score.models import Point
 from ...document.models import Document, View, Annotation
 
-from .models import Relation, RelationAnnotation
-from .serializers import RelationSerializer, RelationFeedbackSerializer, RelationCereal
+from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
+from .serializers import RelationSerializer, RelationCereal
 
 
 @login_required
@@ -201,8 +201,14 @@ def document_analysis(request, document_pk, relation_pk=None):
 
     c.execute(cmd_str)
     rel_tasks = []
+
+    # (TODO) Ugly patch for #189 (https://github.com/SuLab/mark2cure/issues/189)
+    # Intended to mirror behavior at mark2cure/task/relation/serializers.pyL55
+    cdr_query = ConceptDocumentRelationship.objects.filter(document=document)
     for x in c.fetchall():
-        rel_tasks.append(x)
+        cdr1 = cdr_query.filter(concept_text__concept_id=x[3]).first()
+        cdr2 = cdr_query.filter(concept_text__concept_id=x[4]).first()
+        rel_tasks.append((x[0], x[1], x[2], x[3], x[4], cdr1.concept_text.text, cdr2.concept_text.text))
 
     cmd_str = """
         SELECT  `document_document`.`id` as `doc_pk`,
@@ -241,12 +247,4 @@ def document_analysis(request, document_pk, relation_pk=None):
 
     serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
     return Response(serializer.data)
-
-
-@login_required
-@api_view(['GET'])
-def fetch_relation_feedback(request, relation_pk):
-    relation = get_object_or_404(Relation, pk=relation_pk)
-    serializer = RelationFeedbackSerializer([relation], many=True, context={'user': request.user})
-    return Response(serializer.data[0])
 
