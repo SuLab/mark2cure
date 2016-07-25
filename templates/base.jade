@@ -40,7 +40,7 @@ head
       title Mark2Cure
 
     block css-libs
-      link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css')
+      link(rel='stylesheet', href='#{STATIC_URL}css/font-awesome.min.css')
       link(rel='stylesheet', href='#{STATIC_URL}css/style.css')
 
   body
@@ -87,7 +87,7 @@ head
 
       // Other Various JS libs
       script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
-      script(src='#{STATIC_URL}js/libs/d3.v3.js')
+      script(src='#{STATIC_URL}js/libs/d3.min.js')
       script(src='#{STATIC_URL}js/libs/md5.js')
       script(src='#{STATIC_URL}js/libs/moment.js')
       script(src='#{STATIC_URL}js/libs/selectize.js')
@@ -138,7 +138,6 @@ head
         linesOfContext: 30
       };
       Raven.config('{% sentry_public_dsn %}').install()
-
       Raven.setUser({
         email: "{{ request.user.email }}",
         id: "{{ request.user.pk }}"

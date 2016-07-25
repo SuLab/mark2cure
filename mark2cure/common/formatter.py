@@ -3,8 +3,9 @@ from django.contrib.contenttypes.models import ContentType
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
-import datetime
 import xmltodict
+import itertools
+import datetime
 import json
 import nltk
 
@@ -59,19 +60,47 @@ def bioc_as_json(writer):
         return json.dumps(o)
 
 
+# R & S are tuple of (start position, stop position)
+def are_separate(r, s):
+    return r[1] < s[0] or s[1] < r[0]
+
+
+def are_overlapping(r, s):
+    return not(r[1] < s[0] or s[1] < r[0])
+
+
+def clean_passage_df_overlaps(df):
+    df.reset_index(inplace=True)
+
+    res = []
+    for index, row in df.iterrows():
+        loc_splt_str = [int(x) for x in row['location'].split(':')]
+        loc_span = (loc_splt_str[0], loc_splt_str[0] + loc_splt_str[1])
+        res.append((loc_span, index))
+
+    for x, y in itertools.combinations(res, 2):
+        span_a, span_a_row = x
+        span_b, span_b_row = y
+        if are_overlapping(span_a, span_b):
+            df.drop(span_b_row, inplace=True)
+
+    return df
+
+
 def pubtator_df_as_writer(writer, df):
     bioc_doc = writer.collection.documents[0]
     approved_types = ['Disease', 'Gene', 'Chemical']
 
-    for bioc_passage in bioc_doc.passages:
-        offset = int(bioc_passage.offset)
+    i = 0
+    for offset, group_df in df.groupby(['offset']):
+        bioc_passage = bioc_doc.passages[i]
+        i = i + 1
 
         bioc_passage.annotations = []
-        # (TODO) Abstract offset is less than offset in the input df; odd
-        # my solution is to not create a smaller tmp df; not really necessary
-        tmp_df = df
 
-        for row_idx, row in tmp_df.iterrows():
+        group_df = clean_passage_df_overlaps(group_df)
+
+        for row_idx, row in group_df.iterrows():
 
             if row['ann_type'] in approved_types:
                 annotation = BioCAnnotation()

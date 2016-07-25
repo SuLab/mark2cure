@@ -1,0 +1,26 @@
+#presets {
+  a { border-left: solid #666 1px; padding: 0 10px; }
+  a.first { border-left: none; }
+}
+
+#angles {
+  text-align: center;
+  margin: 0 auto;
+  width: 350px;
+
+  text {
+    fill: #333;
+  }
+
+  path.drag {
+    fill: #666; cursor: move;
+  }
+
+  input, #max {
+    width: 42px;
+  }
+
+  line, path, circle {
+    stroke: #666;
+  }
+}

@@ -465,7 +465,10 @@ WordView = Backbone.Marionette.ItemView.extend({
 
   mouseover : function(evt) {
     evt.stopPropagation();
-    if(this.model.get('disabled')) { this.$el.css({'color': '#000', 'cursor': 'default'}); return; };
+    if(this.model.get('disabled')) {
+      this.$el.css({'color': '#000'});
+      return;
+    };
     var word = this.model,
         words = word.collection;
 

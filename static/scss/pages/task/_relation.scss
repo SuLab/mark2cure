@@ -100,7 +100,7 @@ li {
   .chemical { border: 16px solid $color_treatment; }
 
   .concept.incorrect {
-    border: 16px solid red;
+    border: 16px solid $color_error_red;
   }
 
   .concept {
@@ -167,7 +167,7 @@ li {
   }
   #relation.relation-go-back:hover {
     color: #fff;
-    background-color: #D92B24;
+    background-color: $color_error_red;
   }
 
   .list-group-item,

@@ -124,7 +124,7 @@ block post-footer
         'success': function(data) {
           _.each(data, function(v) {
             if(v.enabled) {
-              var template = _.template("<div class='row m-t-md'><div class='col-xs-12'><h3><a href='/group/<%- stub %>/'><%- name %></a></h3><a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a></div><div id='group-<%- pk %>' class='col-xs-12 paragraph-box'><h2 class='quest-loading text-cente'>Loading...</h2></div></div>");
+              var template = _.template("<div class='row m-t-md'><div class='col-xs-12'><h3><a href='/group/<%- stub %>/'><%- name %></a></h3><a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a></div><div id='group-<%- pk %>' class='col-xs-12 paragraph-box'><p class='quest-loading text-center'>Loading...</p></div></div>");
               $('#group-selection').append(template(v));
 
               $.ajax({

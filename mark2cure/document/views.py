@@ -78,6 +78,7 @@ def read_pubtator_new_bioc(request, pubmed_id):
     bioc_document = doc.as_bioc_with_pubtator_annotations()
     writer.collection.add_document(bioc_document)
 
+    # (TODO) WARNING This second passage offset is +1 more than pubtator / supposed to be
     df = doc.as_pubtator_annotation_df()
 
     # (TODO) Consolidate into a single function for reuse with task.relation.task.import_concepts

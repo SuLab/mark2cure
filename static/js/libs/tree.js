@@ -69,6 +69,7 @@ RelationView = Backbone.Marionette.ItemView.extend({
   },
 });
 
+var incorrect_id_arr = ["zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy", "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer"];
 
 RelationCompositeView = Backbone.Marionette.CompositeView.extend({
   template: '#tree-template',
@@ -105,8 +106,12 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
   hoverIncorrect: function(evt) {
     $(evt.target).parent().addClass('incorrect');
   },
+
   hoverOutIncorrect: function(evt) {
-    $(evt.target).parent().removeClass('incorrect');
+    var choice = this.options['choice'];
+    if( !_.contains(incorrect_id_arr, choice.id) ) {
+      $(evt.target).parent().removeClass('incorrect');
+    }
   },
 
   resetRelationship: function(evt) {
@@ -116,6 +121,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
   c1Error: function(evt) {
     Tree['convoChannel'].trigger('error', 'c_1');
   },
+
   c2Error: function(evt) {
     Tree['convoChannel'].trigger('error', 'c_2');
   },
@@ -124,9 +130,6 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
     var self = this;
     var choice = this.options['choice'];
     var concepts = this.options['concepts'];
-    /*
-     * console.log('[RelationCompositeView onRender] Choice:', choice);
-     */
 
     if(this.options.first_draw) {
       if( _.has(concepts['c1'], 'fadeIn') ) {
@@ -151,9 +154,11 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
       if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
         this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
+        this.ui.c1.addClass('incorrect');
 
       } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
         this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
+        this.ui.c2.addClass('incorrect');
 
         /* Training specific
          * (TODO) get out of here
@@ -169,7 +174,7 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
 
     if(choice || this.collection.parentRelation) {
       this.ui.relation.removeClass('disabled');
-      self.ui.relation.addClass('relation-go-back');
+      this.ui.relation.addClass('relation-go-back');
     }
 
   }

@@ -2,7 +2,7 @@
   nav.navbar.navbar-default
     div.container
       div.navbar-header
-        a.navbar-brand(href="/")
+        a.navbar-brand(href='{% url "common:home" %}')
           img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
 
       div(id="navbar")

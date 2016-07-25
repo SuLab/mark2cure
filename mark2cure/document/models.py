@@ -110,11 +110,6 @@ class Document(models.Model):
                                 uid_type = key
                                 uid = infons.get(uid_type, None)
 
-                        # print infons.keys()
-                        # print infons
-                        # print uid_type, uid, '('+str(annotation_type)+')'
-                        # print ' - '*40
-
                         pubtator_arr.append({
                             'uid': uid,
                             'source': uid_type,

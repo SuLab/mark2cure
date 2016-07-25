@@ -32,6 +32,18 @@ nav#header-auth-generic(role='navigation').navbar.navbar-default
                     li
                       a(href='{% url "instructions:home" %}')
                         p Instructions
+          - else
+            .row
+              .col-xs-6.col-xs-offset-6.col-sm-5.col-sm-offset-7
+                ul.list-unstyled.site-links
+                  li
+                    a(href='{% url "account_login" %}')
+                      p Login
+
+                  li
+                    a(href='{% url "common:get-started" %}')
+                      p Get Started
+
 
     .row
       .col-xs-10.col-xs-offset-1

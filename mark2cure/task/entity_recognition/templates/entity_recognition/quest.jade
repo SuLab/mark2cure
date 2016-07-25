@@ -95,7 +95,7 @@ block content
               | Yes, Let's Talk
 
           .col-xs-6
-            a(href='/task/entity-recognition/quest/{{task.pk}}/').button.btn.btn-primary.btn-block.done
+            a(href='{% url "task-entity-recognition:quest-home" quest_pk=task.pk %}').button.btn.btn-primary.btn-block.done
               | Next Doc
 
 
