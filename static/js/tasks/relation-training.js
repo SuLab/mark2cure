@@ -70,7 +70,7 @@ var add_relation_classes = function(current_relationship) {
   }
   if( current_relationship.get('concepts')['c1']['text'] == 'citizen scientist' ) {
     $('#c1 .not_correct_stype').text('is not a helpful person?');
-  }  
+  }
   if( current_relationship.get('concepts')['c2']['text'] == 'Biomedical research' ) {
     $('#c2 .not_correct_stype').text('is not a field of study?');
   }

@@ -9,23 +9,23 @@ block content
     .modal-dialog
       .modal-content
         .modal-header
-          h2.text-center The Genes Concept includes more than just gene names
-          p.lead.text-center <strong>Do NOT mark Diseases Concept terms in this tutorial.</strong>
+          h2.text-xs-center The Genes Concept includes more than just gene names
+          p.lead.text-xs-center <strong>Do NOT mark Diseases Concept terms in this tutorial.</strong>
 
         .modal-body
 
           .card
             .card-header
-              h3.text-center Acquire the Gene Marking Skill by learning the Genes Concept.
+              h3.text-xs-center Acquire the Gene Marking Skill by learning the Genes Concept.
 
             .card-block
-              p.text-center The Genes Concept includes:
-              ul.list-unstyled.list-inline.text-center
-                li <strong>Genes</strong>
+              p.text-xs-center The Genes Concept includes:
+              ul.list-unstyled.list-inline.text-xs-center
+                li.list-inline-item <strong>Genes</strong>
                   ul.list-unstyled
                     li Gene Names
                     li Gene Symbols
-                li <strong>Gene Products</strong>
+                li.list-inline-item <strong>Gene Products</strong>
                   ul.list-unstyled
                     li Proteins
                     li MicroRNAs
@@ -34,24 +34,24 @@ block content
           button(type="button", data-dismiss="modal").btn.btn-primary Close
 
   .container
-    .row.m-t-md
+    .row.m-t-1
       .col-md-12
         block step-instructions
           h2 A <strong>disease</strong> is a particular abnormal, pathological condition that affects part or all of an organism
           p In the box below, mark every instance of the disease (rule #1)
 
-    #partner(style='display: none;').row.m-t-md
+    #partner(style='display: none;').row.m-t-1
       .row
         .col-md-4.col-md-offset-4
           .alert.alert-success
-            h2.text-center Good job!
+            h2.text-xs-center Good job!
 
-    .row.m-t-md
+    .row.m-t-1
       #quest-alerts.col-md-10.col-md-offset-1
       #quest.col-md-10.col-md-offset-1.paragraph-box
         block paragraph
 
-    .row.m-t-md
+    .row.m-t-1
       .col-md-8.col-md-offset-2
         .progress
           block progress

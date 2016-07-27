@@ -1,7 +1,7 @@
 extends training/relation/part-1/base
 
 block intro-content
-  .row.m-t-md
+  .row.m-t-1
     .col-xs-12
       p Relationships for three different types of concepts will be presented. The concepts will be color-coded:
       ul
@@ -12,8 +12,8 @@ block intro-content
       p Press ‘Next’ to continue.
 
 
-  .row.m-t-md
-    .col-xs-12.text-center
+  .row.m-t-1
+    .col-xs-12.text-xs-center
       a(href='{% url "training:relation-training" part_num=3 step_num=2 %}').btn.btn-primary Next
 
 
@@ -21,7 +21,7 @@ block intro-content
       .modal-dialog.modal-md
         .modal-content
           .modal-body
-            .list-group.text-center
+            .list-group.text-xs-center
               .list-group-item.completed
                 | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
               .list-group-item.completed

@@ -9,23 +9,23 @@ block content
   .container
     .row
       .col-xs-8.col-xs-offset-2
-        .row.alert.alert-info.alert-sticky.text-center
-          h2.text-center This is what you marked in Training #3!
-          p.lead.text-center Most people don't think they can do this and would be scared to try, but <strong>YOU DID IT!</strong>
-          p.lead.text-center Highlighting treatment concept terms is how you will earn points and help science
+        .row.alert.alert-info.alert-sticky.text-xs-center
+          h2.text-xs-center This is what you marked in Training #3!
+          p.lead.text-xs-center Most people don't think they can do this and would be scared to try, but <strong>YOU DID IT!</strong>
+          p.lead.text-xs-center Highlighting treatment concept terms is how you will earn points and help science
           .col-xs-4.col-xs-offset-4
             a(href='{% url "training:three" step_num="feedback" %}', id='next').btn.btn-primary.pull-right Next
 
-    .row.m-t-md
+    .row.m-t-1
       #quest.col-md-10.col-md-offset-1.paragraph-box
         p.paragraph.results In 1975 , Eli Lilly discovered that their compound , <span class='user_annotated_pink'>Lilly 110140</span> , had an analgesic effect and could mitigate pain . <span class='user_annotated_pink'>Lilly 110140</span> was eventually approved for the treatment of depression under the name <span class='user_annotated_pink'>fluoxetine hydrochloride</span> and has since been marketed under many names including , <span class='user_annotated_pink'>Prozac</span> and <span class='user_annotated_pink'>Sarafem</span> . <span class='user_annotated_pink'>Fluoxetine</span> belongs to a class of drugs known as <span class='user_annotated_pink'>selective serotonin reuptake inhibitors</span> ( <span class='user_annotated_pink'>SSRIs</span> ) which work by prolonging the duration of serotonin in neuronal synapses . Other <span class='user_annotated_pink'>SSRI</span> regiments , such as <span class='user_annotated_pink'>Paxil</span> therapy , have also been prescribed for the treatment of obsessive-compulsive disorder , panic disorder , and Bulimina Nervosa . Obsessive-compulsive disorders have also been treated by <span class='user_annotated_pink'>behavioral therapy</span> ( <span class='user_annotated_pink'>BT</span> ) or <span class='user_annotated_pink'>cognitive-behavioral therapy</span> ( <span class='user_annotated_pink'>CBT</span> ) .
 
-    .row.m-t-md
+    .row.m-t-1
       .col-md-10.col-md-offset-1
         progress(value='100' max='100').progress.progress-striped
           .progress
             span(style='width: 100%;').progress-bar 100%
 
-    .row.m-t-md
+    .row.m-t-1
       a(href='{% url "training:three" step_num="feedback" %}', id='next').btn.btn-primary.pull-right Next
 

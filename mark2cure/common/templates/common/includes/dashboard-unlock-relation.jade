@@ -1,19 +1,19 @@
 .row
-  .col-xs-12.text-center
+  .col-xs-12.text-xs-center
     .relations-title Relation Tasks
 
 .row
-  .col-xs-12.text-center.unlock-icon
+  .col-xs-12.text-xs-center.unlock-icon
     i(aria-hidden='true').fa.fa-lock.fa-5x
 
 .row
-  .col-xs-12.text-center
+  .col-xs-12.text-xs-center
     p
       small Complete the following training steps to unlock an entire new task!
 
 .row
   #relation-training-progress.col-xs-12
-    .list-group.dashboard.text-center
+    .list-group.dashboard.text-xs-center
       - if training_levels.relation == 0
         a(href='{% url "training:relation-training" part_num=1 step_num=1 %}').list-group-item.current
           | <i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface

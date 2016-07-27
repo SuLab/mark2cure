@@ -1,19 +1,19 @@
 extends training/relation/part-1/base
 
 block intro-content
-  .row.m-t-md
+  .row.m-t-1
     .col-xs-12
       p Drug-Disease Relationships: Last one!
 
-    .col-xs-12.text-center
+    .col-xs-12.text-xs-center
       p
         strong Use the menu in the box below to help relate the two concepts:
 
 
 block navigation
 
-  .row.m-t-md
-    .col-xs-12.text-center
+  .row.m-t-1
+    .col-xs-12.text-xs-center
       a(id='next-button', style='display:none;', href='{% url "training:relation-training" part_num=3 step_num=18 %}').btn.btn-primary Submit
 
 
@@ -21,7 +21,7 @@ block interactive
 
   #tree-insert
 
-  .row.m-t-md
+  .row.m-t-1
     .col-xs-12
       p When taken regularly, <span class='user_annotated_pink'>caffeine</span> has several performance-enhancing benefits. However, when used excessively or in vulnerable populations, <span class='user_annotated_pink'>caffeine</span> can cause several unwanted side effects such as nervousness, sensory disturbances, insomnia, <span class='user_annotated'>arrhythmia</span>, excitability, inattentiveness, restlessness, mood changes, gastrointestinal disturbances, and even psychosis
 
@@ -52,7 +52,7 @@ block interactive
 
 block post-footer
   <script type="html/template" id="tree-template">
-  <div id="tree" class="row text-center">
+  <div id="tree" class="row text-xs-center">
 
   <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
   <i id="c1_not_correct" class="fa fa-times-circle"></i>

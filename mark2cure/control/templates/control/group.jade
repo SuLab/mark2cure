@@ -6,14 +6,14 @@ extends control/base
 
 block content
 
-  .container.m-t-lg
+  .container.m-t-2
     .row
-      .col-md-10.col-md-offset-1.m-t-md
-        h2.text-center
+      .col-md-10.col-md-offset-1.m-t-1
+        h2.text-xs-center
           a(href='{% url "admin:common_group_change" group.pk %}')
             #{group.name}
 
-        p.text-center
+        p.text-xs-center
           small #{group.description}
 
     .row
@@ -38,7 +38,7 @@ block content
                       h3 #{doc_q_rel.document.document_id}
 
                   td
-                    h4.text-center #{doc_q_rel.task.name}
+                    h4.text-xs-center #{doc_q_rel.task.name}
 
                   td
                     a(href='{% url "admin:task_task_change" doc_q_rel.task.pk %}')

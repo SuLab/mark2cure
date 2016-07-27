@@ -50,7 +50,7 @@ def settings(request):
             profile.team = team
             profile.save()
 
-        messages.info(request, '<p class="lead text-center">Profile Successfully Updated</p>', extra_tags='safe alert-info')
+        messages.info(request, '<p class="lead text-xs-center">Profile Successfully Updated</p>', extra_tags='safe alert-info')
         return redirect('userprofile:settings')
 
     ctx = {'user_change_form': user_change_form,

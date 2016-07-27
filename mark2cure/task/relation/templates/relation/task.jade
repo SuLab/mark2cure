@@ -17,7 +17,7 @@ block content
         ul#progress-bar.list-unstyled.list-inline
 
       .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
-        p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
+        p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span>
 
     #feedback-next-action-area(style='display:none;').row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -47,7 +47,7 @@ block content
         form(id="task_relation_submit_document_set", action='{% url "task-relation:submit-set" document_pk=document.pk %}', method='POST')
           - csrf_token
 
-      .row.m-t-md
+      .row.m-t-1
         .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
           div(role="group").btn-group-vertical
             a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
@@ -69,7 +69,7 @@ block post-footer
   script(src="/static/js/tasks/relation.js")
 
   script(type="html/template", id="tree-template")
-    div#tree.row.text-center
+    div#tree.row.text-xs-center
 
       div.concept.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3#c1
         i#c1_not_correct.fa.fa-times-circle
@@ -112,7 +112,7 @@ block post-footer
         regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });

@@ -143,7 +143,7 @@ RelationTaskCollection = Backbone.Collection.extend({
 
 var ProgressItem = Backbone.Marionette.ItemView.extend({
   tagName: 'li',
-  className: 'uncompleted',
+  className: 'list-inline-item uncompleted',
   template: _.template('&#8226;'),
   initialize : function(options) {
     this.listenTo(this.model, 'change:user_completed', this.render);

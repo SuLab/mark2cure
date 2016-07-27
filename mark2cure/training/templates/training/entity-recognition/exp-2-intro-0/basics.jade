@@ -6,11 +6,11 @@ block header
 
 block content
   .container
-    .row.m-t-md
+    .row.m-t-1
       .col-xs-12
         h2.lead Welcome, new trainee, let's start with the basics...
 
-    .row.m-t-md
+    .row.m-t-1
         .col-xs-10.col-xs-offset-1.entity_tag
           #basics
             p Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all new relevant information . By joining Mark2Cure I am helping to tag research articles so that they are readily searchable and can be linked to find new relationships, new discoveries, and hopefully new treatment strategies. I contribute to Mark2Cure because I am ready to help .
@@ -18,7 +18,7 @@ block content
     .col-md-8.col-md-offset-2
       #next-container.pull-right
         block next-link
-          .row.m-t-md
+          .row.m-t-1
             a(href='{% url "training:introduction" step_num=2 %}', id='next', disabled).btn.btn-primary.pull-right.disabled Next
 
 block post-footer

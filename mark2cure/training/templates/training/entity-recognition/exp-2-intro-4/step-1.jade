@@ -1,7 +1,7 @@
 extends training/entity-recognition/exp-2-intro-4/step-base
 
 block step-instructions
-  h2.text-center Let’s start with the meaning of the color <span class='user_annotated'><strong>Blue</strong></span>.
+  h2.text-xs-center Let’s start with the meaning of the color <span class='user_annotated'><strong>Blue</strong></span>.
   h2 <span class='user_annotated'><strong>Blue</strong></span> will refer to the Diseases Concept
   p In the box below, use your Disease Marking Skill to highlight disease concept terms in blue
 
@@ -20,7 +20,7 @@ block highlightkey
   .row
     .col-xs-1
       h2 Key
-    .col-xs-3.m-t-md
+    .col-xs-3.m-t-1
       #btn-type-list(role="group").btn-group-vertical
         a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
           | Disease Concept  <i class="fa fa-external-link fa-lg"></i>

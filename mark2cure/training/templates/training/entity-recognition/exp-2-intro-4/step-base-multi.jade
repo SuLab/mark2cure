@@ -13,8 +13,8 @@ block content
           p.lead Instead of reading the same abstract three times and marking a different concept each time, you can use color coding to mark 3 different concepts all at once
           .panel.panel-info
             .panel-body
-              h3.text-center In this tutorial, you will learn about:
-              ul.list-unstyled.list-inline.text-center
+              h3.text-xs-center In this tutorial, you will learn about:
+              ul.list-unstyled.list-inline.text-xs-center
                 li
                   ul.list-unstyled
                     li Changing the color of the “marker”
@@ -23,15 +23,15 @@ block content
         .modal-footer
           button(type="button", data-dismiss="modal").btn.btn-default Close
   .container
-    .row.m-t-md
+    .row.m-t-1
       .col-md-12
         block step-instructions
 
-    #partner(style='display: none;').row.m-t-md
+    #partner(style='display: none;').row.m-t-1
       .row
         .col-md-4.col-md-offset-4
           .alert.alert-success
-            h2.text-center Good job!
+            h2.text-xs-center Good job!
 
     .row
       #quest-alerts.col-md-10.col-md-offset-1
@@ -42,7 +42,7 @@ block content
       .row
         .col-xs-1
           h2 Key
-        .col-xs-3.m-t-md
+        .col-xs-3.m-t-1
           #btn-type-list(role="group").btn-group-vertical
             a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
               | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
@@ -53,7 +53,7 @@ block content
             a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-info
               | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
 
-    .row.m-t-md
+    .row.m-t-1
       .col-md-8.col-md-offset-2
         .progress
           block progress

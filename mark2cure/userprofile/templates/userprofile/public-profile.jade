@@ -16,17 +16,17 @@ block content
   .container
     .row
       .col-xs-6.col-xs-offset-3
-        h1.text-center #{player.username}
+        h1.text-xs-center #{player.username}
       - if owner
 
-        .col-xs-2.col-xs-offset-4.text-center
+        .col-xs-2.col-xs-offset-4.text-xs-center
           form(method="post", action='{% url "account_logout" %}')
             - csrf_token
             button(type="submit", style='margin:0px;padding:0px;').btn.btn-link
               p Logout
 
         .col-xs-2
-          p.text-center.text-muted.text-center
+          p.text-xs-center.text-muted.text-xs-center
             a(href='{% url "profile:settings" %}') Settings
 
 
@@ -69,11 +69,11 @@ block content
                       - for group in contributed_groups
                         - if forloop.counter0 == 0
                           div(role="tabpanel", id="tab-{{group.stub}}").tab-pane
-                            #chart.text-center
+                            #chart.text-xs-center
 
                         - else
                           div(role="tabpanel", id="tab-{{group.stub}}").tab-pane.active
-                            #chart.text-center
+                            #chart.text-xs-center
 
       .col-xs-4
         .card

@@ -35,7 +35,7 @@ class CommonViews(TestCase, TestBase):
 
         # Ensure footers appear on this webpage
         self.assert_footers_in_html(response.content)
-        self.assertInHTML('<h2 class="text-center">Why do you Mark2Cure?</h2>',
+        self.assertInHTML('<h2 class="text-xs-center">Why do you Mark2Cure?</h2>',
                           response.content)
 
     def test_dashboard(self):
@@ -50,7 +50,7 @@ class CommonViews(TestCase, TestBase):
         # Check for standard footers and dashboard specific features.
         self.assert_footers_in_html(response.content)
         self.assertInHTML('<h4 id="myModalLabel" class="modal-title">Quest Instructions</h4>', response.content)
-        self.assertInHTML('<h2 class="text-center">Community Dashboard</h2>', response.content)
+        self.assertInHTML('<h2 class="text-xs-center">Community Dashboard</h2>', response.content)
         self.client.logout()
 
     def test_group_view(self):

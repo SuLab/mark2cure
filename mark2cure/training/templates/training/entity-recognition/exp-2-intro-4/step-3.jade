@@ -1,7 +1,7 @@
 extends training/entity-recognition/exp-2-intro-4/step-base-multi
 
 block step-instructions
-  h2.text-center Continue to mark disease concept terms in blue and gene concept terms in green
+  h2.text-xs-center Continue to mark disease concept terms in blue and gene concept terms in green
 
 block progress
   progress(value='40' max='100').progress.progress-striped
@@ -15,7 +15,7 @@ block highlightkey
   .row
     .col-xs-1
       h2 Key
-    .col-xs-3.m-t-md
+    .col-xs-3.m-t-1
       #btn-type-list(role="group").btn-group-vertical
         a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
           | Disease Concept  <i class="fa fa-external-link fa-lg"></i>

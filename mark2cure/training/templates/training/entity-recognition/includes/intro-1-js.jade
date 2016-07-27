@@ -1,12 +1,12 @@
 <script id="alert-template" type="text/template">
 <div class="alert alert-warning alert-training col-md-10 col-md-offset-1" role="alert">
-<p class='lead text-center'>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p>
+<p class='lead text-xs-center'>Sorry! <strong><%= text %></strong> doesn't appear to be correct.</p>
 
 <% if (help_message) { %>
-<p class='lead text-center'><%= help_message %></p>
+<p class='lead text-xs-center'><%= help_message %></p>
 
 <% }; if (instructions_link) { %>
-<p class='lead text-center'><%= instructions_link %></p>
+<p class='lead text-xs-center'><%= instructions_link %></p>
 
 <% } %>
 </div>

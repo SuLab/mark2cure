@@ -6,17 +6,17 @@ block header
 
 
 block content
-  .container.m-t-md
+  .container.m-t-1
     .row
       .col-xs-offset-2.col-xs-8
         .row
           .col-xs-12
             .card
-              .card-header.text-center
-                h2.text-center Why do you Mark2Cure?
+              .card-header.text-xs-center
+                h2.text-xs-center Why do you Mark2Cure?
               .card-block
                 .list-group
                   - for profile in profiles
                     .list-group-item
-                      p.text-center #{profile.motivation}
+                      p.text-xs-center #{profile.motivation}
 

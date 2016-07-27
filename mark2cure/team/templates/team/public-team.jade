@@ -14,7 +14,7 @@ block content
   .container
     .row
       .col-xs-6.col-xs-offset-3
-        h1.text-center Team #{team.name}
+        h1.text-xs-center Team #{team.name}
 
     .row
       .col-xs-10.col-xs-offset-1
@@ -85,4 +85,4 @@ block content
               - for member_profile in members
                 .col-xs-4
                   a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
-                    p.lead.text-center #{member_profile.user.username}
+                    p.lead.text-xs-center #{member_profile.user.username}

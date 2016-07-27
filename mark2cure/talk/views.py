@@ -61,7 +61,7 @@ def recent_discussion(request):
 
     content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
     if is_moderator:
-        msg = '<p class="lead text-center">You\'re a moderator, showing Global View.</p>'
+        msg = '<p class="lead text-xs-center">You\'re a moderator, showing Global View.</p>'
         messages.info(request, msg, extra_tags='safe alert-info')
 
         comment_queryset = Comment.objects.filter(

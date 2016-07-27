@@ -12,26 +12,26 @@ block content
   .container
     .row
       .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
-        .row.alert.alert-info.alert-sticky.text-center
+        .row.alert.alert-info.alert-sticky.text-xs-center
           h2 Congratulations you completed Quest #{task.name}
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-center Bonus Points: #{task.points}
+        h2.text-xs-center Bonus Points: #{task.points}
 
-    .row.m-t-md
+    .row.m-t-1
       .col-xs-6.col-xs-offset-3
-        p.lead.text-center You've made a valuable and important contribution! Tell your friends about it now and help find cures faster.
+        p.lead.text-xs-center You've made a valuable and important contribution! Tell your friends about it now and help find cures faster.
 
-    .row.m-t-md.m-b-md
-      .col-xs-10.col-xs-offset-1.text-center
+    .row.m-t-1.m-b-1
+      .col-xs-10.col-xs-offset-1.text-xs-center
         ul.list-inline
-          li
+          li.list-inline-item
             a(href="https://twitter.com/intent/tweet?text=I just completed Quest {{task.name}} of the {{task.group.stub}} doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.").btn.btn-default
               i.fa.fa-twitter-square.fa-2x.pull-left
               | Tweet accomplishment!
 
-          li
+          li.list-inline-item
             a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just completed Quest {{task.name}} of the {{task.group.stub}} doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank").btn.btn-default
               i.fa.fa-facebook-square.fa-2x.pull-left
               | Share accomplishment!

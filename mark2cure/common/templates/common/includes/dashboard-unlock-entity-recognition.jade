@@ -1,19 +1,19 @@
 .row
-  .col-xs-12.text-center
+  .col-xs-12.text-xs-center
     .relations-title Entity Recognition Tasks
 
 .row
-  .col-xs-12.text-center.unlock-icon
+  .col-xs-12.text-xs-center.unlock-icon
     i(aria-hidden='true').fa.fa-lock.fa-5x
 
 .row
-  .col-xs-12.text-center
+  .col-xs-12.text-xs-center
     p
       small Complete the following training steps to unlock an entire new task!
 
 .row
   #relation-training-progress.col-xs-12
-    .list-group.dashboard.text-center
+    .list-group.dashboard.text-xs-center
 
       - if training_levels.entity_recognition <= 2
         a(href='{% url "training:introduction" step_num=1 %}').list-group-item.current

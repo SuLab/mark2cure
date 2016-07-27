@@ -12,7 +12,7 @@ block content
       .container
         .row
           .col-xs-12
-            .cta.text-center
+            .cta.text-xs-center
               h1 Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.
               .row
                 .col-sm-8.col-sm-offset-2
@@ -35,7 +35,7 @@ block content
 
 
       .cta-bar
-        .container-fluid.text-center
+        .container-fluid.text-xs-center
           .row
             .col-xs-12
               p
@@ -49,7 +49,7 @@ block content
 
     .container
       .row
-        .col-sm-12.text-center
+        .col-sm-12.text-xs-center
           h2 Current <span class="font-red text-uppercase">missions.</span>
 
     .container-fluid
@@ -67,18 +67,18 @@ block content
                           - if group.percentage_complete > 99
                             h2
                               i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
-                            h5.text-center(style="color: #818a91") {{ group.name }}
-                            h5.text-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
+                            h5.text-xs-center(style="color: #818a91") {{ group.name }}
+                            h5.text-xs-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
                           - else
                             h2
                               i.fa.fa-pencil(aria-hidden="true")
-                            h5.text-center {{ group.name }}
-                            h5.text-center Total Docs: {{ group.doc_count }}
+                            h5.text-xs-center {{ group.name }}
+                            h5.text-xs-center Total Docs: {{ group.doc_count }}
             <ul class="pages"></ul>
 
       .container
-        .row.m-t-md
-          .col-sm-12.text-center
+        .row.m-t-1
+          .col-sm-12.text-xs-center
             h2 Scientific <span class="font-red text-uppercase">communication</span> is broken.
             p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
 
@@ -89,7 +89,7 @@ block content
 
       .container.push30
         .row
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             h2 <span class="font-red text-uppercase">you</span> can fix it and help find cures.
             p.medium The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.
 
@@ -104,13 +104,13 @@ block content
 
       .container.push100
         .row
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             h2#learnMore Learn More
             .center-block.push50
               iframe(width="640", height="360", src="https://www.youtube.com/embed/uaD0-GTX0N8", frameborder="0", allowfullscreen)
 
         .row.push50
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             p.font-purple.medium
               | If you can read you can help.
             a(href='{% url "common:get-started" %}').push15.btn.btn-large.btn-primary I want to help
@@ -124,7 +124,7 @@ block content
           .modal-header
             <h2 class="modal-title">Contact Support</h2>
             <h4>Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.</h4>
-            <h5 class="text-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
+            <h5 class="text-xs-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
 
           .modal-body
             form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax

@@ -6,7 +6,7 @@ extends control/base
 
 block content
 
-  .container-fluid.m-t-lg.talk
+  .container-fluid.m-t-2.talk
     .row
       .col-xs-4.col-xs-offset-1
         .row
@@ -80,7 +80,7 @@ block post-footer
         regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });

@@ -1,7 +1,7 @@
 extends training/relation/part-1/base
 
 block intro-content
-  .row.m-t-md
+  .row.m-t-1
     .col-xs-12
       p.text-muted The text in which the two concepts were found together will be included. The concepts are highlighted in the text so you can easily find their relationship
       p.text-muted
@@ -12,8 +12,8 @@ block intro-content
       p.text-muted
         strong The 'submit' button will not be active until a relationship is selected
 
-  .row.m-t-md
-    .col-xs-12.text-center
+  .row.m-t-1
+    .col-xs-12.text-xs-center
       - if user.is_authenticated
         a(id='next-button', style='display: none;', href='{% url "training:relation-training" part_num=2 step_num=1 %}').btn.btn-primary Submit
       - else
@@ -57,7 +57,7 @@ block interactive
 
 block post-footer
   <script type="html/template" id="tree-template">
-  <div id="tree" class="row text-center">
+  <div id="tree" class="row text-xs-center">
 
   <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
   <i id="c1_not_correct" class="fa fa-times-circle"></i>

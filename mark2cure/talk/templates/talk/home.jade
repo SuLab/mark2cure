@@ -22,7 +22,7 @@ block content
   .container-fluid.talk
     .row
       .col-xs-10.col-xs-offset-1
-        h4(style='color:black;').text-center #{doc}
+        h4(style='color:black;').text-xs-center #{doc}
 
         .row
           .col-xs-12
@@ -37,7 +37,7 @@ block content
 
             div.tab-content
               div(id="er-results", role="tabpanel").tab-pane.active
-                .row.m-t-md
+                .row.m-t-1
                   .col-xs-10.col-xs-offset-1
                     p.text-muted Mouseover to see other users' annotations:
                     ul.pagination
@@ -48,7 +48,7 @@ block content
                     .paragraphs.micro
 
               div(id="r-results", role="tabpanel").tab-pane
-                .row(style='min-height: 300px;').m-t-md
+                .row(style='min-height: 300px;').m-t-1
                   .col-xs-10.col-xs-offset-1
                     #relation-synopsis-insert
 
@@ -56,11 +56,11 @@ block content
     .row
       .col-xs-12
 
-        .row.m-t-md
+        .row.m-t-1
           .col-sm-6
             .row
               .col-xs-4
-                h4.text-center Diseases
+                h4.text-xs-center Diseases
                 table.table.table-condensed.table-striped
                   thead
                     tr
@@ -75,7 +75,7 @@ block content
                             | #{disease.0}
 
               .col-xs-4
-                h4.text-center Genes
+                h4.text-xs-center Genes
                 table.table.table-condensed.table-striped
                   thead
                     tr
@@ -90,7 +90,7 @@ block content
                             | #{gene_protein.0}
 
               .col-xs-4
-                h4.text-center Drugs
+                h4.text-xs-center Drugs
                 table.table.table-condensed.table-striped
                   thead
                     tr
@@ -139,13 +139,13 @@ block content
 
 block post-footer
   script(type='html/template', id='relation-synopsis-template')
-    p.lead.text-center Click on the circles to see how your answers compared to the community's.
+    p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
     ul#relation-synopsis-bar.list-unstyled.list-inline
     #feedback-next-action-area
     #chart-context(style='display:none;').row
       .col-xs-4.col-xs-offset-1.text-right
         p#concept-a.lead
-      .col-xs-2.text-center
+      .col-xs-2.text-xs-center
         | <i class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>
       .col-xs-4.text-left
         p#concept-b.lead
@@ -168,7 +168,7 @@ block post-footer
         regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });

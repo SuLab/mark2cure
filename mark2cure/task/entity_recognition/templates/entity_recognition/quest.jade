@@ -19,16 +19,16 @@ block content
       .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
         ol.list-unstyled.list-inline
           - for doc in completed_doc_pks
-            li.completed &#8226;
+            li.list-inline-item.completed &#8226;
 
           - each val, index in uncompleted_docs
             - if index == 0
-              li.active &#8226;
+              li.list-inline-item.active &#8226;
             - else
-              li.uncompleted &#8226;
+              li.list-inline-item.uncompleted &#8226;
 
       .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
-        p.text-center Score: <span id='score'>#{user.userprofile.score}</span>
+        p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span>
 
     #partner-results(style='display:none;').row
       .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
@@ -41,8 +41,8 @@ block content
             p Level: <span id="partner-level"></span>
 
           .col-xs-8
-            h2#flatter.text-center
-            h4.text-center
+            h2#flatter.text-xs-center
+            h4.text-xs-center
               | Earned
               | <span id='points'></span>
               | points!
@@ -51,11 +51,11 @@ block content
       .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
         .row.alert.alert-info.alert-info-minimal.alert-sticky
           .col-xs-10.col-xs-offset-1
-            h2.text-center New Annotations!
-            h3.text-center You earned 1,000 points for marking this new document
-            p.text-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
-            //h2.text-center New Document!
-            //h3.text-center Unfortunately you didn't earn any points because no annotations were provided ;(
+            h2.text-xs-center New Annotations!
+            h3.text-xs-center You earned 1,000 points for marking this new document
+            p.text-xs-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
+            //h2.text-xs-center New Document!
+            //h3.text-xs-center Unfortunately you didn't earn any points because no annotations were provided ;(
 
     .row
       .col-xs-12.col-md-10.col-md-offset-1
@@ -63,7 +63,7 @@ block content
           .paragraphs
 
 
-    .row.m-t-md
+    .row.m-t-1
       .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
         div(role="group").btn-group-vertical
           a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
@@ -88,7 +88,7 @@ block content
         #doc-talk(style='display:none;').row
           .col-xs-10.col-xs-offset-1
             a(href='{% url "talk:home" document.document_id %}', target='_blank')
-              p.text-muted.text-center
+              p.text-muted.text-xs-center
                 small Annotations in this doc have been discussed #{comment_count} times. <strong>Discuss Now?</strong>
           .col-xs-6
             a(href='{% url "talk:home" document.document_id %}', target='_blank').button.btn.btn-default.btn-block.done
@@ -120,7 +120,7 @@ block post-footer
         var regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-md"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
           regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
         });

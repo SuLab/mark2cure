@@ -8,12 +8,12 @@ extends control/base
 
 block content
 
-  .container.m-t-lg
+  .container.m-t-2
     .row
       .col-xs-10.col-xs-offset-1
 
-        h2.text-center Create a New Group
-        p.text-center
+        h2.text-xs-center Create a New Group
+        p.text-xs-center
           small (Hidden by default)
 
         form(action='{% url "control:group_create" %}', method='post')

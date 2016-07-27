@@ -29,9 +29,9 @@
     hr
 
     .row
-      .col-xs-12.text-center
+      .col-xs-12.text-xs-center
         ul.list-inline
-          li
+          li.list-inline-item
             a(href='{% url "instructions:relation" %}')
               | Rules
 
@@ -41,5 +41,5 @@
   #document-relation-board
 
 - else
-  p.lead.text-center.m-t-lg Sorry, no relationship tasks currently available for you to work on.
+  p.lead.text-xs-center.m-t-2 Sorry, no relationship tasks currently available for you to work on.
 

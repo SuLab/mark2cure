@@ -25,8 +25,8 @@ block content
   .container
     .row
       - if group.description
-        .col-md-10.col-md-offset-1.m-t-md
-          h2.text-center {{ group.name }}
+        .col-md-10.col-md-offset-1.m-t-1
+          h2.text-xs-center {{ group.name }}
           p.lead #{group.description}
 
           - if user.is_authenticated
@@ -35,7 +35,7 @@ block content
             - if group.enabled and group.percentage_complete < 100
               h4 This doc set needs your help. <a href='{% url "account_login" %}'>Please sign in here</a>.
 
-        .col-md-10.col-md-offset-1.m-t-md
+        .col-md-10.col-md-offset-1.m-t-1
           - with progress=group.percentage_complete
             - if progress
               h4.progress-label Community progress on this set:
@@ -49,7 +49,7 @@ block content
     .row
       .col-xs-4.col-xs-offset-4
         a
-          h4.text-center Toggle Network <i class="fa fa-caret-down"></i>
+          h4.text-xs-center Toggle Network <i class="fa fa-caret-down"></i>
 
     #network-row(style="height:800px;display:none;").row
       .col-xs-1
@@ -65,7 +65,7 @@ block content
 
   .container
     .row
-      .col-md-10.col-md-offset-1.m-t-md
+      .col-md-10.col-md-offset-1.m-t-1
 
         - if user.is_authenticated
           .container(style="padding-bottom: 20px")
@@ -116,7 +116,7 @@ block content
 
 
     .row
-      .col-md-10.col-md-offset-1.m-t-md
+      .col-md-10.col-md-offset-1.m-t-1
         p.lead Top contributor word cloud:
 
         #vis
@@ -148,7 +148,7 @@ block post-footer
 
     script#quest-icon-template(type='text/template')
       <div class='row'>
-      <div class='col-xs-12 text-center'>
+      <div class='col-xs-12 text-xs-center'>
       <% if(d.progress.completed) { %>
       <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
       <% } else if (d.user.completed) { %>
@@ -173,7 +173,7 @@ block post-footer
     script#group-template(type='text/template')
       <h3><%- name %></h3>
       <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-      <div class='col-xs-12 text-center'>
+      <div class='col-xs-12 text-xs-center'>
       <p class='quest-loading'>Loading...</p>
       </div>
       </div>

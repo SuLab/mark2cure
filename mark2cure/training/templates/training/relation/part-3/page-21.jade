@@ -1,7 +1,7 @@
 extends training/relation/part-1/base
 
 block intro-content
-  .row.m-t-md
+  .row.m-t-1
     .col-xs-12
       p.text-muted Gene-Drug Relationships: <strong>Genes</strong> and <strong>gene products</strong> can affect and be affected by <strong>drugs</strong> in many different ways.  There are two options for describing the relationship between genes and drugs
       p.text-muted <strong>"(may) affect(s)"</strong> – The gene or gene product affects or may affect the activity, metabolism, or efficacy of the drug. In other words, the gene or gene product acts on the drug
@@ -9,8 +9,8 @@ block intro-content
 
 
 
-  .row.m-t-md
-    .col-xs-12.text-center
+  .row.m-t-1
+    .col-xs-12.text-xs-center
       a(href='{% url "training:relation-training" part_num=3 step_num=22 %}').btn.btn-primary Next
 
 

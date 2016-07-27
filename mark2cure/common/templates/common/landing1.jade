@@ -75,7 +75,7 @@ html
         .container
           .row
             .col-xs-12
-              .cta.text-center
+              .cta.text-xs-center
                 <h1>Push <span class="bg-redanimate"><span class="f">research</span></span> forward and <br> discover <span class="u-redanimate">cures</span> faster. <span id="cursor">|</span></h1>
                 <p>Let's help scientists organize biomedical knowledge and uncover hidden links.</p>
                 p.font-purple
@@ -88,7 +88,7 @@ html
                     <a href="https://www.youtube.com/watch?v=hT_pj1cB0Q8" class="hidden-md hidden-lg"><button class="btn btn-block btn-primary btn-outline"><i class="fa fa-play"></i> Watch Video</button></a>
 
       .cta-bar.stick-bottom-off
-        .container-fluid.bg-purple.text-center.push130.cta-bar
+        .container-fluid.bg-purple.text-xs-center.push130.cta-bar
           .row
             .col-xs-12
               <p><a href="http://sulab.org/2015/08/new-doc-set-and-a-preliminary-look-at-the-data-generated-by-mark2cure/">Alacrima and CDG doc sets are complete! Volunteers submitted 109,963 annotations in just these two sets. <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
@@ -107,7 +107,7 @@ html
 
       .container
         .row
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             <h2>Scientific <span class="font-red text-uppercase">communication</span> is broken.</h2>
             p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
 
@@ -119,7 +119,7 @@ html
 
       .container.push30
         .row
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             <h2><span class="font-red text-uppercase">you</span> can fix it and help find cures.</h2>
             <p class="medium">The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.</p>
 
@@ -134,13 +134,13 @@ html
 
       .container.push100.hidden-xs.hidden-sm
         .row
-          .col-sm-12.text-center
+          .col-sm-12.text-xs-center
             <h2 id="learnMore">Learn More</h2>
             .center-block.push50
               <iframe width="640" height="360" src="https://www.youtube.com/embed/hT_pj1cB0Q8" frameborder="0" allowfullscreen></iframe>
 
             .row.push50
-              .col-sm-12.text-center
+              .col-sm-12.text-xs-center
                 <p class="font-purple medium">If you can read you can help.</p>
                 <a href="#"><button class="push15 btn btn-large btn-primary">I want to help.</button></a>
 
@@ -150,7 +150,7 @@ html
 
       footer#footer
         .container
-          .row.text-center(style="padding-bottom:30px;")
+          .row.text-xs-center(style="padding-bottom:30px;")
             .col-sm-12
               #result
         .container
@@ -188,7 +188,7 @@ html
           .modal-header
             <h2 class="modal-title">Contact Support</h2>
             <h4>Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.</h4>
-            <h5 class="text-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
+            <h5 class="text-xs-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
 
           .modal-body
             form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax

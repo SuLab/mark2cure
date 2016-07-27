@@ -15,6 +15,7 @@ var color_scale = d3.scale.linear()
 RelationItem = Backbone.Marionette.ItemView.extend({
   template: _.template('&#8226;'),
   tagName: 'li',
+  className: 'list-inline-item',
 
   initialize: function(){
     this.listenTo(this.model, 'change:focus', this.render);

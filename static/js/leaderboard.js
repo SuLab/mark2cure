@@ -83,7 +83,7 @@ UserView = Backbone.Marionette.ItemView.extend({
 });
 
 UserCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<h2 class="text-center">Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h2><h4 class="text-center"><%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h4><ol class="list-unstyled list-group"></ol>'),
+  template: _.template('<h2 class="text-xs-center">Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h2><h4 class="text-xs-center"><%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h4><ol class="list-unstyled list-group"></ol>'),
   childView  : UserView,
   childViewContainer: "ol",
 
