@@ -1,0 +1,22 @@
+{
+  "name": "mark2cure",
+  "description": "[Mark2Cure](http://mark2cure.org/) is a web-based, concept recognition, relationship extraction and validation tool for annotating text. It is intended to be a fun and exploratory way to help biomedical research, but can readily be extended to other disciplines of study where publication rates far exceed a researcher's ability to consume and incorporate knowledge from the literature.",
+  "main": "index.js",
+  "authors": [
+    "Max Nanis <max@maxnanis.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/SuLab/mark2cure",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "v4.0.0-alpha.2",
+    "font-awesome": "^4.6.3"
+  }
+}

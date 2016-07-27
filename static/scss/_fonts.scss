@@ -1,27 +1,8 @@
-@include font-face(
-  'Px Grotesk Light',
-    font-files(
-      'px-grotesk/PxGrotesk-Light.woff',
-      'px-grotesk/PxGrotesk-Light.ttf',
-      'px-grotesk/PxGrotesk-Light.svg#1a4c10eeacc188c4a18294755cd99f20'),
-       'px-grotesk/PxGrotesk-Light.eot', 200, 'normal');
-
-@include font-face(
-  'Px Grotesk Light Italic',
-    font-files(
-      'px-grotesk/PxGrotesk-LightIta.woff',
-      'px-grotesk/PxGrotesk-LightIta.ttf',
-      'px-grotesk/PxGrotesk-LightIta.svg#00b34757bd765fe995b4f20b31f7333a'),
-        'px-grotesk/PxGrotesk-LightIta.eot', 200, 'normal');
-
 $font_paragraph: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
-$font_px_light: 'Px Grotesk Light';
-$font_px_light_italic: 'Px Grotesk Light Italic';
 $font_helvetica: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 
 .better-helvetica {
   font-family: $font_helvetica;
   font-weight: 300;
 }
-
 

@@ -1,34 +1,13 @@
-// Mark2Cure Color Branding
-$color_gray_dark:       #333 !default;
-$color_gray:            #666 !default;
-$color_gray_light:      #818a91 !default;
-$color_gray_lighter:    #eceeef !default;
-$color_gray_lightest:   #f7f7f9 !default;
+@import 'colors';
+@import 'fonts';
+@import 'bootstrap_variables';
+@import 'bootstrap';
 
-$color_white:           #ffffff;
-$color_black:           #000000;
-
-$color_purple:          #7F3CFF;
-$color_green:           #b2f270;
-$color_bootstrap_blue:  #0074d9;
-$color_picton_blue:     #5dbcf6;
-$color_red:             #E85997;
-$color_error_red:       #E64C66;
-$color_yellow:          #FEFF02;
-
-$color_disease:         #D1F3FF;
-$color_gene:            #B1FFA8;
-$color_treatment:       #FFD1DC;
-
-
+@import 'compass';
 @import 'compass/css3';
 @import 'compass/utilities';
-@import 'compass';
-
 @import 'font-awesome';
-@import 'fonts';
 
-@import 'bootstrap/bootstrap';
 
 @import 'includes/header';
 @import 'includes/footer';
@@ -69,12 +48,12 @@ $color_treatment:       #FFD1DC;
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 
 .fade-in {
-  opacity: 0;  /* make things invisible upon start */
-  -webkit-animation: fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+  opacity: 0;
+  -webkit-animation: fadeIn ease-in 1;
   -moz-animation: fadeIn ease-in 1;
   animation: fadeIn ease-in 1;
 
-  -webkit-animation-fill-mode: forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -webkit-animation-fill-mode: forwards;
   -moz-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 

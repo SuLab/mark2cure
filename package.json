@@ -1,0 +1,36 @@
+{
+  "name": "mark2cure",
+  "version": "1.0.0",
+  "description": "[Mark2Cure](http://mark2cure.org/) is a web-based, concept recognition, relationship extraction and validation tool for annotating text. It is intended to be a fun and exploratory way to help biomedical research, but can readily be extended to other disciplines of study where publication rates far exceed a researcher's ability to consume and incorporate knowledge from the literature.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://x0xMaximus@github.com/SuLab/mark2cure.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SuLab/mark2cure/issues"
+  },
+  "homepage": "https://github.com/SuLab/mark2cure#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-bower": "0.0.13",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-compass": "^2.1.0",
+    "gulp-csso": "^2.0.0",
+    "gulp-if": "^2.0.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-util": "^3.0.7",
+    "path": "^0.12.7",
+    "segfault-handler": "^1.0.0",
+    "tiny-lr": "^0.2.1"
+  }
+}

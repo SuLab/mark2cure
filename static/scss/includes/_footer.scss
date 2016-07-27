@@ -1,5 +1,6 @@
 #footer {
   margin-top: 60px;
+  @extend .better-helvetica;
 
   .line {
     background: $color_gray_light;
@@ -7,7 +8,6 @@
   }
 
   .line-text {
-    font-family: $font_px_light;
     background: $color_white;
     color: $color_gray_light;
     font-size: 1.6em;
@@ -19,7 +19,6 @@
   }
 
   a p {
-    font-family: $font_px_light;
     color: $color_red;
   }
 
