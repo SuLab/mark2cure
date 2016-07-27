@@ -27,7 +27,14 @@ gulp.task('watch', function () {
   });
 });
 
-gulp.task('css', function() {
+gulp.task('fonts', function() {
+  return gulp
+    .src(path.join(__dirname, 'bower_components', 'font-awesome', 'fonts/*'))
+    .pipe(gulp.dest('static/fonts/'))
+    .pipe( livereload(server));
+});
+
+gulp.task('css', ['fonts'], function() {
     return gulp.src('./static/scss/style.scss')
       .pipe(compass({
         project: path.join(__dirname, 'static'),
