@@ -40,17 +40,15 @@ block content
 
     block highlightkey
       .row
-        .col-xs-1
-          h2 Key
-        .col-xs-3.m-t-1
-          #btn-type-list(role="group").btn-group-vertical
-            a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-info
+        .col-xs-3.col-xs-offset-1.m-t-1
+          #concept-type-instruction-link-list.list-group
+            a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank').list-group-item.disease-concept-bg
               | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
 
-            a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-info
+            a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank').list-group-item.gene-concept-bg
               | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
 
-            a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-info
+            a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank').list-group-item.treatment-concept-bg
               | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
 
     .row.m-t-1
