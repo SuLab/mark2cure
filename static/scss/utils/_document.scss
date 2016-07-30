@@ -40,6 +40,13 @@ p.paragraph {
 
 }
 
+p.paragraph.no-interactive {
+  span:hover {
+    color: $color_black;
+  }
+  cursor: auto;
+}
+
 .micro p.paragraph {
   line-height: 1.2em;
   font-size: 1.2em;
