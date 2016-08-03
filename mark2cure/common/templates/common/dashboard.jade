@@ -80,10 +80,44 @@ block content
               include common/includes/dashboard-sidebar
 
 
+      <script type="text/template" id="relation-item-template">
+      <div class='row'>
+      <div class='col-xs-12 text-xs-center'>
+      <% if(d.progress.completed) { %>
+      <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
+      <% } else if (d.user.completed) { %>
+      <span class='fa fa-check' title='You have completed this Quest.'></span>
+      <% } else if (!d.user.enabled) { %>
+      <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
+      <% } else { %>
+      <p style='font-size: 1.75em; line-height: 1.8em;'>
+      <%- d.name %>
+      </p>
+      <% } %>
+      </div>
+      </div>
+
+      <% if(d.user.enabled) { %>
+      <div class='row'>
+      <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
+      <progress value='<%- progress %>' max='100' class='progress'>
+      <div class='progress'>
+      <span style='width: <%- progress %>%;' class='progress-bar'>
+      <%- d.progress.current %> Completions
+      </span>
+      </div>
+      </progress>
+      </div>
+      </div>
+      <% } %>
+      </script>
+
+
 block post-footer
   {{ block.super }}
 
   block post-footer-entity-recognition
+
     script.
       var draw_dashboard = function(group, quests) {
         $('#group-'+ group.pk).html('');
@@ -95,7 +129,7 @@ block post-footer
           .domain([_.min(completion_size), _.max(completion_size)])
           .range(['#00CCFF', '#E64C66']);
 
-        var template = _.template("<div class='row'><div class='col-xs-12 text-xs-center'><% if(d.progress.completed) { %><span class='fa fa-certificate muted' title='The community has completed this Quest.'></span><% } else if (d.user.completed) { %><span class='fa fa-check' title='You have completed this Quest.'></span><% } else if (!d.user.enabled) { %><span class='fa fa-circle muted' title='This quest is not enabled.'></span><% } else { %><a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a><% } %></div></div><% if(d.user.enabled) { %><div class='row'><div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'><progress value='<%- progress %>' max='100' class='progress'><div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div></progress></div></div><% } %>");
+        var template = _.template($('#relation-item-template').html());
 
         var attrs = {
           'class': 'quest col-xs-4 col-sm-3 col-md-3 col-lg-2',
@@ -149,15 +183,11 @@ block post-footer
 
 
   block post-footer-relation
-    <script type="text/template" id="template">
-    <span class="relation-item-container">
-    <div>
+    <script type="text/template" id="relation-list-item-template">
     <div class="relation-item">
-    <div class="time pull-right"><%= task_count %> steps</div>
 
-    <p>
-    <span class="main-text"><%= title %></span>
-    </p>
+    <p class="steps pull-right"><%= task_count %> steps</p>
+    <p class="main-text"><%= title %></p>
 
     <progress value='<%- (progress.current/progress.required)*100 %>' max='100' class='progress'>
     <div class='progress'>
@@ -168,9 +198,6 @@ block post-footer
     </progress>
 
     </div>
-    </div>
-
-    </span>
     <hr />
     </script>
 

@@ -1,0 +1,64 @@
+#relation-task-list {
+
+  a.relation-item-container:hover {
+    text-decoration: none;
+  }
+
+  a.relation-item-container {
+    .relation-item {
+      color: rgba(0, 0, 0, 0.870588);
+
+      padding: 8px 8px;
+      margin: 4px 0px;
+      line-height: 16px;
+      position: relative;
+      border: 10px;
+      box-sizing: border-box;
+      display: block;
+      outline: none;
+
+      cursor: pointer;
+
+      transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+
+      progress.progress {
+        margin: 8px 0px;
+      }
+
+      p.steps {
+        font-size: 14px;
+        margin-top: -5px;
+      }
+
+      p.main-text {
+        height: 36px;
+        margin: 0;
+        margin-top: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        font-size: 16px;
+        line-height: 18px;
+
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+
+    .relation-item:hover {
+      background: rgba(0, 0, 0, 0.0980392);
+      cursor: pointer;
+    }
+  }
+
+  hr {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    height: 1px;
+    background: $color_gray_lighter;
+    background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
+  }
+}
+
