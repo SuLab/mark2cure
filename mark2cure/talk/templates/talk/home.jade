@@ -42,8 +42,8 @@ block content
                     p.text-muted Mouseover to see other users' annotations:
                     ul.pagination
                       - for user_pk in doc.contributors
-                        li
-                          a(data-userpk='{{user_pk}}') #{user_pk}
+                        li.page-item
+                          a(data-userpk='{{user_pk}}').page-link #{user_pk}
 
                     .paragraphs.micro
 

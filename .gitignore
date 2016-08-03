@@ -81,3 +81,4 @@ static/data/network_cdg.json
 /bower_components
 /node_modules
 static/fonts
+/static/css
