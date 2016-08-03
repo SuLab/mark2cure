@@ -90,9 +90,11 @@ block content
       <% } else if (!d.user.enabled) { %>
       <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
       <% } else { %>
+      <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'>
       <p style='font-size: 1.75em; line-height: 1.8em;'>
       <%- d.name %>
       </p>
+      </a>
       <% } %>
       </div>
       </div>
