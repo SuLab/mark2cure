@@ -1,51 +1,40 @@
 - load humanize
 
-nav#header-auth-generic(role='navigation').navbar.navbar-default
+nav#header-auth-generic(role='navigation').navbar
   div.container
-    .row
-      .col-md-3.col-md-offset-0.hidden-md-down
+    // Navbar for "all at once" content. SM >> up
+    .row.hidden-xs-down
+
+      .col-sm-3.col-md-2
         div.navbar-header
           a.navbar-brand(href='{% url "common:dashboard" %}')
             img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
 
-      .col-xs-10.col-xs-offset-1.col-md-6.col-md-offset-0
-        h2.text-xs-center #{headerMessage}
+      .col-sm-6.col-md-6.col-lg-7
+        // font-size: 1.25rem; for SM
+        h1.text-xs-center #{headerMessage}
 
-      .col-xs-10.col-xs-offset-1.col-sm-6.col-sm-offset-3.col-md-6.col-md-offset-0.col-lg-3.col-lg-offset-0
-        #site-nav.collapse.navbar-toggleable-xs
-          - if user.is_authenticated
-            .row
-              .col-xs-6.col-sm-7
-                ul.list-unstyled.user-info
-                  li
-                    a(href='{% url "profile:public-profile" username=user.username %}')
-                      p {{user}}
+      .col-sm-3.col-md-4.col-lg-3
+        include includes/header-links
 
-              .col-xs-6.col-sm-5
-                ul.list-unstyled.site-links
-                  - if user.profile.unlocked_tasks|length > 1
-                      li
-                        a(href='{% url "talk:recent" %}')
-                          p Talk Pages
+    // Navbar  or expand based content. XS ONLY
+    .row.hidden-sm-up
+      .col-xs-12
+        .row
+          .col-xs-4
+            div.navbar-header
+              a.navbar-brand(href='{% url "common:dashboard" %}')
+                img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
 
-                  block header-instructions
-                    li
-                      a(href='{% url "instructions:home" %}')
-                        p Instructions
-          - else
-            .row
-              .col-xs-6.col-xs-offset-6.col-sm-5.col-sm-offset-7
-                ul.list-unstyled.site-links
-                  li
-                    a(href='{% url "account_login" %}')
-                      p Login
+          .col-xs-4.col-xs-offset-3
+            button#expand-content(type='button', data-toggle='collapse', data-target='#site-nav', aria-controls='site-nav', aria-expanded='false', aria-label='Toggle navigation').btn-block.navbar-toggler.hidden-sm-up &#9776;
 
-                  li
-                    a(href='{% url "common:get-started" %}')
-                      p Get Started
+        #site-nav.row.collapse
+          hr
+          .col-xs-12
+            // font-size: 1.25rem; for SM
+            h1.text-xs-center #{headerMessage}
+            hr
 
-
-    .row
-      .col-xs-10.col-xs-offset-1
-        button#expand-content(data-toggle='collapse', data-target='#site-nav').btn-block.navbar-toggler.hidden-sm-up
-          h4 EXPAND
+          .col-xs-12
+            include includes/header-links

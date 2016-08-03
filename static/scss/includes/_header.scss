@@ -63,10 +63,11 @@
   padding-top: 0px;
   padding-bottom: 0px;
 
-  h2 {
+  h1 {
     color: $color_gray_light;
-    margin-top: .5em;
-    margin-bottom: 0px;
+    font-size: 1.75rem;
+    margin-top: .75rem;
+
     cursor: default;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -75,24 +76,16 @@
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;
 
+    @include media-breakpoint-down(sm) {
+      font-size: 1.25rem;
+    }
+    @include media-breakpoint-only(sm) {
+      margin-top: 1.25rem;
+    }
+
   }
   .navbar-header .navbar-brand img {
     max-height: 60px;
-  }
-  @include media-breakpoint-down(sm) {
-    h1{
-      text-align: center;
-      font-size: 4em;
-    }
-
-    h2 {
-      text-align: center;
-      font-size: 2em;
-      margin-top: 0em;
-    }
-    ul li {
-      text-align: center;
-    }
   }
 
   #site-nav {
@@ -116,12 +109,7 @@
   }
 
   #expand-content {
-    h4 {
-      text-align: center;
-      padding: 0px;
-      margin: 0px;
-      letter-spacing: 4px;
-    }
+    font-size: 3rem;
   }
 
 }
