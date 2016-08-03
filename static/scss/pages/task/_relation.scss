@@ -100,10 +100,19 @@ li {
   .chemical { border: 16px solid $color_treatment; }
 
   .concept.incorrect {
-    border: 16px solid $color_error_red;
+    border-color: $color_error_red;
   }
 
+
   .concept {
+
+    @include media-breakpoint-down(sm) {
+      border-width: 8px;
+    }
+
+    @include media-breakpoint-only(md) {
+      border-width: 12px;
+    }
 
     h3 {
       font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -112,6 +121,19 @@ li {
       letter-spacing: 1px;
       font-size: 1.75em;
       margin: 10px 0px;
+      word-wrap: break-word;
+
+      @include media-breakpoint-down(sm) {
+        font-size: 1rem;
+      }
+
+      @include media-breakpoint-only(md) {
+        font-size: 1.25rem;
+      }
+
+      @include media-breakpoint-only(lg) {
+        font-size: 1.5rem;
+      }
     }
 
     .fa.fa-times-circle {
@@ -161,6 +183,7 @@ li {
     padding: 12px 0px;
   }
 
+
   #relation.disabled {
     color: #e7e7e7;
     cursor: default;
@@ -168,6 +191,30 @@ li {
   #relation.relation-go-back:hover {
     color: #fff;
     background-color: $color_error_red;
+  }
+
+  @include media-breakpoint-down(sm) {
+    #relation, #relation.disabled {
+      font-size: 1rem;
+    }
+    .not_correct_stype {
+      font-size: .6rem;
+    }
+  }
+
+  @include media-breakpoint-only(md) {
+    #relation, #relation.disabled {
+      font-size: 1.25rem;
+    }
+    .not_correct_stype {
+      font-size: .8rem;
+    }
+  }
+
+  @include media-breakpoint-only(lg) {
+    #relation, #relation.disabled {
+      font-size: 1.5rem;
+    }
   }
 
   .list-group-item,
