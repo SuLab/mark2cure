@@ -82,13 +82,19 @@
     @include media-breakpoint-only(sm) {
       margin-top: 1.25rem;
     }
+    @include media-breakpoint-only(xs) {
+      margin-top: 0px;
+    }
 
   }
   .navbar-header .navbar-brand img {
     max-height: 60px;
   }
 
-  #site-nav {
+  #header-links {
+    @include media-breakpoint-only(xs) {
+      margin-bottom: .5rem;
+    }
     .user-info { text-align: right; }
     .site-links { text-align: left; }
     ul { margin-bottom: 0px; }
@@ -99,17 +105,23 @@
       }
       a:hover p {
         color: $color_purple;
+        cursor: pointer;
       }
       a:active { text-decoration: none; }
       p {
         padding: 2px;
         margin: 0px;
+
+        @include media-breakpoint-only(sm) {
+          font-size: .8rem;
+        }
+
+
       }
     }
   }
 
-  #expand-content {
-    font-size: 3rem;
-  }
+  #expand-content { font-size: 3rem; }
+  #expand-content:hover { color: $brand-primary; }
 
 }

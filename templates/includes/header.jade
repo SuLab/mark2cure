@@ -26,15 +26,16 @@ nav#header-auth-generic(role='navigation').navbar
               a.navbar-brand(href='{% url "common:dashboard" %}')
                 img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
 
-          .col-xs-4.col-xs-offset-3
+          .col-xs-4.col-xs-offset-4
             button#expand-content(type='button', data-toggle='collapse', data-target='#site-nav', aria-controls='site-nav', aria-expanded='false', aria-label='Toggle navigation').btn-block.navbar-toggler.hidden-sm-up &#9776;
 
         #site-nav.row.collapse
           hr
-          .col-xs-12
-            // font-size: 1.25rem; for SM
-            h1.text-xs-center #{headerMessage}
-            hr
+          - if headerMessage
+            .col-xs-12
+              // font-size: 1.25rem; for SM
+              h1.text-xs-center #{headerMessage}
+              hr
 
           .col-xs-12
             include includes/header-links
