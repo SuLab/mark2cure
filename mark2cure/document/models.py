@@ -73,7 +73,7 @@ class Document(models.Model):
 
         return True
 
-    def as_pubtator_annotation_df(self):
+    def as_df_with_pubtator_annotations(self):
         # If the document has 3 solid annotations
         # "GNormPlus"
         # "DNorm"

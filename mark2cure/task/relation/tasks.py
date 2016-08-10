@@ -33,7 +33,7 @@ def import_concepts():
 
     for document in RelationGroup.objects.get(pk=2).documents.all():
 
-        df = document.as_pubtator_annotation_df()
+        df = document.as_df_with_pubtator_annotations()
         # We need annotations with at least a UID and Source
         df.dropna(subset=('uid', 'source'), how='any', inplace=True)
         df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
