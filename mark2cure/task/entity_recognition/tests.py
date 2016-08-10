@@ -3,7 +3,6 @@ from django.test import TestCase
 
 from ...task.models import Task, UserQuestRelationship
 from ...common.models import Group
-from ...document.tasks import get_pubmed_document
 from ...document.models import Annotation
 from ...test_base.test_base import TestBase
 
@@ -168,18 +167,3 @@ class DocumentSubmissionsAPIViews(TestCase, TestBase):
                                     'document_pk': doc.pk}),
                                     follow=True)
         self.client.logout()
-
-        # As Anon user, export the documents submissions
-        res = self.client.get(reverse('task-entity-recognition:read-users-bioc',
-                                      kwargs={'pubmed_id': doc.document_id,
-                                      'format_type': 'xml'}), follow=True)
-        self.assertEqual(res.status_code, 200)
-        bioc = BioCReader(source=res.content)
-        bioc.read()
-
-        # Make sure the BioC document has the opponent's info
-        self.assertEqual(len(bioc.collection.documents), 1)
-        self.assertEqual(int(bioc.collection.documents[0].id), doc.document_id)
-        self.assertEqual(len(bioc.collection.documents[0].passages), 2)
-        self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
-        self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
-from ...common.formatter import bioc_writer, bioc_as_json, apply_bioc_annotations
+from ...common.formatter import bioc_as_json, apply_bioc_annotations
 from ...document.models import Document, Section, Annotation
 from .forms import EntityRecognitionAnnotationForm
 from ..models import Level, Task, UserQuestRelationship
@@ -18,20 +18,6 @@ from ...score.models import Point
 from django.utils import timezone
 
 import random
-
-
-def read_users_bioc(request, pubmed_id, format_type):
-    """Return a BioC file for the PMID with all M2C entity_recognition submissions as annotations"""
-    writer = bioc_writer(request)
-    doc = get_object_or_404(Document, document_id=pubmed_id)
-    doc_bioc = doc.as_bioc_with_user_annotations()
-    writer.collection.add_document(doc_bioc)
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
 
 
 @login_required

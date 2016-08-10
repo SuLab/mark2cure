@@ -6,8 +6,6 @@ from ..document.models import Annotation
 from ..common.models import Group
 from ..task.models import Task
 
-from .views import group_users_bioc
-
 from ..common.bioc import BioCReader
 
 import json
@@ -83,25 +81,6 @@ class GroupBioCAPIViews(TestCase, TestBase):
             for bioc_passage in bioc_doc.passages:
                 total_bioc_annotation_int += len(bioc_passage.annotations)
         self.assertEqual(Annotation.objects.count(), total_bioc_annotation_int)
-
-    def test_group_pubtator_bioc(self):
-        '''
-        # As Anon user, export the documents submissions
-        res = self.client.get(reverse('document:read-users-bioc',
-                              kwargs={'pubmed_id': doc.document_id,
-                              'format_type': 'xml'}), follow=True)
-        self.assertEqual(res.status_code, 200)
-        bioc = BioCReader(source=res.content)
-        bioc.read()
-
-        # Make sure the BioC document has the opponent's infp
-        self.assertEqual(len(bioc.collection.documents), 1)
-        self.assertEqual(int(bioc.collection.documents[0].id), doc.document_id)
-        self.assertEqual(len(bioc.collection.documents[0].passages), 2)
-        self.assertEqual(len(bioc.collection.documents[0].passages[0].annotations), 0)
-        self.assertEqual(len(bioc.collection.documents[0].passages[1].annotations), 6)
-        '''
-        pass
 
     def test_group_list(self):
         # Confirm login required
