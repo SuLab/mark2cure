@@ -104,8 +104,7 @@ block post-footer
       Backbone.Radio.DEBUG = true;
       YPet['convoChannel'] = Backbone.Radio.channel('ypet');
 
-
-      $.getJSON('/document/pubtator-new/'+relation_task_settings.document_pmid+'.json', function( data ) {
+      $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
         /* The Annotation information has been returned from the server at this point
            it is now safe to start YPET */
         passages = data.collection.document.passage;

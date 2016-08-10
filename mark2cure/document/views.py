@@ -51,22 +51,6 @@ def read_specific_pubtator_bioc(request, pub_pk, format_type):
 
 
 def read_pubtator_bioc(request, pubmed_id, format_type):
-    """A merged file of the multiple Pubtator responses"""
-    # When fetching via pubmed, include no annotaitons
-    doc = get_object_or_404(Document, document_id=pubmed_id)
-
-    writer = bioc_writer(request)
-    bioc_document = doc.as_bioc_with_pubtator_annotations()
-    writer.collection.add_document(bioc_document)
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
-
-
-def read_pubtator_new_bioc(request, pubmed_id):
     """
         A merged file of the multiple Pubtator responses
         That is not respective of overlaps and serves back as much as possible
@@ -98,6 +82,9 @@ def read_pubtator_new_bioc(request, pubmed_id):
 
     writer = pubtator_df_as_writer(writer, df)
 
-    writer_json = bioc_as_json(writer)
-    return HttpResponse(writer_json, content_type='application/json')
+    if format_type == 'json':
+        writer_json = bioc_as_json(writer)
+        return HttpResponse(writer_json, content_type='application/json')
+    else:
+        return HttpResponse(writer, content_type='text/xml')
 
