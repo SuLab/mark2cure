@@ -577,7 +577,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
           try {
             var ann_start = +annotation.location['@offset'] - passage_offset;
             var ann_length = +annotation.location['@length'];
-            var ann_type = +_.find(annotation.infon, function(o){return o['@key']=='type';})['#text'];
+            var ann_type_id = +_.find(annotation.infon, function(o){return o['@key']=='type_id';})['#text'];
 
             var start_match = false;
             var selected = words.filter(function(word) {
@@ -590,10 +590,10 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
             if(selected.length) {
               if(opponent) {
                 var opp_anns = parentDocument.get('opponent_annotations');
-                opp_anns.create({words: selected, type: ann_type, opponent: opponent});
+                opp_anns.create({words: selected, type: ann_type_id, opponent: opponent});
               } else {
                 var anns = parentDocument.get('annotations');
-                anns.create({words: selected, type: ann_type, opponent: opponent});
+                anns.create({words: selected, type: ann_type_id, opponent: opponent});
               }
             }
 
