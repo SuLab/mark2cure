@@ -258,14 +258,23 @@ def group_users_bioc(request, group_pk, format_type):
 
 
 def group_pubtator_bioc(request, group_pk, format_type):
+    '''
+        Fetches a group level BioC File
+    '''
     group = get_object_or_404(Group, pk=group_pk)
 
     # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
 
     for doc in group.get_documents():
-        doc_bioc = doc.as_bioc_with_pubtator_annotations()
-        writer.collection.add_document(doc_bioc)
+        doc_writer = doc.as_writer()
+        doc_df = doc.as_df_with_pubtator_annotations()
+
+        # convert DF table into BioC Document
+        from mark2cure.common.formatter import apply_annotations
+        doc_writer = apply_annotations(doc_writer, doc_df)
+
+        writer.collection.add_document(doc_writer.collection.documents[0])
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
