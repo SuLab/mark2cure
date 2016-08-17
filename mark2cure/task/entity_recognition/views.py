@@ -44,9 +44,10 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
 
 @login_required
 def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
-    """Returns back the modified BioC file with additional collection metadata that allow us to compare you to a user and show score data
-        (TODO) Expand this section
-    """
+    '''
+        Returns back the modified BioC file with additional collection metadata that allow us to compare you to a user and show score data
+            (TODO) Expand this section
+    '''
 
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
