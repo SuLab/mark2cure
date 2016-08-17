@@ -2,18 +2,15 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from ..common.bioc import BioCReader, BioCWriter
-from ..common.formatter import bioc_writer, bioc_as_json, pubtator_df_as_writer
+from ..common.formatter import bioc_as_json, clean_df, apply_annotations
 from .models import Document, Pubtator
 
 
 def read_bioc(request, pubmed_id, format_type):
     """A plain (no annotations) BioC file for a PMID"""
-    writer = bioc_writer(request)
     doc = get_object_or_404(Document, document_id=pubmed_id)
 
-    writer = bioc_writer(request)
-    bioc_document = doc.as_bioc_with_passages()
-    writer.collection.add_document(bioc_document)
+    writer = doc.as_writer()
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
