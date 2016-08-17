@@ -1,7 +1,5 @@
-from django.contrib.contenttypes.models import ContentType
-
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..document.models import Document
 
 import xmltodict
 import itertools
@@ -87,70 +85,93 @@ def clean_passage_df_overlaps(df):
     return df
 
 
-def pubtator_df_as_writer(writer, df):
+def clean_df(df):
+    ann_types_arr = ['Chemical', 'Gene', 'Disease']
+    ann_types_arr.extend(Document.APPROVED_TYPES)
+    # (TODO) Consolidate into a single function for reuse with task.relation.task.import_concepts
+    df.dropna(subset=('uid', 'source'), how='any', inplace=True)
+    df = df[df['ann_type'].isin(ann_types_arr)]
+
+    # (TODO) Inspect for , in IDs and duplicate rows
+    # remove unnecessary prefixes from uids
+    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("MESH:") else v)
+    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("OMIM:") else v)
+    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[6:] if v.startswith("CHEBI:") else v)
+
+    # (TODO) Is there an ordering to the UIDs?
+    # (NOTES) After a short inspection, I didn't see an obvious order. -Max 3/2/2016
+    df = df[~df.uid.str.contains(",")]
+    df = df[~df.uid.str.contains("\|")]
+
+    return df
+
+
+def apply_annotations(writer, df):
+    '''
+        This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
+        to apply to the BioCWriter
+    '''
+
+    # If nothing in DF, we can safely return the non-modified writer
+    if df.shape[0] == 0:
+        return writer
+
+    # (TODO) Cases in which a user hasn't annotated something in the title...
+    section_ids = list(df['section_id'].unique())
+    if not len(section_ids) >= 1:
+        raise ValueError('Incorrect number of document sections.')
+
     bioc_doc = writer.collection.documents[0]
-    approved_types = ['Disease', 'Gene', 'Chemical']
+    approved_types = ['disease', 'gene_protein', 'chemical',    'gene', 'species']
+    # ann_types_arr = ['Chemical', 'Gene', 'Disease']
+    # ann_types_arr.extend(Document.APPROVED_TYPES)
+
+    # Make all the offsets scoped the the entire document (like Pubtator)
+    df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']
+    df.ix[df['offset_relative'], 'offset_relative'] = False
+
+    # Not required, but easier to view this way
+    df.sort('start_position', inplace=True)
+
+    # if row['ann_type'] in approved_types:
 
     i = 0
-    for offset, group_df in df.groupby(['offset']):
+    for offset_position, group_df in df.groupby(['section_offset']):
+        # This is another approach to offset grouping:
+        # offset = int(bioc_passage.offset)
+        # for idx, row in df[df['offset'] == offset].iterrows():
+
         bioc_passage = bioc_doc.passages[i]
         i = i + 1
 
-        bioc_passage.annotations = []
+        # Should already be empty if from doc.as_writer(), but perhaps we add an
+        # append method in the future
+        bioc_passage.clear_annotations()
 
-        group_df = clean_passage_df_overlaps(group_df)
+        # (TODO) This should determined off the user_id field
+        # if pubtator:
+        #     group_df = clean_passage_df_overlaps(group_df)
 
         for row_idx, row in group_df.iterrows():
-
-            if row['ann_type'] in approved_types:
-                annotation = BioCAnnotation()
-                annotation.id = str(row_idx)
-                annotation.put_infon('user', 'pubtator')
-                annotation.put_infon('uid', str(row['uid']))
-
-                # (TODO) Map type strings back to 0,1,2
-                annotation.put_infon('type', str(approved_types.index(row['ann_type'])))
-
-                location = BioCLocation()
-                loc = row['location'].split(':')
-                location.offset = str(loc[0])
-                location.length = str(loc[1])
-                annotation.add_location(location)
-
-                annotation.text = row['text']
-
-                bioc_passage.add_annotation(annotation)
-
-    return writer
-
-
-def apply_bioc_annotations(writer, user=None):
-    bioc_doc = writer.collection.documents[0]
-    approved_types = ['disease', 'gene_protein', 'drug']
-
-    for bioc_passage in bioc_doc.passages:
-        section_pk = bioc_passage.infons['id']
-        offset = int(bioc_passage.offset)
-        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-        if user:
-            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_and_user(section_pk, user.pk, content_type_id)
-        else:
-            er_ann_query_set = EntityRecognitionAnnotation.objects.annotations_for_section_pk(section_pk, content_type_id)
-
-        for er_ann in er_ann_query_set:
             annotation = BioCAnnotation()
-            annotation.id = str(er_ann.id)
-            annotation.put_infon('user', str(er_ann.user_id))
 
-            # (TODO) Map type strings back to 0,1,2
-            annotation.put_infon('type', str(approved_types.index(er_ann.type)))
+            annotation.id = str(row_idx)
+
+            # if pubtator:
+            #    annotation.put_infon('user', 'pubtator')
+
+            annotation.put_infon('uid', row['uid'])
+            annotation.put_infon('source', row['source'])
+            annotation.put_infon('user_id', str(row['user_id']))
+            annotation.put_infon('type', row['ann_type'])
+            annotation.put_infon('type_id', str(approved_types.index(row['ann_type'])))
 
             location = BioCLocation()
-            location.offset = str(offset + er_ann.start)
-            location.length = str(len(er_ann.text))
+            location.offset = str(row['start_position'])
+            location.length = str(row['length'])
             annotation.add_location(location)
 
-            annotation.text = er_ann.text
+            annotation.text = row['text']
 
             bioc_passage.add_annotation(annotation)
 
