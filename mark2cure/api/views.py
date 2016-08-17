@@ -201,6 +201,7 @@ def group_bioc(request, group_pk, selection_type, format_type):
         else:
             doc_df = doc.as_df_with_pubtator_annotations()
 
+        # Protection isn't needed b/c this is the raw output for analysis.
         doc_df = clean_df(doc_df, overlap_protection=False)
 
         # convert DF table into BioC Document

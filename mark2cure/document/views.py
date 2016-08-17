@@ -31,18 +31,15 @@ def read_pubtator(request, pk):
 def read_pubtator_bioc(request, pubmed_id, format_type):
     '''
         A merged file of the multiple Pubtator responses
-        That is not respective of overlaps and serves back as much as possible
+        Prevents overlap of text as this is used by YPet
     '''
     # When fetching via pubmed, include no annotaitons
     doc = get_object_or_404(Document, document_id=pubmed_id)
 
-    # (TODO) WARNING This second passage offset is +1 more than pubtator / supposed to be
-    writer = doc.as_writer()
     df = doc.as_df_with_pubtator_annotations()
-    df = clean_df(df)
+    df = clean_df(df, overlap_protection=True)
 
-    print df
-
+    writer = doc.as_writer()
     writer = apply_annotations(writer, df)
 
     if format_type == 'json':

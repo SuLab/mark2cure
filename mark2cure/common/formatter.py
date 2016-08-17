@@ -71,16 +71,13 @@ def is_pubtator_df(df):
     return df['user_id'].isnull().all()
 
 
-def clean_df(df, overlap_protection=False):
+def clean_df(df, overlap_protection=False, allow_duplicates=True):
     '''
         This attempts to santize our Annotation Dataframes that may originate
         from multiple sources (users, pubtator) so they're comparable
     '''
     if df.shape[1] is not 10:
         raise ValueError('Incorrect number of dataframe columns.')
-
-    # We're previously DB Primary Keys
-    df.reset_index(inplace=True)
 
     # Make all the offsets scoped the the entire document (like Pubtator)
     df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']
@@ -108,11 +105,16 @@ def clean_df(df, overlap_protection=False):
     df['ann_type'] = df['ann_type'].str.lower()
     ann_types_arr = ['chemical', 'gene', 'disease']
     ann_types_arr.extend(Document.APPROVED_TYPES)
+    # from relation.task importer
+    # df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
     df = df[df['ann_type'].isin(ann_types_arr)]
     df['ann_type_id'] = 0
     df.ix[df['ann_type'] == 'disease', 'ann_type_id'] = 0
     df.ix[df['ann_type'] == 'gene', 'ann_type_id'] = 1
     df.ix[df['ann_type'] == 'chemical', 'ann_type_id'] = 2
+
+    # We're previously DB Primary Keys
+    df.reset_index(inplace=True)
 
     # is_pubtator = is_pubtator_df(df)
     if overlap_protection:
@@ -126,7 +128,10 @@ def clean_df(df, overlap_protection=False):
             span_a, span_a_row = x
             span_b, span_b_row = y
             if are_overlapping(span_a, span_b):
-                df.drop(span_b_row, axis=1, inplace=True)
+                df.drop(span_b_row, inplace=True)
+
+    if not allow_duplicates:
+        df.drop_duplicates(['uid', 'ann_type_id', 'text'], inplace=True)
 
     return df
 
