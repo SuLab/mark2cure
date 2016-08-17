@@ -25,6 +25,10 @@ urlpatterns = patterns('',
     url(r'^group/(?P<group_pk>\d+)/(?P<selection_type>\w+)/annotations.(?P<format_type>\w+)$',
         views.group_bioc, name='group-bioc'),
 
+    # BioC File export for annotations by Group
+    url(r'^relation-group/(?P<group_pk>\d+).(?P<format_type>\w+)$',
+        views.relation_group_bioc, name='relation-group-bioc'),
+
     url(r'^groups/$',
         views.group_list, name='groups-api'),
 
