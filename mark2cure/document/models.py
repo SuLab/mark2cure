@@ -2,8 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCReader, BioCWriter, BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
-
+from mark2cure.common.bioc import BioCReader, BioCWriter, BioCPassage
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -73,12 +72,46 @@ class Document(models.Model):
 
         return True
 
+    DF_COLUMNS = ('uid', 'source', 'user_id',
+                  'ann_type', 'text',
+                  'section_id', 'section_offset', 'offset_relative',
+                  'start_position', 'length')
+    APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
+
+    def create_df_row(self,
+                      uid, source='db', user_id=None,
+                      ann_type='', text='',
+                      section_id=0, section_offset=0, offset_relative=True,
+                      start_position=0, length=0):
+        '''
+            When offset_relative is False:
+                start position is relative to the entire document and not the
+                section it's contained within
+
+            user_id can be None
+
+            (TODO) Ann Types needs to be normalized
+        '''
+        ann_type = ann_type.lower()
+        return {
+            'uid': str(uid), 'source': str(source), 'user_id': int(user_id) if user_id else None,
+            'ann_type': str(ann_type), 'text': str(text),
+            'section_id': int(section_id), 'section_offset': int(section_offset), 'offset_relative': bool(offset_relative),
+            'start_position': int(start_position), 'length': int(length)
+        }
+
     def as_df_with_pubtator_annotations(self):
+        '''
+            This is a function that merges the 3 different pubtator
+            reponses into 1 main file. It performances selective
+            ordering and precedence for some annotations types / instances
+        '''
         # If the document has 3 solid annotations
         # "GNormPlus"
         # "DNorm"
         # "tmChem"
-        df_columns = ('uid', 'source', 'ann_type', 'text', 'offset', 'location')
+
+        section_ids = self.section_set.values_list('pk', flat=True)
 
         pubtator_dfs = []
         if self.valid_pubtator():
@@ -94,7 +127,7 @@ class Document(models.Model):
 
                 pubtator_arr = []
                 bioc_document = r.collection.documents[0]
-                for passage in bioc_document.passages:
+                for p_idx, passage in enumerate(bioc_document.passages):
 
                     for annotation in passage.annotations:
                         infons = annotation.infons
@@ -110,165 +143,91 @@ class Document(models.Model):
                                 uid_type = key
                                 uid = infons.get(uid_type, None)
 
-                        pubtator_arr.append({
-                            'uid': uid,
-                            'source': uid_type,
+                        start, length = str(annotation.locations[0]).split(':')
+                        pubtator_arr.append(self.create_df_row(
+                            uid=uid, source=uid_type, user_id=None,
+                            text=annotation.text, ann_type=annotation_type,
+                            section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
+                            start_position=start, length=length))
 
-                            'ann_type': annotation_type,
-                            'text': str(annotation.text),
-
-                            'offset': int(passage.offset),
-                            'location': str(annotation.locations[0])
-                        })
-
-                pubtator_dfs.append(pd.DataFrame(pubtator_arr, columns=df_columns))
+                pubtator_dfs.append(pd.DataFrame(pubtator_arr, columns=Document.DF_COLUMNS))
 
         if len(pubtator_dfs):
             return pd.concat(pubtator_dfs)
         else:
-            return pd.DataFrame([], columns=df_columns)
+            return pd.DataFrame([], columns=Document.DF_COLUMNS)
 
-    def as_bioc_with_user_annotations(self, request=None):
+    def as_df_with_user_annotations(self, user=None):
         '''
-            BioC file with every contributed user annotation for that document
-            User's annotations span all experience, agreement, accounts, etc. - there is no filtration
+            Returns back a Pandas Dataframe with the Entity Recognition annotations
+            submitted by all users for this document.
+
+            If a user is passed in, the returning dataframe only contains annotations
+            by that individual user.
         '''
-        document = self.as_bioc()
-        approved_types = ['disease', 'gene_protein', 'drug']
 
-        passage_offset = 0
-        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-        for section in self.available_sections():
-            passage = section.as_bioc(passage_offset)
+        df_arr = []
 
-            for ann in EntityRecognitionAnnotation.objects.annotations_for_section_pk(section.pk, content_type_id):
-                annotation = BioCAnnotation()
-                annotation.id = str(ann.pk)
-                annotation.put_infon('user', str(ann.user_id))
+        content_type_id = str(ContentType.objects.get_for_model(
+            EntityRecognitionAnnotation.objects.first()).id)
 
-                # (TODO) Map type strings back to 0,1,2
-                annotation.put_infon('type', str(approved_types.index(ann.type)))
-                annotation.put_infon('type_name', str(ann.type))
+        if user:
+            # (id, type, text, start, created, section_id, user_id)
+            er_ann_query_set = EntityRecognitionAnnotation.objects.\
+                annotations_for_document_pk_and_user(self.pk, user.pk, content_type_id)
+        else:
+            # (id, type, text, start, created, section_id, user_id)
+            er_ann_query_set = EntityRecognitionAnnotation.objects.\
+                annotations_for_document_pk(self.pk, content_type_id)
 
-                location = BioCLocation()
-                location.offset = str(passage_offset + ann.start)
-                location.length = str(len(ann.text))
-                annotation.add_location(location)
+        # Use the BioC pubtator file for the offset values
+        offset_dict = {}
+        writer = self.as_writer()
+        for passage in writer.collection.documents[0].passages:
+            offset_dict[int(passage.infons.get('id'))] = passage.offset
 
-                annotation.text = ann.text
-                passage.add_annotation(annotation)
+        for er_ann in er_ann_query_set:
 
-            # (WARNING) Addresses Github Issue #133 & #183
-            # Unclear how pubtator will behave with 3+ section documents
-            passage_offset += len(passage.text) + 1
-            document.add_passage(passage)
+            df_arr.append(self.create_df_row(
+                uid=er_ann.id, source='db', user_id=er_ann.user_id,
+                text=er_ann.text, ann_type=er_ann.type,
+                section_id=er_ann.section_id, section_offset=offset_dict[er_ann.section_id], offset_relative=True,
+                start_position=er_ann.start, length=len(er_ann.text)))
 
-        return document
+        return pd.DataFrame(df_arr, columns=Document.DF_COLUMNS)
 
-    def as_bioc_with_pubtator_annotations(self, request=None):
+    def as_writer(self):
         '''
-            This is a function that merges the 3 different pubtator
-            reponses into 1 main file. It performances selective
-            ordering and precedence for some annotations types / instances
-        '''
-        approved_types = ['Disease', 'Gene', 'Chemical']
-        self.init_pubtator()
-        reader = self.as_writer(request)
+            Return a blank BioC Writer that is based off the pubtator content.
 
-        pub_query_set = Pubtator.objects.filter(
+            Problems: This requires every document to have at least 1 pubtator model
+            Pros: This prevents us from generating our own BioC file which may
+            have inconsistencies
+        '''
+        pubtator = Pubtator.objects.filter(
             document=self,
             session_id='',
-            content__isnull=False)
+            content__isnull=False).first()
 
-        # Load up our various pubtator responses
-        pub_readers = []
-        for pubtator in pub_query_set.all():
-            r = BioCReader(source=pubtator.content)
-            r.read()
-            pub_readers.append(r)
+        if not pubtator:
+            return False
 
-        for d_idx, document in enumerate(reader.collection.documents):
-            for p_idx, passage in enumerate(document.passages):
-                # For each passage in each document in the collection
-                # add the appropriate annotation
-                for p in pub_readers:
+        r = BioCReader(source=pubtator.content)
+        r.read()
 
-                    for annotation in p.collection.documents[d_idx].passages[p_idx].annotations:
-                        ann_type = annotation.infons['type']
-                        infons = annotation.infons
+        section_ids = self.section_set.values_list('pk', flat=True)
 
-                        if ann_type in approved_types:
+        for doc in r.collection.documents:
+            for idx, passage in enumerate(doc.passages):
+                passage.clear_annotations()
 
-                            uid_type = None
-                            uid = None
-                            for key in infons.keys():
-                                if key != 'type':
-                                    uid_type = key
-                                    uid = infons.get(uid_type, None)
+                passage.put_infon('section', ['title', 'paragraph'][idx])
+                passage.put_infon('id', str(section_ids[idx]))
 
-                            annotation.clear_infons()
-                            annotation.put_infon('type', str(approved_types.index(ann_type)))
-                            annotation.put_infon('user', 'pubtator')
-                            annotation.put_infon('uid', str(uid))
-                            reader.collection.documents[d_idx].passages[p_idx].add_annotation(annotation)
+        bioc_writer = BioCWriter()
+        bioc_writer.collection = r.collection
 
-                # Remove the shorter annotation if they're multiple
-                # at the same start position
-                anns = reader.collection.documents[d_idx].passages[p_idx].annotations
-                ann_offsets = [x.locations[0].offset for x in anns]
-
-                import collections
-                # For each of the offset positions where there are multiple annotations
-                for offset in [x for x, y in collections.Counter(ann_offsets).items() if y > 1]:
-
-                    conflicting_anns = [x for x in anns if x.locations[0].offset == offset]
-                    longest_ann = max(conflicting_anns, key=lambda a: int(a.locations[0].length))
-
-                    for ann in conflicting_anns:
-                        if ann is not longest_ann:
-                            reader.collection.documents[d_idx].passages[p_idx].remove_annotation(ann)
-
-                # Remove any annoations that overlap, prefer selection for longest
-                anns = reader.collection.documents[d_idx].passages[p_idx].annotations
-                for needle_ann in anns:
-                    needle_ann_offset = int(needle_ann.locations[0].offset)
-                    needle_ann_length = int(needle_ann.locations[0].length)
-
-                    for stack_ann in anns:
-                        stack_ann_offset = int(stack_ann.locations[0].offset)
-                        stack_ann_length = int(stack_ann.locations[0].length)
-
-                        if needle_ann_offset >= stack_ann_offset and needle_ann_length < stack_ann_length:
-                            try:
-                                reader.collection.documents[d_idx].passages[p_idx].remove_annotation(needle_ann)
-                            except:
-                                pass
-
-        return reader.collection.documents[0]
-
-    def as_writer(self, request=None):
-        from mark2cure.common.formatter import bioc_writer
-        writer = bioc_writer(request)
-        document = self.as_bioc_with_passages()
-        writer.collection.add_document(document)
-        return writer
-
-    def as_bioc_with_passages(self):
-        document = self.as_bioc()
-
-        passage_offset = 0
-        for section in self.available_sections():
-            passage = section.as_bioc(passage_offset)
-            passage_offset += len(passage.text)
-            document.add_passage(passage)
-        return document
-
-    def as_bioc(self):
-        document = BioCDocument()
-        document.id = str(self.document_id)
-        document.put_infon('id', str(self.pk))
-        document.put_infon('source', str(self.source))
-        return document
+        return bioc_writer
 
     # Helpers for Talk Page
     def annotations(self):

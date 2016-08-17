@@ -70,7 +70,7 @@ class EntityRecognitionAnnotationManager(models.Manager):
         """.format(doc_pk, type, content_type_id));
         return [x.text for x in res]
 
-    def annotations_for_section_pk(self, section_pk, content_type_id):
+    def annotations_for_document_pk(self, document_pk, content_type_id):
         res = self.raw("""
             SELECT
                 entity_recognition_entityrecognitionannotation.id,
@@ -85,9 +85,33 @@ class EntityRecognitionAnnotationManager(models.Manager):
                 ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {1}
                 LEFT OUTER JOIN document_view
                     ON document_annotation.view_id = document_view.id
-            WHERE section_id = {0}
-        """.format(section_pk, content_type_id));
+                        LEFT OUTER JOIN document_section
+                            ON document_view.section_id = document_section.id
+            WHERE document_section.document_id = {0}
+        """.format(document_pk, content_type_id));
         return res
+
+    def annotations_for_document_pk_and_user(self, document_pk, user_pk, content_type_id):
+        res = self.raw("""
+            SELECT
+                entity_recognition_entityrecognitionannotation.id,
+                entity_recognition_entityrecognitionannotation.type,
+                entity_recognition_entityrecognitionannotation.text,
+                entity_recognition_entityrecognitionannotation.start,
+                document_annotation.created,
+                document_view.section_id,
+                document_view.user_id
+            FROM entity_recognition_entityrecognitionannotation
+            LEFT OUTER JOIN document_annotation
+                ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {2}
+                LEFT OUTER JOIN document_view
+                    ON document_annotation.view_id = document_view.id
+                        LEFT OUTER JOIN document_section
+                            ON document_view.section_id = document_section.id
+            WHERE (document_section.document_id = {0} AND document_view.user_id = {1})
+        """.format(document_pk, user_pk, content_type_id));
+        return res
+
 
     def annotations_for_view_pks(self, view_pks, content_type_id):
         res = self.raw("""
@@ -130,22 +154,4 @@ class EntityRecognitionAnnotationManager(models.Manager):
         return [i for i in res]
 
 
-    def annotations_for_section_and_user(self, section_pk, user_pk, content_type_id):
-        res = self.raw("""
-            SELECT
-                entity_recognition_entityrecognitionannotation.id,
-                entity_recognition_entityrecognitionannotation.type,
-                entity_recognition_entityrecognitionannotation.text,
-                entity_recognition_entityrecognitionannotation.start,
-                document_annotation.created,
-                document_view.section_id,
-                document_view.user_id
-            FROM entity_recognition_entityrecognitionannotation
-            LEFT OUTER JOIN document_annotation
-                ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {2}
-                LEFT OUTER JOIN document_view
-                    ON document_annotation.view_id = document_view.id
-            WHERE (section_id = {0} AND user_id = {1})
-        """.format(section_pk, user_pk, content_type_id));
-        return res
 
