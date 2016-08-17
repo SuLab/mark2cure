@@ -67,41 +67,62 @@ def are_overlapping(r, s):
     return not(r[1] < s[0] or s[1] < r[0])
 
 
-def clean_passage_df_overlaps(df):
+def is_pubtator_df(df):
+    return df['user_id'].isnull().all()
+
+
+def clean_df(df, overlap_protection=False):
+    '''
+        This attempts to santize our Annotation Dataframes that may originate
+        from multiple sources (users, pubtator) so they're comparable
+    '''
+    if df.shape[1] is not 10:
+        raise ValueError('Incorrect number of dataframe columns.')
+
+    # We're previously DB Primary Keys
     df.reset_index(inplace=True)
 
-    res = []
-    for index, row in df.iterrows():
-        loc_splt_str = [int(x) for x in row['location'].split(':')]
-        loc_span = (loc_splt_str[0], loc_splt_str[0] + loc_splt_str[1])
-        res.append((loc_span, index))
+    # Make all the offsets scoped the the entire document (like Pubtator)
+    df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']
+    df.ix[df['offset_relative'], 'offset_relative'] = False
 
-    for x, y in itertools.combinations(res, 2):
-        span_a, span_a_row = x
-        span_b, span_b_row = y
-        if are_overlapping(span_a, span_b):
-            df.drop(span_b_row, inplace=True)
+    # Not required, but easier to view this way
+    df.sort('start_position', inplace=True)
 
-    return df
-
-
-def clean_df(df):
-    ann_types_arr = ['Chemical', 'Gene', 'Disease']
-    ann_types_arr.extend(Document.APPROVED_TYPES)
-    # (TODO) Consolidate into a single function for reuse with task.relation.task.import_concepts
+    # Absolutely require UID and Source
     df.dropna(subset=('uid', 'source'), how='any', inplace=True)
-    df = df[df['ann_type'].isin(ann_types_arr)]
+
+    # Remove unnecessary prefixes from uids if coming from external sources (via pubtator algos)
+    df.loc[:, 'uid'] = df.loc[:, 'uid'].map(lambda v: v[5:] if v.startswith('MESH:') else v)
+    df.loc[:, 'uid'] = df.loc[:, 'uid'].map(lambda v: v[5:] if v.startswith('OMIM:') else v)
+    df.loc[:, 'uid'] = df.loc[:, 'uid'].map(lambda v: v[6:] if v.startswith('CHEBI:') else v)
 
     # (TODO) Inspect for , in IDs and duplicate rows
-    # remove unnecessary prefixes from uids
-    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("MESH:") else v)
-    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[5:] if v.startswith("OMIM:") else v)
-    df.loc[:, "uid"] = df.loc[:, "uid"].map(lambda v: v[6:] if v.startswith("CHEBI:") else v)
-
     # (TODO) Is there an ordering to the UIDs?
+
     # (NOTES) After a short inspection, I didn't see an obvious order. -Max 3/2/2016
     df = df[~df.uid.str.contains(",")]
     df = df[~df.uid.str.contains("\|")]
+
+    # Only keep rows that are in our known annotation type lists
+    df['ann_type'] = df['ann_type'].str.lower()
+    ann_types_arr = ['chemical', 'gene', 'disease']
+    ann_types_arr.extend(Document.APPROVED_TYPES)
+    df = df[df['ann_type'].isin(ann_types_arr)]
+
+    # is_pubtator = is_pubtator_df(df)
+    if overlap_protection:
+        # Removes any annotations (rows) that have span overlap
+        res = []
+        for index, row in df.iterrows():
+            loc_span = (row['start_position'], row['start_position'] + row['length'])
+            res.append((loc_span, index))
+
+        for x, y in itertools.combinations(res, 2):
+            span_a, span_a_row = x
+            span_b, span_b_row = y
+            if are_overlapping(span_a, span_b):
+                df.drop(span_b_row, axis=1, inplace=True)
 
     return df
 
@@ -110,6 +131,9 @@ def apply_annotations(writer, df):
     '''
         This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
         to apply to the BioCWriter
+
+        Enforces as little DF modification as possible. This function is only
+        intended to take the DF it was given and return a BioC Writer
     '''
 
     # If nothing in DF, we can safely return the non-modified writer
@@ -122,18 +146,6 @@ def apply_annotations(writer, df):
         raise ValueError('Incorrect number of document sections.')
 
     bioc_doc = writer.collection.documents[0]
-    approved_types = ['disease', 'gene_protein', 'chemical',    'gene', 'species']
-    # ann_types_arr = ['Chemical', 'Gene', 'Disease']
-    # ann_types_arr.extend(Document.APPROVED_TYPES)
-
-    # Make all the offsets scoped the the entire document (like Pubtator)
-    df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']
-    df.ix[df['offset_relative'], 'offset_relative'] = False
-
-    # Not required, but easier to view this way
-    df.sort('start_position', inplace=True)
-
-    # if row['ann_type'] in approved_types:
 
     i = 0
     for offset_position, group_df in df.groupby(['section_offset']):
@@ -141,6 +153,7 @@ def apply_annotations(writer, df):
         # offset = int(bioc_passage.offset)
         # for idx, row in df[df['offset'] == offset].iterrows():
 
+        # (TODO) (WARNING) If only 1 section, then the bioc_passage will be wrong
         bioc_passage = bioc_doc.passages[i]
         i = i + 1
 
@@ -148,23 +161,16 @@ def apply_annotations(writer, df):
         # append method in the future
         bioc_passage.clear_annotations()
 
-        # (TODO) This should determined off the user_id field
-        # if pubtator:
-        #     group_df = clean_passage_df_overlaps(group_df)
-
         for row_idx, row in group_df.iterrows():
             annotation = BioCAnnotation()
 
             annotation.id = str(row_idx)
 
-            # if pubtator:
-            #    annotation.put_infon('user', 'pubtator')
-
             annotation.put_infon('uid', row['uid'])
             annotation.put_infon('source', row['source'])
             annotation.put_infon('user_id', str(row['user_id']))
             annotation.put_infon('type', row['ann_type'])
-            annotation.put_infon('type_id', str(approved_types.index(row['ann_type'])))
+            annotation.put_infon('type_id', row['ann_type_id'])
 
             location = BioCLocation()
             location.offset = str(row['start_position'])
