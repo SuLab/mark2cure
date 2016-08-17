@@ -175,8 +175,8 @@ def apply_annotations(writer, df):
             annotation.put_infon('type_id', str(row['ann_type_id']))
 
             location = BioCLocation()
-            location.offset = str(row['start_position'])
-            location.length = str(row['length'])
+            location.offset = str(int(row['start_position']))
+            location.length = str(int(row['length']))
             annotation.add_location(location)
 
             annotation.text = row['text']
