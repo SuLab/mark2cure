@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
-from ...common.formatter import bioc_as_json, apply_bioc_annotations
+from ...common.formatter import bioc_as_json, apply_annotations, clean_df
 from ...document.models import Document, Section, Annotation
 from .forms import EntityRecognitionAnnotationForm
 from ..models import Level, Task, UserQuestRelationship
@@ -22,13 +22,18 @@ import random
 
 @login_required
 def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
-    """Return a BioC file for the PMID with only a specific user's M2C entity_recognition submissions as annotations"""
+    '''
+        Return a BioC file for the PMID with only a specific user's M2C entity_recognition submissions as annotations
+    '''
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
+    df = document.as_df_with_user_annotations(user=user)
+    df = clean_df(df)
+
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_bioc_annotations(writer, user)
+    writer = apply_annotations(writer, df)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
