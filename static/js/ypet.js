@@ -566,7 +566,7 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
       var passage_offset = +passage.offset;
       if(annotations.length) {
 
-        var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user';})['#text']; }));
+        var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user_id';})['#text']; }));
         if(user_ids.length != 1) { console.log('throw error'); }
         var user_id = +user_ids[0];
         if(passage_offset != 0) {
