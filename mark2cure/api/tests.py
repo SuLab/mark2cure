@@ -58,14 +58,16 @@ class GroupBioCAPIViews(TestCase, TestBase):
         self.load_fake_annotations(self.user_names, doc)
 
         # Fetch the Group BioC as JSON to ensure is online
-        response = self.client.get(reverse('api:group-users-bioc',
+        response = self.client.get(reverse('api:group-bioc',
                                            kwargs={'group_pk': self.group.pk,
+                                                   'selection_type': 'user',
                                                    'format_type': 'json'}))
         self.assertEqual(response.status_code, 200)
 
         # Fetch the Group BioC for all user annotations
-        response = self.client.get(reverse('api:group-users-bioc',
+        response = self.client.get(reverse('api:group-bioc',
                                            kwargs={'group_pk': self.group.pk,
+                                                   'selection_type': 'pubtator',
                                                    'format_type': 'xml'}))
         self.assertEqual(response.status_code, 200)
         r = BioCReader(source=response.content)
