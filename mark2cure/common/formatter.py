@@ -1,4 +1,4 @@
-from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation
+from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation, BioCRelation, BioCNode
 from ..document.models import Document
 
 import xmltodict
@@ -190,6 +190,38 @@ def apply_annotations(writer, df):
             annotation.text = row['text']
 
             bioc_passage.add_annotation(annotation)
+
+    return writer
+
+
+def apply_rel_annotations(writer, df):
+    '''
+        This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
+        to apply to the BioCWriter
+
+        Enforces as little DF modification as possible. This function is only
+        intended to take the DF it was given and return a BioC Writer
+    '''
+
+    # If nothing in DF, we can safely return the non-modified writer
+    # if df.shape[0] == 0 or df.shape[1] != 11:
+    if df.shape[0] == 0:
+        return writer
+
+    bioc_doc = writer.collection.documents[0]
+
+    for row_idx, row in df.iterrows():
+        # Relations get added on a document level, not passage
+        r = BioCRelation()
+        r.put_infon('event-type', row['answer'])
+        r.put_infon('relation-type', row['relation_type'])
+
+        n = BioCNode(refid=row['concept_1_id'], role='')
+        r.add_node(n)
+
+        n = BioCNode(refid=row['concept_2_id'], role='')
+        r.add_node(n)
+        bioc_doc.add_relation(r)
 
     return writer
 

@@ -3,8 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
-from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_annotations
-from ..common.bioc import BioCRelation, BioCNode
+from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_annotations, apply_rel_annotations
 from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
@@ -225,25 +224,11 @@ def relation_group_bioc(request, group_pk, format_type):
     for doc in group.documents.all():
         doc_writer = doc.as_writer()
         if doc_writer:
-            d = doc_writer.collection.documents[0]
 
-            for relation in doc.relation_set.all():
-                for answer in relation.relationannotation_set.values_list('answer', flat=True):
+            doc_df = doc.as_rel_df_with_user_annotations()
+            doc_writer = apply_rel_annotations(doc_writer, doc_df)
 
-                    # Relations get added on a document leve, not passage
-                    r = BioCRelation()
-                    r.put_infon('event-type', answer)
-                    r.put_infon('relation-type', relation.relation_type)
-
-                    n = BioCNode(refid=relation.concept_1.id, role='')
-                    r.add_node(n)
-
-                    n = BioCNode(refid=relation.concept_2.id, role='')
-                    r.add_node(n)
-
-                    d.add_relation(r)
-
-            writer.collection.add_document(d)
+            writer.collection.add_document(doc_writer.collection.documents[0])
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
