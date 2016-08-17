@@ -21,13 +21,9 @@ urlpatterns = patterns('',
     url(r'^quest/(?P<group_pk>\d+)/$',
         views.quest_group_list, name='quest-group-api'),
 
-    # BioC File for M2C annotations by Group
-    url(r'^group/(?P<group_pk>\d+)/user_annotations.(?P<format_type>\w+)$',
-        views.group_users_bioc, name='group-users-bioc'),
-
-    # BioC File for Pubtator annotations by Group
-    url(r'^group/(?P<group_pk>\d+)/pubtator_annotations.(?P<format_type>\w+)$',
-        views.group_pubtator_bioc, name='group-pubtator-bioc'),
+    # BioC File export for annotations by Group
+    url(r'^group/(?P<group_pk>\d+)/(?P<selection_type>\w+)/annotations.(?P<format_type>\w+)$',
+        views.group_bioc, name='group-bioc'),
 
     url(r'^groups/$',
         views.group_list, name='groups-api'),

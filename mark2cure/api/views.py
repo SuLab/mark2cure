@@ -184,11 +184,9 @@ def relation_list(request):
     return Response(serializer.data)
 
 
-# @api_view(['GET'])
-def group_users_bioc(request, group_pk, format_type):
+def group_bioc(request, group_pk, selection_type, format_type):
     '''
-        Returns the BioC document for all user
-        annotations accross the group
+        Returns the BioC document for all annotations accross the group
     '''
 
     # Fetch the group and all documents associated with the Group
@@ -198,32 +196,11 @@ def group_users_bioc(request, group_pk, format_type):
 
     for doc in group.get_documents():
         doc_writer = doc.as_writer()
-        doc_df = doc.as_df_with_user_annotations()
-        doc_df = clean_df(doc_df, overlap_protection=False)
+        if selection_type == 'user':
+            doc_df = doc.as_df_with_user_annotations()
+        else:
+            doc_df = doc.as_df_with_pubtator_annotations()
 
-        # convert DF table into BioC Document
-        doc_writer = apply_annotations(doc_writer, doc_df)
-
-        writer.collection.add_document(doc_writer.collection.documents[0])
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
-
-
-def group_pubtator_bioc(request, group_pk, format_type):
-    '''
-        Fetches a group level BioC File
-    '''
-    group = get_object_or_404(Group, pk=group_pk)
-
-    writer = bioc_writer(request)
-
-    for doc in group.get_documents():
-        doc_writer = doc.as_writer()
-        doc_df = doc.as_df_with_pubtator_annotations()
         doc_df = clean_df(doc_df, overlap_protection=False)
 
         # convert DF table into BioC Document
