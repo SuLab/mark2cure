@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
-from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_annotations, apply_rel_annotations
+from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_er_annotations, apply_rel_annotations
 from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
@@ -206,7 +206,7 @@ def group_bioc(request, group_pk, selection_type, format_type):
         doc_df = clean_df(doc_df, overlap_protection=False)
 
         # convert DF table into BioC Document
-        doc_writer = apply_annotations(doc_writer, doc_df)
+        doc_writer = apply_er_annotations(doc_writer, doc_df)
 
         writer.collection.add_document(doc_writer.collection.documents[0])
 

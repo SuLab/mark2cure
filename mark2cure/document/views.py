@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from ..common.formatter import bioc_as_json, clean_df, apply_annotations
+from ..common.formatter import bioc_as_json, clean_df, apply_er_annotations
 from .models import Document, Pubtator
 
 
@@ -40,7 +40,7 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
     df = clean_df(df, overlap_protection=True)
 
     writer = doc.as_writer()
-    writer = apply_annotations(writer, df)
+    writer = apply_er_annotations(writer, df)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)

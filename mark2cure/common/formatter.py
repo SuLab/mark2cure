@@ -136,7 +136,7 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     return df
 
 
-def apply_annotations(writer, df):
+def apply_er_annotations(writer, df):
     '''
         This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
         to apply to the BioCWriter

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
-from ...common.formatter import bioc_as_json, apply_annotations, clean_df
+from ...common.formatter import bioc_as_json, apply_er_annotations, clean_df
 from ...document.models import Document, Section, Annotation
 from .forms import EntityRecognitionAnnotationForm
 from ..models import Level, Task, UserQuestRelationship
@@ -33,7 +33,7 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
 
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_annotations(writer, df)
+    writer = apply_er_annotations(writer, df)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -85,7 +85,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
 
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_annotations(writer, df)
+    writer = apply_er_annotations(writer, df)
 
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
@@ -221,7 +221,7 @@ def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type)
 
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_annotations(writer, df)
+    writer = apply_er_annotations(writer, df)
 
     writer.collection.put_infon('partner', str(user.username))
     writer.collection.put_infon('partner_level', Level.objects.filter(user=user, task_type='e').first().get_name())
