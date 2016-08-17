@@ -80,9 +80,12 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
                              created=timezone.now())
         return HttpResponseServerError('points_awarded')
 
+    df = document.as_df_with_user_annotations(user=opponent)
+    df = clean_df(df)
+
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_bioc_annotations(writer, opponent)
+    writer = apply_annotations(writer, df)
 
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
@@ -204,14 +207,21 @@ def quest_read_doc(request, quest_pk, doc_idx):
 
 @login_required
 def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type):
+    '''
+        Returns the BioC file for how a particular user did
+        on a document WITHIN a specific quest
+    '''
     # Check pass just for url santization reasons
     get_object_or_404(Task, pk=quest_pk)
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
+    df = document.as_df_with_user_annotations(user=user)
+    df = clean_df(df)
+
     # BioC Writer Response that will serve all partner comparison information
     writer = document.as_writer()
-    writer = apply_bioc_annotations(writer, user)
+    writer = apply_annotations(writer, df)
 
     writer.collection.put_infon('partner', str(user.username))
     writer.collection.put_infon('partner_level', Level.objects.filter(user=user, task_type='e').first().get_name())
