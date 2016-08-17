@@ -1,17 +1,12 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-
-from ..common.bioc import BioCDocument, BioCPassage, BioCAnnotation, BioCLocation
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
-from ..common.formatter import bioc_writer, bioc_as_json
+from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_annotations
 from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
-from ..document.models import Section
 from ..score.models import Point
 
 from rest_framework.decorators import api_view
@@ -195,60 +190,21 @@ def group_users_bioc(request, group_pk, format_type):
         Returns the BioC document for all user
         annotations accross the group
     '''
-    # (TODO) What is this content var all about?
-    content = False
-    if not type(request) == dict:
-        content = request.GET.get('content', False)
 
     # Fetch the group and all documents associated with the Group
     group = get_object_or_404(Group, pk=group_pk)
-    document_pmids = group.get_documents().values_list('document_id', flat=True)
 
-    # Fetch all the section pks and their text length
-    sections = Section.objects.filter(
-        document__document_id__in=document_pmids
-    ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
-
-    # Provide the base of the response
     writer = bioc_writer(request)
-    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
 
-    for doc_pmid in document_pmids:
-        document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid, content_type_id)
+    for doc in group.get_documents():
+        doc_writer = doc.as_writer()
+        doc_df = doc.as_df_with_user_annotations()
+        doc_df = clean_df(doc_df, overlap_protection=False)
 
-        document = BioCDocument()
-        document.id = str(doc_pmid)
+        # convert DF table into BioC Document
+        doc_writer = apply_annotations(doc_writer, doc_df)
 
-        passage_offset = 0
-
-        section_pks = list(set([ann.section_id for ann in document_annotations]))
-        for section_pk in section_pks:
-            # Add the Section to the Document
-            passage = BioCPassage()
-            passage.put_infon('id', str(section_pk))
-            passage.offset = str(passage_offset)
-
-            section_annotations = filter(lambda ann: ann.section_id == section_pk, document_annotations)
-            for ann in section_annotations:
-                annotation = BioCAnnotation()
-
-                annotation.id = str(ann.id)
-                annotation.put_infon('user', str(ann.user_id))
-                annotation.put_infon('type', ann.type)
-
-                location = BioCLocation()
-                location.offset = str(passage_offset + ann.start)
-                location.length = str(len(ann.text))
-                annotation.add_location(location)
-                annotation.text = ann.text
-
-                passage.add_annotation(annotation)
-
-            section_results = filter(lambda section: section['pk'] == section_pk, sections)
-            passage_offset += int(section_results[0]['section_length'])
-            document.add_passage(passage)
-
-        writer.collection.add_document(document)
+        writer.collection.add_document(doc_writer.collection.documents[0])
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -263,15 +219,14 @@ def group_pubtator_bioc(request, group_pk, format_type):
     '''
     group = get_object_or_404(Group, pk=group_pk)
 
-    # When fetching via pubmed, include all user annotaitons
     writer = bioc_writer(request)
 
     for doc in group.get_documents():
         doc_writer = doc.as_writer()
         doc_df = doc.as_df_with_pubtator_annotations()
+        doc_df = clean_df(doc_df, overlap_protection=False)
 
         # convert DF table into BioC Document
-        from mark2cure.common.formatter import apply_annotations
         doc_writer = apply_annotations(doc_writer, doc_df)
 
         writer.collection.add_document(doc_writer.collection.documents[0])
