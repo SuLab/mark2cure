@@ -33,7 +33,7 @@ def import_concepts():
 
     for document in RelationGroup.objects.get(pk=2).documents.all():
 
-        df = document.as_df_with_pubtator_annotations()
+        df = document.as_er_df_with_pubtator_annotations()
         # (TODO) Do we need protection or not? I'm confused.
         df = clean_df(df, overlap_protection=False, allow_duplicates=False)
 

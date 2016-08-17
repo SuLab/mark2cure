@@ -36,7 +36,7 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     doc = get_object_or_404(Document, document_id=pubmed_id)
 
-    df = doc.as_df_with_pubtator_annotations()
+    df = doc.as_er_df_with_pubtator_annotations()
     df = clean_df(df, overlap_protection=True)
 
     writer = doc.as_writer()

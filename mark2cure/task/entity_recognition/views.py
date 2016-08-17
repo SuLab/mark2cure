@@ -28,7 +28,7 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
-    df = document.as_df_with_user_annotations(user=user)
+    df = document.as_er_df_with_user_annotations(user=user)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information
@@ -80,7 +80,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
                              created=timezone.now())
         return HttpResponseServerError('points_awarded')
 
-    df = document.as_df_with_user_annotations(user=opponent)
+    df = document.as_er_df_with_user_annotations(user=opponent)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information
@@ -216,7 +216,7 @@ def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type)
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
-    df = document.as_df_with_user_annotations(user=user)
+    df = document.as_er_df_with_user_annotations(user=user)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information

@@ -78,7 +78,7 @@ class Document(models.Model):
                   'start_position', 'length')
     APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
 
-    def create_df_row(self,
+    def create_er_df_row(self,
                       uid, source='db', user_id=None,
                       ann_type='', text='',
                       section_id=0, section_offset=0, offset_relative=True,
@@ -100,7 +100,7 @@ class Document(models.Model):
             'start_position': int(start_position), 'length': int(length)
         }
 
-    def as_df_with_pubtator_annotations(self):
+    def as_er_df_with_pubtator_annotations(self):
         '''
             This is a function that merges the 3 different pubtator
             reponses into 1 main file. It performances selective
@@ -144,7 +144,7 @@ class Document(models.Model):
                                 uid = infons.get(uid_type, None)
 
                         start, length = str(annotation.locations[0]).split(':')
-                        pubtator_arr.append(self.create_df_row(
+                        pubtator_arr.append(self.create_er_df_row(
                             uid=uid, source=uid_type, user_id=None,
                             text=annotation.text, ann_type=annotation_type,
                             section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
@@ -157,7 +157,7 @@ class Document(models.Model):
         else:
             return pd.DataFrame([], columns=Document.DF_COLUMNS)
 
-    def as_df_with_user_annotations(self, user=None):
+    def as_er_df_with_user_annotations(self, user=None):
         '''
             Returns back a Pandas Dataframe with the Entity Recognition annotations
             submitted by all users for this document.
@@ -188,7 +188,7 @@ class Document(models.Model):
 
         for er_ann in er_ann_query_set:
 
-            df_arr.append(self.create_df_row(
+            df_arr.append(self.create_er_df_row(
                 uid=er_ann.id, source='db', user_id=er_ann.user_id,
                 text=er_ann.text, ann_type=er_ann.type,
                 section_id=er_ann.section_id, section_offset=offset_dict[er_ann.section_id], offset_relative=True,

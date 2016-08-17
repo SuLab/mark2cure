@@ -197,9 +197,9 @@ def group_bioc(request, group_pk, selection_type, format_type):
     for doc in group.get_documents():
         doc_writer = doc.as_writer()
         if selection_type == 'user':
-            doc_df = doc.as_df_with_user_annotations()
+            doc_df = doc.as_er_df_with_user_annotations()
         else:
-            doc_df = doc.as_df_with_pubtator_annotations()
+            doc_df = doc.as_er_df_with_pubtator_annotations()
 
         # Protection isn't needed b/c this is the raw output for analysis.
         doc_df = clean_df(doc_df, overlap_protection=False)
