@@ -109,6 +109,7 @@ def clean_df(df, overlap_protection=False):
     ann_types_arr = ['chemical', 'gene', 'disease']
     ann_types_arr.extend(Document.APPROVED_TYPES)
     df = df[df['ann_type'].isin(ann_types_arr)]
+    df['ann_type_id'] = 0
 
     # is_pubtator = is_pubtator_df(df)
     if overlap_protection:
@@ -137,6 +138,7 @@ def apply_annotations(writer, df):
     '''
 
     # If nothing in DF, we can safely return the non-modified writer
+    # if df.shape[0] == 0 or df.shape[1] != 11:
     if df.shape[0] == 0:
         return writer
 
@@ -170,7 +172,7 @@ def apply_annotations(writer, df):
             annotation.put_infon('source', row['source'])
             annotation.put_infon('user_id', str(row['user_id']))
             annotation.put_infon('type', row['ann_type'])
-            annotation.put_infon('type_id', row['ann_type_id'])
+            annotation.put_infon('type_id', str(row['ann_type_id']))
 
             location = BioCLocation()
             location.offset = str(row['start_position'])
