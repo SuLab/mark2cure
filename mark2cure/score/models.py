@@ -21,6 +21,7 @@ class Point(models.Model):
 
     class Meta:
         ordering = ('-updated',)
+        app_label = 'score'
 
     def __unicode__(self):
         return '{0}'.format(self.id)

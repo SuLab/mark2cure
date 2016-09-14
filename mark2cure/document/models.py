@@ -244,6 +244,7 @@ class Document(models.Model):
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'
+        app_label = 'document'
 
 
 class Pubtator(models.Model):
@@ -261,6 +262,9 @@ class Pubtator(models.Model):
     # since last time it's been known to validate
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'document'
 
     def __unicode__(self):
         return 'pubtator'
@@ -324,6 +328,9 @@ class Section(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     document = models.ForeignKey(Document)
+
+    class Meta:
+        app_label = 'document'
 
     def as_bioc(self, offset, content=True):
         passage = BioCPassage()
@@ -408,6 +415,7 @@ class View(models.Model):
 
     class Meta:
         get_latest_by = 'pk'
+        app_label = 'document'
 
     def __unicode__(self):
         return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
@@ -441,5 +449,7 @@ class Annotation(models.Model):
 
     class Meta:
         get_latest_by = 'updated'
+        app_label = 'document'
+
         # (TODO) This is not supported by MySQL but would help prevent dups in this table
         # unique_together = ['kind', 'type', 'text', 'start', 'view']

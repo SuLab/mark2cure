@@ -26,6 +26,9 @@ class Team(models.Model):
     description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'userprofile'
+
     def __unicode__(self):
         return self.name
 
@@ -144,6 +147,9 @@ class UserProfile(models.Model):
     referral = models.TextField(verbose_name=u'I heard about Mark2Cure from', blank=True)
     motivation = models.TextField(verbose_name=u'I contribute to Mark2Cure because', blank=True)
     quote = models.TextField(verbose_name=u'Quote / Signature', blank=True)
+
+    class Meta:
+        app_label = 'userprofile'
 
     def __unicode__(self):
         return u'Profile of user: %s' % self.user.username

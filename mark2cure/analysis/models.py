@@ -21,6 +21,9 @@ class Report(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        app_label = 'analysis'
+
     def __unicode__(self):
         return u'Report'
 

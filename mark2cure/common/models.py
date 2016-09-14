@@ -37,6 +37,9 @@ class Group(models.Model):
 
     enabled = models.BooleanField(default=False)
 
+    class Meta:
+        app_label = 'common'
+
     def get_documents(self):
         # (TODO?) Return for __in of task_ids
         return Document.objects.filter(task__group=self)
@@ -163,4 +166,7 @@ class SupportMessage(models.Model):
 
     def __unicode__(self):
         return u'{text} (via {user})'.format(text=self.text, user=self.user)
+
+    class Meta:
+        app_label = 'common'
 

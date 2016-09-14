@@ -11,3 +11,7 @@ class Download(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
     download_count = models.IntegerField(default=0)
+
+    class Meta:
+        app_label = 'download'
+
