@@ -12,7 +12,6 @@ from ..task.models import Level
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from brabeion.models import BadgeAward
 from django.contrib import messages
 
 
@@ -62,10 +61,10 @@ def settings(request):
 @api_view(['GET'])
 @login_required
 def user_points(request):
-    points_badge = BadgeAward.objects.filter(user=request.user, slug='points').last()
 
     return Response({
         'points': request.user.profile.score(),
-        'points_level': points_badge.name,
+        # (TODO) implement using new score method
+        'points_level': 'Hard Worker',
         'skill_level': Level.objects.filter(user=request.user, task_type='e').first().get_name()
     })

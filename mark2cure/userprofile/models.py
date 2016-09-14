@@ -4,10 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Q
 
-from timezone_field import TimeZoneField
 from django_countries.fields import CountryField
-
-from djangoratings.fields import RatingField
 
 from ..document.models import Annotation, Document, View
 from ..common.models import Group
@@ -98,12 +95,9 @@ class UserProfile(models.Model):
     team = models.ForeignKey(Team, null=True, blank=True)
     last_seen = models.DateTimeField(null=True, blank=True)
 
-    timezone = TimeZoneField(default='America/Los_Angeles',
-                             blank=True, null=True)
     avatar = models.ImageField(upload_to=_content_file_name,
                                default='images/default.jpg',
                                blank=True)
-    rating = RatingField(range=100000, allow_anonymous=True)
 
     email_notify = models.BooleanField(default=False)
 

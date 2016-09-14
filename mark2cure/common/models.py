@@ -5,8 +5,6 @@ from django.db import models
 from ..document.models import Document, View, Annotation
 from ..task.models import DocumentQuestRelationship, Task, UserQuestRelationship
 
-from brabeion.base import Badge, BadgeAwarded
-from brabeion import badges
 from decimal import Decimal
 
 import random
@@ -27,47 +25,6 @@ def user_signed_up_(request, user, **kwargs):
             Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=3, created=timezone.now())
         elif task_type_str == 'r':
             Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=1, created=timezone.now())
-
-
-class PointsBadge(Badge):
-    slug = "points"
-    levels = [
-        "Novice Magic Marker",
-        "Magic Marker",
-        "Expert Magic Marker",
-        "Novice Marker Bee",
-        "Marker Bee",
-        "Expert Marker Bee",
-        "Novice Marksman",
-        "Marksman",
-        "Expert Marksman",
-        "Novice Mark up",
-        "Mark up",
-        "Expert Mark up"
-        "Novice Benchmarker",
-        "Benchmarker",
-        "Expert Benchmarker",
-        "Master Benchmarker",
-        "Master Marker",
-        "Bronze Master Marker",
-        "Silver Master Marker",
-        "Gold Master Marker",
-    ]
-    events = [
-        "points_awarded",
-    ]
-    multiple = False
-
-    def award(self, **state):
-        user = state["user"]
-        points = user.profile.score()
-        if points > 500:
-            return BadgeAwarded(level=2)
-        if points > 50:
-            return BadgeAwarded(level=1)
-
-
-badges.register(PointsBadge)
 
 
 class Group(models.Model):

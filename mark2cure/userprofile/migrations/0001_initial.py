@@ -5,7 +5,7 @@ from django.db import models, migrations
 import mark2cure.userprofile.models
 import django_countries.fields
 from django.conf import settings
-import timezone_field.fields
+# import timezone_field.fields
 
 
 class Migration(migrations.Migration):
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('last_seen', models.DateTimeField(null=True, blank=True)),
-                ('timezone', timezone_field.fields.TimeZoneField(default=b'America/Los_Angeles', null=True, blank=True)),
+                # ('timezone', timezone_field.fields.TimeZoneField(default=b'America/Los_Angeles', null=True, blank=True)),
                 ('avatar', models.ImageField(default=b'images/default.jpg', upload_to=mark2cure.userprofile.models._content_file_name, blank=True)),
                 ('email_notify', models.BooleanField(default=False)),
                 ('gender', models.CharField(default=None, max_length=1, null=True, blank=True, choices=[(b'm', b'Male'), (b'f', b'Female')])),

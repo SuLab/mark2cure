@@ -5,7 +5,7 @@ from .models import UserProfile, Team
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['timezone', 'avatar', 'team', 'email_notify',
+        fields = ['avatar', 'team', 'email_notify',
                   'gender', 'age', 'occupation', 'education',
                   'science_education', 'country', 'referral',
                   'motivation', 'quote']
