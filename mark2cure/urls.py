@@ -82,4 +82,4 @@ urlpatterns = [
 
     url(r'^(?P<url>.*/)$', views.flatpage),
 
-)
+]
