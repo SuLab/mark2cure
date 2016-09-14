@@ -45,6 +45,9 @@ urlpatterns = patterns('',
     url(r'^api/', include('mark2cure.api.urls',
         namespace='api')),
 
+    url(r'^download/', include('mark2cure.download.urls',
+        namespace='download')),
+
     url(r'^control/', include('mark2cure.control.urls',
         namespace='control')),
 

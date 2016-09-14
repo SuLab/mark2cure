@@ -1,0 +1,73 @@
+extends base
+
+- load humanize
+
+block header
+  - with headerMessage='Downloads'
+    include includes/header
+
+block content
+  #instructions.container.m-t-1.m-b-2
+    .row
+      ol.breadcrumb
+        li
+          a(href='{% url "instructions:home" %}') Instructions
+        //block breadcrumb
+
+    .row
+      // Sidebar
+      .col-md-4
+        ul.list-group
+          - for group in groups
+            li.list-group-item.row
+              .col-xs-2
+                - if group.2 == 'er'
+                  i(aria-hidden='true').fa.fa-pencil
+                - else
+                  i(aria-hidden='true').fa.fa-share-alt
+
+
+              .col-xs-10
+                form(method='post', action='{% url "download:export" %}')
+                  - csrf_token
+                  input(name='group_pk', type='hidden', value='{{ group.0 }}')
+                  input(name='task_type', type='hidden', value='{{ group.2 }}')
+                  button(type='submit').btn.btn-link #{group.1}
+
+
+      .col-md-8
+        p.lead.text-xs-center.m-t-2 Here is your resource to be able to download the raw data collected by Mark2Cure
+
+        table.table
+          thead
+            tr
+              th #
+              th Name
+              th ER
+              th Rel
+              th Generated
+              th Status
+          tbody
+            - for download in downloads
+              tr
+                th(scope='row') #{forloop.counter}
+                th 
+                th
+                  - if download.task_er
+                    i(aria-hidden='true').fa.fa-check
+                  - else
+                    i(aria-hidden='true').fa.fa-times
+
+                th
+                  - if download.task_rel
+                    i(aria-hidden='true').fa.fa-check
+                  - else
+                    i(aria-hidden='true').fa.fa-times
+
+                th #{download.create_time|naturaltime}
+                th
+                  - if download.file
+                    | Download
+                  - else
+                    i(aria-hidden='true').fa.fa-spinner
+
