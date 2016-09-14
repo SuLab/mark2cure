@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-from ..common.formatter import bioc_as_json, clean_df, apply_er_annotations
+from ..common.formatter import bioc_as_json, clean_df, apply_annotations
 from .models import Document, Pubtator
 
 

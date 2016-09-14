@@ -3,11 +3,9 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
-from ..common.formatter import bioc_writer, bioc_as_json, clean_df, apply_er_annotations, apply_rel_annotations
 from ..userprofile.models import Team
 from ..common.models import Document, Group
 from ..task.models import Task
-from ..task.relation.models import RelationGroup
 from ..score.models import Point
 
 from rest_framework.decorators import api_view
@@ -185,57 +183,16 @@ def relation_list(request):
     return Response(serializer.data)
 
 
-def group_bioc(request, group_pk, selection_type, format_type):
-    '''
-        Returns the BioC document for all annotations accross the group
-    '''
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
-    # Fetch the group and all documents associated with the Group
-    group = get_object_or_404(Group, pk=group_pk)
+class ExportView(TemplateView):
+    template_name = 'api/export'
 
-    writer = bioc_writer(request)
-
-    for doc in group.get_documents():
-        doc_writer = doc.as_writer()
-        if selection_type == 'user':
-            doc_df = doc.as_er_df_with_user_annotations()
-        else:
-            doc_df = doc.as_er_df_with_pubtator_annotations()
-
-        # Protection isn't needed b/c this is the raw output for analysis.
-        doc_df = clean_df(doc_df, overlap_protection=False)
-
-        # convert DF table into BioC Document
-        doc_writer = apply_er_annotations(doc_writer, doc_df)
-
-        writer.collection.add_document(doc_writer.collection.documents[0])
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
-
-
-def relation_group_bioc(request, group_pk, format_type):
-    group = get_object_or_404(RelationGroup, pk=group_pk)
-    writer = bioc_writer(request)
-
-    for doc in group.documents.all():
-        doc_writer = doc.as_writer()
-        if doc_writer:
-
-            doc_df = doc.as_rel_df_with_user_annotations()
-            doc_writer = apply_rel_annotations(doc_writer, doc_df)
-
-            writer.collection.add_document(doc_writer.collection.documents[0])
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
-
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ProtectedView, self).dispatch(*args, **kwargs)
 
 # @login_required
 @api_view(['GET'])

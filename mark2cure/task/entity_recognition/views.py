@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
-from ...common.formatter import bioc_as_json, apply_er_annotations, clean_df
+from ...common.formatter import bioc_as_json, apply_annotations, clean_df
 from ...document.models import Document, Section, Annotation
 from .forms import EntityRecognitionAnnotationForm
 from ..models import Level, Task, UserQuestRelationship

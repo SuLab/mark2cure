@@ -6,6 +6,7 @@ from mark2cure.common.bioc import BioCReader, BioCWriter, BioCPassage
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
+from .managers import DocumentManager
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 # from ..task.relation.models import RelationAnnotation
 
@@ -21,6 +22,8 @@ class Document(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=200, blank=True)
+
+    objects = DocumentManager()
 
     def __unicode__(self):
         return self.title
@@ -196,39 +199,6 @@ class Document(models.Model):
                 start_position=er_ann.start, length=len(er_ann.text)))
 
         return pd.DataFrame(df_arr, columns=Document.DF_COLUMNS)
-
-    REL_DF_COLUMNS = ('answer', 'user_id',
-                  'concept_1_id', 'concept_2_id',
-                  'relation_type')
-
-    def as_rel_df_with_user_annotations(self, user=None):
-        '''
-            Returns back a Pandas Dataframe with the Relation annotations
-            submitted by all users for this document.
-
-            If a user is passed in, the returning dataframe only contains annotations
-            by that individual user.
-        '''
-
-        df_arr = []
-        '''
-        content_type_id = str(ContentType.objects.get_for_model(
-            RelationAnnotation.objects.first()).id)
-        if user:
-            pass
-        else:
-            pass
-        '''
-
-        for relation in self.relation_set.all():
-            for answer in relation.relationannotation_set.values_list('answer', flat=True):
-                df_arr.append({
-                    'answer': answer, 'user_id': 0,
-                    'concept_1_id': relation.concept_1.id, 'concept_2_id': relation.concept_2.id,
-                    'relation_type': relation.relation_type,
-                })
-
-        return pd.DataFrame(df_arr, columns=Document.REL_DF_COLUMNS)
 
     def as_writer(self):
         '''

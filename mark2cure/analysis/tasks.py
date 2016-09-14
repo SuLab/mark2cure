@@ -8,15 +8,11 @@
     other user as the gold standard for each pairing.
 '''
 
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from ..common.bioc import BioCReader
 from ..common.models import Group
-from ..api.views import group_users_bioc
-from ..document.models import Section
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..document.models import Document
 from .models import Report
 from . import synonyms_dict
 
@@ -29,7 +25,7 @@ import networkx as nx
 import itertools
 
 
-def hashed_annotations_df(group_pk, private_api=False,
+def hashed_er_annotations_df(group_pk, private_api=False,
         compare_type=True, compare_text=False):
     '''
         Users will always be represented in Analysis as their PKs as strings.
@@ -39,74 +35,19 @@ def hashed_annotations_df(group_pk, private_api=False,
         This standard is a must as there are many downstream cases where this
         column is searched for users by their str(pk)
     '''
+    group = Group.objects.get(pk=group_pk)
+    docs = group.get_documents()
 
-    hashed_annotations = []  # Creates empty list for the annotations
-    ann_types = EntityRecognitionAnnotation.ANNOTATION_TYPE_CHOICE
-
-    if private_api:
-        group = Group.objects.get(pk=group_pk)
-        document_pmids = group.get_documents().values_list('document_id', flat=True)
-
-        # Fetch all the section pks and their text length
-        sections = Section.objects.filter(
-            document__document_id__in=document_pmids
-        ).extra(select={'section_length': 'LENGTH(text)'}).values('pk', 'section_length')
-        content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-
-        for doc_pmid in document_pmids:
-
-            document_annotations = EntityRecognitionAnnotation.objects.annotations_for_document_pmid(doc_pmid, content_type_id)
-
-            passage_offset = 0
-
-            section_pks = list(set([ann.section_id for ann in document_annotations]))
-            for section_pk in section_pks:
-
-                section_annotations = filter(lambda ann: ann.section_id == section_pk, document_annotations)
-                for ann in section_annotations:
-                    hashed_annotations.append((
-                        ann.document_id,
-                        str(ann.user_id),
-                        ann_types.index(ann.type),
-
-                        passage_offset + ann.start,
-
-                        len(ann.text),
-                        ann.text
-                    ))
-
-                section_results = filter(lambda section: section['pk'] == section_pk, sections)
-                passage_offset += int(section_results[0]['section_length'])
-
-    else:
-        # Capture exported data
-        req = group_users_bioc({}, group_pk, 'xml')
-        reader = BioCReader(source=req.content)
-        reader.read()
-
-        # Read through BioC results and convert to a list of (user, uniq_ann_identifier, document_id)
-        for document in reader.collection.documents:
-            for passage in document.passages:
-                for ann in passage.annotations:
-                    ann_loc = ann.locations[0]
-
-                    hashed_annotations.append((
-                        document.id,
-                        str(ann.infons.get('user')),
-                        ann_types.index(ann.infons.get('type')),
-                        ann_loc.offset,
-                        ann_loc.length,
-                        ann.text
-                    ))
-
-    df = pd.DataFrame(hashed_annotations, columns=('document_id', 'user', 'type', 'offset', 'length', 'text'))
+    org_er_df = Document.objects.entity_recognition_df(documents=docs)
+    from mark2cure.common.formatter import clean_df
+    er_df = clean_df(org_er_df)
 
     if compare_type:
-        df['hash'] = df.document_id.apply(str) + '_' + df.type.apply(str) + '_' + df.offset.apply(str) + '_' + df.length.apply(str)
+        er_df['hash'] = er_df.document_id.apply(str) + '_' + er_df.type.apply(str) + '_' + er_df.offset.apply(str) + '_' + er_df.length.apply(str)
     else:
-        df['hash'] = df.document_id.apply(str) + '_' + df.offset.apply(str) + '_' + df.length.apply(str)
+        er_df['hash'] = er_df.document_id.apply(str) + '_' + er_df.offset.apply(str) + '_' + er_df.length.apply(str)
 
-    return df
+    return er_df
 
 
 def compute_pairwise(hashed_annotations_df):
@@ -192,7 +133,7 @@ def generate_reports(group_pk, private_api=False,
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
-    hash_table_df = hashed_annotations_df(group_pk, private_api=private_api)
+    hash_table_df = hashed_er_annotations_df(group_pk, private_api=private_api)
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
@@ -205,7 +146,7 @@ def generate_reports(group_pk, private_api=False,
 
 
 def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGNITION_K):
-    df = hashed_annotations_df(group_pk, private_api=True)
+    df = hashed_er_annotations_df(group_pk, private_api=True)
 
     # (TODO) This can be wayyy faster and better
     # Add a username column
@@ -238,7 +179,7 @@ def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGN
     return df[df['hash_count'] >= min_thresh]
 
 
-def generate_network(group_pk, parallel=False, spring_force=10, include_degree=False):
+def generate_network(group_pk, parallel=False, spring_force=10, include_degree=False): # noqa
     '''
         1) Generate the DF needed to compute the Graph
         2) Compute the graph (aggregate, compare text / pmid)

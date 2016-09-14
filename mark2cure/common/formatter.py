@@ -1,5 +1,4 @@
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation, BioCRelation, BioCNode
-from ..document.models import Document
 
 import xmltodict
 import itertools
@@ -76,8 +75,11 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
         This attempts to santize our Annotation Dataframes that may originate
         from multiple sources (users, pubtator) so they're comparable
     '''
-    if df.shape[1] is not 10:
+    if df.shape[1] is not 11:
         raise ValueError('Incorrect number of dataframe columns.')
+
+    # If Pubtator included, make the user_id -1
+    df.fillna(value=-1, inplace=True)
 
     # Make all the offsets scoped the the entire document (like Pubtator)
     df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']
@@ -104,6 +106,8 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     # Only keep rows that are in our known annotation type lists
     df['ann_type'] = df['ann_type'].str.lower()
     ann_types_arr = ['chemical', 'gene', 'disease']
+
+    from ..document.models import Document
     ann_types_arr.extend(Document.APPROVED_TYPES)
     # from relation.task importer
     # df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
@@ -136,92 +140,80 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     return df
 
 
-def apply_er_annotations(writer, df):
+def apply_annotations(writer, er_df=None, rel_df=None):
     '''
-        This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
+        This takes a BioCWriter for N document(s) and a Pandas Dataframe of annotations
         to apply to the BioCWriter
 
         Enforces as little DF modification as possible. This function is only
         intended to take the DF it was given and return a BioC Writer
     '''
+    for bioc_doc in writer.collection.documents:
+        doc_pk_int = int(bioc_doc.infons.get('document_pk'))
 
-    # If nothing in DF, we can safely return the non-modified writer
-    # if df.shape[0] == 0 or df.shape[1] != 11:
-    if df.shape[0] == 0:
-        return writer
+        if er_df is not None:
+            doc_df = er_df[er_df['document_pk'] == doc_pk_int]
 
-    # (TODO) Cases in which a user hasn't annotated something in the title...
-    section_ids = list(df['section_id'].unique())
-    if not len(section_ids) >= 1:
-        raise ValueError('Incorrect number of document sections.')
+            # (TODO) Cases in which a user hasn't annotated something in the title...
+            section_ids = list(doc_df['section_id'].unique())
+            if not len(section_ids) >= 1:
+                raise ValueError('Incorrect number of document sections.')
 
-    bioc_doc = writer.collection.documents[0]
+            i = 0
+            for offset_position, group_df in doc_df.groupby(['section_offset']):
+                # This is another approach to offset grouping:
+                # offset = int(bioc_passage.offset)
+                # for idx, row in df[df['offset'] == offset].iterrows():
 
-    i = 0
-    for offset_position, group_df in df.groupby(['section_offset']):
-        # This is another approach to offset grouping:
-        # offset = int(bioc_passage.offset)
-        # for idx, row in df[df['offset'] == offset].iterrows():
+                # (TODO) (WARNING) If only 1 section, then the bioc_passage will be wrong
+                bioc_passage = bioc_doc.passages[i]
+                i = i + 1
 
-        # (TODO) (WARNING) If only 1 section, then the bioc_passage will be wrong
-        bioc_passage = bioc_doc.passages[i]
-        i = i + 1
+                # Should already be empty if from doc.as_writer(), but perhaps we add an
+                # append method in the future
+                bioc_passage.clear_annotations()
 
-        # Should already be empty if from doc.as_writer(), but perhaps we add an
-        # append method in the future
-        bioc_passage.clear_annotations()
+                for row_idx, row in group_df.iterrows():
+                    annotation = BioCAnnotation()
+                    annotation.id = str(row_idx)
+                    annotation.put_infon('uid', row['uid'])
+                    annotation.put_infon('source', row['source'])
+                    annotation.put_infon('user_id', str(int(row['user_id'])))
+                    annotation.put_infon('type', row['ann_type'])
+                    annotation.put_infon('type_id', str(row['ann_type_id']))
 
-        for row_idx, row in group_df.iterrows():
-            annotation = BioCAnnotation()
+                    location = BioCLocation()
+                    location.offset = str(int(row['start_position']))
+                    location.length = str(int(row['length']))
+                    annotation.add_location(location)
 
-            annotation.id = str(row_idx)
+                    annotation.text = row['text']
 
-            annotation.put_infon('uid', row['uid'])
-            annotation.put_infon('source', row['source'])
-            annotation.put_infon('user_id', str(row['user_id']))
-            annotation.put_infon('type', row['ann_type'])
-            annotation.put_infon('type_id', str(row['ann_type_id']))
+                    bioc_passage.add_annotation(annotation)
 
-            location = BioCLocation()
-            location.offset = str(int(row['start_position']))
-            location.length = str(int(row['length']))
-            annotation.add_location(location)
+        if rel_df is not None:
+            '''
+                This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
+                to apply to the BioCWriter
 
-            annotation.text = row['text']
+                Enforces as little DF modification as possible. This function is only
+                intended to take the DF it was given and return a BioC Writer
+            '''
+            doc_df = rel_df[rel_df['document_pk'] == doc_pk_int]
 
-            bioc_passage.add_annotation(annotation)
+            for row_idx, row in doc_df.iterrows():
+                # Relations get added on a document level, not passage
+                r = BioCRelation()
+                r.put_infon('event-type', row['answer'])
+                r.put_infon('relation-type', row['relation_type'])
 
-    return writer
+                n = BioCNode(refid=row['concept_1_id'], role='')
+                r.add_node(n)
 
+                n = BioCNode(refid=row['concept_2_id'], role='')
+                r.add_node(n)
 
-def apply_rel_annotations(writer, df):
-    '''
-        This takes a BioCWriter for 1 document and a Pandas Dataframe of annotations
-        to apply to the BioCWriter
-
-        Enforces as little DF modification as possible. This function is only
-        intended to take the DF it was given and return a BioC Writer
-    '''
-
-    # If nothing in DF, we can safely return the non-modified writer
-    # if df.shape[0] == 0 or df.shape[1] != 11:
-    if df.shape[0] == 0:
-        return writer
-
-    bioc_doc = writer.collection.documents[0]
-
-    for row_idx, row in df.iterrows():
-        # Relations get added on a document level, not passage
-        r = BioCRelation()
-        r.put_infon('event-type', row['answer'])
-        r.put_infon('relation-type', row['relation_type'])
-
-        n = BioCNode(refid=row['concept_1_id'], role='')
-        r.add_node(n)
-
-        n = BioCNode(refid=row['concept_2_id'], role='')
-        r.add_node(n)
-        bioc_doc.add_relation(r)
+                bioc_doc.add_relation(r)
 
     return writer
 
