@@ -43,11 +43,11 @@ class Task(models.Model):
     completions = models.IntegerField(default=10, blank=True, null=True)
     documents = models.ManyToManyField('document.Document', through='DocumentQuestRelationship', blank=True)
     users = models.ManyToManyField(User, through='UserQuestRelationship', blank=True)
-    points = models.IntegerField(max_length=6, blank=True, default=0)
+    points = models.IntegerField(blank=True, default=0)
     experiment = models.IntegerField(blank=True, null=True)
 
-    requires_qualification = models.IntegerField(max_length=6, blank=True, null=True)
-    provides_qualification = models.IntegerField(max_length=6, blank=True, null=True)
+    requires_qualification = models.IntegerField(blank=True, null=True)
+    provides_qualification = models.IntegerField(blank=True, null=True)
     meta_url = models.CharField(max_length=200, null=True, blank=True)
 
     updated = models.DateTimeField(auto_now=True)
@@ -114,7 +114,7 @@ class UserQuestRelationship(models.Model):
     views = models.ManyToManyField('document.View')
 
     completed = models.BooleanField(default=False, blank=True)
-    score = models.IntegerField(max_length=7, blank=True, default=5)
+    score = models.IntegerField(blank=True, default=5)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -141,7 +141,7 @@ class DocumentQuestRelationship(models.Model):
     task = models.ForeignKey(Task)
     document = models.ForeignKey('document.Document')
 
-    points = models.IntegerField(max_length=7, blank=True, default=0)
+    points = models.IntegerField(blank=True, default=0)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

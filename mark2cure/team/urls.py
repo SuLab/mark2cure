@@ -1,9 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^(?P<teamname>[\w.@+-]+)/',
         views.home, name='home'),
-)
+]

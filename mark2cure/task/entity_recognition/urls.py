@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     # BioC File for Showing User Comparisons accross PMID
     url(r'^(?P<doc_pk>\d+)/user/(?P<user_pk>\d+)/results.(?P<format_type>\w+)$',
@@ -44,5 +44,4 @@ urlpatterns = patterns('',
 
     url(r'^quest/(?P<quest_pk>\d+)/submit/$',
         views.quest_submit, name='quest-submit'),
-
-)
+]

@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     url(r'^(?P<pubmed_id>\d+)/$',
         views.home, name='home'),
@@ -13,4 +13,4 @@ urlpatterns = patterns('',
     url(r'',
         views.recent_discussion, name='recent'),
 
-)
+]

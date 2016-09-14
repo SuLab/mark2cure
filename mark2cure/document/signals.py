@@ -1,13 +1,11 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import Pubtator
-
 import requests
 import re
 
 
-@receiver(post_save, sender=Pubtator)
+@receiver(post_save, sender='document.Pubtator')
 def pubtator_post_save(sender, instance, created, **kwargs):
     '''
         When a new Pubtator model is created,

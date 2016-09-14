@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Entity Recognition training
     url(r'^entity-recognition/basics/step/(?P<step_num>\w+)/$',
         views.introduction, name='introduction'),
@@ -18,5 +18,4 @@ urlpatterns = patterns('',
     url(r'^relation/(?P<part_num>\w+)/step/(?P<step_num>\w+)/$', views.relation_training, name='relation-training'),
 
     url(r'', views.route, name='route'),
-)
-
+]

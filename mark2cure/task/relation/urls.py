@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     # AJAX Endpoints
     url(r'^(?P<document_pk>\d+)/(?P<relation_pk>\d+)/submit/$',
@@ -26,4 +26,4 @@ urlpatterns = patterns('',
     url(r'^(?P<document_pk>\d+)/$',
         views.relation_task_home, name='task'),
 
-)
+]

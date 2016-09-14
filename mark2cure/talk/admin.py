@@ -25,6 +25,6 @@ class CA(CommentsAdmin):
     def pmid(self, obj):
         return Document.objects.get(pk=obj.object_pk).document_id
 
-admin.site.unregister(Comment)
-admin.site.register(Comment, CA)
+# admin.site.unregister(Comment)
+# admin.site.register(Comment, CA)
 

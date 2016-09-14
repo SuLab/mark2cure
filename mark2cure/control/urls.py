@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^user/training/(?P<format_type>\w+)/$',
         views.user_training, name='user_training'),
     url(r'^user/quest-availability/(?P<format_type>\w+)/$',
@@ -29,5 +29,4 @@ urlpatterns = patterns('',
 
     url(r'^$',
         views.home, name='home')
-)
-
+]

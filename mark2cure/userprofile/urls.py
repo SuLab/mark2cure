@@ -1,9 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$',
         views.settings, name='settings'),
 
@@ -17,4 +17,4 @@ urlpatterns = patterns('',
     url(r'^(?P<username>[\w.@+-]+)/',
         views.public_profile, name='public-profile'),
 
-)
+]

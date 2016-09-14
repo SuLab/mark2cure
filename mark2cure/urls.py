@@ -1,27 +1,27 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.flatpages import views
 
 from django.contrib.auth import views as reset_views
 
 from django.contrib.sitemaps.views import sitemap
-from django.contrib.sitemaps import FlatPageSitemap
+from django.contrib.flatpages.sitemaps import FlatPageSitemap
 
-#from common.accounts.views import signup
+# from common.accounts.views import signup
 
 
 sitemaps = {
     'flatpages': FlatPageSitemap
 }
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
 
-    (r'^robots\.txt$', include('robots.urls')),
+    # url(r'^robots\.txt', include('robots.urls')),
 
     # Password / Account based changes
     # url(r'^accounts/signup/$', signup, name='account_signup'),
