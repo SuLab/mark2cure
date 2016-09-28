@@ -1,18 +1,19 @@
 from __future__ import absolute_import
-from django.conf import settings
 
-from configurations import importer
+import os
+
 from celery import Celery
 
+from django.conf import settings
 import logging
-import os
 logger = logging.getLogger(__name__)
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mark2cure.settings')
 os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
 
-importer.install()
+import configurations # noqa
+configurations.setup()
 
 app = Celery('mark2cure')
 
@@ -21,13 +22,8 @@ app = Celery('mark2cure')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-app.conf.update(
-    CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
-)
-
 
 @app.task(bind=True)
 def debug_task(self):
     logger.debug('Debug Task', exc_info=True, extra={'self': self})
-
 
