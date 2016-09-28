@@ -8,7 +8,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 from .managers import DocumentManager
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
-# from ..task.relation.models import RelationAnnotation
 
 import pandas as pd
 pd.set_option('display.width', 1000)

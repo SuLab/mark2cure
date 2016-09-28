@@ -1,20 +1,12 @@
-from celery.schedules import crontab
-from datetime import timedelta
-import raven
+from configurations import Configuration
+from configurations.values import SecretValue, DatabaseURLValue
+
+from .celery_settings import CeleryConfig
 
 import djcelery
+import raven
 import sys
 import os
-
-from configurations import (
-    Configuration
-)
-
-from configurations.values import (
-    SecretValue,
-    DatabaseURLValue
-)
-
 
 class Base(Configuration):
 
@@ -27,11 +19,6 @@ class Base(Configuration):
     def setup(cls):
         super(Base, cls).setup()
 
-        cls.RAVEN_CONFIG = {
-            'dsn': cls.SENTRY_DSN,
-            'release': raven.fetch_git_sha(cls.PROJECT_PATH),
-        }
-
     SECRET_KEY = SecretValue(environ_prefix='MARK2CURE')
     ADMINS = ()
     MANAGERS = ADMINS
@@ -40,17 +27,19 @@ class Base(Configuration):
 
     # Application definition
     INSTALLED_APPS = (
+        'grappelli',
+        'django.contrib.admin',
+
         'django.contrib.auth',
         'django.contrib.contenttypes',
+        'django.contrib.sites',
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
 
         'django_comments',
 
-        'django.contrib.sites',
         'django.contrib.flatpages',
-        'django.contrib.webdesign',
         'django.contrib.sitemaps',
         'raven.contrib.django.raven_compat',
 
@@ -59,28 +48,23 @@ class Base(Configuration):
         'allauth.socialaccount',
         'allauth.socialaccount.providers.google',
 
-        'djangoratings',
-        'djrill',
-        'djcelery',
-        'robots',
-        'corsheaders',
+        # 'djrill',
+        # 'djcelery',
+        # 'robots',
+        # 'corsheaders',
 
-        'grappelli',
-        'django.contrib.admin',
         'django_extensions',
-        'django_nose',
+        # 'django_nose',
         'rest_framework',
-        'tagging',
-        'mptt',
-        'brabeion',
-        'debug_toolbar',
+        # 'debug_toolbar',
 
         # Mark2Cure specific apps
+        'mark2cure.document',
+
         'mark2cure.userprofile',
         'mark2cure.team',
         'mark2cure.instructions',
         'mark2cure.training',
-        'mark2cure.document',
 
         'mark2cure.task',
         'mark2cure.task.entity_recognition',
@@ -90,6 +74,7 @@ class Base(Configuration):
         'mark2cure.common',
         'mark2cure.talk',
         'mark2cure.api',
+        'mark2cure.download',
         'mark2cure.control',
         'mark2cure.analysis',
 
@@ -112,6 +97,10 @@ class Base(Configuration):
                 'format': '%(levelname)s %(asctime)s %(module)s '
                           '%(process)d %(thread)d %(message)s'
             },
+            # 'django.server': {
+            #     '()': 'django.utils.log.ServerFormatter',
+            #     'format': '[%(server_time)s] %(message)s',
+            # }
         },
         'handlers': {
             'sentry': {
@@ -123,7 +112,12 @@ class Base(Configuration):
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose'
-            }
+            },
+            # 'django.server': {
+            #     'level': 'INFO',
+            #     'class': 'logging.StreamHandler',
+            #     'formatter': 'django.server',
+            # },
         },
         'loggers': {
             'django.db.backends': {
@@ -141,16 +135,22 @@ class Base(Configuration):
                 'handlers': ['console'],
                 'propagate': False,
             },
+            # 'django.server': {
+            #     'handlers': ['django.server', 'console'],
+            #     'level': 'INFO',
+            #     'propagate': False,
+            # }
         },
     }
 
-    # AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
     AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
 
         # `allauth` specific authentication methods, such as login by e-mail
         'allauth.account.auth_backends.AuthenticationBackend',
     )
+
+    DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
     MIDDLEWARE_CLASSES = (
         'django.middleware.cache.UpdateCacheMiddleware',
@@ -190,35 +190,44 @@ class Base(Configuration):
     USE_L10N = True
     USE_TZ = True
 
-    TEMPLATE_LOADERS = (
-        ('pyjade.ext.django.Loader', (
-            'django.template.loaders.filesystem.Loader',
-            'django.template.loaders.app_directories.Loader',
-            'django.template.loaders.eggs.Loader',
-        )),
-    )
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [
+                PROJECT_PATH + '/templates/',
+            ],
+            'OPTIONS': {
+                'debug': True,
+                'context_processors': [
+                    'django.template.context_processors.request',
 
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        'django.core.context_processors.debug',
-        'django.core.context_processors.i18n',
-        'django.core.context_processors.media',
-        'django.core.context_processors.static',
-        'django.contrib.auth.context_processors.auth',
-        'django.contrib.messages.context_processors.messages',
-        'django.core.context_processors.request',
-
-        'mark2cure.common.context_processors.support_form',
-    )
+                    'django.contrib.auth.context_processors.auth',
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.i18n',
+                    'django.template.context_processors.media',
+                    'django.template.context_processors.static',
+                    'django.template.context_processors.tz',
+                    'django.contrib.messages.context_processors.messages',
+                    # App Specific
+                    'mark2cure.common.context_processors.support_form',
+                ],
+                'loaders': [
+                    ('pyjade.ext.django.Loader', (
+                        'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
+                        'django.template.loaders.eggs.Loader',
+                    )),
+                ],
+                'builtins': ['pyjade.ext.django.templatetags'],
+            },
+        },
+    ]
 
     MEDIA_URL = 'media/'
     MEDIA_ROOT = 'media/'
 
     STATIC_URL = '/static/'
     STATIC_ROOT = '/static/'
-
-    TEMPLATE_DIRS = (
-        PROJECT_PATH + '/templates/',
-    )
 
     STATICFILES_DIRS = (
         PROJECT_PATH + '/static',
@@ -282,24 +291,6 @@ class Base(Configuration):
     # User is online if they've been last seen 5min ago
     USER_ONLINE_TIMEOUT = 300
 
-    BROKER_URL = SecretValue(environ_prefix='MARK2CURE')
-    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-    CELERY_TIMEZONE = 'America/Los_Angeles'
-    CELERYBEAT_SCHEDULE = {
-        'check-system-uptime': {
-            'task': 'mark2cure.common.tasks.check_system_uptime',
-            'schedule': timedelta(seconds=30)
-        },
-        'check-corpus': {
-            'task': 'mark2cure.document.tasks.check_corpus_health',
-            'schedule': timedelta(minutes=10)
-        },
-        'group-analysis': {
-            'task': 'mark2cure.analysis.tasks.group_analysis',
-            'schedule': crontab(hour=1, minute=30)
-        },
-    }
-
     ROBOTS_USE_SITEMAP = True
 
     # Email settings management
@@ -340,15 +331,12 @@ class Base(Configuration):
     RELATION_DOC_POINTS = 1000
 
 
-class Development(Base):
+class Development(Base, CeleryConfig):
     LOCAL = True
     DEBUG = True
-    TEMPLATE_DEBUG = True
 
     CORS_ORIGIN_ALLOW_ALL = True
     ALLOWED_HOSTS = ['*']
-
-    DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
 
     if 'test' in sys.argv:
         import dj_database_url
@@ -367,8 +355,13 @@ class Development(Base):
         }
     }
 
+    # RAVEN_CONFIG = {
+    #     # 'dsn': 'https://264b7ea623ab4c3780fcd91cd363cf03:44055014fc85409f95a3b654fbeded5d@app.getsentry.com/61810',
+    #     'release': raven.fetch_git_sha(BASE_DIR),
+    # }
 
-class Production(Base):
+
+class Production(Base, CeleryConfig):
     LOCAL = False
     DEBUG = False
     TEMPLATE_DEBUG = False
@@ -376,20 +369,7 @@ class Production(Base):
     CORS_ORIGIN_ALLOW_ALL = False
     ALLOWED_HOSTS = ['.mark2cure.org']
 
-    DATABASES = DatabaseURLValue(environ_prefix='MARK2CURE')
-
     DOMAIN = 'mark2cure.org'
     DEBUG_FILENAME = 'mark2cure-debug.log'
     VERSION = '0.1 (Production)'
 
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': '127.0.0.1:11211',
-        }
-    }
-
-    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
