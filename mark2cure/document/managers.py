@@ -1,12 +1,13 @@
-from django.db import models, connection
 from django.contrib.contenttypes.models import ContentType
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
-from mark2cure.task.relation import relation_data_flat
-from ..common.bioc import BioCReader
-from ..common.formatter import bioc_writer
-import pandas as pd
-from itertools import groupby
+from django.db import models, connection
+from mark2cure.common.formatter import bioc_writer
+from mark2cure.common.bioc import BioCReader
 
+from mark2cure.task.relation import relation_data_flat
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
+
+from itertools import groupby
+import pandas as pd
 
 DF_COLUMNS = ('uid', 'source', 'user_id',
               'ann_type', 'text',

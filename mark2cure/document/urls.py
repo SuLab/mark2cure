@@ -1,10 +1,8 @@
 from django.conf.urls import url
-
 from . import views
 
 
 urlpatterns = [
-
     # BioC File for PMID (basic / no annotations)
     url(r'^(?P<pubmed_id>\d+).(?P<format_type>\w+)$',
         views.read_bioc, name='read-bioc'),
@@ -16,5 +14,4 @@ urlpatterns = [
     # BioC File for Specific Pubtator
     url(r'^pubtator/(?P<pk>\d+)/$',
         views.read_pubtator, name='read-pubtator'),
-
 ]
