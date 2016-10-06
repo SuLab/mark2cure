@@ -7,9 +7,6 @@ from mark2cure.document.models import Document, Pubtator, Section
 from mark2cure.common.formatter import pad_split
 
 from Bio import Entrez, Medline
-from celery import task
-from celery.schedules import crontab
-from celery.task import periodic_task
 from ..common import celery_app as app
 
 import requests
@@ -17,8 +14,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@periodic_task(run_every=crontab(minute='*/10'), ignore_result=True)
-def check_corpus_health():
+@app.task(bind=True, ignore_result=False,
+          max_retries=1,
+          acks_late=True, track_started=True,
+          expires=None)
+def check_corpus_health(self):
     '''
         Task to run every 10 minutes
 
@@ -31,11 +31,9 @@ def check_corpus_health():
             - Make sure content pubtators are correctly assigned
 
     '''
-    logger.debug('[TASK] check_corpus_health')
     for document in Document.objects.all():
         # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
-            print '  > Downloading Sections: '
             get_pubmed_document(document.document_id)
 
             # Update any newly enforced padding rules

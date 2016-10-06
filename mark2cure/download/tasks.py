@@ -13,7 +13,7 @@ from django.core.files.storage import default_storage
 
 
 @app.task(bind=True, ignore_result=False,
-          max_retries=1, rate_limit='20/m', soft_time_limit=300,
+          max_retries=1, rate_limit='20/m', soft_time_limit=600,
           acks_late=True, track_started=True,
           expires=None)
 def group_export(self, document_pks):
