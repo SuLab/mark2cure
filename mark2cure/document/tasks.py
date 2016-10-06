@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from django.conf import settings
 
 from mark2cure.common.models import Group
@@ -6,13 +8,16 @@ from mark2cure.common.formatter import pad_split
 
 from Bio import Entrez, Medline
 from celery import task
+from celery.schedules import crontab
+from celery.task import periodic_task
+from ..common import celery_app as app
 
 import requests
 import logging
 logger = logging.getLogger(__name__)
 
 
-@task()
+@periodic_task(run_every=crontab(minute='*/10'), ignore_result=True)
 def check_corpus_health():
     '''
         Task to run every 10 minutes
@@ -77,7 +82,10 @@ def check_pubtator_health():
         pubtator.save()
 
 
-@task()
+@app.task(bind=True, ignore_result=False,
+          max_retries=1, rate_limit='2/s', soft_time_limit=15,
+          acks_late=True, track_started=True,
+          expires=None)
 def get_pubtator_response(pk):
     pubtator = Pubtator.objects.get(pk=pk)
 
@@ -99,7 +107,10 @@ def get_pubtator_response(pk):
         pubtator.save()
 
 
-@task()
+@app.task(bind=True, ignore_result=False,
+          max_retries=1, rate_limit='2/s', soft_time_limit=15,
+          acks_late=True, track_started=True,
+          expires=None)
 def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
     Entrez.email = settings.ENTREZ_EMAIL
 

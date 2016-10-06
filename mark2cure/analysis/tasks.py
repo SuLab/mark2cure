@@ -260,8 +260,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
 
     return G
 
-
-@task()
+# (TODO) run this on a periodic task
 def group_analysis():
     for group in Group.objects.all():
         if group.percentage_complete() < 100:
