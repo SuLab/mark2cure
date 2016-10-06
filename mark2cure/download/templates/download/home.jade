@@ -67,7 +67,8 @@ block content
                 th #{download.create_time|naturaltime}
                 th
                   - if download.file
-                    | Download
+                    a(href='{{ download.file.url }}', target='_blank')
+                      p Download
                   - else
                     i(aria-hidden='true').fa.fa-spinner
 

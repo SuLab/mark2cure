@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect
 
 from .models import Download
+from .tasks import group_export
 
 
 def home(request):
@@ -28,12 +29,9 @@ def start_export(request):
         group = RelationGroup.objects.get(pk=group_pk)
         docs = group.documents.all()
 
-    d = Download.objects.create(
-        task_er=task_type == 'er',
-        task_rel=task_type == 'rel',
-    )
-    d.documents = docs.values_list('pk', flat=True)
-    d.save()
+    group_export.apply_async(
+        args=[list(docs.values_list('pk', flat=True))],
+        queue='mark2cure_tasks', routing_key='mark2cure.tasks')
 
     return redirect('download:home')
 
