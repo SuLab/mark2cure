@@ -82,3 +82,4 @@ static/data/network_cdg.json
 /node_modules
 static/fonts
 /static/css
+/mark2cure/local_settings.py

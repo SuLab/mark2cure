@@ -1,19 +1,17 @@
 from __future__ import absolute_import
 
+from django.conf import settings
+
+from celery import Celery, states
+from celery.exceptions import Ignore
+
+import logging
 import os
 
-from celery import Celery
-
-from django.conf import settings
-import logging
 logger = logging.getLogger(__name__)
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mark2cure.settings')
-os.environ.setdefault('DJANGO_CONFIGURATION', 'Production')
-
-import configurations # noqa
-configurations.setup()
 
 app = Celery('mark2cure')
 
@@ -24,7 +22,10 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
 @app.task(bind=True)
-def debug_task(self):
+def debug_task(self, msg):
     logger.debug('Debug Task', exc_info=True, extra={'self': self})
 
+    if not self.request.called_directly:
+        self.update_state(state=states.SUCCESS, meta=msg)
+        raise Ignore()
 
