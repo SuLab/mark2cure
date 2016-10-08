@@ -132,7 +132,11 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
             span_a, span_a_row = x
             span_b, span_b_row = y
             if are_overlapping(span_a, span_b):
-                df.drop(span_b_row, inplace=True)
+                try:
+                    # (TODO) Figure out why this fails sometimes...
+                    df.drop(span_b_row, inplace=True)
+                except:
+                    pass
 
     if not allow_duplicates:
         df.drop_duplicates(['uid', 'ann_type_id', 'text'], inplace=True)

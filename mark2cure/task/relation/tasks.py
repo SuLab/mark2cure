@@ -1,4 +1,5 @@
 from .models import Concept, ConceptText, ConceptDocumentRelationship, Relation, RelationGroup
+from ...document.models import Document
 from ...common.formatter import clean_df
 
 import itertools
@@ -33,7 +34,7 @@ def import_concepts():
 
     for document in RelationGroup.objects.get(pk=2).documents.all():
 
-        df = document.as_er_df_with_pubtator_annotations()
+        df = Document.objects.entity_recognition_df(documents=[document], include_pubtator=True)
         # (TODO) Do we need protection or not? I'm confused.
         df = clean_df(df, overlap_protection=False, allow_duplicates=False)
 

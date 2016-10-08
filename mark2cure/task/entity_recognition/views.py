@@ -28,12 +28,12 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
-    df = document.as_er_df_with_user_annotations(user=user)
+    df = Document.objects.entity_recognition_df(documents=[document], users=[user], include_pubtator=False)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information
-    writer = document.as_writer()
-    writer = apply_er_annotations(writer, df)
+    writer = Document.objects.as_writer(documents=[document])
+    writer = apply_annotations(writer, er_df=df)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -80,12 +80,12 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
                              created=timezone.now())
         return HttpResponseServerError('points_awarded')
 
-    df = document.as_er_df_with_user_annotations(user=opponent)
+    df = Document.objects.entity_recognition_df(documents=[document], users=[opponent], include_pubtator=False)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information
-    writer = document.as_writer()
-    writer = apply_er_annotations(writer, df)
+    writer = Document.objects.as_writer(documents=[document])
+    writer = apply_annotations(writer, er_df=df)
 
     # Other results exist if other people have at least viewed
     # the quest and we know other users have at least submitted
@@ -216,12 +216,12 @@ def quest_read_doc_results_bioc(request, quest_pk, doc_pk, user_pk, format_type)
     document = get_object_or_404(Document, pk=doc_pk)
     user = get_object_or_404(User, pk=user_pk)
 
-    df = document.as_er_df_with_user_annotations(user=user)
+    df = Document.objects.entity_recognition_df(documents=[document], users=[user], include_pubtator=False)
     df = clean_df(df)
 
     # BioC Writer Response that will serve all partner comparison information
-    writer = document.as_writer()
-    writer = apply_er_annotations(writer, df)
+    writer = Document.objects.as_writer(documents=[document])
+    writer = apply_annotations(writer, er_df=df)
 
     writer.collection.put_infon('partner', str(user.username))
     writer.collection.put_infon('partner_level', Level.objects.filter(user=user, task_type='e').first().get_name())

@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from .models import Document
 
 import requests
 import re
@@ -16,7 +17,7 @@ def pubtator_post_save(sender, instance, created, **kwargs):
     if created is True and pubtator.content is None and not kwargs.get('raw', False):
         # Make response to post job to pubtator
         payload = {'content-type': 'text/xml'}
-        writer = pubtator.document.as_writer()
+        writer = Document.objects.as_writer(documents=[pubtator.document])
         data = str(writer)
         url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
 

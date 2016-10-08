@@ -90,7 +90,7 @@ def get_pubtator_response(pk):
     if pubtator.session_id:
         # Body required to fetch content from previous session
         payload = {'content-type': 'text/xml'}
-        writer = pubtator.document.as_writer()
+        writer = Document.objects.as_writer(documents=[pubtator.document])
         data = str(writer)
         url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
             session_id=pubtator.session_id)

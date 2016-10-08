@@ -53,7 +53,7 @@ def annotation_search(request):
 
 @login_required
 def recent_discussion(request):
-    doc_content_pk = ContentType.objects.get(name='document').pk
+    doc_content_pk = ContentType.objects.get(app_label='document', model='document').pk
     completed_document_pks = request.user.profile.completed_document_pks()
 
     is_moderator = request.user.groups.filter(name='Comment Moderators').exists()

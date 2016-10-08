@@ -77,6 +77,7 @@ class Group(models.Model):
         return total_contributors
 
     def total_annotation_count(self):
+        # (TODO) make work with multiple annotation types
         uqrs = UserQuestRelationship.objects.filter(task__group=self)
         return Annotation.objects.filter(view=View.objects.filter(userquestrelationship=uqrs)).count()
 

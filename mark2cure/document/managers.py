@@ -343,6 +343,8 @@ class DocumentManager(models.Manager):
                     for annotation in passage.annotations:
 
                         # Determine some meta-data (UID info) about the BioCAnnotation
+                        annotation_type = None
+                        uid_type = None
                         uid = None
                         for key in annotation.infons.keys():
                             if key == 'type':

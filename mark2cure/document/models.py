@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCReader, BioCWriter, BioCPassage
+from mark2cure.common.bioc import BioCReader
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -103,135 +103,6 @@ class Document(models.Model):
             'start_position': int(start_position), 'length': int(length)
         }
 
-    def as_er_df_with_pubtator_annotations(self):
-        '''
-            This is a function that merges the 3 different pubtator
-            reponses into 1 main file. It performances selective
-            ordering and precedence for some annotations types / instances
-        '''
-        # If the document has 3 solid annotations
-        # "GNormPlus"
-        # "DNorm"
-        # "tmChem"
-
-        section_ids = self.section_set.values_list('pk', flat=True)
-
-        pubtator_dfs = []
-        if self.valid_pubtator():
-
-            pubtators = Pubtator.objects.filter(
-                document=self,
-                session_id='',
-                content__isnull=False).all()
-
-            for pubtator in pubtators:
-                r = BioCReader(source=pubtator.content)
-                r.read()
-
-                pubtator_arr = []
-                bioc_document = r.collection.documents[0]
-                for p_idx, passage in enumerate(bioc_document.passages):
-
-                    for annotation in passage.annotations:
-                        infons = annotation.infons
-
-                        annotation_type = None
-                        uid_type = None
-                        uid = None
-
-                        for key in infons.keys():
-                            if key == 'type':
-                                annotation_type = infons.get(key, None)
-                            else:
-                                uid_type = key
-                                uid = infons.get(uid_type, None)
-
-                        start, length = str(annotation.locations[0]).split(':')
-                        pubtator_arr.append(self.create_er_df_row(
-                            uid=uid, source=uid_type, user_id=None,
-                            text=annotation.text, ann_type=annotation_type,
-                            section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
-                            start_position=start, length=length))
-
-                pubtator_dfs.append(pd.DataFrame(pubtator_arr, columns=Document.DF_COLUMNS))
-
-        if len(pubtator_dfs):
-            return pd.concat(pubtator_dfs)
-        else:
-            return pd.DataFrame([], columns=Document.DF_COLUMNS)
-
-    def as_er_df_with_user_annotations(self, user=None):
-        '''
-            Returns back a Pandas Dataframe with the Entity Recognition annotations
-            submitted by all users for this document.
-
-            If a user is passed in, the returning dataframe only contains annotations
-            by that individual user.
-        '''
-
-        df_arr = []
-
-        content_type_id = str(ContentType.objects.get_for_model(
-            EntityRecognitionAnnotation.objects.first()).id)
-
-        if user:
-            # (id, type, text, start, created, section_id, user_id)
-            er_ann_query_set = EntityRecognitionAnnotation.objects.\
-                annotations_for_document_pk_and_user(self.pk, user.pk, content_type_id)
-        else:
-            # (id, type, text, start, created, section_id, user_id)
-            er_ann_query_set = EntityRecognitionAnnotation.objects.\
-                annotations_for_document_pk(self.pk, content_type_id)
-
-        # Use the BioC pubtator file for the offset values
-        offset_dict = {}
-        writer = self.as_writer()
-        for passage in writer.collection.documents[0].passages:
-            offset_dict[int(passage.infons.get('id'))] = passage.offset
-
-        for er_ann in er_ann_query_set:
-
-            df_arr.append(self.create_er_df_row(
-                uid=er_ann.id, source='db', user_id=er_ann.user_id,
-                text=er_ann.text, ann_type=er_ann.type,
-                section_id=er_ann.section_id, section_offset=offset_dict[er_ann.section_id], offset_relative=True,
-                start_position=er_ann.start, length=len(er_ann.text)))
-
-        return pd.DataFrame(df_arr, columns=Document.DF_COLUMNS)
-
-    def as_writer(self):
-        '''
-            Return a blank BioC Writer that is based off the pubtator content.
-
-            Problems: This requires every document to have at least 1 pubtator model
-            Pros: This prevents us from generating our own BioC file which may
-            have inconsistencies
-        '''
-        pubtator = Pubtator.objects.filter(
-            document=self,
-            session_id='',
-            content__isnull=False).first()
-
-        if not pubtator:
-            return False
-
-        r = BioCReader(source=pubtator.content)
-        r.read()
-
-        section_ids = self.section_set.values_list('pk', flat=True)
-
-        for doc in r.collection.documents:
-            for idx, passage in enumerate(doc.passages):
-                passage.clear_annotations()
-
-                passage.put_infon('section', ['title', 'paragraph'][idx])
-                passage.put_infon('id', str(section_ids[idx]))
-
-        bioc_writer = BioCWriter()
-        bioc_writer.collection = r.collection
-
-        return bioc_writer
-
     # Helpers for Talk Page
     def annotations(self):
         return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
@@ -288,15 +159,6 @@ class Pubtator(models.Model):
             # If one of them doesn't validate leave
             return False
 
-    def as_writer(self, request=None):
-        r = BioCReader(source=self.content)
-        r.read()
-
-        bioc_writer = BioCWriter()
-        bioc_writer.collection = r.collection
-
-        return bioc_writer
-
     def count_annotations(self):
         if self.valid():
             count = 0
@@ -330,18 +192,6 @@ class Section(models.Model):
 
     class Meta:
         app_label = 'document'
-
-    def as_bioc(self, offset, content=True):
-        passage = BioCPassage()
-        passage.put_infon('type', 'paragraph')
-        passage.put_infon('section', self.get_kind_display().lower())
-        passage.put_infon('id', str(self.pk))
-        if content:
-            passage.text = self.text
-        else:
-            passage.text = ''
-        passage.offset = str(offset)
-        return passage
 
     def resultwords(self, user_view, gm_view):
         # Gather words and positions from the text

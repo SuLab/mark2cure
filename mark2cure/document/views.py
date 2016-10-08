@@ -11,7 +11,7 @@ def read_bioc(request, pubmed_id, format_type):
     '''
     doc = get_object_or_404(Document, document_id=pubmed_id)
 
-    writer = doc.as_writer()
+    writer = Document.objects.as_writer(documents=[doc])
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
@@ -36,11 +36,11 @@ def read_pubtator_bioc(request, pubmed_id, format_type):
     # When fetching via pubmed, include no annotaitons
     doc = get_object_or_404(Document, document_id=pubmed_id)
 
-    df = doc.as_er_df_with_pubtator_annotations()
+    df = Document.objects.entity_recognition_df(documents=[doc], include_pubtator=True)
     df = clean_df(df, overlap_protection=True)
 
-    writer = doc.as_writer()
-    writer = apply_er_annotations(writer, df)
+    writer = Document.objects.as_writer(documents=[doc])
+    writer = apply_annotations(writer, er_df=df)
 
     if format_type == 'json':
         writer_json = bioc_as_json(writer)
