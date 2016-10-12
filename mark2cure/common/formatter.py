@@ -71,15 +71,17 @@ def is_pubtator_df(df):
 
 
 def clean_df(df, overlap_protection=False, allow_duplicates=True):
-    '''
+    """Ensure all manager dataframe generators share a uniform format
+
         This attempts to santize our Annotation Dataframes that may originate
         from multiple sources (users, pubtator) so they're comparable
-    '''
+    """
     if df.shape[1] is not 11:
         raise ValueError('Incorrect number of dataframe columns.')
 
     # If Pubtator included, make the user_id -1
     df.fillna(value=-1, inplace=True)
+    df['user_id'] = df['user_id'].astype(int)
 
     # Make all the offsets scoped the the entire document (like Pubtator)
     df.ix[df['offset_relative'], 'start_position'] = df['section_offset'] + df['start_position']

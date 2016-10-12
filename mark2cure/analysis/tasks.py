@@ -11,13 +11,14 @@
 from django.contrib.auth.models import User
 from django.conf import settings
 
+from ..common.formatter import clean_df
 from ..common.models import Group
 from ..document.models import Document
 from .models import Report
 from . import synonyms_dict
 
 from nltk.metrics import scores as nltk_scoring
-from celery import task
+# from celery import task
 
 import pandas as pd
 import networkx as nx
@@ -25,7 +26,7 @@ import networkx as nx
 import itertools
 
 
-def hashed_er_annotations_df(group_pk, private_api=False,
+def hashed_er_annotations_df(group_pk,
         compare_type=True, compare_text=False):
     '''
         Users will always be represented in Analysis as their PKs as strings.
@@ -39,13 +40,12 @@ def hashed_er_annotations_df(group_pk, private_api=False,
     docs = group.get_documents()
 
     org_er_df = Document.objects.entity_recognition_df(documents=docs)
-    from mark2cure.common.formatter import clean_df
     er_df = clean_df(org_er_df)
 
     if compare_type:
-        er_df['hash'] = er_df.document_id.apply(str) + '_' + er_df.type.apply(str) + '_' + er_df.offset.apply(str) + '_' + er_df.length.apply(str)
+        er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.ann_type.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
     else:
-        er_df['hash'] = er_df.document_id.apply(str) + '_' + er_df.offset.apply(str) + '_' + er_df.length.apply(str)
+        er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
 
     return er_df
 
@@ -61,16 +61,16 @@ def compute_pairwise(hashed_annotations_df):
     inter_annotator_arr = []
     # For each unique user comparision, compute
     for user_a, user_b in itertools.combinations(userset, 2):
-        # The list of document_ids that each user had completed
-        user_a_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_a].document_id)
-        user_b_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_b].document_id)
+        # The list of document_pks that each user had completed
+        user_a_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_a].document_pk)
+        user_b_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_b].document_pk)
 
         # Only compare documents both users have completed
         pmid_set = user_a_set.intersection(user_b_set)
 
         # If user_a and user_b have completed shared PMID, compute comparisions
         if len(pmid_set) != 0:
-            pmid_df = hashed_annotations_df[hashed_annotations_df['document_id'].isin(pmid_set)]
+            pmid_df = hashed_annotations_df[hashed_annotations_df['document_pk'].isin(pmid_set)]
             ref_set = set(pmid_df[pmid_df['user'] == user_a].hash)
             test_set = set(pmid_df[pmid_df['user'] == user_b].hash)
 
@@ -128,12 +128,12 @@ def merge_pairwise_comparisons(inter_annotator_df):
     return avg_user_f
 
 
-def generate_reports(group_pk, private_api=False,
+def generate_reports(group_pk,
         compare_type=True, compare_text=False):
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
-    hash_table_df = hashed_er_annotations_df(group_pk, private_api=private_api)
+    hash_table_df = hashed_er_annotations_df(group_pk)
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
@@ -146,7 +146,7 @@ def generate_reports(group_pk, private_api=False,
 
 
 def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGNITION_K):
-    df = hashed_er_annotations_df(group_pk, private_api=True)
+    df = hashed_er_annotations_df(group_pk)
 
     # (TODO) This can be wayyy faster and better
     # Add a username column
@@ -154,7 +154,8 @@ def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGN
     res = {}
     for u_dict in user_lookup:
         res[u_dict['pk']] = u_dict['username']
-    df['username'] = df['user'].map(lambda user: res[int(user)]).apply(str)
+
+    df['username'] = df['user_id'].map(lambda user: res[user] if user > 0 else 'pubtator').apply(str)
 
     # Capitalize all annotation text
     df['text'] = df['text'].map(lambda x: x.upper())
@@ -172,7 +173,7 @@ def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGN
     # df['clean_text_count'] = df['clean_text'].map(lambda text_str: clean_text_count_series[text_str])
 
     # User Annotation count per PMID
-    df['user_pmid_hash'] = df.document_id.apply(str) + '_' + df.user.apply(str)
+    df['user_pmid_hash'] = df.document_pk.apply(str) + '_' + df.username.apply(str)
     user_pmid_hash_count_series = df['user_pmid_hash'].value_counts()
     df['user_pmid_count'] = df['user_pmid_hash'].map(lambda hash_str: user_pmid_hash_count_series[hash_str])
 
@@ -201,7 +202,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     G.add_nodes_from(names)
 
     anns = []
-    for (doc, text, user), g_df in df.groupby(['document_id', 'clean_text', 'username']):
+    for (doc, text, user), g_df in df.groupby(['document_pk', 'clean_text', 'username']):
         anns.append({
             'node': nodes[text],
             'doc': doc,
@@ -231,8 +232,8 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
 
     # Santize the node colors
     # if these colors get changed, need to edit group_home.js
-    type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
-    df['color'] = df['type'].map(type_to_color)
+    type_to_color = {'disease': '#d1f3ff', 'gene_protein': '#B1FFA8', 'drug': '#ffd1dc'}
+    df['color'] = df['ann_type'].map(type_to_color)
     df['nodes'] = df['clean_text'].map(nodes)
     colors = {}
     for node, g_df in df.groupby('nodes'):
@@ -260,8 +261,9 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
 
     return G
 
+
 # (TODO) run this on a periodic task
 def group_analysis():
     for group in Group.objects.all():
         if group.percentage_complete() < 100:
-            generate_reports(group.pk, private_api=True)
+            generate_reports(group.pk)
