@@ -17,10 +17,6 @@ DocumentView = Backbone.Marionette.ItemView.extend({
 
   onRender : function() {
     this.$el.attr('href', '/task/relation/'+ this.model.get('id') +'/')
-
-    if(this.model.get('user').completed) {
-      this.$el.addClass('disabled').attr('disabled', true).attr('href', '#');
-    }
   },
 
 });
@@ -32,9 +28,6 @@ DocumentCompositeView = Backbone.Marionette.CompositeView.extend({
 
   initialize : function(options) {
     this.collection.fetch();
-  },
-
-  onRender : function() {
   },
 
 });

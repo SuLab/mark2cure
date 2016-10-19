@@ -98,33 +98,17 @@ class QuestSerializer(serializers.ModelSerializer):
 
 class DocumentRelationSerializer(serializers.ModelSerializer):
 
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super(DocumentRelationSerializer, self).__init__(*args, **kwargs)
-
-    user = serializers.SerializerMethodField('get_user_status')
+    task_count = serializers.SerializerMethodField()
     progress = serializers.SerializerMethodField('get_progress_status')
 
-    task_count = serializers.SerializerMethodField()
-    concepts = serializers.SerializerMethodField()
-
-    def get_concepts(self, document):
-        return 'foo'
-
     def get_task_count(self, document):
-        return document.task_count
+        return document.get('relation_units')
 
-    def get_user_status(self, document):
-        return {'enabled': True,
-                'completed': True if document.user_completed_count > 0 else False}
-
-    def get_progress_status(self, task):
+    def get_progress_status(self, document):
         return {'required': settings.ENTITY_RECOGNITION_K,
-                'current': task.current_completed_count,
-                'completed': task.current_completed_count >= settings.ENTITY_RECOGNITION_K}
+                'current': document.get('completions')}
 
     class Meta:
         model = Document
-        fields = ('id', 'title', 'document_id',
-                  'user', 'progress', 'task_count', 'concepts')
+        fields = ('id', 'document_id', 'title', 'task_count', 'progress')
 

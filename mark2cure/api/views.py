@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db import connection
+from django.conf import settings
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
@@ -140,46 +142,47 @@ def quest_group_list(request, group_pk):
 @login_required
 @api_view(['GET'])
 def relation_list(request):
+    cmd_str = """
+        SELECT  ANY_VALUE(`document_document`.`id`),
+                `document_document`.`document_id`,
+                ANY_VALUE(`document_document`.`title`) as `title`,
+                ANY_VALUE((
+                    SELECT COUNT(*)
+                    FROM `relation_relation`
+                    WHERE `relation_relation`.`document_id` = `document_document`.`id`
+                )) as `relation_units`,
+                COUNT(`view`.`id`) as `completions`,
+                IF(SUM(`view`.`user_id` = {user_id}), true, false) as `user_completed`
 
-    queryset = Document.objects.filter(relationgroup__stub='alacrima').extra(select={
-        "current_completed_count": """
-            SELECT COUNT(*) AS user_completed_count
-            FROM document_view
+        FROM `document_document`
 
-            INNER JOIN `document_section` ON ( document_view.section_id = document_section.id)
+        /* Link up the document group information for filtering purposes */
+        INNER JOIN `relation_relationgroup_documents`
+            ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
+        INNER JOIN `relation_relationgroup` as `group`
+            ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
 
-            WHERE (document_view.task_type = 'ri'
-                AND document_view.completed = 1
-                AND document_section.document_id = document_document.id)""",
+        /* Link up the completed relationship views for each document
+           A View is considered complete when all relationships have been submitted (requires 100%) */
+        INNER JOIN `document_section`
+            ON `document_section`.`document_id` = `document_document`.`id`
+        INNER JOIN `document_view` as `view`
+            ON (`view`.`section_id` = `document_section`.`id` AND `view`.`task_type` = 'ri' AND `view`.`completed` = 1)
 
-        "task_count": """
-            SELECT COUNT(*) AS task_count
-            FROM relation_relation
-            WHERE relation_relation.document_id = document_document.id""",
+        WHERE `group`.`enabled` = 1
+        GROUP BY `document_document`.`document_id`
+        /* Filter what we want to show on the dashboard */
+        HAVING  `relation_units` <= 20
+            AND `completions` < {completions}
+            AND `user_completed` = false
+    """.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
 
-        "concepts": """
-            SELECT COUNT(*) AS task_count
-            FROM relation_relation
-            WHERE relation_relation.document_id = document_document.id""",
+    # Start the DB Connection
+    c = connection.cursor()
+    c.execute(cmd_str)
+    queryset = [{'id': x[0], 'document_id': x[1], 'title': x[2], 'relation_units': x[3], 'completions': x[4]} for x in c.fetchall()]
 
-        # How many times has this Document Task View been completed (should only be 0 or 1)
-        "user_completed_count": """
-            SELECT COUNT(*) AS user_completed_count
-            FROM document_view
-
-            INNER JOIN `document_section` ON ( document_view.section_id = document_section.id)
-
-            WHERE (document_view.task_type = 'ri'
-                AND document_view.completed = 1
-                AND document_view.user_id = %d
-        AND document_section.document_id = document_document.id)""" % (request.user.pk,)
-    })
-
-    queryset = [x for x in queryset if x.task_count > 0]
-    queryset = [x for x in queryset if x.task_count < 20]
-    queryset = [x for x in queryset if x.user_completed_count == 0]
-
-    serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
+    serializer = DocumentRelationSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
