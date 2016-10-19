@@ -51,7 +51,7 @@ def check_corpus_health(self):
           max_retries=0, rate_limit='2/s', soft_time_limit=15,
           acks_late=True, track_started=True,
           expires=60)
-def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
+def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
     Entrez.email = settings.ENTREZ_EMAIL
 
     if type(pubmed_ids) == list:
@@ -97,7 +97,7 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, grou
           max_retries=0,
           acks_late=True, track_started=True,
           expires=180)
-def check_pubtator_health():
+def check_pubtator_health(self):
     # Set Validate Cache to False for all to perform
     # an entire, clean sweep of new checks
     Pubtator.objects.all().update(validate_cache=False)
@@ -138,7 +138,7 @@ def check_pubtator_health():
           max_retries=0, rate_limit='2/s', soft_time_limit=15,
           acks_late=True, track_started=True,
           expires=None)
-def get_pubtator_response(pk):
+def get_pubtator_response(self, pk):
     pubtator = Pubtator.objects.get(pk=pk)
 
     if pubtator.session_id:

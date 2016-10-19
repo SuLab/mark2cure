@@ -122,7 +122,7 @@ def merge_pairwise_comparisons(inter_annotator_df):
           max_retries=0, soft_time_limit=600,
           acks_late=True, track_started=True,
           expires=3600)
-def generate_reports(group_pk):
+def generate_reports(self, group_pk):
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
@@ -142,7 +142,7 @@ def generate_reports(group_pk):
           max_retries=0,
           acks_late=True, track_started=True,
           expires=3600)
-def group_analysis():
+def group_analysis(self):
     for group in Group.objects.all():
         if group.percentage_complete() < 100:
             generate_reports.apply_async(
