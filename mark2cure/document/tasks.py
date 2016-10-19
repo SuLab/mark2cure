@@ -14,12 +14,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True, ignore_result=False,
-          max_retries=1,
+@app.task(bind=True, ignore_result=True,
+          max_retries=0,
           acks_late=True, track_started=True,
-          expires=None)
+          expires=300)
 def check_corpus_health(self):
-    '''
+    """
         Task to run every 10 minutes
 
         1) Check on document health
@@ -29,86 +29,28 @@ def check_corpus_health(self):
         2) Check on the pubtator health
             - Fetch pending sessions
             - Make sure content pubtators are correctly assigned
-
-    '''
+    """
     for document in Document.objects.all():
         # Update any documents that don't have a Title or Abstract
         if document.available_sections().count() < 2:
-            get_pubmed_document(document.document_id)
+            get_pubmed_document.apply_async(
+                args=[document.document_id],
+                queue='mark2cure_tasks')
 
             # Update any newly enforced padding rules
             # If the document doesn't pass the validator
             # delete all existing content and retry
-            valid_pubtator_responses = document.valid_pubtator()
-            update_padding = document.update_padding()
-
-            if not valid_pubtator_responses or update_padding:
+            if not document.valid_pubtator() or document.update_padding():
                 document.init_pubtator()
 
-    check_pubtator_health()
+    if not self.request.called_directly:
+        return True
 
 
-def check_pubtator_health():
-    # Set Validate Cache to False for all to perform
-    # an entire, clean sweep of new checks
-    Pubtator.objects.all().update(validate_cache=False)
-
-    # Try to fetch all the pending pubtator requests
-    for pubtator in Pubtator.objects.exclude(session_id='').all():
-        get_pubtator_response(pubtator.pk)
-
-    # For all Pubtator models with content ensure it validates and cleanup the session_id and content
-    for pubtator in Pubtator.objects.filter(content__isnull=False).all():
-        # (TODO) Do robust checks for Pubtator object valid status
-        p_valid = pubtator.valid()
-
-        if p_valid:
-            # Association with the correct document
-            pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
-
-            # Prevents subsequent API calls
-            pubtator.session_id = ''
-
-            # Make Pubtator.validate() faster
-            pubtator.validate_cache = True
-
-        else:
-            pubtator.content = None
-
-        # Do this just so the first time valid_pubtator
-        # actually runs we know it's fresh'
-        pubtator.save()
-
-
-@app.task(bind=True, ignore_result=False,
-          max_retries=1, rate_limit='2/s', soft_time_limit=15,
+@app.task(bind=True, ignore_result=True,
+          max_retries=0, rate_limit='2/s', soft_time_limit=15,
           acks_late=True, track_started=True,
-          expires=None)
-def get_pubtator_response(pk):
-    pubtator = Pubtator.objects.get(pk=pk)
-
-    if pubtator.session_id:
-        # Body required to fetch content from previous session
-        payload = {'content-type': 'text/xml'}
-        writer = Document.objects.as_writer(documents=[pubtator.document])
-        data = str(writer)
-        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
-            session_id=pubtator.session_id)
-
-        results = requests.post(url, data=data, params=payload)
-        pubtator.request_count = pubtator.request_count + 1
-
-        if results.content != 'Not yet':
-            pubtator.session_id = ''
-            pubtator.content = results.text
-
-        pubtator.save()
-
-
-@app.task(bind=True, ignore_result=False,
-          max_retries=1, rate_limit='2/s', soft_time_limit=15,
-          acks_late=True, track_started=True,
-          expires=None)
+          expires=60)
 def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
     Entrez.email = settings.ENTREZ_EMAIL
 
@@ -146,3 +88,76 @@ def get_pubmed_document(pubmed_ids, source='pubmed', include_pubtator=True, grou
         docs = Document.objects.filter(source=source).all()
         group = Group.objects.get(pk=group_pk)
         group.assign(docs)
+
+    if not self.request.called_directly:
+        return True
+
+
+@app.task(bind=True, ignore_result=True,
+          max_retries=0,
+          acks_late=True, track_started=True,
+          expires=180)
+def check_pubtator_health():
+    # Set Validate Cache to False for all to perform
+    # an entire, clean sweep of new checks
+    Pubtator.objects.all().update(validate_cache=False)
+
+    # Try to fetch all the pending pubtator requests
+    for pubtator in Pubtator.objects.exclude(session_id='').all():
+        get_pubtator_response.apply_async(
+            args=[pubtator.pk],
+            queue='mark2cure_tasks')
+
+    # For all Pubtator models with content ensure it validates and cleanup the session_id and content
+    for pubtator in Pubtator.objects.filter(content__isnull=False).all():
+        # (TODO) Do robust checks for Pubtator object valid status
+        p_valid = pubtator.valid()
+
+        if p_valid:
+            # Association with the correct document
+            pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
+
+            # Prevents subsequent API calls
+            pubtator.session_id = ''
+
+            # Make Pubtator.validate() faster
+            pubtator.validate_cache = True
+
+        else:
+            pubtator.content = None
+
+        # Do this just so the first time valid_pubtator
+        # actually runs we know it's fresh'
+        pubtator.save()
+
+    if not self.request.called_directly:
+        return True
+
+
+@app.task(bind=True, ignore_result=True,
+          max_retries=0, rate_limit='2/s', soft_time_limit=15,
+          acks_late=True, track_started=True,
+          expires=None)
+def get_pubtator_response(pk):
+    pubtator = Pubtator.objects.get(pk=pk)
+
+    if pubtator.session_id:
+        # Body required to fetch content from previous session
+        payload = {'content-type': 'text/xml'}
+        writer = Document.objects.as_writer(documents=[pubtator.document])
+        data = str(writer)
+        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
+            session_id=pubtator.session_id)
+
+        results = requests.post(url, data=data, params=payload)
+        pubtator.request_count = pubtator.request_count + 1
+
+        if results.content != 'Not yet':
+            pubtator.session_id = ''
+            pubtator.content = results.text
+
+        pubtator.save()
+
+    if not self.request.called_directly:
+        return True
+

@@ -31,7 +31,7 @@ def start_export(request):
 
     group_export.apply_async(
         args=[list(docs.values_list('pk', flat=True))],
-        queue='mark2cure_tasks', routing_key='mark2cure.tasks')
+        queue='mark2cure_downloads')
 
     return redirect('download:home')
 

@@ -18,7 +18,7 @@ from .models import Report
 from . import synonyms_dict
 
 from nltk.metrics import scores as nltk_scoring
-# from celery import task
+from ..common import celery_app as app
 
 import pandas as pd
 import networkx as nx
@@ -26,51 +26,41 @@ import networkx as nx
 import itertools
 
 
-def hashed_er_annotations_df(group_pk,
-        compare_type=True, compare_text=False):
-    '''
-        Users will always be represented in Analysis as their PKs as strings.
-        This is because, on occasion, we will include users that are not in the
-        DB and don't have an int to represent their PK
-
-        This standard is a must as there are many downstream cases where this
-        column is searched for users by their str(pk)
-    '''
+def hashed_er_annotations_df(group_pk, compare_type=True):
+    """Generate a Entity Recognition DataFrame with additional hash column
+    """
     group = Group.objects.get(pk=group_pk)
-    docs = group.get_documents()
-
-    org_er_df = Document.objects.entity_recognition_df(documents=docs)
+    org_er_df = Document.objects.entity_recognition_df(documents=group.get_documents())
     er_df = clean_df(org_er_df)
 
     if compare_type:
         er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.ann_type.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
     else:
         er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
-
     return er_df
 
 
-def compute_pairwise(hashed_annotations_df):
-    '''
+def compute_pairwise(hashed_er_anns_df):
+    """
         Returns pairwise comparision between users (uesr_a & user_b)
         that have completed similar documents
-    '''
+    """
     # Make user_pks unique
-    userset = set(hashed_annotations_df.user)
+    userset = set(hashed_er_anns_df.user)
 
     inter_annotator_arr = []
     # For each unique user comparision, compute
     for user_a, user_b in itertools.combinations(userset, 2):
         # The list of document_pks that each user had completed
-        user_a_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_a].document_pk)
-        user_b_set = set(hashed_annotations_df[hashed_annotations_df['user'] == user_b].document_pk)
+        user_a_set = set(hashed_er_anns_df[hashed_er_anns_df['user'] == user_a].document_pk)
+        user_b_set = set(hashed_er_anns_df[hashed_er_anns_df['user'] == user_b].document_pk)
 
         # Only compare documents both users have completed
         pmid_set = user_a_set.intersection(user_b_set)
 
         # If user_a and user_b have completed shared PMID, compute comparisions
         if len(pmid_set) != 0:
-            pmid_df = hashed_annotations_df[hashed_annotations_df['document_pk'].isin(pmid_set)]
+            pmid_df = hashed_er_anns_df[hashed_er_anns_df['document_pk'].isin(pmid_set)]
             ref_set = set(pmid_df[pmid_df['user'] == user_a].hash)
             test_set = set(pmid_df[pmid_df['user'] == user_b].hash)
 
@@ -89,10 +79,10 @@ def compute_pairwise(hashed_annotations_df):
 
 
 def merge_pairwise_comparisons(inter_annotator_df):
-    '''
+    """
         Merging User1 and User2 columns for the pairings since combi ensures that
         that users are paired with each other only once (no reverse pairing)
-    '''
+    """
     # Sort rows by best F-Score at the top
     inter_annotator_df.sort('f-score', ascending=False, inplace=True)
 
@@ -128,8 +118,11 @@ def merge_pairwise_comparisons(inter_annotator_df):
     return avg_user_f
 
 
-def generate_reports(group_pk,
-        compare_type=True, compare_text=False):
+@app.task(bind=True, ignore_result=True,
+          max_retries=0, soft_time_limit=600,
+          acks_late=True, track_started=True,
+          expires=3600)
+def generate_reports(group_pk):
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
@@ -143,6 +136,21 @@ def generate_reports(group_pk,
     avg_user_f = merge_pairwise_comparisons(inter_annotator_df)
     Report.objects.create(group=group, report_type=Report.AVERAGE,
             dataframe=avg_user_f, args=args)
+
+
+@app.task(bind=True, ignore_result=True,
+          max_retries=0,
+          acks_late=True, track_started=True,
+          expires=3600)
+def group_analysis():
+    for group in Group.objects.all():
+        if group.percentage_complete() < 100:
+            generate_reports.apply_async(
+                args=[group.pk],
+                queue='mark2cure_tasks')
+
+    if not self.request.called_directly:
+        return True
 
 
 def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGNITION_K):
@@ -262,8 +270,4 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     return G
 
 
-# (TODO) run this on a periodic task
-def group_analysis():
-    for group in Group.objects.all():
-        if group.percentage_complete() < 100:
-            generate_reports(group.pk)
+
