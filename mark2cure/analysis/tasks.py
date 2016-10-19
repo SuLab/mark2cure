@@ -46,14 +46,14 @@ def compute_pairwise(hashed_er_anns_df):
         that have completed similar documents
     """
     # Make user_pks unique
-    userset = set(hashed_er_anns_df.user)
+    userset = set(hashed_er_anns_df.user_id)
 
     inter_annotator_arr = []
     # For each unique user comparision, compute
     for user_a, user_b in itertools.combinations(userset, 2):
         # The list of document_pks that each user had completed
-        user_a_set = set(hashed_er_anns_df[hashed_er_anns_df['user'] == user_a].document_pk)
-        user_b_set = set(hashed_er_anns_df[hashed_er_anns_df['user'] == user_b].document_pk)
+        user_a_set = set(hashed_er_anns_df[hashed_er_anns_df['user_id'] == user_a].document_pk)
+        user_b_set = set(hashed_er_anns_df[hashed_er_anns_df['user_id'] == user_b].document_pk)
 
         # Only compare documents both users have completed
         pmid_set = user_a_set.intersection(user_b_set)
@@ -61,8 +61,8 @@ def compute_pairwise(hashed_er_anns_df):
         # If user_a and user_b have completed shared PMID, compute comparisions
         if len(pmid_set) != 0:
             pmid_df = hashed_er_anns_df[hashed_er_anns_df['document_pk'].isin(pmid_set)]
-            ref_set = set(pmid_df[pmid_df['user'] == user_a].hash)
-            test_set = set(pmid_df[pmid_df['user'] == user_b].hash)
+            ref_set = set(pmid_df[pmid_df['user_id'] == user_a].hash)
+            test_set = set(pmid_df[pmid_df['user_id'] == user_b].hash)
 
             # Compute the precision, recall and F-measure based on
             # the unique hashes
@@ -126,7 +126,7 @@ def generate_reports(self, group_pk):
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
-    hash_table_df = hashed_er_annotations_df(group_pk)
+    hash_table_df = hashed_er_annotations_df(group.pk)
 
     inter_annotator_df = compute_pairwise(hash_table_df)
     Report.objects.create(
