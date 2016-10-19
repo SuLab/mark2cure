@@ -175,6 +175,8 @@ def relation_list(request):
         HAVING  `relation_units` <= 20
             AND `completions` < {completions}
             AND `user_completed` = false
+        ORDER BY `completions` DESC
+        LIMIT 20
     """.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
 
     # Start the DB Connection
