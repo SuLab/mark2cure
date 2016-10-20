@@ -27,7 +27,7 @@
                      "#text":"title"
                   },
                   {
-                     "@key":"type",
+                     "@key":"type_id",
                      "#text":"paragraph"
                   },
                   {
@@ -45,11 +45,11 @@
                         "#text":"trainee"
                      },
                      {
-                        "@key":"user",
+                        "@key":"user_id",
                         "#text":"1"
                      },
                      {
-                        "@key":"type",
+                        "@key":"type_id",
                         "#text":"0"
                      }
                   ],
@@ -66,11 +66,11 @@
                         "#text":"trainee"
                      },
                      {
-                        "@key":"user",
+                        "@key":"user_id",
                         "#text":"1"
                      },
                      {
-                        "@key":"type",
+                        "@key":"type_id",
                         "#text":"0"
                      }
                   ],
@@ -87,11 +87,11 @@
                         "#text":"trainee"
                      },
                      {
-                        "@key":"user",
+                        "@key":"user_id",
                         "#text":"1"
                      },
                      {
-                        "@key":"type",
+                        "@key":"type_id",
                         "#text":"0"
                      }
                   ],
@@ -108,11 +108,11 @@
                         "#text":"trainee"
                      },
                      {
-                        "@key":"user",
+                        "@key":"user_id",
                         "#text":"1"
                      },
                      {
-                        "@key":"type",
+                        "@key":"type_id",
                         "#text":"1"
                      }
                   ],
@@ -129,11 +129,11 @@
                         "#text":"trainee"
                      },
                      {
-                        "@key":"user",
+                        "@key":"user_id",
                         "#text":"1"
                      },
                      {
-                        "@key":"type",
+                        "@key":"type_id",
                         "#text":"1"
                      }
                   ],

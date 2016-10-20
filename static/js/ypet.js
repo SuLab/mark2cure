@@ -131,7 +131,7 @@ Annotation = Backbone.RelationalModel.extend({
     /* An annotation doesn't exist when removed so
      * we can start them all off at 0 and not need to
      * mix in a null type */
-    type: 0,
+    type_id: 0,
     text: '',
     start: null,
   },
@@ -154,10 +154,10 @@ Annotation = Backbone.RelationalModel.extend({
   toggleType : function() {
     /* Removes (if only 1 Annotation type) or changes
      * the Annotation type when clicked after existing */
-    if( this.get('type') == YPet.AnnotationTypes.length-1 || this.get('text') == "") {
+    if( this.get('type_id') == YPet.AnnotationTypes.length-1 || this.get('text') == "") {
       this.destroy();
     } else {
-      this.set('type', this.get('type')+1 );
+      this.set('type_id', this.get('type_id')+1 );
     }
   }
 });
@@ -190,7 +190,7 @@ AnnotationList = Backbone.Collection.extend({
       this.drawAnnotations(annotation);
     });
 
-    this.listenTo(this, 'change:type', function(annotation) {
+    this.listenTo(this, 'change:type_id', function(annotation) {
       this.drawAnnotations(annotation);
     });
 
@@ -210,7 +210,7 @@ AnnotationList = Backbone.Collection.extend({
   },
 
   drawAnnotations: function(annotation) {
-    var annotation_type = YPet.AnnotationTypes.at(annotation.get('type')),
+    var annotation_type = YPet.AnnotationTypes.at(annotation.get('type_id')),
         words_len = annotation.get('words').length;
     var parent_document = this.parentDocument || this._parentDocument;
 
@@ -590,10 +590,10 @@ WordCollectionView = Backbone.Marionette.CollectionView.extend({
             if(selected.length) {
               if(opponent) {
                 var opp_anns = parentDocument.get('opponent_annotations');
-                opp_anns.create({words: selected, type: ann_type_id, opponent: opponent});
+                opp_anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
               } else {
                 var anns = parentDocument.get('annotations');
-                anns.create({words: selected, type: ann_type_id, opponent: opponent});
+                anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
               }
             }
 

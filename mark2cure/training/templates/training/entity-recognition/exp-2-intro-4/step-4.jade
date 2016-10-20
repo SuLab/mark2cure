@@ -80,23 +80,23 @@ block ypet
     });
 
     var answers = [
-      {text: "Ehlers–Danlos syndrome", start: 0, type: 0},
-      {text: "EDS", start: 25, type: 0},
-      {text: "connective tissue disorder", start: 36, type: 0},
-      {text: "collagen 3A", start: 144, type: 1},
-      {text: "collagen 5A", start: 160, type: 1},
+      {text: "Ehlers–Danlos syndrome", start: 0, type_id: 0},
+      {text: "EDS", start: 25, type_id: 0},
+      {text: "connective tissue disorder", start: 36, type_id: 0},
+      {text: "collagen 3A", start: 144, type_id: 1},
+      {text: "collagen 5A", start: 160, type_id: 1},
 
-      {text: "COL5A", start: 191, type: 1},
-      {text: "COL3A", start: 200, type: 1},
-      {text: "EDS", start: 252, type: 0},
+      {text: "COL5A", start: 191, type_id: 1},
+      {text: "COL3A", start: 200, type_id: 1},
+      {text: "EDS", start: 252, type_id: 0},
 
-      {text: "EDS", start: 291, type: 0},
-      {text: "physical therapy", start: 304, type: 2},
-      {text: "bracing", start: 323, type: 2},
-      {text: "corrective surgery", start: 337, type: 2},
-      {text: "frequent injuries", start: 374, type: 0},
-      {text: "pain", start: 396, type: 0},
-      {text: "EDS", start: 431, type: 0}];
+      {text: "EDS", start: 291, type_id: 0},
+      {text: "physical therapy", start: 304, type_id: 2},
+      {text: "bracing", start: 323, type_id: 2},
+      {text: "corrective surgery", start: 337, type_id: 2},
+      {text: "frequent injuries", start: 374, type_id: 0},
+      {text: "pain", start: 396, type_id: 0},
+      {text: "EDS", start: 431, type_id: 0}];
 
     var validation_check = function(collection) {
       if(validate(collection, answers)) { correct(); }
