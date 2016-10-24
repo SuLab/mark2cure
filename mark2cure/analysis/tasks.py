@@ -101,11 +101,11 @@ def merge_pairwise_comparisons(inter_annotator_df):
             group['f-score'].sum()
         ))
 
-    temp_df = pd.DataFrame(all_users_arr, columns=('user', 'pairings', 'total_f'))
+    temp_df = pd.DataFrame(all_users_arr, columns=('user_id', 'pairings', 'total_f'))
 
     # Obtaining average f-score from user-merged data.
     avg_f_arr = []
-    for group_idx, group in temp_df.groupby('user'):
+    for group_idx, group in temp_df.groupby('user_id'):
         pairing_counts = group['pairings'].sum()
         avg_f_arr.append((
             group_idx,
@@ -113,7 +113,7 @@ def merge_pairwise_comparisons(inter_annotator_df):
             group['total_f'].sum() / pairing_counts
         ))
 
-    avg_user_f = pd.DataFrame(avg_f_arr, columns=('user', 'pairings', 'f-score'))
+    avg_user_f = pd.DataFrame(avg_f_arr, columns=('user_id', 'pairings', 'f-score'))
     avg_user_f.sort('f-score', ascending=False, inplace=True)
     return avg_user_f
 

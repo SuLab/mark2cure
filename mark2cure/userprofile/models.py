@@ -65,14 +65,14 @@ class Team(models.Model):
         '''
             Return back the weighted mean (pairings count) f-score
         '''
-        reports = Report.objects.filter(report_type=1).order_by('-created')[:Group.objects.count()]
-
-        team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
-        team_user_profile_pks = [str(u) for u in team_user_profile_pks]
-
-        dataframes = [r.dataframe[r.dataframe['user'].isin(team_user_profile_pks)] for r in reports]
 
         try:
+
+            reports = Report.objects.filter(report_type=Report.AVERAGE).order_by('-created')[:Group.objects.count()]
+
+            team_user_profile_pks = self.userprofile_set.values_list('pk', flat=True)
+            dataframes = [r.dataframe[r.dataframe['user_id'].isin(team_user_profile_pks)] for r in reports]
+
             team_df = pd.concat(dataframes)
 
             if weighted:
@@ -243,10 +243,11 @@ class UserProfile(models.Model):
         '''
             Return back the weighted mean (pairings count) f-score
         '''
-        reports = Report.objects.filter(report_type=1).order_by('-created')[:Group.objects.count()]
-        dataframes = [r.dataframe[r.dataframe['user'] == str(self.user.pk)] for r in reports]
 
         try:
+            reports = Report.objects.filter(report_type=Report.AVERAGE).order_by('-created')[:Group.objects.count()]
+            dataframes = [r.dataframe[r.dataframe['user_id'] == self.user.pk] for r in reports]
+
             user_df = pd.concat(dataframes)
             if weighted:
                 user_df['wf'] = user_df['pairings'] * user_df['f-score']
