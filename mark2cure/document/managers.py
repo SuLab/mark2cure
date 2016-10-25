@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, connection
 from mark2cure.common.formatter import bioc_writer
-from mark2cure.common.bioc import BioCReader
+from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
 
 from mark2cure.task.relation import relation_data_flat
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
@@ -36,6 +36,9 @@ class DocumentManager(models.Manager):
                     doc_arr.append(d)
                 elif type(d) is int or type(d) is long:
                     doc_arr.append(str(d))
+            str_doc_arr = list(set(doc_arr))
+        else:
+            raise ValueError('No documents supplied to generator writer')
 
         cmd_str = '''
             SELECT
@@ -53,13 +56,14 @@ class DocumentManager(models.Manager):
                 AND `document_pubtator`.`document_id` IN ({0})
 
             GROUP BY `document_pubtator`.`document_id`;
-        '''.format(','.join(doc_arr))
+        '''.format(','.join(str_doc_arr))
         c = connection.cursor()
         try:
             c.execute(cmd_str)
             res = [(x[0], x[1], x[2]) for x in c.fetchall()]
         finally:
             c.close()
+
 
         writer = bioc_writer(None)
         for pubtator_content in res:
@@ -77,7 +81,33 @@ class DocumentManager(models.Manager):
 
             writer.collection.add_document(doc)
 
+            str_doc_arr.remove(str(pubtator_content[0]))
+
+        # Capture all the documents not available via pubtators
+        for document_pk_str in str_doc_arr:
+            # Can optimize this model retrieval but should rarely occur
+            document_model = Document.objects.get(pk=document_pk_str)
+
+            bioc_document = BioCDocument()
+            bioc_document.id = str(document_model.document_id)
+            bioc_document.put_infon('document_pk', document_pk_str)
+
+            passage_offset = 0
+            for idx, section in enumerate(document_model.available_sections()):
+                passage = BioCPassage()
+                passage.put_infon('section', ['title', 'paragraph'][idx])
+                passage.put_infon('id', str(section.pk))
+                # (TODO) Missing a "type" infon?
+                passage.text = section.text
+
+                passage.offset = str(passage_offset)
+                passage_offset += len(passage.text)+1
+
+                bioc_document.add_passage(passage)
+
+            writer.collection.add_document(bioc_document)
         return writer
+
 
     def relation_df(self, documents=[], users=[]):
         ct = ContentType.objects.get(model='relationannotation')
