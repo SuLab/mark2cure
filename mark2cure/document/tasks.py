@@ -9,6 +9,8 @@ from mark2cure.common.formatter import pad_split
 from Bio import Entrez, Medline
 from ..common import celery_app as app
 
+from celery.exceptions import SoftTimeLimitExceeded
+
 import requests
 import logging
 logger = logging.getLogger(__name__)
@@ -139,24 +141,31 @@ def check_pubtator_health(self):
           acks_late=True, track_started=True,
           expires=None)
 def get_pubtator_response(self, pk):
-    pubtator = Pubtator.objects.get(pk=pk)
+    try:
+        pubtator = Pubtator.objects.get(pk=pk)
 
-    if pubtator.session_id:
-        # Body required to fetch content from previous session
-        payload = {'content-type': 'text/xml'}
-        writer = Document.objects.as_writer(documents=[pubtator.document])
-        data = str(writer)
-        url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
-            session_id=pubtator.session_id)
+        if pubtator.session_id:
+            # Body required to fetch content from previous session
+            payload = {'content-type': 'text/xml'}
+            writer = Document.objects.as_writer(documents=[pubtator.document])
+            data = str(writer)
+            url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
+                session_id=pubtator.session_id)
 
-        results = requests.post(url, data=data, params=payload)
-        pubtator.request_count = pubtator.request_count + 1
+            results = requests.post(url, data=data, params=payload)
+            pubtator.request_count = pubtator.request_count + 1
 
-        if results.content != 'Not yet':
-            pubtator.session_id = ''
-            pubtator.content = results.text
+            if results.content != 'Not yet':
+                pubtator.session_id = ''
+                pubtator.content = results.text
 
-        pubtator.save()
+            pubtator.save()
+
+    except SoftTimeLimitExceeded:
+        return False
+
+    except:
+        return False
 
     if not self.request.called_directly:
         return True
