@@ -113,11 +113,12 @@ def check_pubtator_health(self):
     # For all Pubtator models with content ensure it validates and cleanup the session_id and content
     for pubtator in Pubtator.objects.filter(content__isnull=False).all():
         # (TODO) Do robust checks for Pubtator object valid status
-        p_valid = pubtator.valid()
+        instance = pubtator.get_instance()
 
-        if p_valid:
+        if instance:
             # Association with the correct document
-            pubtator.document = Document.objects.get(document_id=p_valid.collection.documents[0].id)
+            doc_id = instance.collection.documents[0].id
+            pubtator.document = Document.objects.get(document_id=doc_id)
 
             # Prevents subsequent API calls
             pubtator.session_id = ''

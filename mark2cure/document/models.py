@@ -121,11 +121,8 @@ class Pubtator(models.Model):
     document = models.ForeignKey(Document)
 
     kind = models.CharField(max_length=200, blank=True)
-    session_id = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True, null=True)
 
-    request_count = models.IntegerField(default=0)
-    validate_cache = models.BooleanField(default=False)
 
     # Updated is also trigged during doc.valid_pubtator
     # so it's associated with when last polled or
@@ -139,18 +136,22 @@ class Pubtator(models.Model):
     def __unicode__(self):
         return 'pubtator'
 
-    def valid(self):
-        # (TODO) This may return 2 different "types" check on
-        # implications of this discrepancy
-        if self.validate_cache:
-            return True
-
-        if self.session_id != '':
-            return False
-
+    def is_valid(self):
+        """
+            Returns a boolean for if the pubtator is a valid state
+        """
         if self.content is None:
             return False
 
+        if self.get_instance():
+            return True
+        else:
+            return False
+
+    def get_instance(self):
+        """
+            Returns the pubtator BioC instance if valid or None
+        """
         try:
             r = BioCReader(source=self.content)
             r.read()
@@ -159,18 +160,37 @@ class Pubtator(models.Model):
             # If one of them doesn't validate leave
             return False
 
+
     def count_annotations(self):
-        if self.valid():
+        """
+            Returns an Integer count of all types of annotations, accross all sections for a pubtator response of any type.
+            If none are found or the document is invalid, return 0
+        """
+        instance = self.get_instance()
+        if instance:
             count = 0
-            reader = BioCReader(source=self.content)
-            reader.read()
-            for doc in reader.collection.documents:
+            for doc in instance.collection.documents:
                 for passage in doc.passages:
                     count += len(passage.annotations)
             return count
 
         else:
             return 0
+
+class PubtatorRequest(models.Model):
+    """
+        Pending jobs that have been submitted to Pubtator and are
+        awaiting completion
+    """
+    pubtator = models.ForeignKey(Pubtator)
+
+    fulfilled = models.BooleanField(default=False)
+    session_id = models.CharField(max_length=200, blank=True)
+    # The Number of times we've checked on the session_id
+    request_count = models.IntegerField(default=0)
+
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Section(models.Model):

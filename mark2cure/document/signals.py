@@ -27,7 +27,10 @@ def pubtator_post_save(sender, instance, created, **kwargs):
             raise e
 
         session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', response.url)[0]
-        pubtator.session_id = session_id
-        pubtator.save()
+
+        PubtatorRequest.objects.get_or_create(
+            pubtator=pubtator,
+            fulfilled=False,
+            session_id=session_id)
 
 
