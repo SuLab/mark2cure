@@ -123,13 +123,6 @@ class Pubtator(models.Model):
     kind = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True, null=True)
 
-
-    # Updated is also trigged during doc.valid_pubtator
-    # so it's associated with when last polled or
-    # since last time it's been known to validate
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         app_label = 'document'
 
@@ -160,7 +153,6 @@ class Pubtator(models.Model):
             # If one of them doesn't validate leave
             return False
 
-
     def count_annotations(self):
         """
             Returns an Integer count of all types of annotations, accross all sections for a pubtator response of any type.
@@ -177,6 +169,7 @@ class Pubtator(models.Model):
         else:
             return 0
 
+
 class PubtatorRequest(models.Model):
     """
         Pending jobs that have been submitted to Pubtator and are
@@ -185,7 +178,7 @@ class PubtatorRequest(models.Model):
     pubtator = models.ForeignKey(Pubtator)
 
     fulfilled = models.BooleanField(default=False)
-    session_id = models.CharField(max_length=200, blank=True)
+    session_id = models.CharField(max_length=19)
     # The Number of times we've checked on the session_id
     request_count = models.IntegerField(default=0)
 

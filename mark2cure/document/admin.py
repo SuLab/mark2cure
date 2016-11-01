@@ -40,13 +40,9 @@ class DocumentAdmin(admin.ModelAdmin):
 class PubtatorAdmin(admin.ModelAdmin):
     search_fields = ('document__document_id', 'session_id', 'content', 'kind')
 
-    list_display = ('pmid', 'kind', 'session_id',
-            'annotations', 'valid', 'request_count',
-            'updated', 'created',)
+    list_display = ('pmid', 'kind', 'annotations', 'valid')
 
-    readonly_fields = ('document', 'kind', 'session_id',
-            'content', 'validate_cache',
-            'request_count', 'updated', 'created',)
+    readonly_fields = ('document', 'kind', 'content')
 
     def pmid(self, obj):
         return obj.document.document_id

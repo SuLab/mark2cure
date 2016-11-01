@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from django.conf import settings
 
 from mark2cure.common.models import Group
-from mark2cure.document.models import Document, Pubtator, Section
+from mark2cure.document.models import Document, Pubtator, PubtatorRequest, Section
 from mark2cure.common.formatter import pad_split
 
 from Bio import Entrez, Medline
@@ -105,33 +105,10 @@ def check_pubtator_health(self):
     Pubtator.objects.all().update(validate_cache=False)
 
     # Try to fetch all the pending pubtator requests
-    for pubtator in Pubtator.objects.exclude(session_id='').all():
+    for pubtator_request in PubtatorRequest.objects.filter(fulfilled=False).all():
         get_pubtator_response.apply_async(
-            args=[pubtator.pk],
+            args=[pubtator_request.pk],
             queue='mark2cure_tasks')
-
-    # For all Pubtator models with content ensure it validates and cleanup the session_id and content
-    for pubtator in Pubtator.objects.filter(content__isnull=False).all():
-        # (TODO) Do robust checks for Pubtator object valid status
-        instance = pubtator.get_instance()
-
-        if instance:
-            # Association with the correct document
-            doc_id = instance.collection.documents[0].id
-            pubtator.document = Document.objects.get(document_id=doc_id)
-
-            # Prevents subsequent API calls
-            pubtator.session_id = ''
-
-            # Make Pubtator.validate() faster
-            pubtator.validate_cache = True
-
-        else:
-            pubtator.content = None
-
-        # Do this just so the first time valid_pubtator
-        # actually runs we know it's fresh'
-        pubtator.save()
 
     if not self.request.called_directly:
         return True
@@ -142,31 +119,31 @@ def check_pubtator_health(self):
           acks_late=True, track_started=True,
           expires=None)
 def get_pubtator_response(self, pk):
+    pubtator_request = PubtatorRequest.objects.get(pk=pk)
+    pubtator = pubtator_request.pubtator
+
+    # Build the writer required to fetch content from previous session
+    # Unclear why Pubtator wants this posted twice
+    writer = Document.objects.as_writer(documents=[pubtator.document])
+
     try:
-        pubtator = Pubtator.objects.get(pk=pk)
-
-        if pubtator.session_id:
-            # Body required to fetch content from previous session
-            payload = {'content-type': 'text/xml'}
-            writer = Document.objects.as_writer(documents=[pubtator.document])
-            data = str(writer)
-            url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(
-                session_id=pubtator.session_id)
-
-            results = requests.post(url, data=data, params=payload)
-            pubtator.request_count = pubtator.request_count + 1
-
-            if results.content != 'Not yet':
-                pubtator.session_id = ''
-                pubtator.content = results.text
-
-            pubtator.save()
-
+        results = requests.post('http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator_request.session_id),
+                                data=str(writer),
+                                params={'content-type': 'text/xml'})
+        pubtator_request.request_count = pubtator_request.request_count + 1
+        pubtator_request.save()
     except SoftTimeLimitExceeded:
         return False
 
     except:
         return False
+
+    if results.content != 'Not yet':
+        pubtator.content = results.text
+        pubtator.save()
+
+        pubtator_request.fulfilled = True
+        pubtator_request.save()
 
     if not self.request.called_directly:
         return True

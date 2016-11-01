@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Document
+from .models import Document, PubtatorRequest
 
 import requests
 import re
@@ -27,10 +27,8 @@ def pubtator_post_save(sender, instance, created, **kwargs):
             raise e
 
         session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', response.url)[0]
-
         PubtatorRequest.objects.get_or_create(
             pubtator=pubtator,
-            fulfilled=False,
             session_id=session_id)
 
 
