@@ -93,8 +93,6 @@ block post-footer
 
   </script>
 
-
-
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-training.js")
 
@@ -154,22 +152,22 @@ block post-footer
       event_counter++;
     });
 
-
     Tree['convoChannel'].on('back', function(obj) {
-      $('.popover').popover('dispose');
-      $relates_el = $('ul.list-group a:nth(0)');
-      $relates_el.popover({
-        container: 'body',
-        html: true,
-        animation: false,
-        content: function() {
-          return 'Once again, click on the \'relates to\' box';
-        },
-        placement: 'left',
-      });
-      $relates_el.popover('show');
+      if(obj.choice) {
+        $('.popover').popover('dispose');
+        $relates_el = $('ul.list-group a:nth(0)');
+        $relates_el.popover({
+          container: 'body',
+          html: true,
+          animation: false,
+          content: function() {
+            return 'Once again, click on the \'relates to\' box';
+          },
+          placement: 'left',
+        });
+        $relates_el.popover('show');
+      }
     });
-
 
     /* When an item is selected */
     Tree['convoChannel'].on('click', function(obj) {
