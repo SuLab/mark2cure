@@ -51,9 +51,7 @@ class DocumentManager(models.Manager):
             JOIN `document_section`
                 ON `document_section`.`document_id` = `document_pubtator`.`document_id`
 
-            WHERE `document_pubtator`.`content` != ''
-                AND `document_pubtator`.`session_id` = ''
-                AND `document_pubtator`.`document_id` IN ({0})
+            WHERE `document_pubtator`.`content` != '' AND `document_pubtator`.`document_id` IN ({0})
 
             GROUP BY `document_pubtator`.`document_id`;
         '''.format(','.join(str_doc_arr))
@@ -63,7 +61,6 @@ class DocumentManager(models.Manager):
             res = [(x[0], x[1], x[2]) for x in c.fetchall()]
         finally:
             c.close()
-
 
         writer = bioc_writer(None)
         for pubtator_content in res:
@@ -101,13 +98,12 @@ class DocumentManager(models.Manager):
                 passage.text = section.text
 
                 passage.offset = str(passage_offset)
-                passage_offset += len(passage.text)+1
+                passage_offset += len(passage.text) + 1
 
                 bioc_document.add_passage(passage)
 
             writer.collection.add_document(bioc_document)
         return writer
-
 
     def relation_df(self, documents=[], users=[]):
         ct = ContentType.objects.get(model='relationannotation')
