@@ -33,10 +33,12 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
 
-    def init_pubtator(self):
+    def init_pubtator(self, force_create=False):
         if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
+
+        # (TODO) implement force overwrite to create new requests
 
     def update_padding(self):
         from mark2cure.common.formatter import pad_split

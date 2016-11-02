@@ -13,6 +13,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 import requests
 import logging
+import re
 logger = logging.getLogger(__name__)
 
 
@@ -99,14 +100,14 @@ def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True
           max_retries=0,
           acks_late=True, track_started=True,
           expires=180)
-def check_pubtator_health(self):
-    # Set Validate Cache to False for all to perform
-    # an entire, clean sweep of new checks
-    Pubtator.objects.all().update(validate_cache=False)
+def maintain_pubtator_requests(self):
+    """A routine job that continually checks for pending Pubtator Requests
+        and will resubmit Pubtators that haven't been updated in a "long time"
+    """
 
     # Try to fetch all the pending pubtator requests
     for pubtator_request in PubtatorRequest.objects.filter(fulfilled=False).all():
-        get_pubtator_response.apply_async(
+        check_pubtator.apply_async(
             args=[pubtator_request.pk],
             queue='mark2cure_tasks')
 
@@ -118,8 +119,39 @@ def check_pubtator_health(self):
           max_retries=0, rate_limit='2/s', soft_time_limit=15,
           acks_late=True, track_started=True,
           expires=None)
-def get_pubtator_response(self, pk):
-    pubtator_request = PubtatorRequest.objects.get(pk=pk)
+def submit_pubtator(self, pubtator_pk):
+    """Takes an existing Pubtator instance and submits a processing request
+    """
+    pubtator = Pubtator.objects.get(pk=pubtator_pk)
+
+    # Make response to post job to pubtator
+    payload = {'content-type': 'text/xml'}
+    writer = Document.objects.as_writer(documents=[pubtator.document])
+    data = str(writer)
+    url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
+
+    try:
+        response = requests.post(url, data=data, params=payload)
+    except Exception as e:
+        raise e
+
+    session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', response.url)[0]
+    PubtatorRequest.objects.get_or_create(
+        pubtator=pubtator,
+        session_id=session_id)
+
+    if not self.request.called_directly:
+        return True
+
+
+@app.task(bind=True, ignore_result=True,
+          max_retries=0, rate_limit='2/s', soft_time_limit=15,
+          acks_late=True, track_started=True,
+          expires=None)
+def check_pubtator(self, pubtator_request_pk):
+    """Takes a Pubtator Request and checks for the status from the server
+    """
+    pubtator_request = PubtatorRequest.objects.get(pk=pubtator_request_pk)
     pubtator = pubtator_request.pubtator
 
     # Build the writer required to fetch content from previous session
