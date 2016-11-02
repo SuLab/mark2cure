@@ -345,7 +345,6 @@ class DocumentManager(models.Manager):
                     ON `document_section`.`document_id` = `document_pubtator`.`document_id`
 
                 WHERE `document_pubtator`.`content` != ''
-                    AND `document_pubtator`.`session_id` = ''
                     AND `document_pubtator`.`document_id` IN ({0})
 
                 GROUP BY `document_pubtator`.`id`
