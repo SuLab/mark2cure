@@ -115,9 +115,14 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     # df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
     df = df[df['ann_type'].isin(ann_types_arr)]
     df['ann_type_id'] = 0
+
     df.ix[df['ann_type'] == 'disease', 'ann_type_id'] = 0
+
     df.ix[df['ann_type'] == 'gene', 'ann_type_id'] = 1
+    df.ix[df['ann_type'] == 'gene_protein', 'ann_type_id'] = 1  # M2C Enum Syntax
+
     df.ix[df['ann_type'] == 'chemical', 'ann_type_id'] = 2
+    df.ix[df['ann_type'] == 'drug', 'ann_type_id'] = 2  # M2C Enum Syntax
 
     # We're previously DB Primary Keys
     df.reset_index(inplace=True)
