@@ -194,40 +194,28 @@ block post-footer
 
     $('#quest-submit').one('click', function(evt) {
       /* AJAX submit all of the current Annotaitons */
-      var self = this,
-          counter = 0,
-          ann_counter = 0;
+      var self = this;
+          ann_dict = {};
 
       /* Iterate over each of the paragraphs or annotatable sections on the page */
       _.each(passages, function(passage, passage_idx) {
-
-        var section_pk = +_.find(passage.infon, function(o){return o['@key']=='id';})['#text'],
-            annotations = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON(),
-            url = '/task/entity-recognition/{{task.pk}}/'+ section_pk +'/annotation/';
-        ann_counter += annotations.length;
-
-        /* Iterate over each of the annotations within that section */
-        _.each(annotations, function(annotation) {
-          /* Do not save data if the annotation is empty */
-          if (annotation.text != "") {
-            $.ajax({
-              type: 'POST',
-              url: url,
-              data: $.extend({'csrfmiddlewaretoken': '{{csrf_token}}'}, annotation),
-              cache: false,
-              async: false,
-              success: function() { counter++; },
-              error: function() { alert('There was a problem submitting this document. Please try another.'); },
-            });
-          };
-        });
+        ann_dict[+_.find(passage.infon, function(o){return o['@key']=='id';})['#text']] = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON();
       });
+
+      /* Add the section to the objects */
+      _.each(_.keys(ann_dict), function(section_pk) {
+        ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': section_pk}) })
+      })
+
+      /* Do not save data if the annotation is empty */
+      var annotations = _.flatten(_.values(ann_dict));
+      annotations = _.without(annotations, _.findWhere(annotations, {'text': ""}));
 
       /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
       $.ajax({
         type: 'POST',
         url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
-        data: {'csrfmiddlewaretoken': '{{csrf_token}}'},
+        data: {'csrfmiddlewaretoken': '{{csrf_token}}'}, 'annotations': annotations},
         cache: false,
         async: false,
         success: function() {
