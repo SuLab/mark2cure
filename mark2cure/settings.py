@@ -307,7 +307,6 @@ DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_DEFAULT_QUEUE = 'default'
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
