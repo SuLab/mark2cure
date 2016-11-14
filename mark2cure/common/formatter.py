@@ -165,10 +165,12 @@ def apply_annotations(writer, er_df=None, rel_df=None):
         if er_df is not None:
             doc_df = er_df[er_df['document_pk'] == doc_pk_int]
 
+            '''
             # (TODO) Cases in which a user hasn't annotated something in the title...
             section_ids = list(doc_df['section_id'].unique())
             if not len(section_ids) >= 1:
                 raise ValueError('Incorrect number of document sections.')
+            '''
 
             i = 0
             for offset_position, group_df in doc_df.groupby(['section_offset']):
