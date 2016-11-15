@@ -216,7 +216,7 @@ block post-footer
       $.ajax({
         type: 'POST',
         url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
-        data: {'csrfmiddlewaretoken': '{{csrf_token}}'}, 'annotations': annotations},
+        data: {'csrfmiddlewaretoken': '{{csrf_token}}', 'annotations': annotations},
         cache: false,
         async: false,
         success: function() {
