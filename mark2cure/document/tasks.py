@@ -106,10 +106,8 @@ def maintain_pubtator_requests(self):
     """
 
     # Try to fetch all the pending pubtator requests
-    for pubtator_request in PubtatorRequest.objects.filter(fulfilled=False).all():
-        check_pubtator.apply_async(
-            args=[pubtator_request.pk],
-            queue='mark2cure_tasks')
+    for pubtator_request in PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).all():
+        pubtator_request.check_status()
 
     if not self.request.called_directly:
         return True
@@ -128,14 +126,14 @@ def submit_pubtator(self, pubtator_pk):
     payload = {'content-type': 'text/xml'}
     writer = Document.objects.as_writer(documents=[pubtator.document])
     data = str(writer)
-    url = 'http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
+    url = 'https://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{api_ann}/Submit/'.format(api_ann=pubtator.kind)
 
     try:
-        response = requests.post(url, data=data, params=payload)
+        res = requests.post(url, data=data, params=payload)
     except Exception as e:
         raise e
 
-    session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', response.url)[0]
+    session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', res.content)[0]
     PubtatorRequest.objects.get_or_create(
         pubtator=pubtator,
         session_id=session_id)
@@ -159,23 +157,39 @@ def check_pubtator(self, pubtator_request_pk):
     writer = Document.objects.as_writer(documents=[pubtator.document])
 
     try:
-        results = requests.post('http://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator_request.session_id),
-                                data=str(writer),
-                                params={'content-type': 'text/xml'})
+        res = requests.post('https://www.ncbi.nlm.nih.gov/CBBresearch/Lu/Demo/RESTful/tmTool.cgi/{session_id}/Receive/'.format(session_id=pubtator_request.session_id),
+                            data=str(writer),
+                            params={'content-type': 'text/xml'})
         pubtator_request.request_count = pubtator_request.request_count + 1
         pubtator_request.save()
     except SoftTimeLimitExceeded:
         return False
-
     except:
         return False
 
-    if results.content != 'Not yet':
-        pubtator.content = results.text
+    if res.ok and res.status_code == 200:
+        pubtator.content = res.text
         pubtator.save()
 
-        pubtator_request.fulfilled = True
+        pubtator_request.status = PubtatorRequest.FULLFILLED
         pubtator_request.save()
+        return True
+
+    else:
+        if res.status_code == 501:
+            # '[Warning] : The Result is not ready.\n'
+            pubtator_request.status = PubtatorRequest.UNFULLFILLED
+            pubtator_request.save()
+            return False
+
+        elif res.status_code == 404:
+            # '[Warning] : The Session number does not exist.\n'
+            pubtator_request.status = PubtatorRequest.FAILED
+            pubtator_request.save()
+            return False
+
+        else:
+            raise ValueError('Unable to react to Pubtator Response.')
 
     if not self.request.called_directly:
         return True

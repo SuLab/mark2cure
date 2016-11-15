@@ -8,6 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 from .managers import DocumentManager
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from librabbitmq import ConnectionError
 
 import pandas as pd
 pd.set_option('display.width', 1000)
@@ -171,6 +172,15 @@ class Pubtator(models.Model):
         else:
             return 0
 
+    def submit(self):
+        from .tasks import submit_pubtator
+        try:
+            submit_pubtator.apply_async(
+                args=[self.pk],
+                queue='mark2cure_tasks')
+        except ConnectionError:
+            submit_pubtator(self.pk)
+
 
 class PubtatorRequest(models.Model):
     """
@@ -179,13 +189,33 @@ class PubtatorRequest(models.Model):
     """
     pubtator = models.ForeignKey(Pubtator)
 
-    fulfilled = models.BooleanField(default=False)
+    UNFULLFILLED = 0
+    FULLFILLED = 1
+    FAILED = 2
+    STATUS_CHOICES = (
+        (UNFULLFILLED, 'Unfullfilled'),
+        (FULLFILLED, 'Fullfilled'),
+        (FAILED, 'Failed')
+    )
+    status = models.IntegerField(default=UNFULLFILLED, choices=STATUS_CHOICES)
     session_id = models.CharField(max_length=19)
     # The Number of times we've checked on the session_id
     request_count = models.IntegerField(default=0)
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return 'Pubtator Request: {0}'.format(self.session_id)
+
+    def check_status(self):
+        from .tasks import check_pubtator
+        try:
+            check_pubtator.apply_async(
+                args=[self.pk],
+                queue='mark2cure_tasks')
+        except ConnectionError:
+            check_pubtator(self.pk)
 
 
 class Section(models.Model):
