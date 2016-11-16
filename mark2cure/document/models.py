@@ -46,7 +46,7 @@ class Document(models.Model):
             # Should never be more than 1 spending request per Pubtator
             try:
                 pending_request = pubtator.pubtatorrequest_set.get(status=PubtatorRequest.UNFULLFILLED)
-            except self.DoesNotExist:
+            except PubtatorRequest.DoesNotExist:
                 pending_request = False
 
             # If we successfully retrieved in the past, but it's old now
