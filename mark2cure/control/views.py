@@ -144,7 +144,7 @@ def pubtator_actions(request, pk):
 
     if request.method == 'POST':
         pubtator.delete()
-        doc.init_pubtator()
+        doc.run_pubtator()
 
     return redirect(reverse('control:document', kwargs={'pk': doc.pk}))
 
@@ -158,7 +158,7 @@ def document_pubtator_actions(request, pk):
     if request.method == 'POST':
         print '> Reset doc pubtators'
         doc.pubtator_set.all().delete()
-        doc.init_pubtator()
+        doc.run_pubtator()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 

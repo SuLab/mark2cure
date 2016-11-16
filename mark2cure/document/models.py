@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader
@@ -34,17 +35,32 @@ class Document(models.Model):
     def count_available_sections(self):
         return self.section_set.exclude(kind='o').count()
 
-    def init_pubtator(self, force_create=True):
+    def run_pubtator(self):
         if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
             for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
                 Pubtator.objects.get_or_create(document=self, kind=api_ann)
 
-        if force_create:
-            # Submit pubtator requests for created and empty Pubtator models
-            # without any pending PubtatorRequests
-            for p in self.pubtator_set.filter(content__isnull=True).all():
-                if not p.pubtatorrequest_set.filter(status=PubtatorRequest.UNFULLFILLED).exists():
-                    p.submit()
+        for pubtator in self.pubtator_set.all():
+            last_request = pubtator.pubtatorrequest_set.filter(status__in=[PubtatorRequest.FULLFILLED, PubtatorRequest.FAILED]).order_by('-updated').first()
+
+            # Should never be more than 1 spending request per Pubtator
+            try:
+                pending_request = pubtator.pubtatorrequest_set.get(status=PubtatorRequest.UNFULLFILLED)
+            except self.DoesNotExist:
+                pending_request = False
+
+            # If we successfully retrieved in the past, but it's old now
+            if last_request and (timezone.now() - last_request.updated).days >= 60 and not pending_request:
+                pubtator.submit
+                return
+
+            # If the current request is never going to finish, flag it and start over
+            if pending_request and (timezone.now() - pending_request.updated).days >= 1:
+                pending_request.status = PubtatorRequest.EXPIRED
+                pending_request.save()
+
+                pubtator.submit()
+                return
 
     def update_padding(self):
         from mark2cure.common.formatter import pad_split
@@ -197,10 +213,12 @@ class PubtatorRequest(models.Model):
     UNFULLFILLED = 0
     FULLFILLED = 1
     FAILED = 2
+    EXPIRED = 3
     STATUS_CHOICES = (
         (UNFULLFILLED, 'Unfullfilled'),
         (FULLFILLED, 'Fullfilled'),
-        (FAILED, 'Failed')
+        (FAILED, 'Failed'),
+        (EXPIRED, 'Expired')
     )
     status = models.IntegerField(default=UNFULLFILLED, choices=STATUS_CHOICES)
     session_id = models.CharField(max_length=19)

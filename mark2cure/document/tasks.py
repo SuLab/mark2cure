@@ -44,7 +44,7 @@ def check_corpus_health(self):
             # If the document doesn't pass the validator
             # delete all existing content and retry
             if not document.valid_pubtator() or document.update_padding():
-                document.init_pubtator()
+                document.run_pubtator()
 
     if not self.request.called_directly:
         return True
@@ -85,7 +85,7 @@ def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True
             sec.save()
 
             if include_pubtator:
-                doc.init_pubtator()
+                doc.run_pubtator()
 
     if group_pk:
         docs = Document.objects.filter(source=source).all()
@@ -104,6 +104,9 @@ def maintain_pubtator_requests(self):
     """A routine job that continually checks for pending Pubtator Requests
         and will resubmit Pubtators that haven't been updated in a "long time"
     """
+    # Start any new or old Pubtator requests
+    for d in Document.objects.all():
+        d.run_pubtator()
 
     # Try to fetch all the pending pubtator requests
     for pubtator_request in PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).all():
