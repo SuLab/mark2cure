@@ -48,6 +48,10 @@ class Document(models.Model):
                 pending_request = pubtator.pubtatorrequest_set.get(status=PubtatorRequest.UNFULLFILLED)
             except PubtatorRequest.DoesNotExist:
                 pending_request = False
+            except PubtatorRequest.MultipleObjectsReturned:
+                # Why where there multiple open at once? Just delete them all and start fresh
+                pubtator.pubtatorrequest_set.filter(status=PubtatorRequest.UNFULLFILLED).all().delete()
+                pending_request = False
 
             # If we successfully retrieved in the past, but it's old now
             if last_request and (timezone.now() - last_request.updated).days >= 60 and not pending_request:
@@ -59,6 +63,10 @@ class Document(models.Model):
                 pending_request.status = PubtatorRequest.EXPIRED
                 pending_request.save()
 
+                pubtator.submit()
+                return
+
+            if not last_request and not pending_request:
                 pubtator.submit()
                 return
 
