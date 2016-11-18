@@ -167,9 +167,10 @@ block post-footer
         regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
+          var passage_id = _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
+          var p_body = '<div id="'+ passage_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
-          regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+          regions[''+passage_idx] = '#'+passage_id;
         });
         YPet.addRegions(regions);
 
