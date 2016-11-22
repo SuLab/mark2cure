@@ -122,8 +122,6 @@ block post-footer
 
       initAnnotationTypes(YPet);
 
-      paragraph_view = undefined;
-
       $.getJSON('/document/pubtator/{{document.document_id}}.json', function (data) {
         passages = data.collection.document.passage;
 
@@ -143,14 +141,10 @@ block post-footer
         // Add the views and regions to YPet
         var ParagraphView = Mn.View.extend({
           el: ".paragraphs",
-          // template: .template(template)
+          regions: regions
         });
 
         var paragraph_view = new ParagraphView();
-
-        _.each(regions, function (id, index) {
-          paragraph_view.addRegion(index, id);
-        });
 
         YPet.showView(paragraph_view);
 
