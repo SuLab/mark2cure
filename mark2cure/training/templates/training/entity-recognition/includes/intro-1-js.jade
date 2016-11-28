@@ -33,12 +33,18 @@ script.
     container: "body"
   });
 
-  YPet.addInitializer(function(options) {
+  var load_initial_data =  function(options) {
+    YPet = new Backbone.Marionette.Application({
+      region: "#quest"
+    });
+
     var p = new Paragraph({'text': $('p.paragraph').text().trim()});
     YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
-    YPet.addRegions({'quest': '#quest'});
-    YPet['quest'].show(new WordCollectionView({collection: p.get('words')}));
-  });
+    YPet.getRegion().show(new WordCollectionView({collection: p.get('words')}));
+  };
+
+  load_initial_data();
+
   YPet.start();
 
   $('a').on('click', function(evt) {
@@ -63,7 +69,7 @@ script.
     return '';
   };
 
-  YPet['quest'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+  YPet.getRegion().currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
     /*
      * Check if the array doesn't contain the selected word.
@@ -125,4 +131,4 @@ script.
       validation_check(collection);
     };
   });
-  YPet['quest'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
+  YPet.getRegion().currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
