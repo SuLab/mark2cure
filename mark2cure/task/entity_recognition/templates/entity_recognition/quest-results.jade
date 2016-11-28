@@ -4,7 +4,7 @@ extends base
 
 
 block header
-  - with headerMessage=task.name
+  with headerMessage=task.name
     include includes/header-task-entity-recognition
 
 
@@ -24,36 +24,55 @@ block post-footer
     var task_id = "{{ task.pk }}";
     var self_data, passages, regions;
 
-    YPet.addInitializer(function(options) {
+    function load_initial_data() {
+      YPet = new Backbone.Marionette.Application({
+        region: "#doc_{{document.pk}}"
+      });
 
-      $.getJSON('/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function( data ) {
+      initAnnotationTypes(YPet);
+
+      paragraph_view = undefined;
+
+      $.getJSON('/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{user.pk}}.json', function(data) {
         self_data = data;
         passages = data.collection.document.passage;
         regions = {};
 
         _.each(passages, function(passage, passage_idx) {
-          var p_body = '<div id="'+ passage.infon[2]['#text'] +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
+          var p_body = '<div id="' + passage.infon[2]['#text'] + '" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
           $('.paragraphs').append(p_body);
-          regions[''+passage_idx] = '#'+passage.infon[2]['#text'];
+          regions['' + passage_idx] = '#' + passage.infon[2]['#text'];
         });
-        YPet.addRegions(regions);
+
+        // Add the views and regions to YPet
+        var ParagraphView = Mn.View.extend({
+          el: ".paragraphs",
+          regions: regions
+        })
+
+        var paragraph_view = new ParagraphView();
+
+        YPet.showView(paragraph_view);
 
         _.each(passages, function(passage, passage_idx) {
           var p = new Paragraph({'text': passage.text});
-          YPet[''+passage_idx].show( new WordCollectionView({
+          paragraph_view.getRegion('' + passage_idx).show(new WordCollectionView({
             collection: p.get('words'),
             passage_json: passage,
             bioc_json: data
-          }) );
+          }));
         });
 
       });
-    });
+    };
+
+    load_initial_data();
+
     YPet.start();
 
     /* Submit Feedback and show partner */
     $.ajax({
-      url:'/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
+      url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/results/{{opponent.pk}}.json',
       dataType: 'json',
       success: function(data) {
 
@@ -62,10 +81,11 @@ block post-footer
         /* Show underlines */
         var passages = data.collection.document.passage;
         _.each(passages, function(passage, passage_idx) {
-          YPet[passage_idx].currentView.drawBioC(passage, true);
+          YPet.getView().getRegion(passage_idx).currentView.drawBioC(passage, true);
         });
 
       },
-      error: function(error_res) { }
+      error: function(error_res) {
+      }
     });
 

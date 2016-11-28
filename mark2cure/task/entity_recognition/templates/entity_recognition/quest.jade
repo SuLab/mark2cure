@@ -13,7 +13,7 @@ block content
   .container-fluid
     // Document header Information
     // 1) List of document Icons
-    // 2) Ongoin    g score (live)
+    // 2) Ongoing score (live)
     // 3) Current Level (not live)
     #quest-guide.row
       .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
@@ -122,15 +122,15 @@ block post-footer
 
       initAnnotationTypes(YPet);
 
-      $.getJSON('/document/pubtator/{{document.document_id}}.json', function (data) {
+      $.getJSON('/document/pubtator/{{document.document_id}}.json', function(data) {
         passages = data.collection.document.passage;
 
         var regions = {};
         var template = "";
 
         // Create the template of the view
-        _.each(passages, function (passage, passage_idx) {
-          var passage_id = _.find(passage.infon, function (o) {
+        _.each(passages, function(passage, passage_idx) {
+          var passage_id = _.find(passage.infon, function(o) {
             return o['@key'] == 'id';
           })['#text'];
           var p_body = '<div id="' + passage_id + '" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
@@ -149,7 +149,7 @@ block post-footer
         YPet.showView(paragraph_view);
 
         /* Add paragraph words and pubtator annotations if available */
-        _.each(passages, function (passage, passage_idx) {
+        _.each(passages, function(passage, passage_idx) {
           var p = new Paragraph({'text': passage.text});
 
           paragraph_view.getRegion("" + passage_idx).show(new WordCollectionView({
@@ -160,8 +160,8 @@ block post-footer
         });
 
         /* Add event listener for recent annotation search helper */
-        _.each(passages, function (passage, passage_idx) {
-          paragraph_view.getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function (model, collection) {
+        _.each(passages, function(passage, passage_idx) {
+          paragraph_view.getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
             var model_json = model.toJSON();
             set_google_annotation(model_json.text);
           });
@@ -188,19 +188,19 @@ block post-footer
         dataType: 'json',
         cache: false,
         async: false,
-        success: function (data) {
+        success: function(data) {
 
           window.scrollTo(0, 0);
-          var points = _.find(data.collection.infon, function (o) {
+          var points = _.find(data.collection.infon, function(o) {
             return o['@key'] == 'points';
           })['#text'];
-          var partner = _.find(data.collection.infon, function (o) {
+          var partner = _.find(data.collection.infon, function(o) {
             return o['@key'] == 'partner';
           })['#text'];
-          var partner_level = _.find(data.collection.infon, function (o) {
+          var partner_level = _.find(data.collection.infon, function(o) {
             return o['@key'] == 'partner_level';
           })['#text'];
-          var flatter = _.find(data.collection.infon, function (o) {
+          var flatter = _.find(data.collection.infon, function(o) {
             return o['@key'] == 'flatter';
           })['#text'];
 
@@ -208,17 +208,17 @@ block post-footer
           $('#partner-username').html(partner);
           $('#partner-level').html(partner_level);
           $('#flatter').html(flatter);
-          $('#partner-results').slideDown(function () {
+          $('#partner-results').slideDown(function() {
             update_score();
             /* Show underlines */
-            _.each(data.collection.document.passage, function (passage, passage_idx) {
+            _.each(data.collection.document.passage, function(passage, passage_idx) {
               YPet.getView().getRegion(passage_idx).currentView.drawBioC(passage, true);
             });
           });
         },
-        error: function (error_res) {
+        error: function(error_res) {
           /* No response so show them the annotation message */
-          _.each(passages, function (passage, passage_idx) {
+          _.each(passages, function(passage, passage_idx) {
             YPet.getView().getRegion(passage_idx).currentView.drawBioC(null, true);
           });
           window.scrollTo(0, 0);
@@ -227,21 +227,21 @@ block post-footer
       });
     };
 
-    $('#quest-submit').one('click', function (evt) {
+    $('#quest-submit').one('click', function(evt) {
       /* AJAX submit all of the current Annotaitons */
       var self = this;
       ann_dict = {};
 
       /* Iterate over each of the paragraphs or annotatable sections on the page */
-      _.each(passages, function (passage, passage_idx) {
-        ann_dict[+_.find(passage.infon, function (o) {
+      _.each(passages, function(passage, passage_idx) {
+        ann_dict[+_.find(passage.infon, function(o) {
           return o['@key'] == 'id';
         })['#text']] = YPet.getView().getRegion(passage_idx).currentView.collection.parentDocument.get('annotations').toJSON();
       });
 
       /* Add the section to the objects */
-      _.each(_.keys(ann_dict), function (section_pk) {
-        ann_dict[section_pk] = _.map(ann_dict[section_pk], function (obj) {
+      _.each(_.keys(ann_dict), function(section_pk) {
+        ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) {
           return _.extend(obj, {'section_pk': section_pk})
         })
       })
@@ -257,7 +257,7 @@ block post-footer
         data: {'csrfmiddlewaretoken': '{{csrf_token}}', 'annotations': annotations},
         cache: false,
         async: false,
-        success: function () {
+        success: function() {
           $('#doc-talk').show();
           $(self).hide();
           show_results();
