@@ -163,6 +163,9 @@ block post-footer
         _.each(passages, function(passage, passage_idx) {
           paragraph_view.getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
             var model_json = model.toJSON();
+
+            console.log(model_json);
+
             set_google_annotation(model_json.text);
           });
         });
@@ -251,6 +254,10 @@ block post-footer
       annotations = _.without(annotations, _.findWhere(annotations, {'text': ""}));
       annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
       annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+
+      console.log(annotations);
+      
+      return;
 
       /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
       $.ajax({
