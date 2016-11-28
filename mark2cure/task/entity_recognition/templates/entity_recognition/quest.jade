@@ -126,7 +126,6 @@ block post-footer
         passages = data.collection.document.passage;
 
         var regions = {};
-        var template = "";
 
         // Create the template of the view
         _.each(passages, function(passage, passage_idx) {
@@ -139,20 +138,16 @@ block post-footer
         });
 
         // Add the views and regions to YPet
-        var ParagraphView = Mn.View.extend({
+        YPet.showView(new (Mn.View.extend({
           el: ".paragraphs",
           regions: regions
-        });
-
-        var paragraph_view = new ParagraphView();
-
-        YPet.showView(paragraph_view);
+        }))());
 
         /* Add paragraph words and pubtator annotations if available */
         _.each(passages, function(passage, passage_idx) {
           var p = new Paragraph({'text': passage.text});
 
-          paragraph_view.getRegion("" + passage_idx).show(new WordCollectionView({
+          YPet.getView().getRegion("" + passage_idx).show(new WordCollectionView({
             collection: p.get('words'),
             passage_json: passage,
             bioc_json: data
@@ -161,7 +156,7 @@ block post-footer
 
         /* Add event listener for recent annotation search helper */
         _.each(passages, function(passage, passage_idx) {
-          paragraph_view.getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
+          YPet.getView().getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
             var model_json = model.toJSON();
 
             console.log(model_json);

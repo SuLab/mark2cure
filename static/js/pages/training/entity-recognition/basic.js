@@ -2,14 +2,14 @@ YPet = new Backbone.Marionette.Application({
     region: "#basics"
 });
 
-var load_initial_data = function() {
+var load_initial_data;
+
+(load_initial_data = function() {
     var p = new Paragraph({'text': $('#basics').text().trim()});
     YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
     // YPet.addRegions({'basics': '#basics'});
     YPet.getRegion().show(new WordCollectionView({collection: p.get('words')}))
-};
-
-load_initial_data();
+})();
 
 YPet.start();
 
