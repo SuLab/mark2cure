@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from . import views
+from .views import SubmitDocumentApiView
 
 urlpatterns = [
 
@@ -11,10 +12,6 @@ urlpatterns = [
     # BioC File for Partner for Task & PMID Paring
     url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
         views.identify_annotations_results_bioc, name='results-bioc'),
-
-    # "API" Endpoint to submit Document Annotations
-    url(r'^(?P<task_pk>\d+)/(?P<section_pk>\d+)/annotation/$',
-        views.identify_annotations_submit, name='create'),
 
     #
     # Routes for Completing the task
@@ -31,7 +28,7 @@ urlpatterns = [
         views.quest_read_doc_results, name='quest-document-results'),
 
     url(r'^quest/(?P<quest_pk>\d+)/(?P<document_pk>\d+)/submit/$',
-        views.document_quest_submit, name='doc-quest-submit'),
+        SubmitDocumentApiView.as_view(), name='doc-quest-submit'),
 
     # Router to:
     # 1) Redirect to specific doc_idx
