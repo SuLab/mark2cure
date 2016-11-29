@@ -173,6 +173,9 @@ function display_network_flag(data) {
 $.ajax({
   'type': 'GET',
   'url': '/api/quest/'+ pk +'/',
+  'error': function(data) {
+    alert('Network not yet avilable. Help uncover the nodes by completing a quest! Only completed quests will appear in the network.');
+  },
   'success': function(data) {
     display_network_flag = display_network_flag(data);
     draw_dashboard({'pk': pk}, data);
