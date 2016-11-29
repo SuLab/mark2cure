@@ -1,15 +1,24 @@
+
+var display_network_flag;
+
 $('#group-network h4').click(function() {
 
-  if( $('#network-row').is(":visible")  ) {
-    $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
-  } else {
-    $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
-  };
+  if (display_network_flag) {
+      if( $('#network-row').is(":visible")  ) {
+        $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
+      } else {
+        $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
+      };
 
-  $('#network-row').toggle(function() {
-    s.refresh();
-    s.refresh();
-  });
+      $('#network-row').toggle(function() {
+        s.refresh();
+        s.refresh();
+      });
+
+  } else {
+    alert("Network not yet available. Help uncover the nodes by completing a quest! Only completed quests will appear in the network.");
+  }
+
 });
 
 
@@ -150,10 +159,22 @@ var draw_dashboard = function(group, quests) {
 var group_template = _.template( $('#group-template').html() );
 $('#group-selection').append(group_template({'pk': pk}));
 
+/* function to check if any docs in group have > 15 user completions */
+function display_network_flag(data) {
+    display_network_flag = false;
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].progress.completed == true) {
+            display_network_flag = true;
+        }
+    }
+    return display_network_flag;
+}
+
 $.ajax({
   'type': 'GET',
   'url': '/api/quest/'+ pk +'/',
   'success': function(data) {
+    display_network_flag = display_network_flag(data);
     draw_dashboard({'pk': pk}, data);
 
     $('#group-selection .quest').click(function(evt) {
