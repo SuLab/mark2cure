@@ -14,6 +14,21 @@ class EntityRecognitionAnnotation(models.Model):
     )
     type = models.CharField(max_length=40, blank=True, null=True, default='disease')
 
+    DISEASE = 0
+    GENE = 1
+    TREATMENT = 2
+    TYPE_CHOICES = (
+        (DISEASE, 'Disease'),
+        (GENE, 'Gene'),
+        (TREATMENT, 'Treatment')
+    )
+    type_idx = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
+    '''
+    for e in EntityRecognitionAnnotation.objects.all():
+        e.type_idx = ['disease', 'gene_protein', 'drug'].index(e.type)
+        e.save()
+    '''
+
     text = models.TextField(blank=True, null=True)
 
     # (WARNING) Different than BioC
