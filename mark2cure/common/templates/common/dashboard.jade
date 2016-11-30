@@ -205,14 +205,14 @@ block post-footer
 
     script(src='#{STATIC_URL}js/tasks/relation-list.js')
     script.
-      DocumentRelationBoard.addInitializer(function(options) {
-        DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
-        var docs = new DocumentList();
-        DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
-      });
-      DocumentRelationBoard.start();
-
-
+      if($('#document-relation-board').length) {
+        DocumentRelationBoard.addInitializer(function(options) {
+          DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
+          var docs = new DocumentList();
+          DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
+        });
+        DocumentRelationBoard.start();
+      }
 
 
   block post-footer-sidebar
