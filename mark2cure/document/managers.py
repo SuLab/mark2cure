@@ -10,7 +10,7 @@ from itertools import groupby
 import pandas as pd
 
 DF_COLUMNS = ('uid', 'source', 'user_id',
-              'ann_type', 'text',
+              'ann_type_idx', 'text',
               'document_pk', 'section_id', 'section_offset', 'offset_relative',
               'start_position', 'length')
 APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
@@ -208,7 +208,7 @@ class DocumentManager(models.Manager):
 
     def _create_er_df_row(self,
                       uid, source='db', user_id=None,
-                      ann_type='', text='',
+                      ann_type_idx=0, text='',
                       document_pk=0, section_id=0, section_offset=0, offset_relative=True,
                       start_position=0, length=0):
         '''
@@ -218,12 +218,10 @@ class DocumentManager(models.Manager):
 
             user_id can be None
 
-            (TODO) Ann Types needs to be normalized
         '''
-        ann_type = ann_type.lower()
         return {
             'uid': str(uid), 'source': str(source), 'user_id': int(user_id) if user_id else None,
-            'ann_type': str(ann_type), 'text': str(text),
+            'ann_type_idx': int(ann_type_idx), 'text': str(text),
             'document_pk': int(document_pk), 'section_id': int(section_id), 'section_offset': int(section_offset), 'offset_relative': bool(offset_relative),
             'start_position': int(start_position), 'length': int(length)
         }
@@ -268,7 +266,7 @@ class DocumentManager(models.Manager):
         cmd_str = '''
             SELECT
                 `entity_recognition_entityrecognitionannotation`.`id`,
-                `entity_recognition_entityrecognitionannotation`.`type`,
+                `entity_recognition_entityrecognitionannotation`.`type_idx`,
                 `entity_recognition_entityrecognitionannotation`.`text`,
                 `entity_recognition_entityrecognitionannotation`.`start`,
                 `document_annotation`.`created`,
@@ -319,7 +317,7 @@ class DocumentManager(models.Manager):
                     for x in doc_group:
                         df_arr.append(self._create_er_df_row(
                             uid=x[0], source='db', user_id=x[8],
-                            text=x[2], ann_type=x[1],
+                            text=x[2], ann_type_idx=x[1],
                             document_pk=x[5], section_id=x[7], section_offset=offset_dict[x[7]], offset_relative=True,
                             start_position=x[3], length=len(x[2])))
 
@@ -379,10 +377,12 @@ class DocumentManager(models.Manager):
                                 uid = annotation.infons.get(uid_type, None)
 
                         start, length = str(annotation.locations[0]).split(':')
-                        df_arr.append(self._create_er_df_row(
 
+                        df_arr.append(self._create_er_df_row(
                             uid=uid, source=uid_type if uid_type else None, user_id=None,
-                            text=annotation.text, ann_type=annotation_type if annotation_type else None,
+                            # (TODO) Map pubtator ann_types to ann_type_idx range
+                            # Determine the ann_type_idx by which pubtator resource it came from
+                            text=annotation.text, ann_type_idx=annotation_type if annotation_type else None,
                             document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
                             start_position=start, length=length))
 

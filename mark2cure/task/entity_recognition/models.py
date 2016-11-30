@@ -24,9 +24,12 @@ class EntityRecognitionAnnotation(models.Model):
     )
     type_idx = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
     '''
-    for e in EntityRecognitionAnnotation.objects.all():
-        e.type_idx = ['disease', 'gene_protein', 'drug'].index(e.type)
-        e.save()
+    for e in EntityRecognitionAnnotation.objects.filter(type_idx__isnull=True).all():
+        try:
+            e.type_idx = ['disease', 'gene_protein', 'drug'].index(e.type)
+            e.save()
+        except:
+            pass
     '''
 
     text = models.TextField(blank=True, null=True)
@@ -39,7 +42,7 @@ class EntityRecognitionAnnotation(models.Model):
     objects = EntityRecognitionAnnotationManager()
 
     def is_exact_match(self, comparing_annotation):
-        required_matching_keys = ['start', 'text', 'type']
+        required_matching_keys = ['start', 'text', 'type_idx']
         self_d = model_to_dict(self)
         compare_d = model_to_dict(comparing_annotation)
         return all([True if self_d[k] == compare_d[k] else False for k in required_matching_keys])

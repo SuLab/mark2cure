@@ -192,12 +192,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 
-class ExportView(TemplateView):
-    template_name = 'api/export'
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ProtectedView, self).dispatch(*args, **kwargs)
+# class ExportView(TemplateView):
+#     template_name = 'api/export'
+#
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(ProtectedView, self).dispatch(*args, **kwargs)
+
 
 # @login_required
 @api_view(['GET'])

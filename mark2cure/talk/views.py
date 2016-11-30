@@ -20,9 +20,9 @@ from datetime import timedelta
 def home(request, pubmed_id):
     document = get_object_or_404(Document, document_id=pubmed_id)
     content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-    disease = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'disease', content_type_id))
-    gene_protein = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'gene_protein', content_type_id))
-    drug = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 'drug', content_type_id))
+    disease = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 0, content_type_id))
+    gene_protein = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 1, content_type_id))
+    drug = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 2, content_type_id))
 
     ctx = {
         'doc': document,

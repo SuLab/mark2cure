@@ -105,25 +105,6 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     df = df[~df.uid.str.contains(",")]
     df = df[~df.uid.str.contains("\|")]
 
-    # Only keep rows that are in our known annotation type lists
-    df['ann_type'] = df['ann_type'].str.lower()
-    ann_types_arr = ['chemical', 'gene', 'disease']
-
-    from ..document.models import Document
-    ann_types_arr.extend(Document.APPROVED_TYPES)
-    # from relation.task importer
-    # df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
-    df = df[df['ann_type'].isin(ann_types_arr)]
-    df['ann_type_id'] = 0
-
-    df.ix[df['ann_type'] == 'disease', 'ann_type_id'] = 0
-
-    df.ix[df['ann_type'] == 'gene', 'ann_type_id'] = 1
-    df.ix[df['ann_type'] == 'gene_protein', 'ann_type_id'] = 1  # M2C Enum Syntax
-
-    df.ix[df['ann_type'] == 'chemical', 'ann_type_id'] = 2
-    df.ix[df['ann_type'] == 'drug', 'ann_type_id'] = 2  # M2C Enum Syntax
-
     # We're previously DB Primary Keys
     df.reset_index(inplace=True)
 
@@ -146,7 +127,7 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
                     pass
 
     if not allow_duplicates:
-        df.drop_duplicates(['uid', 'ann_type_id', 'text'], inplace=True)
+        df.drop_duplicates(['uid', 'ann_type_idx', 'text'], inplace=True)
 
     return df
 
@@ -192,8 +173,8 @@ def apply_annotations(writer, er_df=None, rel_df=None):
                     annotation.put_infon('uid', row['uid'])
                     annotation.put_infon('source', row['source'])
                     annotation.put_infon('user_id', str(int(row['user_id'])))
-                    annotation.put_infon('type', row['ann_type'])
-                    annotation.put_infon('type_id', str(row['ann_type_id']))
+                    annotation.put_infon('type', ['disease', 'gene_protein', 'chemical'][row['ann_type_idx']])  # (TODO) Should be deprecated
+                    annotation.put_infon('type_id', str(row['ann_type_idx']))
 
                     location = BioCLocation()
                     location.offset = str(int(row['start_position']))

@@ -107,34 +107,6 @@ class Document(models.Model):
 
         return True
 
-    DF_COLUMNS = ('uid', 'source', 'user_id',
-                  'ann_type', 'text',
-                  'section_id', 'section_offset', 'offset_relative',
-                  'start_position', 'length')
-    APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
-
-    def create_er_df_row(self,
-                      uid, source='db', user_id=None,
-                      ann_type='', text='',
-                      section_id=0, section_offset=0, offset_relative=True,
-                      start_position=0, length=0):
-        '''
-            When offset_relative is False:
-                start position is relative to the entire document and not the
-                section it's contained within
-
-            user_id can be None
-
-            (TODO) Ann Types needs to be normalized
-        '''
-        ann_type = ann_type.lower()
-        return {
-            'uid': str(uid), 'source': str(source), 'user_id': int(user_id) if user_id else None,
-            'ann_type': str(ann_type), 'text': str(text),
-            'section_id': int(section_id), 'section_offset': int(section_offset), 'offset_relative': bool(offset_relative),
-            'start_position': int(start_position), 'length': int(length)
-        }
-
     # Helpers for Talk Page
     def annotations(self):
         return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
@@ -367,14 +339,11 @@ class Annotation(models.Model):
     def __unicode__(self):
         if self.kind == 'r':
             return 'Relationship Ann'
-        if self.kind == 'e':
+        elif self.kind == 'e':
             return '{0} ({1}) [{2}]'.format(self.text, self.start, self.pk)
         else:
-            return self.type
+            return 'Annotation {0}'.format(self.pk)
 
     class Meta:
         get_latest_by = 'updated'
         app_label = 'document'
-
-        # (TODO) This is not supported by MySQL but would help prevent dups in this table
-        # unique_together = ['kind', 'type', 'text', 'start', 'view']
