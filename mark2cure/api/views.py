@@ -6,7 +6,8 @@ from django.conf import settings
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
-from ..common.models import Document, Group
+from ..common.models import Group
+from ..analysis.models import Report
 from ..task.models import Task
 from ..score.models import Point
 
@@ -60,14 +61,14 @@ def group_network(request, group_pk):
 def analysis_group_user(request, group_pk, user_pk=None):
     group = get_object_or_404(Group, pk=group_pk)
 
-    if user_pk is None:
-        user_pk = str(request.user.pk)
-
     response = []
-    reports = group.report_set.filter(report_type=1).order_by('-created').all()
+    reports = group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').all()
+    user_id = int(user_pk) if user_pk else int(request.user.pk)
+
     for report in reports:
         df = report.dataframe
-        df = df[df['user'] == user_pk]
+        df = df[df['user_id'] == user_id]
+
         if df.shape[0] > 0:
             row = df.iloc[0]
             response.append({
@@ -188,11 +189,9 @@ def relation_list(request):
     return Response(serializer.data)
 
 
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
-
-
+# from django.contrib.auth.decorators import login_required
+# from django.utils.decorators import method_decorator
+# from django.views.generic import TemplateView
 # class ExportView(TemplateView):
 #     template_name = 'api/export'
 #
