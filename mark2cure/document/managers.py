@@ -354,6 +354,8 @@ class DocumentManager(models.Manager):
             finally:
                 c.close()
 
+            # Counter({'Disease': 3676, 'Chemical': 2928, 'Species': 1553, 'Gene': 1544, 'FamilyName': 536, 'DomainMotif': 20}) (Sampleing from DB 11/30/2016)
+            pubtator_types = ['Disease', 'Gene', 'Chemical']
             for pubtator_content in res:
                 r = BioCReader(source=pubtator_content[2])
                 r.read()
@@ -376,15 +378,14 @@ class DocumentManager(models.Manager):
                                 uid_type = key
                                 uid = annotation.infons.get(uid_type, None)
 
-                        start, length = str(annotation.locations[0]).split(':')
-
-                        df_arr.append(self._create_er_df_row(
-                            uid=uid, source=uid_type if uid_type else None, user_id=None,
-                            # (TODO) Map pubtator ann_types to ann_type_idx range
-                            # Determine the ann_type_idx by which pubtator resource it came from
-                            text=annotation.text, ann_type_idx=annotation_type if annotation_type else None,
-                            document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
-                            start_position=start, length=length))
+                        # We're only interested in Pubtator Annotations that are the same concepts users highlight
+                        if annotation_type in pubtator_types:
+                            start, length = str(annotation.locations[0]).split(':')
+                            df_arr.append(self._create_er_df_row(
+                                uid=uid, source=uid_type if uid_type else None, user_id=None,
+                                text=annotation.text, ann_type_idx=pubtator_types.index(annotation_type),
+                                document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
+                                start_position=start, length=length))
 
         return pd.DataFrame(df_arr, columns=DF_COLUMNS)
 
