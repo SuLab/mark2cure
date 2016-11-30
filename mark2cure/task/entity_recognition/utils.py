@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from ...analysis.tasks import generate_reports
+from ...analysis.models import Report
 from ...document.models import View, Annotation
 from .models import EntityRecognitionAnnotation
 
@@ -59,10 +60,10 @@ def select_best_opponent(task, document, player):
         # No expert around so select a previous user at random
         previous_users_pks = [str(u.pk) for u in previous_users]
 
-        report = task.group.report_set.filter(report_type=1).order_by('-created').first()
+        report = task.group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').first()
         if report:
             df = report.dataframe
-            df = df[df['user'].isin(previous_users_pks)]
+            df = df[df['user_id'].isin(previous_users_pks)]
 
             row_length = df.shape[0]
             if row_length:
