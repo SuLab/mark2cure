@@ -219,7 +219,9 @@ block post-footer
         type: 'POST',
         url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
         headers: {'X-CSRFTOKEN': '{{csrf_token}}'},
-        data: {'annotations': annotations},
+        contentType: "application/json; charset=utf-8",
+        data:  JSON.stringify(annotations),
+        dataType: 'json',
         cache: false,
         async: false,
         success: function() {

@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
-from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
 
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
@@ -13,11 +14,11 @@ from django.template.response import TemplateResponse
 
 from ...common.formatter import bioc_as_json, apply_annotations, clean_df
 from ...document.models import Document, Annotation
-from .forms import EntityRecognitionAnnotationForm
 from ..models import Level, Task, UserQuestRelationship
+from .models import EntityRecognitionAnnotation
 from .utils import generate_results, select_best_opponent
 from ...score.models import Point
-from .models import EntityRecognitionAnnotation
+from .serializers import AnnotationSerializer
 
 from django.utils import timezone
 
@@ -236,95 +237,49 @@ def quest_read_doc_results(request, quest_pk, doc_idx):
     return TemplateResponse(request, 'entity_recognition/quest-results.jade', ctx)
 
 
-class EntityRecognitionAnnotationSerializer(serializers.Serializer):
-    type_id = serializers.IntegerField()
-    text = serializers.CharField()
-    start = serializers.IntegerField()
-    section_pk = serializers.IntegerField()
-
-    def create(self, validated_data):
-        print validated_data
-        return EntityRecognitionAnnotation.objects.create(**validated_data)
-
-    # class Meta:
-    #     model = EntityRecognitionAnnotation
-    #     fields = ['text', 'start', 'type']
-    # def clean_type(self):
-    #     # (TODO) Cast or modified this posted *_id attribute to the model
-    #     # data = self.cleaned_data['type_id']
-    #     data = self.data.get('type_id')
-    #     if data.isdigit():
-    #         data = EntityRecognitionAnnotation.ANNOTATION_TYPE_CHOICE[int(data)]
-    #     return data
-    # def update(self, instance, validated_data):
-    #     print instance, validated_data
-    #     # instance.email = validated_data.get('email', instance.email)
-    #     # instance.content = validated_data.get('content', instance.content)
-    #     # instance.created = validated_data.get('created', instance.created)
-    #     return instance
-
-
-class SubmitDocumentSerializer(serializers.Serializer):
-    annotations = EntityRecognitionAnnotationSerializer(many=True)
-
-    # def post_save(self, validated_data):
-    #     print '> POST_SAVE'
-    #     print validated_data
-    #
-    #     annotations_data = validated_data.pop('annotations')
-    #     # submission = Submission.objects.create(**validated_data)
-    #
-    #     print ' -- '
-    #     print annotations_data
-    #
-    #     for annotation_data in annotations_data:
-    #         # Time.objects.create(submission=submission, **time_data)
-    #
-    #         # (map this with the obj attribute now)
-    #         # view = user_quest_rel.views.filter(section=section, completed=False).first()
-    #         er_ann_form = EntityRecognitionAnnotationForm(data=self._request.POST or None)
-    #         if er_ann_form.is_valid():
-    #             er_ann = er_ann_form.save()
-    #
-    #             er_ann_content_type = ContentType.objects.get_for_model(er_ann)
-    #             Annotation.objects.create(
-    #                 kind='e',
-    #                 # view=view,
-    #                 content_type=er_ann_content_type,
-    #                 object_id=er_ann.id)
-    #
-
-
-# @login_required
-# @require_http_methods(['POST'])
 class SubmitDocumentApiView(ListCreateAPIView):
     """API to submit annotations and mark the document as completed
     """
     # request, quest_pk, document_pk
-    serializer_class = SubmitDocumentSerializer
+    serializer_class = AnnotationSerializer(many=True)
+    permission_classes = (permissions.IsAuthenticated,)
 
-    # Must trigger this
-    def before_render(self):
-        """With all of the annotations submitted successfully, mark the view as complete
-            before returning
-        """
-        quest_pk = self.kwargs['quest_pk']
-        document_pk = self.kwargs['document_pk']
-        task = get_object_or_404(Task, pk=quest_pk)
-        document = get_object_or_404(Document, pk=document_pk)
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        task = get_object_or_404(Task, pk=self.kwargs['quest_pk'])
+        document = get_object_or_404(Document, pk=self.kwargs['document_pk'])
 
-        user_quest_relationship = task.user_relationship(self._request.user, False)
-        # user_quest_rel = task.userquestrelationship_set.filter(user=self._request.user, completed=False).first()
+        serializer = AnnotationSerializer(data=data, many=True)
+        if serializer.is_valid():
+            user_quest_rel = task.user_relationship(request.user, False)
 
-        if not user_quest_relationship:
-            return HttpResponseServerError()
+            if not user_quest_rel:
+                return HttpResponseServerError('User Quest Relationship not found')
 
-        for section in document.section_set.all():
-            for view in user_quest_relationship.views.filter(section__document__pk=document_pk):
+            for d in data:
+                view = user_quest_rel.views.filter(section_id=d.get('section_pk'), completed=False).first()
+
+                if not view:
+                    return HttpResponseServerError('View for Annotation not found')
+
+                er_ann = EntityRecognitionAnnotation.objects.create(
+                    type_idx=d.get('type_id'),
+                    text=d.get('text'),
+                    start=d.get('start')
+                )
+                er_ann_content_type = ContentType.objects.get_for_model(er_ann)
+                Annotation.objects.create(
+                    kind='e',
+                    view=view,
+                    content_type=er_ann_content_type,
+                    object_id=er_ann.pk)
+
+            for view in user_quest_rel.views.filter(section__document=document):
                 view.completed = True
                 view.save()
 
-        return HttpResponse(200)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @login_required

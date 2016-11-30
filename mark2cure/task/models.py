@@ -29,6 +29,12 @@ class Level(models.Model):
 
 
 class Task(models.Model):
+    """This is an ER Quest, tracks whose completed it and what documents are contained within
+        the Quest
+
+        * Originally called Task when training was going to be dynamic, a TODO is remove all
+            'Training' references from this model
+    """
     name = models.CharField(max_length=200)
 
     TRAINING = 't'
@@ -108,10 +114,17 @@ class Task(models.Model):
 
 
 class UserQuestRelationship(models.Model):
+    """Describes a User's Status on a specific ER Quest
+
+        We use this to track if a User has completed a Quest
+        * Technically this can be inferred by if they'ved completed all of the
+          documents within the quest, but was originally made to separate if a
+          PMID appears in multiple Quests
+    """
     task = models.ForeignKey(Task)
     user = models.ForeignKey(User)
 
-    views = models.ManyToManyField('document.View')
+    views = models.ManyToManyField('document.View', help_text='The 10 (5 Quests * 2 Sections) Viewable blocks of text that are part of the Quest')
 
     completed = models.BooleanField(default=False, blank=True)
     score = models.IntegerField(blank=True, default=5)
