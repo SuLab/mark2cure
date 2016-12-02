@@ -1,24 +1,14 @@
-
-var display_network_flag;
-
 $('#group-network h4').click(function() {
+    if( $('#network-row').is(":visible")  ) {
+      $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
+    } else {
+      $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
+    };
 
-  if (display_network_flag) {
-      if( $('#network-row').is(":visible")  ) {
-        $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
-      } else {
-        $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
-      };
-
-      $('#network-row').toggle(function() {
-        s.refresh();
-        s.refresh();
-      });
-
-  } else {
-    alert("Network not yet available. Help uncover the nodes by completing a quest! Only completed quests will appear in the network.");
-  }
-
+    $('#network-row').toggle(function() {
+      s.refresh();
+      s.refresh();
+    });
 });
 
 
@@ -55,16 +45,26 @@ var s = new sigma({
 
 var filter = new sigma.plugins.filter(s);
 
-sigma.parsers.json('/api/network/'+ pk +'/', s, function() {
-  s.refresh();
+$.ajax({
+  'type': 'GET',
+  'url': '/api/network/'+ pk +'/',
+  'success': function(graph) {
+    s.graph.clear();
+    s.graph.read(graph);
 
-  maxDegree = 0;
-  s.graph.nodes().forEach(function(n) {
-    maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
-  });
-  $('#min-degree').attr('max', maxDegree/3)
+    s.refresh();
+    maxDegree = 0;
+    s.graph.nodes().forEach(function(n) {
+      maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
+    });
+    $('#min-degree').attr('max', maxDegree/3)
 
+  },
+  'error': function(d) {
+    $('#group-network').html("<div class='row'><div class='col-xs-12'><h4 class='text-xs-center'>Network Unavailable <i class='fa fa-exclamation-triangle fa-1'></i></h4></div></div>");
+  }
 });
+
 s.refresh();
 s.bind('hoverNode clickNode', function(e) {
 //  console.log(e.type, e.data.node.label, e.data.captor);
@@ -159,25 +159,10 @@ var draw_dashboard = function(group, quests) {
 var group_template = _.template( $('#group-template').html() );
 $('#group-selection').append(group_template({'pk': pk}));
 
-/* function to check if any docs in group have > 15 user completions */
-function display_network_flag(data) {
-    display_network_flag = false;
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].progress.completed == true) {
-            display_network_flag = true;
-        }
-    }
-    return display_network_flag;
-}
-
 $.ajax({
   'type': 'GET',
   'url': '/api/quest/'+ pk +'/',
-  'error': function(data) {
-    alert('Network not yet avilable. Help uncover the nodes by completing a quest! Only completed quests will appear in the network.');
-  },
   'success': function(data) {
-    display_network_flag = display_network_flag(data);
     draw_dashboard({'pk': pk}, data);
 
     $('#group-selection .quest').click(function(evt) {
