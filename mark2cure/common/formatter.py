@@ -200,6 +200,7 @@ def apply_annotations(writer, er_df=None, rel_df=None):
                 r = BioCRelation()
                 r.put_infon('event-type', row['answer'])
                 r.put_infon('relation-type', row['relation_type'])
+                r.put_infon('user_id', str(int(row['user_id'])))
 
                 n = BioCNode(refid=row['concept_1_id'], role='')
                 r.add_node(n)
