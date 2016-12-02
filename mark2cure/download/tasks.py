@@ -39,8 +39,8 @@ def group_export(self, document_pks, export_type=0):
             handle.write(export_writer.__str__())
 
         d = Download.objects.create(
-            task_er=True if er_df else False,
-            task_rel=True if rel_df else False,
+            task_er=True if export_type == 0 or export_type == 1 else False,
+            task_rel=True if export_type == 0 or export_type == 2 else False,
             file=save_location
         )
         d.documents = document_pks
