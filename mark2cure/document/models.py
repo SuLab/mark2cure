@@ -45,7 +45,7 @@ class Document(models.Model):
         for missing_kind in list(set(['tmChem', 'DNorm', 'GNormPlus']) - set(self.pubtators.values_list('kind', flat=True))):
             Pubtator.objects.get_or_create(document=self, kind=missing_kind)
 
-        for pubtator in self.pubtators.all():
+        for pubtator in self.pubtators.filter(content__isnull=True).all():
             try:
                 pending_request = pubtator.requests.get(status=PubtatorRequest.UNFULLFILLED)
 
