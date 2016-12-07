@@ -43,7 +43,8 @@ def check_corpus_health(self):
             # Update any newly enforced padding rules
             # If the document doesn't pass the validator
             # delete all existing content and retry
-            if not document.valid_pubtator() or document.update_padding():
+            if document.update_padding():
+                document.pubtators.all().delete()
                 document.run_pubtator()
 
     if not self.request.called_directly:
@@ -100,13 +101,19 @@ def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True
           max_retries=0,
           acks_late=True, track_started=True,
           expires=180)
-def maintain_pubtator_requests(self):
-    """A routine job that continually checks for pending Pubtator Requests
-        and will resubmit Pubtators that haven't been updated in a "long time"
+def pubtator_maintenance(self):
+    """ A routine job (15 min) that continually handles the status of all
+        Pubtator related functions
     """
-    # Start any new or old Pubtator requests
-    for d in Document.objects.all():
-        d.run_pubtator()
+    # Delete any Pubtator entries that may be / have been corrupt
+    # Null Content Pubtators might be awaiting response
+    # Wall time: 1min 10s
+    # for p in Pubtator.objects.filter(content__isnull=False).all():
+    #     if not validate_pubtator(p.content, p.document):
+    #         p.delete()
+
+    # Ensure a all Documents have Pubtator entries
+    [d.run_pubtator() for d in Document.objects.all()]
 
     # Try to fetch all the pending pubtator requests
     for pubtator_request in PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).all():
@@ -137,9 +144,7 @@ def submit_pubtator(self, pubtator_pk):
         raise e
 
     session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', res.content)[0]
-    PubtatorRequest.objects.get_or_create(
-        pubtator=pubtator,
-        session_id=session_id)
+    PubtatorRequest.objects.get_or_create(pubtator=pubtator, session_id=session_id)
 
     if not self.request.called_directly:
         return True

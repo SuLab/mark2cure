@@ -10,7 +10,6 @@ import json
 import nltk
 
 
-
 def pad_split(text):
     text = text.replace("\\(", " ( ")
     text = text.replace("\\)", " ) ")
