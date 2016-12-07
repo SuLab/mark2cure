@@ -116,7 +116,7 @@ class Group(models.Model):
             return 0
 
     def pubtator_coverage(self):
-        """Return back a 0 – 1 float representing the amount of documents contained within the ER Group
+        """Return back a float representing the amount of documents contained within the ER Group
             have Pubtator annotations
 
             (TODO) Totally rework this without validate_cache
