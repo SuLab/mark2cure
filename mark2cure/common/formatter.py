@@ -1,10 +1,14 @@
+from raven.contrib.django.raven_compat.models import client
+
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation, BioCRelation, BioCNode
+from mark2cure.common.bioc import BioCReader
 
 import xmltodict
 import itertools
 import datetime
 import json
 import nltk
+
 
 
 def pad_split(text):
@@ -55,6 +59,37 @@ def bioc_as_json(writer):
 
     except:
         return json.dumps(o)
+
+
+def validate_pubtator(content, document):
+    """ Returns bool if the provided str is a valid
+        pubtator (BioC) response for the Document instance
+    """
+    try:
+        r = BioCReader(source=content)
+        r.read()
+
+        # Check general Collection + Document attributes
+        assert (len(r.collection.documents) == 1), 'The response included more than the provided Document'
+        assert (document.document_id == int(r.collection.documents[0].id)), 'The response does not include the requested PMID'
+        assert (len(r.collection.documents[0].passages) == 2), 'The response document does not include the correct number of sections'
+
+        # Check the Title
+        assert (int(r.collection.documents[0].passages[0].offset) == 0), 'The title does not start at 0'
+        section = document.section_set.first()
+        assert (section.text == r.collection.documents[0].passages[0].text), 'The response title does not equal the provided text'
+        assert (section.id == int(r.collection.documents[0].passages[0].infons.get('id'))), 'The response title is not correctly identified'
+
+        # Check the Abstract
+        assert (int(r.collection.documents[0].passages[1].offset) >= 1), 'The abstract does not start after 0'
+        section = document.section_set.last()
+        assert (section.text == r.collection.documents[0].passages[1].text), 'The response abstract does not equal the provided text'
+        assert (section.id == int(r.collection.documents[0].passages[1].infons.get('id'))), 'The response abstract is not correctly identified'
+        return True
+
+    except Exception:
+        client.captureException()
+        return False
 
 
 # R & S are tuple of (start position, stop position)

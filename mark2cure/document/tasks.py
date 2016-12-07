@@ -4,7 +4,7 @@ from django.conf import settings
 
 from mark2cure.common.models import Group
 from mark2cure.document.models import Document, Pubtator, PubtatorRequest, Section
-from mark2cure.common.formatter import pad_split
+from mark2cure.common.formatter import pad_split, validate_pubtator
 
 from Bio import Entrez, Medline
 from ..common import celery_app as app
@@ -170,7 +170,7 @@ def check_pubtator(self, pubtator_request_pk):
     except:
         return False
 
-    if res.ok and res.status_code == 200:
+    if res.ok and res.status_code == 200 and res.text and validate_pubtator(res.text, pubtator.document):
         pubtator.content = res.text
         pubtator.save()
 
@@ -179,7 +179,13 @@ def check_pubtator(self, pubtator_request_pk):
         return True
 
     else:
-        if res.status_code == 501:
+        if res.status_code == 200:
+            # Failed Validation
+            pubtator_request.status = PubtatorRequest.FAILED
+            pubtator_request.save()
+            return False
+
+        elif res.status_code == 501:
             # '[Warning] : The Result is not ready.\n'
             pubtator_request.status = PubtatorRequest.UNFULLFILLED
             pubtator_request.save()
