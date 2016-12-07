@@ -87,10 +87,6 @@ class Document(models.Model):
         return changed
 
     def valid_pubtator(self):
-        # Quick check using cache
-        if Pubtator.objects.filter(document=self, validate_cache=True).count() == 3:
-            return True
-
         # All responses that are not waiting to fetch conent b/c they already have it
         pubtators = Pubtator.objects.filter(
             document=self,
