@@ -110,8 +110,9 @@ def pubtator_maintenance(self):
     # Ensure a all Documents have Pubtator entries
     [d.run_pubtator() for d in Document.objects.all()]
 
-    # If we know we're up to date, update a few at random
-    if Document.objects.count() * 3 == Pubtator.objects.filter(content__isnull=False).count():
+    # If we know we're up to date and not backlogged, update a few at random
+    if Document.objects.count() * 3 == Pubtator.objects.filter(content__isnull=False).count() and \
+       PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).count() < 100:
         pubtator_pks = list(Pubtator.objects.values_list('pk', flat=True))
         random.shuffle(pubtator_pks)
         for p_pk in pubtator_pks[:10]:
