@@ -41,8 +41,17 @@ class Document(models.Model):
             1) Create Pubtator entries
             2) Start checking for responses if pending
         """
+        kind_arr = ['tmChem', 'DNorm', 'GNormPlus']
+
+        # If the Document has excess Pubtators, cleanup
+        if self.pubtators.count() > 3:
+            for kind in kind_arr:
+                if self.pubtators.filter(kind=kind).count() > 1:
+                    # Picks them off 1 run at a time (oldest first) until no duplicates remain
+                    self.pubtators.filter(kind=kind).first().delete()
+
         # If the Document is missing any Pubtator "kinds", it should get them
-        for missing_kind in list(set(['tmChem', 'DNorm', 'GNormPlus']) - set(self.pubtators.values_list('kind', flat=True))):
+        for missing_kind in list(set(kind_arr) - set(self.pubtators.values_list('kind', flat=True))):
             Pubtator.objects.get_or_create(document=self, kind=missing_kind)
 
         for pubtator in self.pubtators.filter(content__isnull=True).all():
