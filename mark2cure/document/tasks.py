@@ -13,6 +13,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 import requests
 import logging
+import random
 import re
 logger = logging.getLogger(__name__)
 
@@ -105,15 +106,17 @@ def pubtator_maintenance(self):
     """ A routine job (15 min) that continually handles the status of all
         Pubtator related functions
     """
-    # Delete any Pubtator entries that may be / have been corrupt
-    # Null Content Pubtators might be awaiting response
-    # Wall time: 1min 10s
-    # for p in Pubtator.objects.filter(content__isnull=False).all():
-    #     if not validate_pubtator(p.content, p.document):
-    #         p.delete()
 
     # Ensure a all Documents have Pubtator entries
     [d.run_pubtator() for d in Document.objects.all()]
+
+    # If we know we're up to date, update a few at random
+    if Document.objects.count() * 3 == Pubtator.objects.filter(content__isnull=False).count():
+        pubtator_pks = list(Pubtator.objects.values_list('pk', flat=True))
+        random.shuffle(pubtator_pks)
+        for p_pk in pubtator_pks[:10]:
+            pubtator = Pubtator.objects.get(pk=p_pk)
+            pubtator.submit()
 
     # Try to fetch all the pending pubtator requests
     for pubtator_request in PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).all():
