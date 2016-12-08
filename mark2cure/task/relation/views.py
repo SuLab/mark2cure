@@ -19,21 +19,54 @@ from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
 from .serializers import RelationSerializer, RelationCereal
 
 
-@login_required
-def relation_task_home(request, document_pk):
-    """
-        Main page for users to find the relationship between two concepts.
-    """
-    document = get_object_or_404(Document, pk=document_pk)
+class RelationTask(View):
 
-    ctx = {
-        'document': document,
-    }
-    return TemplateResponse(request, 'relation/task.jade', ctx)
+    @login_required
+    # @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    # @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, *args, **kwargs):
+        return super(RelationTask, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """Document base page for completing available Relations.
+        """
+        document = get_object_or_404(Document, pk=kwargs['document_pk'])
+
+        # (TODO) Return if the user has already completed 20 Relations within this Document
+
+        ctx = {
+            'document': document,
+        }
+        return TemplateResponse(request, 'relation/task.jade', ctx)
+
+    def post(self, request, *args, **kwargs):
+        """API to trigger completion of the Document for the user to the extent we allow
+        """
+        document = get_object_or_404(Document, pk=kwargs['document_pk'])
+
+        first_section = document.section_set.first()
+        view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
+        view.completed = True
+        view.save()
+
+        view_content_type = ContentType.objects.get_for_model(view)
+
+        Point.objects.create(user=request.user,
+                             amount=settings.RELATION_DOC_POINTS,
+                             content_type=view_content_type,
+                             object_id=view.id,
+                             created=timezone.now())
+
+        return redirect('task-relation:task-complete', document_pk=document.pk)
 
 
 @login_required
 def relation_task_complete(request, document_pk):
+    """ Document conclusion page for thanking b/c the user exhausted the total number
+        of relation submissions we allow (20)
+
+        - Allows entrance to Talk Page or Return to Dashboard
+    """
     document = get_object_or_404(Document, pk=document_pk)
     first_section = document.section_set.first()
     view = get_object_or_404(View, task_type='ri', completed=True, section=first_section, user=request.user)
@@ -63,35 +96,15 @@ def relation_task_complete(request, document_pk):
     return TemplateResponse(request, 'relation/task-complete.jade', ctx)
 
 
-@login_required
-def submit_document_set(request, document_pk):
-    document = get_object_or_404(Document, pk=document_pk)
 
-    if request.method == 'POST':
-
-        first_section = document.section_set.first()
-        view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
-        view.completed = True
-        view.save()
-
-        view_content_type = ContentType.objects.get_for_model(view)
-
-        Point.objects.create(user=request.user,
-                             amount=settings.RELATION_DOC_POINTS,
-                             content_type=view_content_type,
-                             object_id=view.id,
-                             created=timezone.now())
-
-        return redirect('task-relation:task-complete', document_pk=document.pk)
 
 
 @login_required
 @require_http_methods(['POST'])
 def submit_annotation(request, document_pk, relation_pk):
-    '''
-        Submit the selected relation type as an Annotation that is associated
+    """ Submit the selected relation type as an Annotation that is associated
         to a View of the first Document Section (.first() if Task Type isn't Section Specific)
-    '''
+    """
     document = get_object_or_404(Document, pk=document_pk)
     relation = get_object_or_404(Relation, pk=relation_pk)
 
@@ -124,8 +137,7 @@ def submit_annotation(request, document_pk, relation_pk):
 @login_required
 @api_view(['GET'])
 def fetch_document_relations(request, document_pk):
-    """API that includes all the relationships within one document based on the
-    document's primary key.
+    """ API that includes all the Relations within for a Document for the user (TODO)
     """
     document = get_object_or_404(Document, pk=document_pk)
 
@@ -154,8 +166,7 @@ def fetch_document_relations(request, document_pk):
 @login_required
 @api_view(['GET'])
 def document_analysis(request, document_pk, relation_pk=None):
-    """
-        API for returning analysis details for Document
+    """ API for returning analysis details for Document
         Relation task completions
     """
     document = get_object_or_404(Document, pk=document_pk)

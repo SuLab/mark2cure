@@ -44,7 +44,7 @@ block content
             .paragraphs(style="cursor: not-allowed;")
 
       .row(style="display:none;")
-        form(id="task_relation_submit_document_set", action='{% url "task-relation:submit-set" document_pk=document.pk %}', method='POST')
+        form(id="task_relation_submit_document_set", action='{% url "task-relation:task" document_pk=document.pk %}', method='POST')
           - csrf_token
 
       .row.m-t-1

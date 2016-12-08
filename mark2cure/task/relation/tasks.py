@@ -12,16 +12,12 @@ determined if there are non-overlapping concepts
 (at least one pair, or "relation pair" per document).
 """
 
-stype_hash = {
-    'Chemical': 'c',
-    'Disease': 'd',
-    'Gene': 'g'
-}
+stype_arr = ['d', 'g', 'c']
 
 
 @task()
 def import_concepts():
-    '''
+    """
         This is where the number of documents to prepopulate the relation app starts
         from. For each document we make concept dictionaries from each pubtator
             1) check for overlapping words
@@ -30,35 +26,36 @@ def import_concepts():
             4) Do not use concepts without a unique identification (UID)
             5) Use the longest word as the representative "text" if there are multiple texts
             per UID
-    '''
+    """
 
-    for document in RelationGroup.objects.get(pk=2).documents.all():
+    for group in RelationGroup.objects.all():
 
-        df = Document.objects.entity_recognition_df(documents=[document], include_pubtator=True)
-        # (TODO) Do we need protection or not? I'm confused.
-        df = clean_df(df, overlap_protection=False, allow_duplicates=False)
+        for document in group.documents.all():
 
-        # Put these into the DB
-        for index, row in df.iterrows():
+            df = Document.objects.entity_recognition_df(documents=[document], include_pubtator=True)
+            # (TODO) Do we need protection or not? I'm confused.
+            df = clean_df(df, overlap_protection=False, allow_duplicates=False)
 
-            # (TODO) Maybe make these bulk creates
-            c, created = Concept.objects.get_or_create(id=row['uid'])
-            ct, created = ConceptText.objects.get_or_create(concept_id=row['uid'], text=row['text'])
-            # (TODO) Consider ann_type in addition to source
-            # agree with this comment. 'source' is too variable. Just use ann_type -JF
-            cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype=stype_hash.get(row['ann_type'], None))
+            # Put these into the DB
+            for index, row in df.iterrows():
+                # (TODO) Maybe make these bulk creates
+                c, created = Concept.objects.get_or_create(id=row['uid'])
+                ct, created = ConceptText.objects.get_or_create(concept_id=row['uid'], text=row['text'])
+                # (TODO) Consider ann_type in addition to source
+                # agree with this comment. 'source' is too variable. Just use ann_type -JF
+                cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype=stype_arr[row['ann_type_idx']])
 
 
 @task()
 def compute_relationships():
-    '''
+    """
         This method takes a document and a relation pair list and makes the
         appropriate "relation." The reason relations are stored instead of
         created on the fly, is because there was a significant amount of code
         performed to determine whether or not relations even exist.  We need
         those relation pairs to determine if the document is worth showing to
         a user.
-    '''
+    """
 
     approved_relationship_types = ['c_d', 'g_d', 'g_c']
 
