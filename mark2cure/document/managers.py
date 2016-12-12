@@ -40,21 +40,11 @@ class DocumentManager(models.Manager):
         else:
             raise ValueError('No documents supplied to generator writer')
 
-        cmd_str = '''
-            SELECT
-                `document_pubtator`.`document_id`,
-                ANY_VALUE(`document_pubtator`.`content`),
-                GROUP_CONCAT(DISTINCT `document_section`.`id`) as `section_ids`
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-pubtators.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(','.join(str_doc_arr))
 
-            FROM `document_pubtator`
-
-            JOIN `document_section`
-                ON `document_section`.`document_id` = `document_pubtator`.`document_id`
-
-            WHERE `document_pubtator`.`content` != '' AND `document_pubtator`.`document_id` IN ({0})
-
-            GROUP BY `document_pubtator`.`document_id`;
-        '''.format(','.join(str_doc_arr))
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -139,41 +129,14 @@ class DocumentManager(models.Manager):
         else:
             filter_user_level = ''
 
-        cmd_str = '''
-            SELECT
-                    `relation`.`id` as `relation_id`,
-                    `doc_document`.`id` as `doc_pk`,
-                    `doc_document`.`document_id` as `pmid`,
-                    `doc_view`.`user_id`,
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-relations-results.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(
+            content_type_pk=ct.pk,
+            filter_doc_level=filter_doc_level,
+            filter_user_level=filter_user_level)
 
-                    `relation`.`relation_type`,
-                    `relation`.`concept_1_id`,
-                    `relation`.`concept_2_id`,
-                    `rel_anns`.`answer`,
-                    `doc_ann`.`created`
-
-            FROM `relation_relation` as `relation`
-
-            INNER JOIN `relation_relationannotation` as `rel_anns`
-                    ON `rel_anns`.`relation_id` = `relation`.`id`
-
-            INNER JOIN `document_annotation` as `doc_ann`
-                    ON `doc_ann`.`content_type_id` = {content_type_pk} AND `doc_ann`.`object_id` = `rel_anns`.`id`
-
-            INNER JOIN `document_view` as `doc_view`
-                    ON `doc_view`.`id` = `doc_ann`.`view_id`
-
-            INNER JOIN `document_section` as `doc_section`
-                    ON `doc_section`.`id` = `doc_view`.`section_id`
-
-            INNER JOIN `document_document` as `doc_document`
-                    ON `doc_document`.`id` = `doc_section`.`document_id`
-
-            {filter_doc_level}
-            {filter_user_level}
-
-            ORDER BY `relation`.`id`
-        '''.format(content_type_pk=ct.pk, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -192,14 +155,6 @@ class DocumentManager(models.Manager):
                     'user_id': x[3],
                     'relation_type': x[4], 'concept_1_id': x[5], 'concept_2_id': x[6],
                     'answer': x[7], 'answer_text': filter(lambda d: d['id'] == x[7], relation_data_flat)[0]['text'], 'created': x[8]})
-
-            '''
-            for ro in df_arr:
-                # (TODO) Select the longest text
-                cdr_query = ConceptDocumentRelationship.objects.filter(document=relation.document)
-                cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
-                cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
-            '''
 
             return pd.DataFrame(df_arr, columns=REL_DF_COLUMNS)
 
@@ -263,35 +218,11 @@ class DocumentManager(models.Manager):
 
         df_arr = []
 
-        cmd_str = '''
-            SELECT
-                `entity_recognition_entityrecognitionannotation`.`id`,
-                `entity_recognition_entityrecognitionannotation`.`type_idx`,
-                `entity_recognition_entityrecognitionannotation`.`text`,
-                `entity_recognition_entityrecognitionannotation`.`start`,
-                `document_annotation`.`created`,
-                `document_document`.`id` as `document_pk`,
-                `document_document`.`document_id` as `pmid`,
-                `document_view`.`section_id`,
-                `document_view`.`user_id`
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-er-results.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
 
-            FROM `entity_recognition_entityrecognitionannotation`
-
-            INNER JOIN `document_annotation`
-                ON `document_annotation`.`object_id` = `entity_recognition_entityrecognitionannotation`.`id` AND `document_annotation`.`content_type_id` = {content_type_pk}
-
-            INNER JOIN `document_view`
-                ON `document_annotation`.`view_id` = `document_view`.`id`
-
-            INNER JOIN `document_section`
-                ON `document_view`.`section_id` = `document_section`.`id`
-
-            INNER JOIN `document_document`
-                ON `document_document`.`id` = `document_section`.`document_id`
-
-            {filter_doc_level}
-            {filter_user_level}
-        '''.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -330,23 +261,11 @@ class DocumentManager(models.Manager):
                 reponses into 1 main file. It performances selective
                 ordering and precedence for some annotations types / instances
             '''
-            cmd_str = '''
-                SELECT
-                    `document_pubtator`.`id`,
-                    `document_pubtator`.`document_id`,
-                    `document_pubtator`.`content`,
-                    GROUP_CONCAT(DISTINCT `document_section`.`id`) as `section_ids`
+            cmd_str = ""
+            with open('mark2cure/document/commands/get-er-pubtator-results.sql', 'r') as f:
+                cmd_str = f.read()
+            cmd_str = cmd_str.format(','.join(doc_arr))
 
-                FROM `document_pubtator`
-
-                JOIN `document_section`
-                    ON `document_section`.`document_id` = `document_pubtator`.`document_id`
-
-                WHERE `document_pubtator`.`content` != ''
-                    AND `document_pubtator`.`document_id` IN ({0})
-
-                GROUP BY `document_pubtator`.`id`
-            '''.format(','.join(doc_arr))
             c = connection.cursor()
             try:
                 c.execute(cmd_str)

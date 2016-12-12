@@ -146,77 +146,10 @@ def relation_list(request):
     """ Returns the available relation tasks for a specific user
         Accessed through a JSON API endpoint
     """
-    # cmd_str = """
-    #     SELECT  ANY_VALUE(`document_document`.`id`) as `id`,
-    #             `document_document`.`document_id`,
-    #             ANY_VALUE(`document_document`.`title`) as `title`,
-    #             ANY_VALUE((
-    #                 SELECT COUNT(*)
-    #                 FROM `relation_relation`
-    #                 WHERE `relation_relation`.`document_id` = `document_document`.`id`
-    #             )) as `relation_units`,
-    #             COUNT(`view`.`id`) as `completions`,
-    #             IF(SUM(`view`.`user_id` = {user_id}), true, false) as `user_completed`
-    #
-    #     FROM `document_document`
-    #
-    #     /* Link up the document group information for filtering purposes */
-    #     INNER JOIN `relation_relationgroup_documents`
-    #         ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
-    #     INNER JOIN `relation_relationgroup` as `group`
-    #         ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
-    #
-    #     /* Link up the completed relationship views for each document
-    #        A View is considered complete when all relationships have been submitted (requires 100%) */
-    #     INNER JOIN `document_section`
-    #         ON `document_section`.`document_id` = `document_document`.`id`
-    #     INNER JOIN `document_view` as `view`
-    #         ON (`view`.`section_id` = `document_section`.`id` AND `view`.`task_type` = 'ri' AND `view`.`completed` = 1)
-    #
-    #     WHERE `group`.`enabled` = 1
-    #     GROUP BY `document_document`.`document_id`
-    #     /* Filter what we want to show on the dashboard */
-    #     HAVING  `relation_units` <= 20
-    #         AND `completions` < {completions}
-    #         AND `user_completed` = false
-    #     ORDER BY `completions` DESC
-    #     LIMIT 20
-    # """.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
-
-    cmd_str = """
-        SELECT  `relationship_document`.`id` as `id`,
-                `relationship_document`.`document_id`,
-                `relationship_document`.`title` as `title`,
-                COUNT(`relation_relation`.`id`) as `relation_id`,
-                IF(SUM(`document_view`.`user_id` = {user_id}), true, false) as `user_completed`
-
-        FROM (
-                SELECT  `document_document`.`id` as `id`,
-                        `document_document`.`document_id`,
-                        `document_document`.`title` as `title`
-
-                FROM `document_document`
-
-                INNER JOIN `relation_relationgroup_documents`
-                    ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
-                INNER JOIN `relation_relationgroup` as `group`
-                    ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
-
-                WHERE `group`.`enabled` = 1
-        ) as `relationship_document`
-
-
-        INNER JOIN `relation_relation`
-            ON `relation_relation`.`document_id` = `relationship_document`.`id`
-        INNER JOIN `relation_relationannotation`
-            ON `relation_relationannotation`.`relation_id` = `relation_relation`.`id`
-        INNER JOIN `document_annotation`
-            ON (`document_annotation`.`object_id` = `relation_relationannotation`.`id` and `document_annotation`.`content_type_id` = 56)
-        INNER JOIN `document_view`
-            ON `document_view`.`id` = `document_annotation`.`view_id`
-
-        GROUP BY `relationship_document`.`document_id`, `relation_relation`.`id`
-    """.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
+    cmd_str = ""
+    with open('mark2cure/api/commands/get-relations-v2.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
 
     # Start the DB Connection
     c = connection.cursor()
