@@ -147,19 +147,37 @@ def fetch_document_relations(request, document_pk):
     for section in document.section_set.all():
         View.objects.get_or_create(task_type='ri', section=section, user=request.user)
 
-    queryset = Relation.objects.filter(document=document).extra(select={
-        "user_completed_count": """
-            SELECT COUNT(*) AS user_completed_count
-            FROM document_annotation
+    cmd_str = ""
+    with open('mark2cure/task/relation/commands/get-user-relations-for-document.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(
+        document_id=document.pk,
+        user_id=request.user.pk,
+        completions=settings.ENTITY_RECOGNITION_K)
 
-            INNER JOIN `document_view` ON ( document_annotation.view_id = document_view.id )
-            INNER JOIN `relation_relationannotation` ON ( document_annotation.object_id = relation_relationannotation.id )
+    # Start the DB Connection
+    c = connection.cursor()
+    c.execute(cmd_str)
 
-            WHERE (document_annotation.kind = 'r'
-                AND document_annotation.content_type_id = 56
-                AND document_view.user_id = %d
-                AND relation_relationannotation.relation_id = relation_relation.id)""" % (request.user.pk,)
-    })
+    queryset = [{'id': x[0],
+                 'document_id': x[1],
+                 'relation_type': x[2],
+                 'progress': x[3],
+                 'community_completed': x[4],
+                 'user_completed': x[5],
+
+                 'concept_1_id': x[6],
+                 'concept_1_type': x[7],
+                 'concept_1_text': x[8],
+
+                 'concept_2_id': x[9],
+                 'concept_2_type': x[10],
+                 'concept_2_text': x[11]} for x in c.fetchall()]
+
+    print queryset
+
+    # Close the connection
+    c.close()
 
     serializer = RelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)

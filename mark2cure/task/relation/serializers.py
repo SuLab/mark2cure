@@ -38,40 +38,25 @@ class RelationCereal(serializers.BaseSerializer):
         }
 
 
-class RelationSerializer(serializers.ModelSerializer):
+class RelationSerializer(serializers.Serializer):
 
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super(RelationSerializer, self).__init__(*args, **kwargs)
+    id = serializers.IntegerField()
+    document_id = serializers.IntegerField()
+    relation_type = serializers.CharField()
 
-    user_completed = serializers.SerializerMethodField('get_user_status')
     concepts = serializers.SerializerMethodField()
 
-    def get_user_status(self, relation):
-        return True if relation.user_completed_count > 0 else False
-
     def get_concepts(self, relation):
-        # (TODO) Select the longest text
-        cdr_query = ConceptDocumentRelationship.objects.filter(document=relation.document)
-        cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
-        cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
-
         return {
             'c1': {
-                'text': cdr1.concept_text.text,
-                'type': cdr1.stype,
-                'id': relation.concept_1.id
+                'text': relation.get('concept_1_text'),
+                'type': relation.get('concept_1_type'),
+                'id': relation.get('concept_1_id')
             },
             'c2': {
-                'text': cdr2.concept_text.text,
-                'type': cdr2.stype,
-                'id': relation.concept_2.id
+                'text': relation.get('concept_2_text'),
+                'type': relation.get('concept_2_type'),
+                'id': relation.get('concept_2_id')
             }
         }
-
-    class Meta:
-        model = Relation
-        fields = ('id', 'document', 'relation_type',
-                  'concepts',
-                  'user_completed',)
 
