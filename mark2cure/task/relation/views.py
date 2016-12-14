@@ -176,41 +176,17 @@ def document_analysis(request, document_pk, relation_pk=None):
     if relation_pk:
         relation = get_object_or_404(Relation, pk=relation_pk)
 
-    # Start the DB Connection
-    c = connection.cursor()
-
-    cmd_str = """
-        SELECT  `relation_relation`.`id` as `relationship_id`,
-                `relation_relation`.`document_id`,
-                `relation_relation`.`relation_type`,
-                `relation_relation`.`concept_1_id`,
-                `relation_relation`.`concept_2_id`,
-
-                # ANY_VALUE(`concept_relationship_1`.`stype`) as `concept_1_stype`,
-                ANY_VALUE(`concept_text_1`.`text`) as `concept_1_text`,
-
-                # ANY_VALUE(`concept_relationship_2`.`stype`) as `concept_2_stype`,
-                ANY_VALUE(`concept_text_2`.`text`) as `concept_2_text`
-
-        FROM `relation_relation`
-
-        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_1`
-            ON `concept_relationship_1`.`document_id` = `relation_relation`.`document_id`
-            INNER JOIN `relation_concepttext` as `concept_text_1`
-                    ON `concept_text_1`.`concept_id` = `relation_relation`.`concept_1_id`
-
-        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_2`
-            ON `concept_relationship_2`.`document_id` = `relation_relation`.`document_id`
-            INNER JOIN `relation_concepttext` as `concept_text_2`
-                    ON `concept_text_2`.`concept_id` = `relation_relation`.`concept_2_id`
-
-        WHERE `relation_relation`.`document_id` = {document_id} {relation_logic}
-        GROUP BY `relation_relation`.`id`
-    """.format(
+    cmd_str = ""
+    with open('mark2cure/task/relation/commands/get-relations-for-document.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(
         document_id=document.pk,
         relation_logic=' AND `relation_relation`.`id` = {0}'.format(relation.pk) if relation else '')
 
+    # Start the DB Connection
+    c = connection.cursor()
     c.execute(cmd_str)
+
     rel_tasks = []
 
     # (TODO) Ugly patch for #189 (https://github.com/SuLab/mark2cure/issues/189)
@@ -221,35 +197,19 @@ def document_analysis(request, document_pk, relation_pk=None):
         cdr2 = cdr_query.filter(concept_text__concept_id=x[4]).first()
         rel_tasks.append((x[0], x[1], x[2], x[3], x[4], cdr1.concept_text.text, cdr2.concept_text.text))
 
-    cmd_str = """
-        SELECT  `document_document`.`id` as `doc_pk`,
-                `document_document`.`document_id` as `pmid`,
-                `relation_relationannotation`.`relation_id` as `relationship_id`,
-                `relation_relationannotation`.`answer` as `relationship_answer`,
-                `document_annotation`.`created`,
-                `document_view`.`user_id`
+    cmd_str = ""
+    with open('mark2cure/task/relation/commands/get-relations-annotations-for-document.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(document_id=document.pk)
 
-        FROM `relation_relationannotation`
-
-        INNER JOIN `document_annotation`
-            ON `document_annotation`.`object_id` = `relation_relationannotation`.`id` AND `document_annotation`.`kind` = 'r'
-
-            INNER JOIN `document_view`
-                ON `document_annotation`.`view_id` = `document_view`.`id`
-
-                INNER JOIN `document_section`
-                    ON `document_section`.`id` = `document_view`.`section_id`
-
-                INNER JOIN `document_document`
-                    ON `document_document`.`id` = `document_section`.`document_id`
-
-        WHERE `document_document`.`id` =  {document_id}
-    """.format(document_id=document.pk)
     c.execute(cmd_str)
 
     rel_submissions = []
     for x in c.fetchall():
         rel_submissions.append(x)
+
+    # Close the connection
+    c.close()
 
     from collections import defaultdict
     groups = defaultdict(list)
