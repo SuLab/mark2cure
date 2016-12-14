@@ -147,14 +147,22 @@ def relation_list(request):
         Accessed through a JSON API endpoint
     """
     cmd_str = ""
-    with open('mark2cure/api/commands/get-relations-v2.sql', 'r') as f:
+    with open('mark2cure/api/commands/get-relations.sql', 'r') as f:
         cmd_str = f.read()
     cmd_str = cmd_str.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
 
     # Start the DB Connection
     c = connection.cursor()
     c.execute(cmd_str)
-    queryset = [{'id': x[0], 'document_id': x[1], 'title': x[2], 'relation_units': x[3], 'completions': x[4]} for x in c.fetchall()]
+
+    queryset = [{'id': x[0],
+                 'document_id': x[1],
+                 'title': x[2],
+                 'relationships': x[3],
+                 'progress': x[4]} for x in c.fetchall()]
+
+    # Close the connection
+    c.close()
 
     serializer = DocumentRelationSerializer(queryset, many=True)
     return Response(serializer.data)

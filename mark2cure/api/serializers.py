@@ -96,19 +96,11 @@ class QuestSerializer(serializers.ModelSerializer):
                   'meta_url', 'user', 'progress')
 
 
-class DocumentRelationSerializer(serializers.ModelSerializer):
+class DocumentRelationSerializer(serializers.Serializer):
 
-    task_count = serializers.SerializerMethodField()
-    progress = serializers.SerializerMethodField('get_progress_status')
-
-    def get_task_count(self, document):
-        return document.get('relation_units')
-
-    def get_progress_status(self, document):
-        return {'required': settings.ENTITY_RECOGNITION_K,
-                'current': document.get('completions')}
-
-    class Meta:
-        model = Document
-        fields = ('id', 'document_id', 'title', 'task_count', 'progress')
+    id = serializers.IntegerField()
+    document_id = serializers.IntegerField()
+    title = serializers.CharField()
+    relationships = serializers.IntegerField()
+    progress = serializers.FloatField()
 

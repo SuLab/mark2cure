@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import connection
 
 from django.views.decorators.http import require_http_methods
+from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.contrib.contenttypes.models import ContentType
@@ -19,7 +20,7 @@ from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
 from .serializers import RelationSerializer, RelationCereal
 
 
-class RelationTask(View):
+class RelationTask(TemplateView):
 
     @login_required
     # @method_decorator(user_passes_test(lambda u: u.is_superuser))
@@ -59,6 +60,7 @@ class RelationTask(View):
 
         return redirect('task-relation:task-complete', document_pk=document.pk)
 
+relation_task = RelationTask.as_view()
 
 @login_required
 def relation_task_complete(request, document_pk):
