@@ -4,7 +4,6 @@ from django.conf import settings
 from django.db import connection
 
 from django.views.decorators.http import require_http_methods
-from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.contrib.contenttypes.models import ContentType
@@ -17,50 +16,39 @@ from ...score.models import Point
 from ...document.models import Document, View, Annotation
 
 from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
-from .serializers import RelationSerializer, RelationCereal
+from .serializers import DocumentRelationSerializer, RelationAnalysisSerializer
 
 
-class RelationTask(TemplateView):
-
-    @login_required
-    # @method_decorator(user_passes_test(lambda u: u.is_superuser))
-    # @method_decorator(user_passes_test(lambda u: u.is_staff))
-    def dispatch(self, *args, **kwargs):
-        return super(RelationTask, self).dispatch(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
+@login_required
+def relation_task(request, document_pk):
         """Document base page for completing available Relations.
         """
-        document = get_object_or_404(Document, pk=kwargs['document_pk'])
+        document = get_object_or_404(Document, pk=document_pk)
+
+        if request.POST:
+            """API to trigger completion of the Document for the user to the extent we allow
+            """
+            first_section = document.section_set.first()
+            view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
+            view.completed = True
+            view.save()
+
+            view_content_type = ContentType.objects.get_for_model(view)
+
+            Point.objects.create(user=request.user,
+                                 amount=settings.RELATION_DOC_POINTS,
+                                 content_type=view_content_type,
+                                 object_id=view.id,
+                                 created=timezone.now())
+
+            return redirect('task-relation:task-complete', document_pk=document.pk)
 
         # (TODO) Return if the user has already completed 20 Relations within this Document
-
         ctx = {
             'document': document,
         }
         return TemplateResponse(request, 'relation/task.jade', ctx)
 
-    def post(self, request, *args, **kwargs):
-        """API to trigger completion of the Document for the user to the extent we allow
-        """
-        document = get_object_or_404(Document, pk=kwargs['document_pk'])
-
-        first_section = document.section_set.first()
-        view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
-        view.completed = True
-        view.save()
-
-        view_content_type = ContentType.objects.get_for_model(view)
-
-        Point.objects.create(user=request.user,
-                             amount=settings.RELATION_DOC_POINTS,
-                             content_type=view_content_type,
-                             object_id=view.id,
-                             created=timezone.now())
-
-        return redirect('task-relation:task-complete', document_pk=document.pk)
-
-relation_task = RelationTask.as_view()
 
 @login_required
 def relation_task_complete(request, document_pk):
@@ -96,9 +84,6 @@ def relation_task_complete(request, document_pk):
         'points': request.user.profile.score(view=view)
     }
     return TemplateResponse(request, 'relation/task-complete.jade', ctx)
-
-
-
 
 
 @login_required
@@ -179,7 +164,7 @@ def fetch_document_relations(request, document_pk):
     # Close the connection
     c.close()
 
-    serializer = RelationSerializer(queryset, many=True, context={'user': request.user})
+    serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
 
@@ -236,6 +221,6 @@ def document_analysis(request, document_pk, relation_pk=None):
     for obj in rel_submissions:
         groups[obj[2]].append(obj)
 
-    serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
+    serializer = RelationAnalysisSerializer(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
     return Response(serializer.data)
 

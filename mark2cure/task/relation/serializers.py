@@ -1,16 +1,41 @@
-from .models import Relation, ConceptDocumentRelationship
-
 from rest_framework import serializers
 from . import relation_data_flat
 
 
-class RelationCereal(serializers.BaseSerializer):
+class DocumentRelationSerializer(serializers.Serializer):
+    """Organize the flat SQL response into a slightly
+        nested response for a Document's available
+        relation tasks for a specific user
+    """
+
+    id = serializers.IntegerField()
+    document_id = serializers.IntegerField()
+    relation_type = serializers.CharField()
+
+    concepts = serializers.SerializerMethodField()
+
+    def get_concepts(self, relation):
+        return {
+            'c1': {
+                'text': relation.get('concept_1_text'),
+                'type': relation.get('concept_1_type'),
+                'id': relation.get('concept_1_id')
+            },
+            'c2': {
+                'text': relation.get('concept_2_text'),
+                'type': relation.get('concept_2_type'),
+                'id': relation.get('concept_2_id')
+            }
+        }
+
+
+class RelationAnalysisSerializer(serializers.BaseSerializer):
     def __init__(self, *args, **kwargs):
         context = kwargs.pop('context', {})
         self.sub_dict = context.get('sub_dict', None)
         self.user = context.get('user', None)
         # Instantiate the superclass normally
-        super(RelationCereal, self).__init__(*args, **kwargs)
+        super(RelationAnalysisSerializer, self).__init__(*args, **kwargs)
 
     def to_representation(self, obj):
 
@@ -38,25 +63,4 @@ class RelationCereal(serializers.BaseSerializer):
         }
 
 
-class RelationSerializer(serializers.Serializer):
-
-    id = serializers.IntegerField()
-    document_id = serializers.IntegerField()
-    relation_type = serializers.CharField()
-
-    concepts = serializers.SerializerMethodField()
-
-    def get_concepts(self, relation):
-        return {
-            'c1': {
-                'text': relation.get('concept_1_text'),
-                'type': relation.get('concept_1_type'),
-                'id': relation.get('concept_1_id')
-            },
-            'c2': {
-                'text': relation.get('concept_2_text'),
-                'type': relation.get('concept_2_type'),
-                'id': relation.get('concept_2_id')
-            }
-        }
 
