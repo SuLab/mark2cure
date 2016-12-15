@@ -15,18 +15,30 @@ from rest_framework.response import Response
 from ...score.models import Point
 from ...document.models import Document, View, Annotation
 
-from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
+from .models import Relation, RelationAnnotation
 from .serializers import DocumentRelationSerializer, RelationAnalysisSerializer
 
 
 @login_required
 def relation_task(request, document_pk):
         """Document base page for completing available Relations.
+
+            1) Fetches the Document Relations API to get available work for the document
+            2) Displays the Tree selection interface for comparing the 2 concepts
+                - Submits currents and shows next over AJAX
+            3) When relationships are completed, flag the associated View as completed
+                - This flag is not used to determine anything
         """
         document = get_object_or_404(Document, pk=document_pk)
 
         if request.POST:
             """API to trigger completion of the Document for the user to the extent we allow
+
+                We award them Points for completing the available Relationships
+                that are currently available to them. They may recieve this bonus
+                multiple times
+
+                (TODO) Block out a user from multiple completions of Document
             """
             first_section = document.section_set.first()
             view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
@@ -159,8 +171,6 @@ def fetch_document_relations(request, document_pk):
                  'concept_2_type': x[10],
                  'concept_2_text': x[11]} for x in c.fetchall()]
 
-    print queryset
-
     # Close the connection
     c.close()
 
@@ -170,57 +180,49 @@ def fetch_document_relations(request, document_pk):
 
 @login_required
 @api_view(['GET'])
-def document_analysis(request, document_pk, relation_pk=None):
+def document_analysis(request, document_pk):
     """ API for returning analysis details for Document
         Relation task completions
+
+        Scoped only towards relationships the user is aware of
     """
     document = get_object_or_404(Document, pk=document_pk)
 
-    relation = None
-    # If a relation was specified, only show results for that
-    if relation_pk:
-        relation = get_object_or_404(Relation, pk=relation_pk)
-
     cmd_str = ""
-    with open('mark2cure/task/relation/commands/get-relations-for-document.sql', 'r') as f:
+    with open('mark2cure/task/relation/commands/get-relations-analysis-for-user-and-document.sql', 'r') as f:
         cmd_str = f.read()
-    cmd_str = cmd_str.format(
-        document_id=document.pk,
-        relation_logic=' AND `relation_relation`.`id` = {0}'.format(relation.pk) if relation else '')
+    cmd_str = cmd_str.format(document_id=document.pk, user_id=request.user.pk)
 
     # Start the DB Connection
     c = connection.cursor()
     c.execute(cmd_str)
 
-    rel_tasks = []
+    queryset = [{
+        'id': x[0],
+        'document_id': x[1],
+        'kind': x[2],
+        'concept_1_id': x[3],
+        'concept_1_text': x[4],
 
-    # (TODO) Ugly patch for #189 (https://github.com/SuLab/mark2cure/issues/189)
-    # Intended to mirror behavior at mark2cure/task/relation/serializers.pyL55
-    cdr_query = ConceptDocumentRelationship.objects.filter(document=document)
-    for x in c.fetchall():
-        cdr1 = cdr_query.filter(concept_text__concept_id=x[3]).first()
-        cdr2 = cdr_query.filter(concept_text__concept_id=x[4]).first()
-        rel_tasks.append((x[0], x[1], x[2], x[3], x[4], cdr1.concept_text.text, cdr2.concept_text.text))
+        'concept_2_id': x[5],
+        'concept_2_text': x[6],
 
-    cmd_str = ""
-    with open('mark2cure/task/relation/commands/get-relations-annotations-for-document.sql', 'r') as f:
-        cmd_str = f.read()
-    cmd_str = cmd_str.format(document_id=document.pk)
-
-    c.execute(cmd_str)
-
-    rel_submissions = []
-    for x in c.fetchall():
-        rel_submissions.append(x)
+        'answer': x[7],
+        'user_id': x[8],
+        'self': x[9],
+    } for x in c.fetchall()]
 
     # Close the connection
     c.close()
 
     from collections import defaultdict
     groups = defaultdict(list)
-    for obj in rel_submissions:
-        groups[obj[2]].append(obj)
+    for obj in queryset:
+        groups[obj.get('id')].append(obj)
+    new_list = groups.values()
 
-    serializer = RelationAnalysisSerializer(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
+    print new_list
+
+    serializer = RelationAnalysisSerializer(new_list, many=True, context={'user': request.user})
     return Response(serializer.data)
 
