@@ -2,27 +2,47 @@ SELECT  `document_relationships`.`document_pk`,
         `document_relationships`.`pmid`,
         `document_relationships`.`title`,
 
-    COUNT(DISTINCT `document_relationships`.`relation_id`) as `document_relationships`,
-    SUM(`document_relationships`.`community_completed`)/COUNT(DISTINCT `document_relationships`.`relation_id`) as `community_progress`,
+        COUNT(DISTINCT `document_relationships`.`relation_id`) as `total_document_relationships`,
 
-    /* (TODO) The Community and User Completed boolean
-        can't be based off if their relationship submissions
-        is equal to that in the docuemnt, but should be based
-        of a static number.
+        /*  This might have < 0.0 but I don't think we use it anywhere (they get filtered out with
+            the user_completed boolean) and I don't honestly want to put this whole thing in an
+            IF over limit statement */
+        IF( COUNT(DISTINCT `document_relationships`.`relation_id`) > {rel_work_size},
+          /* If there were more than 20 relationships, the user remaining is on those 20 */
+          {rel_work_size} - SUM(`document_relationships`.`user_completed`),
 
-        This supports the feature to prevent having to limit
-        documents b/c there are too many relationship
-        comparisons within it */
+          /* If there were 20 or less relationships, the user remaining is on them all */
+          COUNT(DISTINCT `document_relationships`.`relation_id`) - SUM(`document_relationships`.`user_completed`)
+        ) as `user_document_relationships`,
 
-    /*  Yes it's redundant with the progress but the
-        boolean is nice to use */
-    IF(
-      SUM(`document_relationships`.`community_completed`) = COUNT(DISTINCT `document_relationships`.`relation_id`)
-    , TRUE, FALSE) as `community_completed`,
+        /* Community scope */
+        IF(
+          SUM(`document_relationships`.`relation_unique_submissions`) = COUNT(DISTINCT `document_relationships`.`relation_id`)*{completions}
+        , TRUE, FALSE) as `community_completed`,
+        /*  This is protected from >1 b/c of the K limit per unique
+            contributer limit we in the subquery */
+        SUM(`document_relationships`.`relation_unique_submissions`)/(COUNT(DISTINCT `document_relationships`.`relation_id`)*{completions}) as `community_progress`,
 
-    IF(
-      SUM(`document_relationships`.`user_completed`) = COUNT(DISTINCT `document_relationships`.`relation_id`)
-    , TRUE, FALSE) as `user_completed`
+        /* User specific scope */
+        IF( COUNT(DISTINCT `document_relationships`.`relation_id`) > {rel_work_size},
+          /* If there were more than 20 relationships, the user only had to do 20 */
+          IF(SUM(`document_relationships`.`user_completed`) >= {rel_work_size}, TRUE, FALSE),
+
+          /* If there were 20 or less relationships, the user only had to do them all */
+          IF(SUM(`document_relationships`.`user_completed`) = COUNT(DISTINCT `document_relationships`.`relation_id`), TRUE, FALSE)
+        ) as `user_completed`,
+
+        /*  This might have > 1.0 but I don't think we use it anywhere and
+            I don't honestly want to put this whole thing in an IF over limit statement */
+        IF( COUNT(DISTINCT `document_relationships`.`relation_id`) > {rel_work_size},
+          /* If there were more than 20 relationships, the user progress is on those 20 */
+          SUM(`document_relationships`.`user_completed`)/{rel_work_size},
+
+          /* If there were 20 or less relationships, the user progress is on them all */
+          SUM(`document_relationships`.`user_completed`)/COUNT(DISTINCT `document_relationships`.`relation_id`)
+        ) as `user_progress`,
+
+        SUM(`document_relationships`.`user_completed`) as `user_answered`
 
 FROM (
   SELECT  `relationship_document`.`id` as `document_pk`,
@@ -35,13 +55,11 @@ FROM (
           # MIN(`document_annotation`.`created`) as `first_annotation`,
           # MAX(`document_annotation`.`created`) as `last_annotation`,
 
-      /*  If the relationship has been answered enough
-          times by a minimum number of unique users */
-      IF(
-        /*  Ensure we count the unique number of users who
-            have completed the relationship */
-        COUNT(DISTINCT `document_view`.`user_id`) >= {completions}
-          , TRUE, FALSE) as `community_completed`,
+      /*  Counting the unique submissions on a relationship level */
+      CASE
+          WHEN COUNT(DISTINCT `document_view`.`user_id`) > {completions} THEN {completions}
+          ELSE COUNT(DISTINCT `document_view`.`user_id`)
+      END as `relation_unique_submissions`,
 
       /*  If the provided users of interest has provided
           an answer for the specific relationship */
@@ -97,6 +115,6 @@ GROUP BY `document_relationships`.`document_pk`
 HAVING `community_completed` = FALSE AND NOT `user_completed` = TRUE
 
 ORDER BY  `community_progress` DESC,
-          `document_relationships` DESC
+          `user_document_relationships` DESC
 
 LIMIT 25

@@ -149,7 +149,10 @@ def relation_list(request):
     cmd_str = ""
     with open('mark2cure/api/commands/get-relations.sql', 'r') as f:
         cmd_str = f.read()
-    cmd_str = cmd_str.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
+    cmd_str = cmd_str.format(
+        user_id=request.user.pk,
+        completions=settings.ENTITY_RECOGNITION_K,
+        rel_work_size=20)
 
     # Start the DB Connection
     c = connection.cursor()
@@ -158,8 +161,16 @@ def relation_list(request):
     queryset = [{'id': x[0],
                  'document_id': x[1],
                  'title': x[2],
-                 'relationships': x[3],
-                 'progress': x[4]} for x in c.fetchall()]
+
+                 'total_document_relationships': x[3],
+                 'user_document_relationships': x[4],
+
+                 'community_completed': x[5],
+                 'community_progress': x[6],
+
+                 'user_completed': x[7],
+                 'user_progress': x[8],
+                 'user_answered': x[9]} for x in c.fetchall()]
 
     # Close the connection
     c.close()

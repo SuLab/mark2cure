@@ -1,7 +1,5 @@
-from django.conf import settings
-
 from ..userprofile.models import Team
-from ..common.models import Document, Group
+from ..common.models import Group
 from ..task.models import Level, Task
 
 from rest_framework import serializers
@@ -101,6 +99,14 @@ class DocumentRelationSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     document_id = serializers.IntegerField()
     title = serializers.CharField()
-    relationships = serializers.IntegerField()
-    progress = serializers.FloatField()
+
+    total_document_relationships = serializers.IntegerField()
+    user_document_relationships = serializers.IntegerField()
+
+    community_completed = serializers.BooleanField()
+    community_progress = serializers.FloatField()
+
+    user_completed = serializers.BooleanField()
+    user_progress = serializers.FloatField()
+    user_answered = serializers.IntegerField()
 

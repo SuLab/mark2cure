@@ -188,12 +188,12 @@ block post-footer
     <script type="text/template" id="relation-list-item-template">
     <div class="relation-item">
 
-    <p class="steps pull-right"><%= relationships %> steps</p>
+    <p class="steps pull-right"><%= user_document_relationships %> steps</p>
     <p class="main-text"><%= title %></p>
 
-    <progress value='<%- progress*100 %>' max='100' class='progress'>
+    <progress value='<%- community_progress*100 %>' max='100' class='progress'>
     <div class='progress'>
-    <span style='width: <%- progress*100 %>%;' class='progress-bar'>
+    <span style='width: <%- community_progress*100 %>%;' class='progress-bar'>
     </span>
     </div>
     </progress>
