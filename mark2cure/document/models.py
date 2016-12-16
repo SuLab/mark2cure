@@ -289,7 +289,8 @@ class View(models.Model):
         app_label = 'document'
 
     def __unicode__(self):
-        return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
+        return u'{pk}, Document #{doc_id}, Section #{sec_id} by {username}'.format(
+            pk=self.pk,
             doc_id=self.section.document.pk,
             sec_id=self.section.pk,
             username=self.user.username)

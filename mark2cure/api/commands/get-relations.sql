@@ -42,7 +42,32 @@ SELECT  `document_relationships`.`document_pk`,
           SUM(`document_relationships`.`user_completed`)/COUNT(DISTINCT `document_relationships`.`relation_id`)
         ) as `user_progress`,
 
-        SUM(`document_relationships`.`user_completed`) as `user_answered`
+        SUM(`document_relationships`.`user_completed`) as `user_answered`,
+        COALESCE((
+          /*  Filtering out uncompleted relationship work
+              that was flagged as being a completed view because
+              the logic (prevous + existing) can be messy and
+              we NEVER want a user to be rewarded a "Relationship
+              Document Quest" bonus more than once
+
+              I coalesce on a subquery with the `document_view`.`completed`
+              b/c it's cleaner to me than joining and filtering views that
+              may not exists (NULL) and uncompleted views */
+            SELECT `document_view`.`completed`
+            FROM `document_view`
+            INNER JOIN `document_section`
+                ON `document_section`.`id` = `document_view`.`section_id`
+            WHERE `document_section`.`document_id` = `document_relationships`.`document_pk`
+                AND `document_view`.`task_type` = 'ri'
+                AND `document_view`.`user_id` = {user_id}
+                AND `document_view`.`completed` = True
+
+            /*  There may be multiple Views, order first
+                by the completed ones so the LIMIT section
+                is on that */
+            ORDER BY `document_view`.`completed` DESC
+            LIMIT 1
+        ), FALSE) as `user_view_completed`
 
 FROM (
   SELECT  `relationship_document`.`id` as `document_pk`,
@@ -51,25 +76,21 @@ FROM (
 
           `relation_relation`.`id` as `relation_id`,
 
-          # (TODO) What happends when there are no annotations?
-          # MIN(`document_annotation`.`created`) as `first_annotation`,
-          # MAX(`document_annotation`.`created`) as `last_annotation`,
+          /*  Counting the unique submissions on a relationship level */
+          CASE
+              WHEN COUNT(DISTINCT `document_view`.`user_id`) > {completions} THEN {completions}
+              ELSE COUNT(DISTINCT `document_view`.`user_id`)
+          END as `relation_unique_submissions`,
 
-      /*  Counting the unique submissions on a relationship level */
-      CASE
-          WHEN COUNT(DISTINCT `document_view`.`user_id`) > {completions} THEN {completions}
-          ELSE COUNT(DISTINCT `document_view`.`user_id`)
-      END as `relation_unique_submissions`,
-
-      /*  If the provided users of interest has provided
-          an answer for the specific relationship */
+          /*  If the provided users of interest has provided
+              an answer for the specific relationship */
           IF(
             SUM(`document_view`.`user_id` = {user_id})
           , TRUE, FALSE) as `user_completed`
 
   FROM (
-    /* Return back the PK, PMID and Title for all Documents
-       that are in active RelationGroups */
+      /*  Return back the PK, PMID and Title for all Documents
+          that are in active RelationGroups */
       SELECT  `document_document`.`id` as `id`,
               `document_document`.`document_id`,
               `document_document`.`title` as `title`
@@ -101,18 +122,23 @@ FROM (
       ON (`document_annotation`.`object_id` = `relation_relationannotation`.`id`
         AND `document_annotation`.`content_type_id` = 56)
 
-  /*  We're only joining Views to get back the User ID,
-      We don't care about the "completed" boolean b/c
-      the Relation tasks are not all or none */
+  /*  We're only joining Views to get back the User ID.
+      We're preventing a user from doing the same document
+      multiple times regardless of the release of new
+      relationships by filtering previously Viewed and
+      "completed" sets. */
   INNER JOIN `document_view`
       ON `document_view`.`id` = `document_annotation`.`view_id`
+          AND `document_view`.`completed` = False
 
   GROUP BY `relation_id`
 ) as `document_relationships`
 
 GROUP BY `document_relationships`.`document_pk`
 
-HAVING `community_completed` = FALSE AND NOT `user_completed` = TRUE
+HAVING `community_completed` = FALSE
+    AND NOT `user_completed` = TRUE
+    AND NOT `user_view_completed` = TRUE
 
 ORDER BY  `community_progress` DESC,
           `user_document_relationships` DESC
