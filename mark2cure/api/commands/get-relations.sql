@@ -126,7 +126,12 @@ FROM (
       We're preventing a user from doing the same document
       multiple times regardless of the release of new
       relationships by filtering previously Viewed and
-      "completed" sets. */
+      "completed" sets.
+
+      (TODO) This scopes EVERYTHING to documents with any document_anns / views
+      in the past, it must not be limited to that!
+
+       */
   INNER JOIN `document_view`
       ON `document_view`.`id` = `document_annotation`.`view_id`
           AND `document_view`.`completed` = False
