@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^(?P<document_pk>\d+)/api/$',
         views.fetch_document_relations, name='fetch-document-relations'),
 
+    url(r'^(?P<document_pk>\d+)/analysis/(?P<relation_pk>\d+)/$',
+        views.document_analysis, name='document-analysis-specific'),
     url(r'^(?P<document_pk>\d+)/analysis/$',
         views.document_analysis, name='document-analysis'),
 

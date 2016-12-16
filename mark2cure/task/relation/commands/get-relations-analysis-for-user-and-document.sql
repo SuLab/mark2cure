@@ -73,6 +73,7 @@ WHERE `relation_relation`.`document_id` = {document_id}
       WHERE `relation_relation`.`document_id` = {document_id}
           AND `document_view`.`user_id` = {user_id}
     )
+    {relation_logic}
 
 ORDER BY  `relation_id` ASC,
           `answer` ASC,

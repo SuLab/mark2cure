@@ -180,7 +180,7 @@ def fetch_document_relations(request, document_pk):
 
 @login_required
 @api_view(['GET'])
-def document_analysis(request, document_pk):
+def document_analysis(request, document_pk, relation_pk=None):
     """ API for returning analysis details for Document
         Relation task completions
 
@@ -188,10 +188,20 @@ def document_analysis(request, document_pk):
     """
     document = get_object_or_404(Document, pk=document_pk)
 
+    relation_logic = ''
+    # If a relation was specified, only show results for that
+    if relation_pk:
+        relation = get_object_or_404(Relation, pk=relation_pk)
+        relation_logic = 'AND `relation_relation`.`id` = {0}'.format(relation.pk)
+
     cmd_str = ""
     with open('mark2cure/task/relation/commands/get-relations-analysis-for-user-and-document.sql', 'r') as f:
         cmd_str = f.read()
-    cmd_str = cmd_str.format(document_id=document.pk, user_id=request.user.pk)
+    cmd_str = cmd_str.format(
+        document_id=document.pk,
+        user_id=request.user.pk,
+        relation_logic=relation_logic
+    )
 
     # Start the DB Connection
     c = connection.cursor()
@@ -207,7 +217,7 @@ def document_analysis(request, document_pk):
         'concept_2_id': x[5],
         'concept_2_text': x[6],
 
-        'answer': x[7],
+        'answer_hash': x[7],
         'user_id': x[8],
         'self': x[9],
     } for x in c.fetchall()]
@@ -219,10 +229,13 @@ def document_analysis(request, document_pk):
     groups = defaultdict(list)
     for obj in queryset:
         groups[obj.get('id')].append(obj)
-    new_list = groups.values()
 
-    print new_list
+    queryset = []
+    for x in groups.iterkeys():
+        item = groups[x][0]
+        item['answers'] = groups[x]
+        queryset.append(item)
 
-    serializer = RelationAnalysisSerializer(new_list, many=True, context={'user': request.user})
+    serializer = RelationAnalysisSerializer(queryset, many=True)
     return Response(serializer.data)
 
