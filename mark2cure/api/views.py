@@ -149,13 +149,14 @@ def relation_list(request):
     cmd_str = ""
     with open('mark2cure/api/commands/get-relations.sql', 'r') as f:
         cmd_str = f.read()
-    cmd_str = cmd_str.format(
-        user_id=request.user.pk,
-        completions=settings.ENTITY_RECOGNITION_K,
-        rel_work_size=20)
 
     # Start the DB Connection
     c = connection.cursor()
+
+    c.execute('SET @user_work_max = {rel_work_size};'.format(rel_work_size=20))
+    c.execute('SET @k_max = {completions};'.format(completions=settings.ENTITY_RECOGNITION_K))
+    c.execute('SET @user_id = {user_id};'.format(user_id=request.user.pk))
+    c.execute('SET @rel_ann_content_type_id = 56;')
     c.execute(cmd_str)
 
     queryset = [{'id': x[0],
@@ -165,12 +166,14 @@ def relation_list(request):
                  'total_document_relationships': x[3],
                  'user_document_relationships': x[4],
 
-                 'community_completed': x[5],
-                 'community_progress': x[6],
+                 'community_answered': x[5],
+                 'community_completed': x[6],
+                 'community_progress': x[7],
 
-                 'user_completed': x[7],
-                 'user_progress': x[8],
-                 'user_answered': x[9]} for x in c.fetchall()]
+                 'user_completed': x[8],
+                 'user_progress': x[9],
+                 'user_answered': x[10],
+                 'user_view_completed': x[11]} for x in c.fetchall()]
 
     # Close the connection
     c.close()
