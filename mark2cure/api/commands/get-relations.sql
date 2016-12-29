@@ -1,73 +1,71 @@
 SELECT  ANY_VALUE(`combined_documents`.`document_pk`) as `document_pk`,
-        `combined_documents`.`pmid`,
-        ANY_VALUE(`combined_documents`.`title`) as `title`,
+        `document_document`.`document_id` as `document_id`,
+        `document_document`.`title` as `title`,
 
-        ANY_VALUE(`combined_documents`.`total_document_relationships`) as `total_document_relationships`,
-        ANY_VALUE(`combined_documents`.`user_document_relationships`) as `user_document_relationships`,
+        MAX(`combined_documents`.`total_document_relationships`) as `total_document_relationships`,
+        MAX(`combined_documents`.`user_document_relationships`) as `user_document_relationships`,
 
-        ANY_VALUE(`combined_documents`.`community_answered`) as `community_answered`,
-        ANY_VALUE(`combined_documents`.`community_completed`) as `community_completed`,
-        ANY_VALUE(`combined_documents`.`community_progress`) as `community_progress`,
+        MAX(`combined_documents`.`community_answered`) as `community_answered`,
+        MAX(`combined_documents`.`community_completed`) as `community_completed`,
+        MAX(`combined_documents`.`community_progress`) as `community_progress`,
 
-        ANY_VALUE(`combined_documents`.`user_completed`) as `user_completed`,
-        ANY_VALUE(`combined_documents`.`user_progress`) as `user_progress`,
-        ANY_VALUE(`combined_documents`.`user_answered`) as `user_answered`,
-        ANY_VALUE(`combined_documents`.`user_view_completed`) as `user_view_completed`
+        MAX(`combined_documents`.`user_completed`) as `user_completed`,
+        MAX(`combined_documents`.`user_progress`) as `user_progress`,
+        MAX(`combined_documents`.`user_answered`) as `user_answered`,
+        MAX(`combined_documents`.`user_view_completed`) as `user_view_completed`
 
 FROM (
 
-  SELECT  `document_relationships`.`document_pk`,
-          `document_relationships`.`pmid`,
-          `document_relationships`.`title`,
+  /* This 1st table response are all RelationGroup documents that have at
+     least 1 relationship annotation (exclusive JOINs on these) */
+  SELECT  `document_relationships`.`document_pk` as `document_pk`,
 
-          /* Note: COUNT(DISTINCT `document_relationships`.`relation_id`)
-            Doesn't work as it's the total unique relationsihps that have preexisting relationship anntoations
-          */
-          (   SELECT COUNT(*)
+          @total_document_relationships:=(
+            SELECT COUNT(`relation_relation`.`id`)
             FROM `relation_relation`
             WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`
-          ) as`total_document_relationships`,
+          ) as `total_document_relationships`,
 
           /*  This might have < 0.0 but I don't think we use it anywhere (they get filtered out with
               the user_completed boolean) and I don't honestly want to put this whole thing in an
               IF over limit statement */
-          IF( (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`) > @user_work_max,
+          IF( @total_document_relationships > @user_work_max,
             /* If there were more than 20 relationships, the user remaining is on those 20 */
-            @user_work_max - SUM(`document_relationships`.`user_completed`),
+            @user_work_max - @total_user_completed:=SUM(`document_relationships`.`user_contributed`),
 
             /* If there were 20 or less relationships, the user remaining is on them all */
-            (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`) - SUM(`document_relationships`.`user_completed`)
+            @total_document_relationships - @total_user_completed
           ) as `user_document_relationships`,
 
           /* Community scope */
-          SUM(`document_relationships`.`relation_unique_submissions`) as `community_answered`,
+          SUM(`document_relationships`.`relation_unique_contributors`) as `community_answered`,
           IF(
-            SUM(`document_relationships`.`relation_unique_submissions`) = (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`)*@k_max
+            SUM(`document_relationships`.`relation_unique_contributors`) = @total_document_relationships*@k_max
           , TRUE, FALSE) as `community_completed`,
           /*  This is protected from >1 b/c of the K limit per unique
               contributer limit we in the subquery */
-          SUM(`document_relationships`.`relation_unique_submissions`)/((SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`)*@k_max) as `community_progress`,
+          SUM(`document_relationships`.`relation_unique_contributors`)/(@total_document_relationships*@k_max) as `community_progress`,
 
           /* User specific scope */
-          IF( (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`) > @user_work_max,
+          IF( @total_document_relationships > @user_work_max,
             /* If there were more than 20 relationships, the user only had to do 20 */
-            IF(SUM(`document_relationships`.`user_completed`) >= @user_work_max, TRUE, FALSE),
+            IF(@total_user_completed >= @user_work_max, TRUE, FALSE),
 
             /* If there were 20 or less relationships, the user only had to do them all */
-            IF(SUM(`document_relationships`.`user_completed`) = (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`), TRUE, FALSE)
+            IF(@total_user_completed = @total_document_relationships, TRUE, FALSE)
           ) as `user_completed`,
 
           /*  This might have > 1.0 but I don't think we use it anywhere and
               I don't honestly want to put this whole thing in an IF over limit statement */
-          IF( (SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`) > @user_work_max,
+          IF( @total_document_relationships > @user_work_max,
             /* If there were more than 20 relationships, the user progress is on those 20 */
-            SUM(`document_relationships`.`user_completed`)/@user_work_max,
+            @total_user_completed/@user_work_max,
 
             /* If there were 20 or less relationships, the user progress is on them all */
-            SUM(`document_relationships`.`user_completed`)/(SELECT COUNT(*) FROM `relation_relation` WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`)
+            @total_user_completed/@total_document_relationships
           ) as `user_progress`,
 
-          SUM(`document_relationships`.`user_completed`) as `user_answered`,
+          @total_user_completed as `user_answered`,
           COALESCE((
             /*  Filtering out uncompleted relationship work
                 that was flagged as being a completed view because
@@ -95,51 +93,31 @@ FROM (
           ), FALSE) as `user_view_completed`
 
   FROM (
+    /* (Step 1) Select all Documents with any RelationAnnotation instances
+       associated with them. Group by Relations so we get aggregated
+       user information for specific comparisons. Results have duplicated
+       Document PKs as we will add up the child relationships in Step 2
+    */
 
-    SELECT  `relationship_document`.`id` as `document_pk`,
-            `relationship_document`.`document_id` as `pmid`,
-            `relationship_document`.`title` as `title`,
-
+    SELECT  `document_document`.`id` as `document_pk`,
             `relation_relation`.`id` as `relation_id`,
 
-            /*  Counting the unique submissions on a relationship level */
+            /*  Counting the unique users included on a relationship level */
             CASE
                 WHEN COUNT(DISTINCT `document_view`.`user_id`) > @k_max THEN @k_max
                 ELSE COUNT(DISTINCT `document_view`.`user_id`)
-            END as `relation_unique_submissions`,
+            END as `relation_unique_contributors`,
 
             /*  If the provided users of interest has provided
                 an answer for the specific relationship */
             IF(
               SUM(`document_view`.`user_id` = @user_id)
-            , TRUE, FALSE) as `user_completed`
+            , TRUE, FALSE) as `user_contributed`
 
-    FROM (
-        /*  Return back the PK, PMID and Title for all Documents
-            that are in active RelationGroups */
-        SELECT  `document_document`.`id` as `id`,
-                `document_document`.`document_id`,
-                `document_document`.`title` as `title`
+    FROM `document_document`
 
-        FROM `document_document`
-
-        INNER JOIN `relation_relationgroup_documents`
-            ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
-
-        INNER JOIN `relation_relationgroup` as `group`
-            ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
-
-        WHERE `group`.`enabled` = 1
-
-    ) as `relationship_document`
-
-    /*  This INNER join is somewhat redundant as enforces only
-        Documents with known potential relationships to show up.
-        However, I'm still keeping the subquery as I think there is value
-        to selectively fetch documents from a RelationGroup that have
-        it's own respective controls (eg. Enabled) */
     INNER JOIN `relation_relation`
-        ON `relation_relation`.`document_id` = `relationship_document`.`id`
+        ON `relation_relation`.`document_id` = `document_document`.`id`
 
     INNER JOIN `relation_relationannotation`
         ON `relation_relationannotation`.`relation_id` = `relation_relation`.`id`
@@ -152,59 +130,63 @@ FROM (
         ON `document_view`.`id` = `document_annotation`.`view_id`
 
     GROUP BY `relation_id`
-
   ) as `document_relationships`
 
   GROUP BY `document_relationships`.`document_pk`
 
   UNION ALL
 
-  SELECT  `document_relationships`.`id` as `document_pk`,
-          `document_relationships`.`document_id` as `pmid`,
-          `document_relationships`.`title` as `title`,
-          (
-            SELECT COUNT(*)
+  /* This 2nd Table is all of the RelationGroup documents with blank data
+     records with actual annotation data will be overwritten by the first
+     table in the union, but allows virgin documents to be included */
+  SELECT  `relationship_document`.`id` as `document_pk`,
+          @total_available_relations:=(
+            SELECT COUNT(`relation_relation`.`id`)
             FROM `relation_relation`
-            WHERE `relation_relation`.`document_id` = `document_relationships`.`id`
+            WHERE `relation_relation`.`document_id` = `relationship_document`.`id`
           )  as `total_document_relationships`,
-          (
-            /* (TODO) Think about this field. Duplicate subquery + is it really needed? */
-            SELECT COUNT(*)
-            FROM `relation_relation`
-            WHERE `relation_relation`.`document_id` = `document_relationships`.`id`
-          )   as `user_document_relationships`,
+
+          IF( @total_available_relations > @user_work_max,
+            /* If there were more than 20 relationships, the user remaining is on those 20 */
+            @user_work_max,
+            /* If there were 20 or less relationships, the user remaining is on them all */
+            @total_available_relations
+          ) as `user_document_relationships`,
+
           0 as `community_answered`,
           0 as `community_completed`,
-          0.0 as `community_progress`,
+          0 as `community_progress`,
 
           0 as `user_completed`,
-        0.0 as `user_progress`,
+          0 as `user_progress`,
           0 as `user_answered`,
           0 as `user_view_completed`
 
   FROM (
         /*  Return back the PK, PMID and Title for all Documents
             that are in active RelationGroups */
-        SELECT  `document_document`.`id` as `id`,
-                `document_document`.`document_id`,
-                `document_document`.`title` as `title`
+        SELECT  `document_document`.`id`
 
         FROM `document_document`
 
         INNER JOIN `relation_relationgroup_documents`
             ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
 
-        INNER JOIN `relation_relationgroup` as `group`
-            ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
+        INNER JOIN `relation_relationgroup`
+            ON `relation_relationgroup`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
 
-        WHERE `group`.`enabled` = 1
-
-  ) as `document_relationships`
+        WHERE `relation_relationgroup`.`enabled` = 1
+  ) as `relationship_document`
 
 ) as `combined_documents`
 
-/* (TODO) This doesn't explicitly state to take the first table from the union's results */
-GROUP BY `combined_documents`.`pmid`
+/* Required to get the PMID + Title at the very end */
+LEFT JOIN `document_document`
+  ON `document_document`.`id` = `combined_documents`.`document_pk`
+
+/* This doesn't explicitly state to take the first table from the union's results
+   but we're using MAX() to get the highest value */
+GROUP BY `combined_documents`.`document_pk`
 
 HAVING `community_completed` = FALSE
     AND NOT `user_completed` = TRUE
