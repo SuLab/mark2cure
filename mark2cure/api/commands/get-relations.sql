@@ -17,7 +17,11 @@ SELECT  ANY_VALUE(`combined_documents`.`document_pk`) as `document_pk`,
 FROM (
 
   /* This 1st table response are all RelationGroup documents that have at
-     least 1 relationship annotation (exclusive JOINs on these) */
+     least 1 relationship annotation (exclusive JOINs on these)
+
+     (Step 2) Group (document_pk, relation_id, relation_unique_contributors, user_contributed)
+     on document_pk so we can build full PMID understanding of community and user specific
+     progress */
   SELECT  `document_relationships`.`document_pk` as `document_pk`,
 
           @total_document_relationships:=(
@@ -26,12 +30,14 @@ FROM (
             WHERE `relation_relation`.`document_id` = `document_relationships`.`document_pk`
           ) as `total_document_relationships`,
 
+          @total_user_completed:=SUM(`document_relationships`.`user_contributed`) as `total_user_completed`,
+
           /*  This might have < 0.0 but I don't think we use it anywhere (they get filtered out with
               the user_completed boolean) and I don't honestly want to put this whole thing in an
               IF over limit statement */
           IF( @total_document_relationships > @user_work_max,
             /* If there were more than 20 relationships, the user remaining is on those 20 */
-            @user_work_max - @total_user_completed:=SUM(`document_relationships`.`user_contributed`),
+            @user_work_max - @total_user_completed,
 
             /* If there were 20 or less relationships, the user remaining is on them all */
             @total_document_relationships - @total_user_completed
