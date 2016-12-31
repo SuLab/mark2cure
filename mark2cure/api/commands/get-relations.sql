@@ -219,6 +219,7 @@ HAVING `community_completed` = FALSE
     AND NOT `user_completed` = TRUE
     AND NOT `user_view_completed` = TRUE
     AND NOT `total_document_relationships` = 0
+    AND NOT `total_document_relationships` >= 100
 
 ORDER BY  `community_progress` DESC,
           `user_document_relationships` DESC
