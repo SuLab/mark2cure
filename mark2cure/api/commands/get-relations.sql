@@ -3,7 +3,7 @@ SELECT  ANY_VALUE(`combined_documents`.`document_pk`) as `document_pk`,
         `document_document`.`title` as `title`,
 
         MAX(`combined_documents`.`total_document_relationships`) as `total_document_relationships`,
-        MAX(`combined_documents`.`user_document_relationships`) as `user_document_relationships`,
+        MIN(`combined_documents`.`user_document_relationships`) as `user_document_relationships`,
 
         MAX(`combined_documents`.`community_answered`) as `community_answered`,
         MAX(`combined_documents`.`community_completed`) as `community_completed`,
@@ -27,13 +27,17 @@ FROM (
 
           /*  This might have < 0.0 but I don't think we use it anywhere (they get filtered out with
               the user_completed boolean) and I don't honestly want to put this whole thing in an
-              IF over limit statement */
+              IF over limit statement
+
+              (TODO) Compare if the relationships the community has completed overlap with the relatoinships
+                     the user has completed
+          */
           IF( `computed_attempts`.`total_document_relationships` > @user_work_max,
             /* If there were more than 20 relationships, the user remaining is on those 20 */
-            @user_work_max - `computed_attempts`.`total_user_completed`,
+            (@user_work_max - `computed_attempts`.`relationships_community_completed`) - `computed_attempts`.`total_user_completed`,
 
             /* If there were 20 or less relationships, the user remaining is on them all */
-            `computed_attempts`.`total_document_relationships` - `computed_attempts`.`total_user_completed`
+            (`computed_attempts`.`total_document_relationships` - `computed_attempts`.`relationships_community_completed`) - `computed_attempts`.`total_user_completed`
           ) as `user_document_relationships`,
 
           /* Community scope */
@@ -79,6 +83,7 @@ FROM (
             SUM(`document_relationships`.`user_contributed`) as `total_user_completed`,
 
             /* Community scope */
+            SUM(`document_relationships`.`relationship_community_completed`) as `relationships_community_completed`,
             SUM(`document_relationships`.`relation_unique_contributors`) as `community_answered`,
 
             COALESCE((
@@ -122,6 +127,11 @@ FROM (
                   WHEN COUNT(DISTINCT `document_view`.`user_id`) > @k_max THEN @k_max
                   ELSE COUNT(DISTINCT `document_view`.`user_id`)
               END as `relation_unique_contributors`,
+
+              CASE
+                  WHEN COUNT(DISTINCT `document_view`.`user_id`) >= @k_max THEN TRUE
+                  ELSE FALSE
+              END as `relationship_community_completed`,
 
               /*  If the provided users of interest has provided
                   an answer for the specific relationship */
