@@ -36,6 +36,9 @@ def import_concepts():
             # (TODO) Do we need protection or not? I'm confused.
             df = clean_df(df, overlap_protection=False, allow_duplicates=False)
 
+            # We're only interested in Pubtator identifiers
+            df = df[df['user_id'] == -1]
+
             # Put these into the DB
             for index, row in df.iterrows():
                 # (TODO) Maybe make these bulk creates
