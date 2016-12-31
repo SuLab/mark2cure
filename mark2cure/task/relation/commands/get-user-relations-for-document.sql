@@ -14,7 +14,7 @@ SELECT  `relationship`.`relation_id`,
           FROM `relation_concepttext`
 
           INNER JOIN `relation_conceptdocumentrelationship`
-            ON `relation_conceptdocumentrelationship`.`document_id` = {document_id}
+            ON `relation_conceptdocumentrelationship`.`document_id` = @document_id
               AND `relation_conceptdocumentrelationship`.`concept_text_id` = `relation_concepttext`.`id`
 
           WHERE `relation_concepttext`.`concept_id` = `relationship`.`concept_1_id`
@@ -26,7 +26,7 @@ SELECT  `relationship`.`relation_id`,
           FROM `relation_concepttext`
 
           INNER JOIN `relation_conceptdocumentrelationship`
-            ON `relation_conceptdocumentrelationship`.`document_id` = {document_id}
+            ON `relation_conceptdocumentrelationship`.`document_id` = @document_id
               AND `relation_conceptdocumentrelationship`.`concept_text_id` = `relation_concepttext`.`id`
 
           WHERE `relation_concepttext`.`concept_id` = `relationship`.`concept_1_id`
@@ -41,7 +41,7 @@ SELECT  `relationship`.`relation_id`,
           FROM `relation_concepttext`
 
           INNER JOIN `relation_conceptdocumentrelationship`
-            ON `relation_conceptdocumentrelationship`.`document_id` = {document_id}
+            ON `relation_conceptdocumentrelationship`.`document_id` = @document_id
               AND `relation_conceptdocumentrelationship`.`concept_text_id` = `relation_concepttext`.`id`
 
           WHERE `relation_concepttext`.`concept_id` = `relationship`.`concept_2_id`
@@ -53,7 +53,7 @@ SELECT  `relationship`.`relation_id`,
           FROM `relation_concepttext`
 
           INNER JOIN `relation_conceptdocumentrelationship`
-            ON `relation_conceptdocumentrelationship`.`document_id` = {document_id}
+            ON `relation_conceptdocumentrelationship`.`document_id` = @document_id
               AND `relation_conceptdocumentrelationship`.`concept_text_id` = `relation_concepttext`.`id`
 
           WHERE `relation_concepttext`.`concept_id` = `relationship`.`concept_2_id`
@@ -69,28 +69,24 @@ FROM (
           `relation_relation`.`concept_1_id`,
           `relation_relation`.`concept_2_id`,
 
-          # (TODO) What happends when there are no annotations?
-          # MIN(`document_annotation`.`created`) as `first_annotation`,
-          # MAX(`document_annotation`.`created`) as `last_annotation`,
-
           /*  If the relationship has been answered enough
               times by a minimum number of unique users */
           IF(
             /*  Ensure we count the unique number of users who
                 have completed the relationship */
-            COUNT(DISTINCT `document_view`.`user_id`) >= {completions}
+            COUNT(DISTINCT `document_view`.`user_id`) >= @k_max
           , TRUE, FALSE) as `community_completed`,
 
           /*  If the provided users of interest has provided
               an answer for the specific relationship */
           IF(
-              SUM(`document_view`.`user_id` = {user_id})
+              SUM(`document_view`.`user_id` = @user_id)
           , TRUE, FALSE) as `user_completed`,
 
           ROUND(
             CASE
-              WHEN COUNT(DISTINCT `document_view`.`user_id`)/{completions} > 1 THEN 1
-              ELSE COUNT(DISTINCT `document_view`.`user_id`)/{completions}
+              WHEN COUNT(DISTINCT `document_view`.`user_id`)/@k_max > 1 THEN 1
+              ELSE COUNT(DISTINCT `document_view`.`user_id`)/@k_max
             END
           , 2) as `progress`
 
@@ -109,7 +105,7 @@ FROM (
   LEFT JOIN `document_view`
       ON `document_view`.`id` = `document_annotation`.`view_id`
 
-  WHERE `relation_relation`.`document_id` = {document_id}
+  WHERE `relation_relation`.`document_id` = @document_id
 
   GROUP BY `relation_id`
 

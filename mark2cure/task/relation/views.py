@@ -147,13 +147,21 @@ def fetch_document_relations(request, document_pk):
     cmd_str = ""
     with open('mark2cure/task/relation/commands/get-user-relations-for-document.sql', 'r') as f:
         cmd_str = f.read()
-    cmd_str = cmd_str.format(
-        document_id=document.pk,
-        user_id=request.user.pk,
-        completions=settings.ENTITY_RECOGNITION_K)
 
     # Start the DB Connection
     c = connection.cursor()
+
+    # SET @user_work_max = 20;
+    # SET @k_max = 15;
+    # SET @user_id = 2;
+    # SET @document_id = 1499;
+    # SET @rel_ann_content_type_id = 56;
+
+    c.execute('SET @user_work_max = {rel_work_size};'.format(rel_work_size=20))
+    c.execute('SET @k_max = {completions};'.format(completions=settings.ENTITY_RECOGNITION_K))
+    c.execute('SET @user_id = {user_id};'.format(user_id=request.user.pk))
+    c.execute('SET @document_id = {document_id};'.format(document_id=document.pk))
+    c.execute('SET @rel_ann_content_type_id = 56;')
     c.execute(cmd_str)
 
     queryset = [{'id': x[0],
