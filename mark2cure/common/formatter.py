@@ -1,4 +1,7 @@
+from raven.contrib.django.raven_compat.models import client
+
 from ..common.bioc import BioCWriter, BioCCollection, BioCAnnotation, BioCLocation, BioCRelation, BioCNode
+from mark2cure.common.bioc import BioCReader
 
 import xmltodict
 import itertools
@@ -57,6 +60,37 @@ def bioc_as_json(writer):
         return json.dumps(o)
 
 
+def validate_pubtator(content, document):
+    """ Returns bool if the provided str is a valid
+        pubtator (BioC) response for the Document instance
+    """
+    try:
+        r = BioCReader(source=content)
+        r.read()
+
+        # Check general Collection + Document attributes
+        assert (len(r.collection.documents) == 1), 'The response included more than the provided Document'
+        assert (document.document_id == int(r.collection.documents[0].id)), 'The response does not include the requested PMID'
+        assert (len(r.collection.documents[0].passages) == 2), 'The response document does not include the correct number of sections'
+
+        # Check the Title
+        assert (int(r.collection.documents[0].passages[0].offset) == 0), 'The title does not start at 0'
+        section = document.section_set.first()
+        assert (section.text == r.collection.documents[0].passages[0].text), 'The response title does not equal the provided text'
+        assert (section.id == int(r.collection.documents[0].passages[0].infons.get('id'))), 'The response title is not correctly identified'
+
+        # Check the Abstract
+        assert (int(r.collection.documents[0].passages[1].offset) >= 1), 'The abstract does not start after 0'
+        section = document.section_set.last()
+        assert (section.text == r.collection.documents[0].passages[1].text), 'The response abstract does not equal the provided text'
+        assert (section.id == int(r.collection.documents[0].passages[1].infons.get('id'))), 'The response abstract is not correctly identified'
+        return True
+
+    except Exception:
+        client.captureException()
+        return False
+
+
 # R & S are tuple of (start position, stop position)
 def are_separate(r, s):
     return r[1] < s[0] or s[1] < r[0]
@@ -105,25 +139,6 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     df = df[~df.uid.str.contains(",")]
     df = df[~df.uid.str.contains("\|")]
 
-    # Only keep rows that are in our known annotation type lists
-    df['ann_type'] = df['ann_type'].str.lower()
-    ann_types_arr = ['chemical', 'gene', 'disease']
-
-    from ..document.models import Document
-    ann_types_arr.extend(Document.APPROVED_TYPES)
-    # from relation.task importer
-    # df = df[df['ann_type'].isin(['Chemical', 'Gene', 'Disease'])]
-    df = df[df['ann_type'].isin(ann_types_arr)]
-    df['ann_type_id'] = 0
-
-    df.ix[df['ann_type'] == 'disease', 'ann_type_id'] = 0
-
-    df.ix[df['ann_type'] == 'gene', 'ann_type_id'] = 1
-    df.ix[df['ann_type'] == 'gene_protein', 'ann_type_id'] = 1  # M2C Enum Syntax
-
-    df.ix[df['ann_type'] == 'chemical', 'ann_type_id'] = 2
-    df.ix[df['ann_type'] == 'drug', 'ann_type_id'] = 2  # M2C Enum Syntax
-
     # We're previously DB Primary Keys
     df.reset_index(inplace=True)
 
@@ -146,7 +161,7 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
                     pass
 
     if not allow_duplicates:
-        df.drop_duplicates(['uid', 'ann_type_id', 'text'], inplace=True)
+        df.drop_duplicates(['uid', 'ann_type_idx', 'text'], inplace=True)
 
     return df
 
@@ -192,8 +207,8 @@ def apply_annotations(writer, er_df=None, rel_df=None):
                     annotation.put_infon('uid', row['uid'])
                     annotation.put_infon('source', row['source'])
                     annotation.put_infon('user_id', str(int(row['user_id'])))
-                    annotation.put_infon('type', row['ann_type'])
-                    annotation.put_infon('type_id', str(row['ann_type_id']))
+                    annotation.put_infon('type', ['disease', 'gene_protein', 'chemical'][row['ann_type_idx']])  # (TODO) Should be deprecated
+                    annotation.put_infon('type_id', str(row['ann_type_idx']))
 
                     location = BioCLocation()
                     location.offset = str(int(row['start_position']))
@@ -219,6 +234,7 @@ def apply_annotations(writer, er_df=None, rel_df=None):
                 r = BioCRelation()
                 r.put_infon('event-type', row['answer'])
                 r.put_infon('relation-type', row['relation_type'])
+                r.put_infon('user_id', str(int(row['user_id'])))
 
                 n = BioCNode(refid=row['concept_1_id'], role='')
                 r.add_node(n)

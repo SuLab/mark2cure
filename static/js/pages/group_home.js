@@ -1,15 +1,14 @@
 $('#group-network h4').click(function() {
+    if( $('#network-row').is(":visible")  ) {
+      $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
+    } else {
+      $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
+    };
 
-  if( $('#network-row').is(":visible")  ) {
-    $('#group-network h4 i').removeClass('fa-caret-up').addClass('fa-caret-down');
-  } else {
-    $('#group-network h4 i').removeClass('fa-caret-down').addClass('fa-caret-up');
-  };
-
-  $('#network-row').toggle(function() {
-    s.refresh();
-    s.refresh();
-  });
+    $('#network-row').toggle(function() {
+      s.refresh();
+      s.refresh();
+    });
 });
 
 
@@ -46,16 +45,26 @@ var s = new sigma({
 
 var filter = new sigma.plugins.filter(s);
 
-sigma.parsers.json('/api/network/'+ pk +'/', s, function() {
-  s.refresh();
+$.ajax({
+  'type': 'GET',
+  'url': '/api/network/'+ pk +'/',
+  'success': function(graph) {
+    s.graph.clear();
+    s.graph.read(graph);
 
-  maxDegree = 0;
-  s.graph.nodes().forEach(function(n) {
-    maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
-  });
-  $('#min-degree').attr('max', maxDegree/3)
+    s.refresh();
+    maxDegree = 0;
+    s.graph.nodes().forEach(function(n) {
+      maxDegree = Math.max(maxDegree, s.graph.degree(n.id));
+    });
+    $('#min-degree').attr('max', maxDegree/3)
 
+  },
+  'error': function(d) {
+    $('#group-network').html("<div class='row'><div class='col-xs-12'><h4 class='text-xs-center'>Network Unavailable <i class='fa fa-exclamation-triangle fa-1'></i></h4></div></div>");
+  }
 });
+
 s.refresh();
 s.bind('hoverNode clickNode', function(e) {
 //  console.log(e.type, e.data.node.label, e.data.captor);

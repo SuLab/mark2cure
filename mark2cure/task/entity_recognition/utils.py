@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
+from ...analysis.tasks import generate_reports
+from ...analysis.models import Report
 from ...document.models import View, Annotation
 from .models import EntityRecognitionAnnotation
 
@@ -58,22 +60,28 @@ def select_best_opponent(task, document, player):
         # No expert around so select a previous user at random
         previous_users_pks = [str(u.pk) for u in previous_users]
 
-        df = task.group.report_set.filter(report_type=1).order_by('-created').first().dataframe
-        df = df[df['user'].isin(previous_users_pks)]
+        report = task.group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').first()
+        if report:
+            df = report.dataframe
+            df = df[df['user_id'].isin(previous_users_pks)]
 
-        row_length = df.shape[0]
-        if row_length:
-            # Top 1/2 of the users (sorted by F)
-            df = df.iloc[:row_length / 2]
+            row_length = df.shape[0]
+            if row_length:
+                # Top 1/2 of the users (sorted by F)
+                df = df.iloc[:row_length / 2]
 
-            # Select 1 at random
-            top_half_user_pks = list(df.user)
-            random.shuffle(top_half_user_pks)
-            selected_user_pk = top_half_user_pks[0]
+                # Select 1 at random
+                top_half_user_pks = list(df.user)
+                random.shuffle(top_half_user_pks)
+                selected_user_pk = top_half_user_pks[0]
 
-            for u in previous_users:
-                if str(u.pk) == str(selected_user_pk):
-                    return u
+                for u in previous_users:
+                    if str(u.pk) == str(selected_user_pk):
+                        return u
+        else:
+            generate_reports.apply_async(
+                args=[task.group.pk],
+                queue='mark2cure_tasks')
 
     return None
 

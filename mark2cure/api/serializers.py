@@ -1,7 +1,5 @@
-from django.conf import settings
-
 from ..userprofile.models import Team
-from ..common.models import Document, Group
+from ..common.models import Group
 from ..task.models import Level, Task
 
 from rest_framework import serializers
@@ -96,19 +94,19 @@ class QuestSerializer(serializers.ModelSerializer):
                   'meta_url', 'user', 'progress')
 
 
-class DocumentRelationSerializer(serializers.ModelSerializer):
+class DocumentRelationSerializer(serializers.Serializer):
 
-    task_count = serializers.SerializerMethodField()
-    progress = serializers.SerializerMethodField('get_progress_status')
+    id = serializers.IntegerField()
+    document_id = serializers.IntegerField()
+    title = serializers.CharField()
 
-    def get_task_count(self, document):
-        return document.get('relation_units')
+    total_document_relationships = serializers.IntegerField()
+    user_document_relationships = serializers.IntegerField()
 
-    def get_progress_status(self, document):
-        return {'required': settings.ENTITY_RECOGNITION_K,
-                'current': document.get('completions')}
+    community_completed = serializers.BooleanField()
+    community_progress = serializers.FloatField()
 
-    class Meta:
-        model = Document
-        fields = ('id', 'document_id', 'title', 'task_count', 'progress')
+    user_completed = serializers.BooleanField()
+    user_progress = serializers.FloatField()
+    user_answered = serializers.IntegerField()
 

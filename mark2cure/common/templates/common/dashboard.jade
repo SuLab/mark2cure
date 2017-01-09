@@ -188,13 +188,12 @@ block post-footer
     <script type="text/template" id="relation-list-item-template">
     <div class="relation-item">
 
-    <p class="steps pull-right"><%= task_count %> steps</p>
+    <p class="steps pull-right"><%= user_document_relationships %> steps</p>
     <p class="main-text"><%= title %></p>
 
-    <progress value='<%- (progress.current/progress.required)*100 %>' max='100' class='progress'>
+    <progress value='<%- community_progress*100 %>' max='100' class='progress'>
     <div class='progress'>
-    <span style='width: <%- (progress.current/progress.required)*100 %>%;' class='progress-bar'>
-    <%- progress.current %> Completions
+    <span style='width: <%- community_progress*100 %>%;' class='progress-bar'>
     </span>
     </div>
     </progress>
@@ -205,14 +204,14 @@ block post-footer
 
     script(src='#{STATIC_URL}js/tasks/relation-list.js')
     script.
-      DocumentRelationBoard.addInitializer(function(options) {
-        DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
-        var docs = new DocumentList();
-        DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
-      });
-      DocumentRelationBoard.start();
-
-
+      if($('#document-relation-board').length) {
+        DocumentRelationBoard.addInitializer(function(options) {
+          DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
+          var docs = new DocumentList();
+          DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
+        });
+        DocumentRelationBoard.start();
+      }
 
 
   block post-footer-sidebar

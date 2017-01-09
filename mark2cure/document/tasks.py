@@ -4,7 +4,7 @@ from django.conf import settings
 
 from mark2cure.common.models import Group
 from mark2cure.document.models import Document, Pubtator, PubtatorRequest, Section
-from mark2cure.common.formatter import pad_split
+from mark2cure.common.formatter import pad_split, validate_pubtator
 
 from Bio import Entrez, Medline
 from ..common import celery_app as app
@@ -13,6 +13,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 import requests
 import logging
+import random
 import re
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,8 @@ def check_corpus_health(self):
             # Update any newly enforced padding rules
             # If the document doesn't pass the validator
             # delete all existing content and retry
-            if not document.valid_pubtator() or document.update_padding():
+            if document.update_padding():
+                document.pubtators.all().delete()
                 document.run_pubtator()
 
     if not self.request.called_directly:
@@ -100,13 +102,22 @@ def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True
           max_retries=0,
           acks_late=True, track_started=True,
           expires=180)
-def maintain_pubtator_requests(self):
-    """A routine job that continually checks for pending Pubtator Requests
-        and will resubmit Pubtators that haven't been updated in a "long time"
+def pubtator_maintenance(self):
+    """ A routine job (15 min) that continually handles the status of all
+        Pubtator related functions
     """
-    # Start any new or old Pubtator requests
-    for d in Document.objects.all():
-        d.run_pubtator()
+
+    # Ensure a all Documents have Pubtator entries
+    [d.run_pubtator() for d in Document.objects.all()]
+
+    # If we know we're up to date and not backlogged, update a few at random
+    if Document.objects.count() * 3 == Pubtator.objects.filter(content__isnull=False).count() and \
+       PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).count() < 100:
+        pubtator_pks = list(Pubtator.objects.values_list('pk', flat=True))
+        random.shuffle(pubtator_pks)
+        for p_pk in pubtator_pks[:10]:
+            pubtator = Pubtator.objects.get(pk=p_pk)
+            pubtator.submit()
 
     # Try to fetch all the pending pubtator requests
     for pubtator_request in PubtatorRequest.objects.filter(status=PubtatorRequest.UNFULLFILLED).all():
@@ -137,9 +148,7 @@ def submit_pubtator(self, pubtator_pk):
         raise e
 
     session_id = re.findall(r'\d{4}-\d{4}-\d{4}-\d{4}', res.content)[0]
-    PubtatorRequest.objects.get_or_create(
-        pubtator=pubtator,
-        session_id=session_id)
+    PubtatorRequest.objects.get_or_create(pubtator=pubtator, session_id=session_id)
 
     if not self.request.called_directly:
         return True
@@ -170,7 +179,7 @@ def check_pubtator(self, pubtator_request_pk):
     except:
         return False
 
-    if res.ok and res.status_code == 200:
+    if res.ok and res.status_code == 200 and res.text and validate_pubtator(res.text, pubtator.document):
         pubtator.content = res.text
         pubtator.save()
 
@@ -179,7 +188,13 @@ def check_pubtator(self, pubtator_request_pk):
         return True
 
     else:
-        if res.status_code == 501:
+        if res.status_code == 200:
+            # Failed Validation
+            pubtator_request.status = PubtatorRequest.FAILED
+            pubtator_request.save()
+            return False
+
+        elif res.status_code == 501:
             # '[Warning] : The Result is not ready.\n'
             pubtator_request.status = PubtatorRequest.UNFULLFILLED
             pubtator_request.save()

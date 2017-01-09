@@ -15,25 +15,60 @@ from rest_framework.response import Response
 from ...score.models import Point
 from ...document.models import Document, View, Annotation
 
-from .models import Relation, RelationAnnotation, ConceptDocumentRelationship
-from .serializers import RelationSerializer, RelationCereal
+from .models import Relation, RelationAnnotation
+from .serializers import DocumentRelationSerializer, RelationAnalysisSerializer
 
 
 @login_required
-def relation_task_home(request, document_pk):
-    """
-        Main page for users to find the relationship between two concepts.
-    """
-    document = get_object_or_404(Document, pk=document_pk)
+def relation_task(request, document_pk):
+        """Document base page for completing available Relations.
 
-    ctx = {
-        'document': document,
-    }
-    return TemplateResponse(request, 'relation/task.jade', ctx)
+            1) Fetches the Document Relations API to get available work for the document
+            2) Displays the Tree selection interface for comparing the 2 concepts
+                - Submits currents and shows next over AJAX
+            3) When relationships are completed, flag the associated View as completed
+                - This flag is not used to determine anything
+        """
+        document = get_object_or_404(Document, pk=document_pk)
+
+        if request.POST:
+            """API to trigger completion of the Document for the user to the extent we allow
+
+                We award them Points for completing the available Relationships
+                that are currently available to them. They may recieve this bonus
+                multiple times
+
+                (TODO) Block out a user from multiple completions of Document
+            """
+            first_section = document.section_set.first()
+            view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
+            view.completed = True
+            view.save()
+
+            view_content_type = ContentType.objects.get_for_model(view)
+
+            Point.objects.create(user=request.user,
+                                 amount=settings.RELATION_DOC_POINTS,
+                                 content_type=view_content_type,
+                                 object_id=view.id,
+                                 created=timezone.now())
+
+            return redirect('task-relation:task-complete', document_pk=document.pk)
+
+        # (TODO) Return if the user has already completed 20 Relations within this Document
+        ctx = {
+            'document': document,
+        }
+        return TemplateResponse(request, 'relation/task.jade', ctx)
 
 
 @login_required
 def relation_task_complete(request, document_pk):
+    """ Document conclusion page for thanking b/c the user exhausted the total number
+        of relation submissions we allow (20)
+
+        - Allows entrance to Talk Page or Return to Dashboard
+    """
     document = get_object_or_404(Document, pk=document_pk)
     first_section = document.section_set.first()
     view = get_object_or_404(View, task_type='ri', completed=True, section=first_section, user=request.user)
@@ -64,34 +99,11 @@ def relation_task_complete(request, document_pk):
 
 
 @login_required
-def submit_document_set(request, document_pk):
-    document = get_object_or_404(Document, pk=document_pk)
-
-    if request.method == 'POST':
-
-        first_section = document.section_set.first()
-        view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
-        view.completed = True
-        view.save()
-
-        view_content_type = ContentType.objects.get_for_model(view)
-
-        Point.objects.create(user=request.user,
-                             amount=settings.RELATION_DOC_POINTS,
-                             content_type=view_content_type,
-                             object_id=view.id,
-                             created=timezone.now())
-
-        return redirect('task-relation:task-complete', document_pk=document.pk)
-
-
-@login_required
 @require_http_methods(['POST'])
 def submit_annotation(request, document_pk, relation_pk):
-    '''
-        Submit the selected relation type as an Annotation that is associated
+    """ Submit the selected relation type as an Annotation that is associated
         to a View of the first Document Section (.first() if Task Type isn't Section Specific)
-    '''
+    """
     document = get_object_or_404(Document, pk=document_pk)
     relation = get_object_or_404(Relation, pk=relation_pk)
 
@@ -124,8 +136,7 @@ def submit_annotation(request, document_pk, relation_pk):
 @login_required
 @api_view(['GET'])
 def fetch_document_relations(request, document_pk):
-    """API that includes all the relationships within one document based on the
-    document's primary key.
+    """ API that includes all the Relations within for a Document for the user (TODO)
     """
     document = get_object_or_404(Document, pk=document_pk)
 
@@ -133,118 +144,106 @@ def fetch_document_relations(request, document_pk):
     for section in document.section_set.all():
         View.objects.get_or_create(task_type='ri', section=section, user=request.user)
 
-    queryset = Relation.objects.filter(document=document).extra(select={
-        "user_completed_count": """
-            SELECT COUNT(*) AS user_completed_count
-            FROM document_annotation
+    cmd_str = ""
+    with open('mark2cure/task/relation/commands/get-user-relations-for-document.sql', 'r') as f:
+        cmd_str = f.read()
 
-            INNER JOIN `document_view` ON ( document_annotation.view_id = document_view.id )
-            INNER JOIN `relation_relationannotation` ON ( document_annotation.object_id = relation_relationannotation.id )
+    # Start the DB Connection
+    c = connection.cursor()
 
-            WHERE (document_annotation.kind = 'r'
-                AND document_annotation.content_type_id = 56
-                AND document_view.user_id = %d
-                AND relation_relationannotation.relation_id = relation_relation.id)""" % (request.user.pk,)
-    })
+    # SET @user_work_max = 20;
+    # SET @k_max = 15;
+    # SET @user_id = 2;
+    # SET @document_id = 1499;
+    # SET @rel_ann_content_type_id = 56;
 
-    serializer = RelationSerializer(queryset, many=True, context={'user': request.user})
+    c.execute('SET @user_work_max = {rel_work_size};'.format(rel_work_size=20))
+    c.execute('SET @k_max = {completions};'.format(completions=settings.ENTITY_RECOGNITION_K))
+    c.execute('SET @user_id = {user_id};'.format(user_id=request.user.pk))
+    c.execute('SET @document_id = {document_id};'.format(document_id=document.pk))
+    c.execute('SET @rel_ann_content_type_id = 56;')
+    c.execute(cmd_str)
+
+    queryset = [{'id': x[0],
+                 'document_id': x[1],
+                 'relation_type': x[2],
+                 'progress': x[3],
+                 'community_completed': x[4],
+                 'user_completed': x[5],
+
+                 'concept_1_id': x[6],
+                 'concept_1_type': x[7],
+                 'concept_1_text': x[8],
+
+                 'concept_2_id': x[9],
+                 'concept_2_type': x[10],
+                 'concept_2_text': x[11]} for x in c.fetchall()]
+
+    # Close the connection
+    c.close()
+
+    serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
     return Response(serializer.data)
 
 
 @login_required
 @api_view(['GET'])
 def document_analysis(request, document_pk, relation_pk=None):
-    """
-        API for returning analysis details for Document
+    """ API for returning analysis details for Document
         Relation task completions
+
+        Scoped only towards relationships the user is aware of
     """
     document = get_object_or_404(Document, pk=document_pk)
 
-    relation = None
+    relation_logic = ''
     # If a relation was specified, only show results for that
     if relation_pk:
         relation = get_object_or_404(Relation, pk=relation_pk)
+        relation_logic = 'AND `relation_relation`.`id` = {0}'.format(relation.pk)
+
+    cmd_str = ""
+    with open('mark2cure/task/relation/commands/get-relations-analysis-for-user-and-document.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(
+        document_id=document.pk,
+        user_id=request.user.pk,
+        relation_logic=relation_logic
+    )
 
     # Start the DB Connection
     c = connection.cursor()
-
-    cmd_str = """
-        SELECT  `relation_relation`.`id` as `relationship_id`,
-                `relation_relation`.`document_id`,
-                `relation_relation`.`relation_type`,
-                `relation_relation`.`concept_1_id`,
-                `relation_relation`.`concept_2_id`,
-
-                # ANY_VALUE(`concept_relationship_1`.`stype`) as `concept_1_stype`,
-                ANY_VALUE(`concept_text_1`.`text`) as `concept_1_text`,
-
-                # ANY_VALUE(`concept_relationship_2`.`stype`) as `concept_2_stype`,
-                ANY_VALUE(`concept_text_2`.`text`) as `concept_2_text`
-
-        FROM `relation_relation`
-
-        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_1`
-            ON `concept_relationship_1`.`document_id` = `relation_relation`.`document_id`
-            INNER JOIN `relation_concepttext` as `concept_text_1`
-                    ON `concept_text_1`.`concept_id` = `relation_relation`.`concept_1_id`
-
-        INNER JOIN `relation_conceptdocumentrelationship` as `concept_relationship_2`
-            ON `concept_relationship_2`.`document_id` = `relation_relation`.`document_id`
-            INNER JOIN `relation_concepttext` as `concept_text_2`
-                    ON `concept_text_2`.`concept_id` = `relation_relation`.`concept_2_id`
-
-        WHERE `relation_relation`.`document_id` = {document_id} {relation_logic}
-        GROUP BY `relation_relation`.`id`
-    """.format(
-        document_id=document.pk,
-        relation_logic=' AND `relation_relation`.`id` = {0}'.format(relation.pk) if relation else '')
-
-    c.execute(cmd_str)
-    rel_tasks = []
-
-    # (TODO) Ugly patch for #189 (https://github.com/SuLab/mark2cure/issues/189)
-    # Intended to mirror behavior at mark2cure/task/relation/serializers.pyL55
-    cdr_query = ConceptDocumentRelationship.objects.filter(document=document)
-    for x in c.fetchall():
-        cdr1 = cdr_query.filter(concept_text__concept_id=x[3]).first()
-        cdr2 = cdr_query.filter(concept_text__concept_id=x[4]).first()
-        rel_tasks.append((x[0], x[1], x[2], x[3], x[4], cdr1.concept_text.text, cdr2.concept_text.text))
-
-    cmd_str = """
-        SELECT  `document_document`.`id` as `doc_pk`,
-                `document_document`.`document_id` as `pmid`,
-                `relation_relationannotation`.`relation_id` as `relationship_id`,
-                `relation_relationannotation`.`answer` as `relationship_answer`,
-                `document_annotation`.`created`,
-                `document_view`.`user_id`
-
-        FROM `relation_relationannotation`
-
-        INNER JOIN `document_annotation`
-            ON `document_annotation`.`object_id` = `relation_relationannotation`.`id` AND `document_annotation`.`kind` = 'r'
-
-            INNER JOIN `document_view`
-                ON `document_annotation`.`view_id` = `document_view`.`id`
-
-                INNER JOIN `document_section`
-                    ON `document_section`.`id` = `document_view`.`section_id`
-
-                INNER JOIN `document_document`
-                    ON `document_document`.`id` = `document_section`.`document_id`
-
-        WHERE `document_document`.`id` =  {document_id}
-    """.format(document_id=document.pk)
     c.execute(cmd_str)
 
-    rel_submissions = []
-    for x in c.fetchall():
-        rel_submissions.append(x)
+    queryset = [{
+        'id': x[0],
+        'document_id': x[1],
+        'kind': x[2],
+        'concept_1_id': x[3],
+        'concept_1_text': x[4],
+
+        'concept_2_id': x[5],
+        'concept_2_text': x[6],
+
+        'answer_hash': x[7],
+        'user_id': x[8],
+        'self': x[9],
+    } for x in c.fetchall()]
+
+    # Close the connection
+    c.close()
 
     from collections import defaultdict
     groups = defaultdict(list)
-    for obj in rel_submissions:
-        groups[obj[2]].append(obj)
+    for obj in queryset:
+        groups[obj.get('id')].append(obj)
 
-    serializer = RelationCereal(rel_tasks, many=True, context={'sub_dict': groups, 'user': request.user})
+    queryset = []
+    for x in groups.iterkeys():
+        item = groups[x][0]
+        item['answers'] = groups[x]
+        queryset.append(item)
+
+    serializer = RelationAnalysisSerializer(queryset, many=True)
     return Response(serializer.data)
 

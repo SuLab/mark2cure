@@ -34,7 +34,7 @@ def hashed_er_annotations_df(group_pk, compare_type=True):
     er_df = clean_df(org_er_df)
 
     if compare_type:
-        er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.ann_type.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
+        er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.ann_type_idx.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
     else:
         er_df['hash'] = er_df.document_pk.apply(str) + '_' + er_df.section_offset.apply(str) + '_' + er_df.length.apply(str)
     return er_df
@@ -240,8 +240,8 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
 
     # Santize the node colors
     # if these colors get changed, need to edit group_home.js
-    type_to_color = {'disease': '#d1f3ff', 'gene_protein': '#B1FFA8', 'drug': '#ffd1dc'}
-    df['color'] = df['ann_type'].map(type_to_color)
+    type_to_color = {0: '#d1f3ff', 1: '#B1FFA8', 2: '#ffd1dc'}
+    df['color'] = df['ann_type_idx'].map(type_to_color)
     df['nodes'] = df['clean_text'].map(nodes)
     colors = {}
     for node, g_df in df.groupby('nodes'):

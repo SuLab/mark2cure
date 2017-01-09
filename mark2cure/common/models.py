@@ -116,12 +116,17 @@ class Group(models.Model):
             return 0
 
     def pubtator_coverage(self):
-        queryset = self.get_documents().prefetch_related('pubtator_set')
-        completed = sum([3 for x in queryset if x.pubtator_set.filter(validate_cache=True).count() == 3])
-        if completed:
-            return (Decimal(completed) / Decimal(queryset.count() * 3)) * 100
-        else:
-            return 0
+        """Return back a float representing the amount of documents contained within the ER Group
+            have Pubtator annotations
+
+            (TODO) Totally rework this without validate_cache
+        """
+        # queryset = self.get_documents().prefetch_related('pubtator_set')
+        # completed = sum([3 for x in queryset if x.pubtator_set.filter(validate_cache=True).count() == 3])
+        # if completed:
+        #     return (Decimal(completed) / Decimal(queryset.count() * 3)) * 100
+        # else:
+        return 0
 
     def assign(self, documents, smallest_bin=5, largest_bin=5, completions=settings.ENTITY_RECOGNITION_K):
         # Insert the other Documents

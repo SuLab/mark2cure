@@ -157,7 +157,7 @@ def document_pubtator_actions(request, pk):
 
     if request.method == 'POST':
         print '> Reset doc pubtators'
-        doc.pubtator_set.all().delete()
+        doc.pubtators.all().delete()
         doc.run_pubtator()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

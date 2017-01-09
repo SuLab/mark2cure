@@ -5,14 +5,15 @@ from django.forms.models import model_to_dict
 
 class EntityRecognitionAnnotation(models.Model):
     # Only access through Document.Annotation.metadata.RelationAnnotation
-
-    # Disease, Gene, Protein, et cetera...
-    ANNOTATION_TYPE_CHOICE = (
-        'disease',
-        'gene_protein',
-        'drug',
+    DISEASE = 0
+    GENE = 1
+    TREATMENT = 2
+    TYPE_CHOICES = (
+        (DISEASE, 'Disease'),
+        (GENE, 'Gene'),
+        (TREATMENT, 'Treatment')
     )
-    type = models.CharField(max_length=40, blank=True, null=True, default='disease')
+    type_idx = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
 
     text = models.TextField(blank=True, null=True)
 
@@ -24,7 +25,7 @@ class EntityRecognitionAnnotation(models.Model):
     objects = EntityRecognitionAnnotationManager()
 
     def is_exact_match(self, comparing_annotation):
-        required_matching_keys = ['start', 'text', 'type']
+        required_matching_keys = ['start', 'text', 'type_idx']
         self_d = model_to_dict(self)
         compare_d = model_to_dict(comparing_annotation)
         return all([True if self_d[k] == compare_d[k] else False for k in required_matching_keys])

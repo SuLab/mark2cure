@@ -311,7 +311,7 @@ $('#submit_button').on('click', function(evt) {
         }
 
         /* Have them review the community's answers */
-        show_results(current_relationship.get('document'), current_relationship.get('id'));
+        show_results(current_relationship.get('document_id'), current_relationship.get('id'));
         update_score();
 
       },

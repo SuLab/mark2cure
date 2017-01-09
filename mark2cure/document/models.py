@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from nltk.tokenize import WhitespaceTokenizer
 from mark2cure.common.bioc import BioCReader
+from mark2cure.common.formatter import validate_pubtator
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -36,39 +37,41 @@ class Document(models.Model):
         return self.section_set.exclude(kind='o').count()
 
     def run_pubtator(self):
-        if self.available_sections().exists() and Pubtator.objects.filter(document=self).count() < 3:
-            for api_ann in ['tmChem', 'DNorm', 'GNormPlus']:
-                Pubtator.objects.get_or_create(document=self, kind=api_ann)
+        """ Ensure a Document has Pubtator entries
+            1) Create Pubtator entries
+            2) Start checking for responses if pending
+        """
+        kind_arr = ['tmChem', 'DNorm', 'GNormPlus']
 
-        for pubtator in self.pubtator_set.all():
-            last_request = pubtator.pubtatorrequest_set.filter(status__in=[PubtatorRequest.FULLFILLED, PubtatorRequest.FAILED]).order_by('-updated').first()
+        # If the Document has excess Pubtators, cleanup
+        if self.pubtators.count() > 3:
+            for kind in kind_arr:
+                if self.pubtators.filter(kind=kind).count() > 1:
+                    # Picks them off 1 run at a time (oldest first) until no duplicates remain
+                    self.pubtators.filter(kind=kind).first().delete()
 
-            # Should never be more than 1 spending request per Pubtator
+        # If the Document is missing any Pubtator "kinds", it should get them
+        for missing_kind in list(set(kind_arr) - set(self.pubtators.values_list('kind', flat=True))):
+            Pubtator.objects.get_or_create(document=self, kind=missing_kind)
+
+        for pubtator in self.pubtators.filter(content__isnull=True).all():
             try:
-                pending_request = pubtator.pubtatorrequest_set.get(status=PubtatorRequest.UNFULLFILLED)
+                pending_request = pubtator.requests.get(status=PubtatorRequest.UNFULLFILLED)
+
+                # If the current request is never going to finish, flag it and start over
+                if pending_request and (timezone.now() - pending_request.updated).days >= 1:
+                    pending_request.status = PubtatorRequest.EXPIRED
+                    pending_request.save()
+                    pubtator.submit()
+
             except PubtatorRequest.DoesNotExist:
-                pending_request = False
+                # Start the PubtatorRequest for the first time
+                pubtator.submit()
+
             except PubtatorRequest.MultipleObjectsReturned:
-                # Why where there multiple open at once? Just delete them all and start fresh
-                pubtator.pubtatorrequest_set.filter(status=PubtatorRequest.UNFULLFILLED).all().delete()
-                pending_request = False
-
-            # If we successfully retrieved in the past, but it's old now
-            if last_request and (timezone.now() - last_request.updated).days >= 60 and not pending_request:
-                pubtator.submit
-                return
-
-            # If the current request is never going to finish, flag it and start over
-            if pending_request and (timezone.now() - pending_request.updated).days >= 1:
-                pending_request.status = PubtatorRequest.EXPIRED
-                pending_request.save()
-
+                # If multiple arise, delete all and restart the PubtatorRequest attempts
+                pubtator.requests.filter(status=PubtatorRequest.UNFULLFILLED).all().delete()
                 pubtator.submit()
-                return
-
-            if not last_request and not pending_request:
-                pubtator.submit()
-                return
 
     def update_padding(self):
         from mark2cure.common.formatter import pad_split
@@ -87,53 +90,21 @@ class Document(models.Model):
         return changed
 
     def valid_pubtator(self):
-        # Quick check using cache
-        if Pubtator.objects.filter(document=self, validate_cache=True).count() == 3:
-            return True
-
+        """ Returns a boolean if the Document instance has a complet Pubtator
+            coverage for all kinds (tmChem, DNorm, GNormPlus)
+        """
         # All responses that are not waiting to fetch conent b/c they already have it
-        pubtators = Pubtator.objects.filter(
-            document=self,
-            session_id='',
-            content__isnull=False).all()
+        pubtators = self.pubtators.all()
 
         # Check if each type validates
         if pubtators.count() != 3:
             return False
 
         for pubtator in pubtators:
-            if not pubtator.valid():
+            if not validate_pubtator(pubtator.content, pubtator.document):
                 return False
 
         return True
-
-    DF_COLUMNS = ('uid', 'source', 'user_id',
-                  'ann_type', 'text',
-                  'section_id', 'section_offset', 'offset_relative',
-                  'start_position', 'length')
-    APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
-
-    def create_er_df_row(self,
-                      uid, source='db', user_id=None,
-                      ann_type='', text='',
-                      section_id=0, section_offset=0, offset_relative=True,
-                      start_position=0, length=0):
-        '''
-            When offset_relative is False:
-                start position is relative to the entire document and not the
-                section it's contained within
-
-            user_id can be None
-
-            (TODO) Ann Types needs to be normalized
-        '''
-        ann_type = ann_type.lower()
-        return {
-            'uid': str(uid), 'source': str(source), 'user_id': int(user_id) if user_id else None,
-            'ann_type': str(ann_type), 'text': str(text),
-            'section_id': int(section_id), 'section_offset': int(section_offset), 'offset_relative': bool(offset_relative),
-            'start_position': int(start_position), 'length': int(length)
-        }
 
     # Helpers for Talk Page
     def annotations(self):
@@ -150,55 +121,31 @@ class Document(models.Model):
 
 
 class Pubtator(models.Model):
-    document = models.ForeignKey(Document)
-
-    kind = models.CharField(max_length=200, blank=True)
+    document = models.ForeignKey(Document, related_name='pubtators')
+    kind = models.CharField(max_length=200)
     content = models.TextField(blank=True, null=True)
 
     class Meta:
         app_label = 'document'
 
     def __unicode__(self):
-        return 'pubtator'
+        return '{0} for PMID: {1} ({2})'.format(self.kind, self.document.document_id, 'Valid' if self.is_valid() else 'Invalid')
 
     def is_valid(self):
-        """
+        """ Alias for validate_pubtator
             Returns a boolean for if the pubtator is a valid state
         """
-        if self.content is None:
-            return False
+        return validate_pubtator(self.content, self.document)
 
-        if self.get_instance():
-            return True
-        else:
-            return False
-
-    def get_instance(self):
-        """
-            Returns the pubtator BioC instance if valid or None
+    def count_annotations(self):
+        """ Returns an int count of all types of ER annotations in the Pubtator instance
+            If none are found or the document is invalid, return 0
         """
         try:
             r = BioCReader(source=self.content)
             r.read()
-            return r
+            return sum([len(passage.annotations) for passage in r.collection.documents[0].passages])
         except Exception:
-            # If one of them doesn't validate leave
-            return False
-
-    def count_annotations(self):
-        """
-            Returns an Integer count of all types of annotations, accross all sections for a pubtator response of any type.
-            If none are found or the document is invalid, return 0
-        """
-        instance = self.get_instance()
-        if instance:
-            count = 0
-            for doc in instance.collection.documents:
-                for passage in doc.passages:
-                    count += len(passage.annotations)
-            return count
-
-        else:
             return 0
 
     def submit(self):
@@ -212,11 +159,10 @@ class Pubtator(models.Model):
 
 
 class PubtatorRequest(models.Model):
-    """
-        Pending jobs that have been submitted to Pubtator and are
+    """ Pending jobs that have been submitted to Pubtator and are
         awaiting completion
     """
-    pubtator = models.ForeignKey(Pubtator)
+    pubtator = models.ForeignKey(Pubtator, related_name='requests')
 
     UNFULLFILLED = 0
     FULLFILLED = 1
@@ -237,7 +183,7 @@ class PubtatorRequest(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return 'Pubtator Request: {0}'.format(self.session_id)
+        return '{0} for Pubtator ({1})'.format(self.session_id, self.pubtator)
 
     def check_status(self):
         from .tasks import check_pubtator
@@ -343,7 +289,8 @@ class View(models.Model):
         app_label = 'document'
 
     def __unicode__(self):
-        return u'Document #{doc_id}, Section #{sec_id} by {username}'.format(
+        return u'{pk}, Document #{doc_id}, Section #{sec_id} by {username}'.format(
+            pk=self.pk,
             doc_id=self.section.document.pk,
             sec_id=self.section.pk,
             username=self.user.username)
@@ -367,14 +314,11 @@ class Annotation(models.Model):
     def __unicode__(self):
         if self.kind == 'r':
             return 'Relationship Ann'
-        if self.kind == 'e':
+        elif self.kind == 'e':
             return '{0} ({1}) [{2}]'.format(self.text, self.start, self.pk)
         else:
-            return self.type
+            return 'Annotation {0}'.format(self.pk)
 
     class Meta:
         get_latest_by = 'updated'
         app_label = 'document'
-
-        # (TODO) This is not supported by MySQL but would help prevent dups in this table
-        # unique_together = ['kind', 'type', 'text', 'start', 'view']

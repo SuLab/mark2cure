@@ -6,7 +6,8 @@ from django.conf import settings
 
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
-from ..common.models import Document, Group
+from ..common.models import Group
+from ..analysis.models import Report
 from ..task.models import Task
 from ..score.models import Point
 
@@ -60,14 +61,14 @@ def group_network(request, group_pk):
 def analysis_group_user(request, group_pk, user_pk=None):
     group = get_object_or_404(Group, pk=group_pk)
 
-    if user_pk is None:
-        user_pk = str(request.user.pk)
-
     response = []
-    reports = group.report_set.filter(report_type=1).order_by('-created').all()
+    reports = group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').all()
+    user_id = int(user_pk) if user_pk else int(request.user.pk)
+
     for report in reports:
         df = report.dataframe
-        df = df[df['user'] == user_pk]
+        df = df[df['user_id'] == user_id]
+
         if df.shape[0] > 0:
             row = df.iloc[0]
             response.append({
@@ -142,62 +143,55 @@ def quest_group_list(request, group_pk):
 @login_required
 @api_view(['GET'])
 def relation_list(request):
-    cmd_str = """
-        SELECT  ANY_VALUE(`document_document`.`id`),
-                `document_document`.`document_id`,
-                ANY_VALUE(`document_document`.`title`) as `title`,
-                ANY_VALUE((
-                    SELECT COUNT(*)
-                    FROM `relation_relation`
-                    WHERE `relation_relation`.`document_id` = `document_document`.`id`
-                )) as `relation_units`,
-                COUNT(`view`.`id`) as `completions`,
-                IF(SUM(`view`.`user_id` = {user_id}), true, false) as `user_completed`
-
-        FROM `document_document`
-
-        /* Link up the document group information for filtering purposes */
-        INNER JOIN `relation_relationgroup_documents`
-            ON `relation_relationgroup_documents`.`document_id` = `document_document`.`id`
-        INNER JOIN `relation_relationgroup` as `group`
-            ON `group`.`id` = `relation_relationgroup_documents`.`relationgroup_id`
-
-        /* Link up the completed relationship views for each document
-           A View is considered complete when all relationships have been submitted (requires 100%) */
-        INNER JOIN `document_section`
-            ON `document_section`.`document_id` = `document_document`.`id`
-        INNER JOIN `document_view` as `view`
-            ON (`view`.`section_id` = `document_section`.`id` AND `view`.`task_type` = 'ri' AND `view`.`completed` = 1)
-
-        WHERE `group`.`enabled` = 1
-        GROUP BY `document_document`.`document_id`
-        /* Filter what we want to show on the dashboard */
-        HAVING  `relation_units` <= 20
-            AND `completions` < {completions}
-            AND `user_completed` = false
-        ORDER BY `completions` DESC
-        LIMIT 20
-    """.format(user_id=request.user.pk, completions=settings.ENTITY_RECOGNITION_K)
+    """ Returns the available relation tasks for a specific user
+        Accessed through a JSON API endpoint
+    """
+    cmd_str = ""
+    with open('mark2cure/api/commands/get-relations.sql', 'r') as f:
+        cmd_str = f.read()
 
     # Start the DB Connection
     c = connection.cursor()
+
+    c.execute('SET @user_work_max = {rel_work_size};'.format(rel_work_size=20))
+    c.execute('SET @k_max = {completions};'.format(completions=settings.ENTITY_RECOGNITION_K))
+    c.execute('SET @user_id = {user_id};'.format(user_id=request.user.pk))
+    c.execute('SET @rel_ann_content_type_id = 56;')
     c.execute(cmd_str)
-    queryset = [{'id': x[0], 'document_id': x[1], 'title': x[2], 'relation_units': x[3], 'completions': x[4]} for x in c.fetchall()]
+
+    queryset = [{'id': x[0],
+                 'document_id': x[1],
+                 'title': x[2],
+
+                 'total_document_relationships': x[3],
+                 'user_document_relationships': x[4],
+
+                 'community_answered': x[5],
+                 'community_completed': x[6],
+                 'community_progress': x[7],
+
+                 'user_completed': x[8],
+                 'user_progress': x[9],
+                 'user_answered': x[10],
+                 'user_view_completed': x[11]} for x in c.fetchall()]
+
+    # Close the connection
+    c.close()
 
     serializer = DocumentRelationSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+# from django.contrib.auth.decorators import login_required
+# from django.utils.decorators import method_decorator
+# from django.views.generic import TemplateView
+# class ExportView(TemplateView):
+#     template_name = 'api/export'
+#
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(ProtectedView, self).dispatch(*args, **kwargs)
 
-class ExportView(TemplateView):
-    template_name = 'api/export'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ProtectedView, self).dispatch(*args, **kwargs)
 
 # @login_required
 @api_view(['GET'])

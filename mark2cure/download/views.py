@@ -21,17 +21,32 @@ def home(request):
 def start_export(request):
     task_type = request.POST.get('task_type')
     group_pk = request.POST.get('group_pk')
+    document_pks = request.POST.get('document_pks')
+    ALL = 0
+    ER = 1
+    REL = 2
 
     if task_type == 'er':
         group = Group.objects.get(pk=group_pk)
         docs = group.get_documents()
-    else:
+        group_export.apply_async(
+            args=[list(docs.values_list('pk', flat=True))],
+            kwargs={'export_type': ER},
+            queue='mark2cure_downloads')
+
+    elif task_type == 'rel':
         group = RelationGroup.objects.get(pk=group_pk)
         docs = group.documents.all()
+        group_export.apply_async(
+            args=[list(docs.values_list('pk', flat=True))],
+            kwargs={'export_type': REL},
+            queue='mark2cure_downloads')
 
-    group_export.apply_async(
-        args=[list(docs.values_list('pk', flat=True))],
-        queue='mark2cure_downloads')
+    else:
+        group_export.apply_async(
+            args=[document_pks],
+            kwargs={'export_type': ALL},
+            queue='mark2cure_downloads')
 
     return redirect('download:home')
 

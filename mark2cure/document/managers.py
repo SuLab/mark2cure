@@ -10,7 +10,7 @@ from itertools import groupby
 import pandas as pd
 
 DF_COLUMNS = ('uid', 'source', 'user_id',
-              'ann_type', 'text',
+              'ann_type_idx', 'text',
               'document_pk', 'section_id', 'section_offset', 'offset_relative',
               'start_position', 'length')
 APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
@@ -40,21 +40,11 @@ class DocumentManager(models.Manager):
         else:
             raise ValueError('No documents supplied to generator writer')
 
-        cmd_str = '''
-            SELECT
-                `document_pubtator`.`document_id`,
-                ANY_VALUE(`document_pubtator`.`content`),
-                GROUP_CONCAT(DISTINCT `document_section`.`id`) as `section_ids`
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-pubtators.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(','.join(str_doc_arr))
 
-            FROM `document_pubtator`
-
-            JOIN `document_section`
-                ON `document_section`.`document_id` = `document_pubtator`.`document_id`
-
-            WHERE `document_pubtator`.`content` != '' AND `document_pubtator`.`document_id` IN ({0})
-
-            GROUP BY `document_pubtator`.`document_id`;
-        '''.format(','.join(str_doc_arr))
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -139,41 +129,14 @@ class DocumentManager(models.Manager):
         else:
             filter_user_level = ''
 
-        cmd_str = '''
-            SELECT
-                    `relation`.`id` as `relation_id`,
-                    `doc_document`.`id` as `doc_pk`,
-                    `doc_document`.`document_id` as `pmid`,
-                    `doc_view`.`user_id`,
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-relations-results.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(
+            content_type_pk=ct.pk,
+            filter_doc_level=filter_doc_level,
+            filter_user_level=filter_user_level)
 
-                    `relation`.`relation_type`,
-                    `relation`.`concept_1_id`,
-                    `relation`.`concept_2_id`,
-                    `rel_anns`.`answer`,
-                    `doc_ann`.`created`
-
-            FROM `relation_relation` as `relation`
-
-            INNER JOIN `relation_relationannotation` as `rel_anns`
-                    ON `rel_anns`.`relation_id` = `relation`.`id`
-
-            INNER JOIN `document_annotation` as `doc_ann`
-                    ON `doc_ann`.`content_type_id` = {content_type_pk} AND `doc_ann`.`object_id` = `rel_anns`.`id`
-
-            INNER JOIN `document_view` as `doc_view`
-                    ON `doc_view`.`id` = `doc_ann`.`view_id`
-
-            INNER JOIN `document_section` as `doc_section`
-                    ON `doc_section`.`id` = `doc_view`.`section_id`
-
-            INNER JOIN `document_document` as `doc_document`
-                    ON `doc_document`.`id` = `doc_section`.`document_id`
-
-            {filter_doc_level}
-            {filter_user_level}
-
-            ORDER BY `relation`.`id`
-        '''.format(content_type_pk=ct.pk, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -193,14 +156,6 @@ class DocumentManager(models.Manager):
                     'relation_type': x[4], 'concept_1_id': x[5], 'concept_2_id': x[6],
                     'answer': x[7], 'answer_text': filter(lambda d: d['id'] == x[7], relation_data_flat)[0]['text'], 'created': x[8]})
 
-            '''
-            for ro in df_arr:
-                # (TODO) Select the longest text
-                cdr_query = ConceptDocumentRelationship.objects.filter(document=relation.document)
-                cdr1 = cdr_query.filter(concept_text__concept_id=relation.concept_1).first()
-                cdr2 = cdr_query.filter(concept_text__concept_id=relation.concept_2).first()
-            '''
-
             return pd.DataFrame(df_arr, columns=REL_DF_COLUMNS)
 
         finally:
@@ -208,7 +163,7 @@ class DocumentManager(models.Manager):
 
     def _create_er_df_row(self,
                       uid, source='db', user_id=None,
-                      ann_type='', text='',
+                      ann_type_idx=0, text='',
                       document_pk=0, section_id=0, section_offset=0, offset_relative=True,
                       start_position=0, length=0):
         '''
@@ -218,12 +173,10 @@ class DocumentManager(models.Manager):
 
             user_id can be None
 
-            (TODO) Ann Types needs to be normalized
         '''
-        ann_type = ann_type.lower()
         return {
             'uid': str(uid), 'source': str(source), 'user_id': int(user_id) if user_id else None,
-            'ann_type': str(ann_type), 'text': str(text),
+            'ann_type_idx': int(ann_type_idx), 'text': str(text),
             'document_pk': int(document_pk), 'section_id': int(section_id), 'section_offset': int(section_offset), 'offset_relative': bool(offset_relative),
             'start_position': int(start_position), 'length': int(length)
         }
@@ -265,35 +218,11 @@ class DocumentManager(models.Manager):
 
         df_arr = []
 
-        cmd_str = '''
-            SELECT
-                `entity_recognition_entityrecognitionannotation`.`id`,
-                `entity_recognition_entityrecognitionannotation`.`type`,
-                `entity_recognition_entityrecognitionannotation`.`text`,
-                `entity_recognition_entityrecognitionannotation`.`start`,
-                `document_annotation`.`created`,
-                `document_document`.`id` as `document_pk`,
-                `document_document`.`document_id` as `pmid`,
-                `document_view`.`section_id`,
-                `document_view`.`user_id`
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-er-results.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
 
-            FROM `entity_recognition_entityrecognitionannotation`
-
-            INNER JOIN `document_annotation`
-                ON `document_annotation`.`object_id` = `entity_recognition_entityrecognitionannotation`.`id` AND `document_annotation`.`content_type_id` = {content_type_pk}
-
-            INNER JOIN `document_view`
-                ON `document_annotation`.`view_id` = `document_view`.`id`
-
-            INNER JOIN `document_section`
-                ON `document_view`.`section_id` = `document_section`.`id`
-
-            INNER JOIN `document_document`
-                ON `document_document`.`id` = `document_section`.`document_id`
-
-            {filter_doc_level}
-            {filter_user_level}
-        '''.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
         c = connection.cursor()
         try:
             c.execute(cmd_str)
@@ -319,7 +248,7 @@ class DocumentManager(models.Manager):
                     for x in doc_group:
                         df_arr.append(self._create_er_df_row(
                             uid=x[0], source='db', user_id=x[8],
-                            text=x[2], ann_type=x[1],
+                            text=x[2], ann_type_idx=x[1],
                             document_pk=x[5], section_id=x[7], section_offset=offset_dict[x[7]], offset_relative=True,
                             start_position=x[3], length=len(x[2])))
 
@@ -332,23 +261,11 @@ class DocumentManager(models.Manager):
                 reponses into 1 main file. It performances selective
                 ordering and precedence for some annotations types / instances
             '''
-            cmd_str = '''
-                SELECT
-                    `document_pubtator`.`id`,
-                    `document_pubtator`.`document_id`,
-                    `document_pubtator`.`content`,
-                    GROUP_CONCAT(DISTINCT `document_section`.`id`) as `section_ids`
+            cmd_str = ""
+            with open('mark2cure/document/commands/get-er-pubtator-results.sql', 'r') as f:
+                cmd_str = f.read()
+            cmd_str = cmd_str.format(','.join(doc_arr))
 
-                FROM `document_pubtator`
-
-                JOIN `document_section`
-                    ON `document_section`.`document_id` = `document_pubtator`.`document_id`
-
-                WHERE `document_pubtator`.`content` != ''
-                    AND `document_pubtator`.`document_id` IN ({0})
-
-                GROUP BY `document_pubtator`.`id`
-            '''.format(','.join(doc_arr))
             c = connection.cursor()
             try:
                 c.execute(cmd_str)
@@ -356,6 +273,8 @@ class DocumentManager(models.Manager):
             finally:
                 c.close()
 
+            # Counter({'Disease': 3676, 'Chemical': 2928, 'Species': 1553, 'Gene': 1544, 'FamilyName': 536, 'DomainMotif': 20}) (Sampleing from DB 11/30/2016)
+            pubtator_types = ['Disease', 'Gene', 'Chemical']
             for pubtator_content in res:
                 r = BioCReader(source=pubtator_content[2])
                 r.read()
@@ -378,13 +297,14 @@ class DocumentManager(models.Manager):
                                 uid_type = key
                                 uid = annotation.infons.get(uid_type, None)
 
-                        start, length = str(annotation.locations[0]).split(':')
-                        df_arr.append(self._create_er_df_row(
-
-                            uid=uid, source=uid_type if uid_type else None, user_id=None,
-                            text=annotation.text, ann_type=annotation_type if annotation_type else None,
-                            document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
-                            start_position=start, length=length))
+                        # We're only interested in Pubtator Annotations that are the same concepts users highlight
+                        if annotation_type in pubtator_types:
+                            start, length = str(annotation.locations[0]).split(':')
+                            df_arr.append(self._create_er_df_row(
+                                uid=uid, source=uid_type if uid_type else None, user_id=None,
+                                text=annotation.text, ann_type_idx=pubtator_types.index(annotation_type),
+                                document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
+                                start_position=start, length=length))
 
         return pd.DataFrame(df_arr, columns=DF_COLUMNS)
 
