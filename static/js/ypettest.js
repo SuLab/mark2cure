@@ -1,3 +1,10 @@
+/**
+ * A tester for YPet
+ * To use this tester, load the script AFTER YPet is loaded (i.e. modifying the webpage to be loaded is needed). Then
+ * in the console, type `YPetTest.start()` No messages will be printed if all tests are passed
+ * @author Runjie Guan guanrunjie@gmail.com
+ */
+
 window.YPetTest = function() {
 
     var _ITERATIONS = 5;
@@ -66,7 +73,7 @@ window.YPetTest = function() {
         }
 
         texts.push($rightElem.text());
-        texts = texts.join(" ");
+        texts = _sanitize(texts.join(" "));
 
         console.assert(YPetTest.lastResponse.type_id === 0, `Words "${texts}" type_id is not zero`);
         console.assert(texts === YPetTest.lastResponse.text, `Words "${texts}" doesn't match response, which is "${YPetTest.lastResponse.text}"`);
@@ -149,7 +156,8 @@ window.YPetTest = function() {
         // // Last click, nothing should be updated
         // response = YPetTest.lastResponse;
         $elem.mousedown().mouseup();
-        // console.assert(response == YPetTest.lastResponse, `On last cycle: response should not be changed. Expected: ${response}. Got: ${YPetTest.lastResponse}. The element selected was "${$elem.text()}"`);
+        // console.assert(response == YPetTest.lastResponse, `On last cycle: response should not be changed. Expected:
+        // ${response}. Got: ${YPetTest.lastResponse}. The element selected was "${$elem.text()}"`);
     };
 
     var _testCycleForMultipleWords = function($leftElem, $rightElem) {
@@ -176,7 +184,7 @@ window.YPetTest = function() {
     var _testClickOnValidWords = function() {
         "use strict";
 
-        console.log("Test clicking on valid words...");
+        console.log("%cTest clicking on valid words...", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             var word = _randomElement(_randomElement(_wordList), (elem)=> {
@@ -196,7 +204,7 @@ window.YPetTest = function() {
     var _testClickOnInvalidWords = function() {
         "use strict";
 
-        console.log("Test clicking on invalid words...");
+        console.log("%cTest clicking on invalid words...", "background:#000; color:#fff");
 
         // Iterate each element instead of randomly choosing
         _.each(_invalidWordList, (word)=> {
@@ -226,10 +234,37 @@ window.YPetTest = function() {
         endElem.mouseover().mouseup();
     }
 
-    function _testDragForwardSameLine() {
+    /**
+     * Drags and tests a selection of word. This function will test it in both ways (drag forward and backward)
+     * @param $dragFrom - where the drag starts
+     * @param $dragTo - where the drag ends
+     * @param $assertFrom (Optional, default is $dragFrom) - where the selection is expected to start
+     * @param $assertTo (Optional, default is $dragTo) - where the selection is expected to end
+     * @private
+     */
+    function _dragAndTest($dragFrom, $dragTo, $assertFrom, $assertTo) {
+        $assertFrom = $assertFrom || $dragFrom;
+        $assertTo = $assertTo || $dragTo;
+
+        // Drag forward
+        console.log("   %cDragging forward", "background:#888; color:#fff");
+        _simulateDragSelectWords($dragFrom, $dragTo);
+
+        _assertSameWords($assertFrom, $assertTo);
+        _testCycle($assertFrom, $assertTo);
+
+        // Drag in opposite direction
+        console.log("   %cDragging backward", "background:#888; color:#fff");
+        _simulateDragSelectWords($dragTo, $dragFrom);
+
+        _assertSameWords($assertFrom, $assertTo);
+        _testCycle($assertFrom, $assertTo);
+    }
+
+    function _testDragSameLine() {
         "use strict";
 
-        console.log("Test dragging forward the words in the same line ...");
+        console.log("%cTest dragging forward the words in the same line ...", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             (()=> {
@@ -267,18 +302,16 @@ window.YPetTest = function() {
 
                 leftElem = $(leftElem);
                 rightElem = $(rightElem);
-                _simulateDragSelectWords(leftElem, rightElem);
 
-                _assertSameWords(leftElem, rightElem);
-                _testCycle(leftElem, rightElem);
+                _dragAndTest(leftElem, rightElem);
             })();
         }
     }
 
-    function _testDragForwardDifferentLine() {
+    function _testDragDifferentLine() {
         "use strict";
 
-        console.log("Test dragging forward the words in the different lines ...");
+        console.log("%cTest dragging forward the words in the different lines ...", "background:#000; color:#fff");
 
         if (_wordList.length < 2) {
             console.log("The given passage does not have sufficient amount of lines");
@@ -312,10 +345,8 @@ window.YPetTest = function() {
 
                 leftElem = $(leftElem);
                 rightElem = $(rightElem);
-                _simulateDragSelectWords(leftElem, rightElem);
 
-                _assertSameWords(leftElem, rightElem);
-                _testCycle(leftElem, rightElem);
+                _dragAndTest(leftElem, rightElem);
             })();
         }
     }
@@ -323,7 +354,7 @@ window.YPetTest = function() {
     function _testDragInvalidWord() {
         "use strict";
 
-        console.log("Test dragging forward the words from/to an invalid word ...");
+        console.log("%cTest dragging forward the words from/to an invalid word ...", "background:#000; color:#fff");
 
         if (_wordList.length < 2) {
             console.log("The given passage does not have sufficient amount of lines");
@@ -354,15 +385,7 @@ window.YPetTest = function() {
                     validNearInvalidWord = $(invalidWord).prev();
                 }
 
-                // Drag from invalid word to a valid word
-                _simulateDragSelectWords(invalidWord, validWord);
-                _assertSameWords(validWord, validNearInvalidWord);
-                _testCycle(validWord, validNearInvalidWord);
-
-                // Drag from a valid word to an invalid word
-                _simulateDragSelectWords(validWord, invalidWord);
-                _assertSameWords(validWord, validNearInvalidWord);
-                _testCycle(validWord, validNearInvalidWord);
+                _dragAndTest(invalidWord, validWord, validWord, validNearInvalidWord);
             })();
         }
     }
@@ -402,10 +425,10 @@ window.YPetTest = function() {
         return candidates;
     }
 
-    function _testDragForwardOverSelectedWord() {
+    function _testDragOverSelectedWord() {
         "use strict";
 
-        console.log("Test dragging forward over word selection");
+        console.log("%cTest dragging forward over word selection", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             // Select four words
@@ -420,16 +443,14 @@ window.YPetTest = function() {
             }
 
             // Drag over the selection
-            _simulateDragSelectWords(candidates[0], candidates[3]);
-            _assertSameWords(candidates[0], candidates[3]);
-            _testCycle(candidates[0], candidates[3]);
+            _dragAndTest(candidates[0], candidates[3]);
         }
     }
 
-    function _testDragForwardFromSelectedWord() {
+    function _testDragFromSelectedWord() {
         "use strict";
 
-        console.log("Test dragging forward from word selection");
+        console.log("%cTest dragging forward from word selection", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             // Select four words
@@ -444,16 +465,14 @@ window.YPetTest = function() {
             }
 
             // Drag from the selection
-            _simulateDragSelectWords(candidates[1], candidates[3]);
-            _assertSameWords(candidates[1], candidates[3]);
-            _testCycle(candidates[1], candidates[3]);
+            _dragAndTest(candidates[1], candidates[3]);
         }
     }
 
-    function _testDragForwardToSelectedWord() {
+    function _testDragToSelectedWord() {
         "use strict";
 
-        console.log("Test dragging forward to word selection");
+        console.log("%cTest dragging forward to word selection", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             // Select four words
@@ -468,26 +487,34 @@ window.YPetTest = function() {
             }
 
             // Drag to the selection
-            _simulateDragSelectWords(candidates[0], candidates[2]);
-            _assertSameWords(candidates[0], candidates[2]);
-            _testCycle(candidates[0], candidates[2]);
+            _dragAndTest(candidates[0], candidates[2]);
         }
     }
 
-    function _testDragForward() {
-        _testDragForwardSameLine();
-        _testDragForwardDifferentLine();
-        _testDragForwardOverSelectedWord();
-        _testDragForwardFromSelectedWord();
-        _testDragForwardToSelectedWord();
+    function _testDragValidWord() {
+        _testDragSameLine();
+        _testDragDifferentLine();
+        _testDragOverSelectedWord();
+        _testDragFromSelectedWord();
+        _testDragToSelectedWord();
     }
 
     function _testDragOnWords() {
         "use strict";
 
-        _testDragForward();
-        _testDragBackward();
+        _testDragValidWord();
         _testDragInvalidWord();
+    }
+
+    /**
+     * Sanitize the stirng to leave out unnecessary information
+     * The function was modifed from YPet.js, AnnotationList.sanitizeAnnotation
+     * @param full_str
+     * @returns {string} sanitized string
+     * @private
+     */
+    function _sanitize(full_str) {
+        return _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
     }
 
     return {
@@ -500,6 +527,9 @@ window.YPetTest = function() {
                 region.currentView.collection.parentDocument.get("annotations").on("change", (model) => {
                     "use strict";
                     YPetTest.lastResponse = model.toJSON();
+
+                    var type = YPetTest.lastResponse.type_id;
+                    console.log("%c" + YPetTest.lastResponse.text, `font-size:6px;color:${type == 0 ? "#d1f3ff" : (type == 1 ? "#B1FFA8" : "#ffd1dc")}`);
                 });
             });
 
@@ -511,13 +541,12 @@ window.YPetTest = function() {
 
         /**
          * Returns if current string is a valid string, i.e. is not empty after sanitizing
-         * The function was modifed from YPet.js, AnnotationList.sanitizeAnnotation
          * @param full_str - the string
          * @returns {boolean} true if this word is valid
          */
         isValidWord: function(full_str) {
             "use strict";
-            return !!(_.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '').length);
+            return !!(_sanitize(full_str).length);
         },
 
         /**
