@@ -164,14 +164,22 @@ window.YPetTest = function() {
         // todo find a random word in the list to cycle over to save some time
         "use strict";
 
-        // Create a new instance
-        // var $curr = $($leftElem);
-        //
-        // do {
-        //     _testCycleForSingleWord($curr);
-        //     _simulateDragSelectWords($leftElem, $rightElem);
-        //     $curr = $curr.next();
-        // } while ($curr.index() !== $rightElem.index());
+        // So that the expected number of elements to be iterated will be approx. equal to _ITERATIONS
+        var threshold = _ITERATIONS / ($rightElem.index() - $leftElem.index());
+
+        if (!isNaN (threshold) && threshold > 0) {
+            // Create a new instance
+            var $curr = $($leftElem);
+
+            do {
+                if (Math.random() < threshold) {
+                    _testCycleForSingleWord($curr);
+                    _simulateDragSelectWords($leftElem, $rightElem);
+                }
+
+                $curr = $curr.next();
+            } while ($curr.index() !== $rightElem.index());
+        }
 
         _testCycleForSingleWord($rightElem);
     };
@@ -245,6 +253,14 @@ window.YPetTest = function() {
     function _dragAndTest($dragFrom, $dragTo, $assertFrom, $assertTo) {
         $assertFrom = $assertFrom || $dragFrom;
         $assertTo = $assertTo || $dragTo;
+
+        if ($assertFrom.index() > $assertTo.index()) {
+            var tmp = $assertFrom;
+            $assertFrom = $assertTo;
+            $assertTo = tmp;
+        }
+
+        // console.log(`$dragFrom: ${$dragFrom.index()}, $dragTo: ${$dragTo.index()}, $assertFrom: ${$assertFrom.index()}, $assertTo: ${$assertTo.index()}`);
 
         // Drag forward
         console.log("   %cDragging forward", "background:#888; color:#fff");
@@ -354,7 +370,7 @@ window.YPetTest = function() {
     function _testDragInvalidWord() {
         "use strict";
 
-        console.log("%cTest dragging forward the words from/to an invalid word ...", "background:#000; color:#fff");
+        console.log("%cTest dragging the words from/to an invalid word ...", "background:#000; color:#fff");
 
         if (_wordList.length < 2) {
             console.log("The given passage does not have sufficient amount of lines");
@@ -529,7 +545,7 @@ window.YPetTest = function() {
                     YPetTest.lastResponse = model.toJSON();
 
                     var type = YPetTest.lastResponse.type_id;
-                    console.log("%c" + YPetTest.lastResponse.text, `font-size:6px;color:${type == 0 ? "#d1f3ff" : (type == 1 ? "#B1FFA8" : "#ffd1dc")}`);
+                    // console.log("%c" + YPetTest.lastResponse.text.substr(0, 50), `font-size:6px;color:${type == 0 ? "#d1f3ff" : (type == 1 ? "#B1FFA8" : "#ffd1dc")}`);
                 });
             });
 
