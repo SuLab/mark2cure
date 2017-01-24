@@ -2,6 +2,10 @@
  * A tester for YPet
  * To use this tester, load the script AFTER YPet is loaded (i.e. modifying the webpage to be loaded is needed). Then
  * in the console, type `YPetTest.start()` No messages will be printed if all tests are passed
+ * E.g. add
+    script(src="#{STATIC_URL}js/ypettest.js")
+ * at the end of quest.jade
+ *
  * @author Runjie Guan guanrunjie@gmail.com
  */
 

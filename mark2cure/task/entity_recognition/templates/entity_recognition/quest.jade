@@ -3,7 +3,6 @@ extends base
 - load widget_tweaks
 - load comments
 
-
 block header
   with(headerMessage=task.name)
     include includes/header-task-entity-recognition
@@ -159,8 +158,7 @@ block post-footer
           YPet.getView().getRegion('' + passage_idx).currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
             var model_json = model.toJSON();
 
-            console.log(model_json);
-
+            //  console.log(model_json);
             set_google_annotation(model_json.text);
           });
         });
@@ -273,3 +271,4 @@ block post-footer
 
     });
 
+  script(src="#{STATIC_URL}js/ypettest.js")
