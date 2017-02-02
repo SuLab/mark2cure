@@ -3,7 +3,7 @@
  * To use this tester, load the script AFTER YPet is loaded (i.e. modifying the webpage to be loaded is needed). Then
  * in the console, type `YPetTest.start()` No messages will be printed if all tests are passed
  * E.g. add
-    script(src="#{STATIC_URL}js/ypettest.js")
+ script(src="#{STATIC_URL}js/ypettest.js")
  * at the end of quest.jade
  *
  * @author Runjie Guan guanrunjie@gmail.com
@@ -28,7 +28,7 @@ window.YPetTest = function() {
      * @returns a random element, or undefined if nothing meets the criteria after _ITERATION times
      * @private
      */
-    var _randomElement = function(list, criteria) {
+    function _randomElement(list, criteria) {
         "use strict";
 
         if (typeof list === "undefined" || !(list.length)) {
@@ -51,14 +51,14 @@ window.YPetTest = function() {
         } while (!criteria(elem));
 
         return elem;
-    };
+    }
 
     /**
      * Asserts if the passed in jquery element is the word that just got clicked
      * @param $elem
      * @private
      */
-    var _assertSameWord = function($elem) {
+    function _assertSameWord($elem) {
         "use strict";
 
         console.assert(YPetTest.lastResponse.type_id === 0, `Word "${$elem.text()}" type_id is not zero`);
@@ -88,7 +88,7 @@ window.YPetTest = function() {
      * Also process the invalid word
      * @private
      */
-    var _processWords = function() {
+    function _processWords() {
         "use strict";
 
         _wordList = [];
@@ -118,7 +118,7 @@ window.YPetTest = function() {
 
         // Remove the first element cuz it's empty
         _wordList.shift();
-    };
+    }
 
     /**
      * Tests the cycling of the type_id for words
@@ -126,7 +126,7 @@ window.YPetTest = function() {
      * @param $rightElem (Optional) - the right element, or undefined
      * @private
      */
-    var _testCycle = function($leftElem, $rightElem) {
+    function _testCycle($leftElem, $rightElem) {
         "use strict";
 
         if (typeof $rightElem === "undefined") {
@@ -134,14 +134,14 @@ window.YPetTest = function() {
         } else {
             _testCycleForMultipleWords($leftElem, $rightElem);
         }
-    };
+    }
 
     /**
      * Tests the cycling of the type_id for a single word
      * @param $elem - the element that has been already clicked once
      * @private
      */
-    var _testCycleForSingleWord = function($elem) {
+    function _testCycleForSingleWord($elem) {
         "use strict";
 
         var response = YPetTest.lastResponse;
@@ -150,28 +150,27 @@ window.YPetTest = function() {
         // First click, change to green
         $elem.mousedown().mouseup();
         console.assert(YPetTest.lastResponse.type_id === 1, "On first cycle: type_id should be 1, got " + YPetTest.lastResponse.type_id);
-        console.assert(YPetTest.lastResponse.text === response.text, "On first cycle: expect '" + response.text + "', got '" + YPetTest.lastResponse.text + "'");
+        console.assert(YPetTest.lastResponse.text === response.text, `On first cycle: expect '${response.text}', got '${YPetTest.lastResponse.text}'. The element clicked is '${$elem.text()}'`);
 
         // Second click, change to red
         $elem.mousedown().mouseup();
         console.assert(YPetTest.lastResponse.type_id === 2, "On first cycle: type_id should be 2, got " + YPetTest.lastResponse.type_id);
-        console.assert(YPetTest.lastResponse.text === response.text, "On second cycle: expect '" + response.text + "', got '" + YPetTest.lastResponse.text + "'");
+        console.assert(YPetTest.lastResponse.text === response.text, `On second cycle: expect '${response.text}', got '${YPetTest.lastResponse.text}'. The element clicked is '${$elem.text()}'`);
 
         // // Last click, nothing should be updated
         // response = YPetTest.lastResponse;
         $elem.mousedown().mouseup();
         // console.assert(response == YPetTest.lastResponse, `On last cycle: response should not be changed. Expected:
         // ${response}. Got: ${YPetTest.lastResponse}. The element selected was "${$elem.text()}"`);
-    };
+    }
 
-    var _testCycleForMultipleWords = function($leftElem, $rightElem) {
-        // todo find a random word in the list to cycle over to save some time
+    function _testCycleForMultipleWords($leftElem, $rightElem) {
         "use strict";
 
         // So that the expected number of elements to be iterated will be approx. equal to _ITERATIONS
         var threshold = _ITERATIONS / ($rightElem.index() - $leftElem.index());
 
-        if (!isNaN (threshold) && threshold > 0) {
+        if (!isNaN(threshold) && threshold > 0) {
             // Create a new instance
             var $curr = $($leftElem);
 
@@ -193,7 +192,7 @@ window.YPetTest = function() {
      * punctuations
      * @private
      */
-    var _testClickOnValidWords = function() {
+    function _testClickOnValidWords() {
         "use strict";
 
         console.log("%cTest clicking on valid words...", "background:#000; color:#fff");
@@ -213,7 +212,7 @@ window.YPetTest = function() {
      * Test clicing on invalid word. For the definition of invalid word, see YPetTest.isValidWord
      * @private
      */
-    var _testClickOnInvalidWords = function() {
+    function _testClickOnInvalidWords() {
         "use strict";
 
         console.log("%cTest clicking on invalid words...", "background:#000; color:#fff");
@@ -226,7 +225,7 @@ window.YPetTest = function() {
             console.assert(YPetTest.lastResponse.text.length === 0, "On invalid word text: expect '', got " + YPetTest.lastResponse.text);
             console.assert(YPetTest.lastResponse.words.length === 0, "On invalid word words: expect empty, got " + YPetTest.lastResponse.words);
         });
-    };
+    }
 
     function _testClickOnWords() {
         "use strict";
@@ -242,8 +241,8 @@ window.YPetTest = function() {
      * @private
      */
     function _simulateDragSelectWords(startElem, endElem) {
-        startElem.mousedown();
-        endElem.mouseover().mouseup();
+        $(startElem).mousedown();
+        $(endElem).mouseover().mouseup();
     }
 
     /**
@@ -264,7 +263,8 @@ window.YPetTest = function() {
             $assertTo = tmp;
         }
 
-        // console.log(`$dragFrom: ${$dragFrom.index()}, $dragTo: ${$dragTo.index()}, $assertFrom: ${$assertFrom.index()}, $assertTo: ${$assertTo.index()}`);
+        // console.log(`$dragFrom: ${$dragFrom.index()}, $dragTo: ${$dragTo.index()}, $assertFrom:
+        // ${$assertFrom.index()}, $assertTo: ${$assertTo.index()}`);
 
         // Drag forward
         console.log("   %cDragging forward", "background:#888; color:#fff");
@@ -284,7 +284,7 @@ window.YPetTest = function() {
     function _testDragSameLine() {
         "use strict";
 
-        console.log("%cTest dragging forward the words in the same line ...", "background:#000; color:#fff");
+        console.log("%cTest dragging the words in the same line ...", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             (()=> {
@@ -331,7 +331,7 @@ window.YPetTest = function() {
     function _testDragDifferentLine() {
         "use strict";
 
-        console.log("%cTest dragging forward the words in the different lines ...", "background:#000; color:#fff");
+        console.log("%cTest dragging the words in the different lines ...", "background:#000; color:#fff");
 
         if (_wordList.length < 2) {
             console.log("The given passage does not have sufficient amount of lines");
@@ -411,18 +411,20 @@ window.YPetTest = function() {
     }
 
     /**
-     * Choose four difference words from _wordList, sorted by their index
+     * Choose four difference words from a list, sorted by their index
      * ASSUMES that there are at least four words available to choose
+     * @param list - The list to select, default value is _wordList
      * @returns {Array}
      * @private
      */
-    function _selectFourUniqueValidWords() {
+    function _selectFourUniqueValidWords(list) {
+        list = list || _wordList;
         var candidates = [];
 
         for (var j = 0; j < 4; ++j) {
             ((j)=> {
                 while (typeof candidates[j] === "undefined") {
-                    candidates[j] = _randomElement(_randomElement(_wordList), (elem)=> {
+                    candidates[j] = _randomElement(_randomElement(list), (elem)=> {
                         if (YPetTest.isValidWord($(elem).text())) {
                             for (var i = 0; i < j; ++i) {
                                 if ($(elem).index() === $(candidates[i]).index()) {
@@ -445,10 +447,25 @@ window.YPetTest = function() {
         return candidates;
     }
 
+    /**
+     * Set a random type id to a word (or a selection of words) by clicking it 0, 1, or 2 times
+     * @param $elem - the word to get random type id
+     * @returns a type_id (# of times clicked)
+     * @private
+     */
+    function _setRandomTypeID($elem) {
+        // Randomly choose how many times this selection should be clicked
+        var clicks = _randomElement([0, 1, 2]);
+        for (var j = 0; j < clicks; ++j) {
+            $($elem).mousedown().mouseup();
+        }
+        return clicks;
+    }
+
     function _testDragOverSelectedWord() {
         "use strict";
 
-        console.log("%cTest dragging forward over word selection", "background:#000; color:#fff");
+        console.log("%cTest dragging over word selection", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             // Select four words
@@ -456,11 +473,7 @@ window.YPetTest = function() {
 
             // Select the middle two words
             _simulateDragSelectWords(candidates[1], candidates[2]);
-            // Randomly choose how many times this selection should be clicked
-            var clicks = _randomElement([0, 1, 2]);
-            for (var j = 0; j < clicks; ++j) {
-                candidates[1].mousedown().mouseup();
-            }
+            _setRandomTypeID(candidates[1]);
 
             // Drag over the selection
             _dragAndTest(candidates[0], candidates[3]);
@@ -470,7 +483,7 @@ window.YPetTest = function() {
     function _testDragFromSelectedWord() {
         "use strict";
 
-        console.log("%cTest dragging forward from word selection", "background:#000; color:#fff");
+        console.log("%cTest dragging from word selection", "background:#000; color:#fff");
 
         for (var i = 0; i < _ITERATIONS; ++i) {
             // Select four words
@@ -478,11 +491,7 @@ window.YPetTest = function() {
 
             // Select the first word and the third word
             _simulateDragSelectWords(candidates[0], candidates[2]);
-            // Randomly choose how many times this selection should be clicked
-            var clicks = _randomElement([0, 1, 2]);
-            for (var j = 0; j < clicks; ++j) {
-                candidates[1].mousedown().mouseup();
-            }
+            _setRandomTypeID(candidates[1]);
 
             // Drag from the selection
             _dragAndTest(candidates[1], candidates[3]);
@@ -500,11 +509,7 @@ window.YPetTest = function() {
 
             // Select the second word and the last word
             _simulateDragSelectWords(candidates[1], candidates[3]);
-            // Randomly choose how many times this selection should be clicked
-            var clicks = _randomElement([0, 1, 2]);
-            for (var j = 0; j < clicks; ++j) {
-                candidates[2].mousedown().mouseup();
-            }
+            _setRandomTypeID(candidates[2]);
 
             // Drag to the selection
             _dragAndTest(candidates[0], candidates[2]);
@@ -527,6 +532,234 @@ window.YPetTest = function() {
     }
 
     /**
+     * Test if SUBMIT button will submit the correct answer
+     * How this works: First list everything to be tested, then choose the lines to be tested by shuffling
+     * @private
+     */
+    function _testSubmitResults() {
+        "use strict";
+
+        console.log("%cTest submitting the results", "background:#000; color:#fff");
+
+        var TYPE = {
+                CLICK_INVALID: undefined,
+                CLICK: 2,
+                DRAG_FORWARD_DIFFERENT_LINE: 3,
+                DRAG_BACKWARD_DIFFERENT_LINE: 4,
+                DRAG_FORWARD_SAME_LINE: 5,
+                DRAG_BACKWARD_SAME_LINE: 6,
+                DRAG_OVER_SELECTED: 7,
+                DRAG_TO_SELECTED: 8,
+                DRAG_FROM_SELECTED: 9,
+                DRAG_TO_INVALID: 100,
+                DRAG_FROM_INVALID: 101
+            },
+            /**
+             * The number of test cases above that need two lines (e.g. DRAG_FORWARD_DIFFERENT_LINE)
+             */
+            TWO_LINES = 2;
+
+        // Make sure we have sufficient amount of lines to test all these
+        var test_array = Object.keys(TYPE),
+            len = _wordList.length - 1;
+
+        // Get the values of TYPE
+        for (var i = 0; i < test_array.length; ++i) {
+            test_array[i] = TYPE[test_array[i]];
+        }
+
+        if (len < test_array.length + TWO_LINES) {
+            console.log("The article doesn't have sufficient amount of lines to test submit results");
+            return;
+        }
+
+        // Extend the test array
+        test_array[len - TWO_LINES - 1] = test_array[len - TWO_LINES - 1] || undefined;
+        var counter = 0;
+
+        // Generate the test cases
+        for (i = 0; i < len; ++i) {
+            // Choose the randomized destination to swap
+            var tar = parseInt(Math.random() * (len - i)) + i,
+                tmp = test_array[i];
+            test_array[i] = test_array[tar];
+            test_array[tar] = tmp;
+            if (test_array[i] == TYPE.DRAG_FROM_INVALID ||
+                test_array[i] == TYPE.DRAG_TO_INVALID) {
+                // Make sure there is an invalid word in this line
+                for (var j = 0; j < _wordList[i].length; ++j) {
+                    if (!YPetTest.isValidWord(_wordList[i][j].text())) {
+                        break;
+                    }
+                }
+
+                if (j === _wordList[i].length) {
+                    // No invalid word is found, start this loop one more time
+                    --i;
+                    if (++counter == _ITERATIONS) {
+                        // Unable to find an alternative test case for this line
+                        console.log("Unable to create test cases for this article. Try again");
+                        return;
+                    }
+                    continue;
+                }
+            } else if (test_array[i] == TYPE.DRAG_BACKWARD_DIFFERENT_LINE ||
+                test_array[i] == TYPE.DRAG_FORWARD_DIFFERENT_LINE) {
+                // The next line is skipped because these two test cases need two lines
+                test_array.splice(++i, 0, undefined);
+            }
+            counter = 0;
+        }
+
+        /**
+         * An array of expected words
+         * @type {Array}
+         */
+        var expected = [],
+            $elem,
+            /**
+             * Push an element in to expected, will also randmoized the type id
+             * @param $elem
+             */
+            __pushToExpected = function($elem) {
+                expected.push({
+                    type_id: _setRandomTypeID($elem),
+                    text: YPetTest.lastResponse.text
+                });
+            },
+            invalidWordLength = 0;
+
+        for (i = 0; i < len; ++i) {
+            switch (test_array[i]) {
+                case TYPE.CLICK:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    for (j = 0; j < 4; ++j) {
+                        $($elem[j]).mousedown().mouseup();
+                        __pushToExpected($elem[j]);
+                    }
+                    break;
+
+                case TYPE.DRAG_FORWARD_DIFFERENT_LINE:
+                    var $dragFrom = _randomElement(_wordList[i++], function($elem) {
+                        return YPetTest.isValidWord($elem.text());
+                    }), $dragTo = _randomElement(_wordList[i], function($elem) {
+                        return YPetTest.isValidWord($elem.text());
+                    });
+
+                    _simulateDragSelectWords($dragFrom, $dragTo);
+                    __pushToExpected($dragFrom);
+                    break;
+
+                case TYPE.DRAG_BACKWARD_DIFFERENT_LINE:
+                    $dragTo = _randomElement(_wordList[i++], function($elem) {
+                        return YPetTest.isValidWord($elem.text());
+                    });
+                    $dragFrom = _randomElement(_wordList[i], function($elem) {
+                        return YPetTest.isValidWord($elem.text());
+                    });
+
+                    _simulateDragSelectWords($dragFrom, $dragTo);
+                    __pushToExpected($dragFrom);
+                    break;
+
+                case TYPE.DRAG_FORWARD_SAME_LINE:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    _simulateDragSelectWords($elem[0], $elem[3]);
+                    __pushToExpected($elem[1]);
+                    break;
+
+                case TYPE.DRAG_BACKWARD_SAME_LINE:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    _simulateDragSelectWords($elem[3], $elem[0]);
+                    __pushToExpected($elem[1]);
+                    break;
+
+                case TYPE.DRAG_OVER_SELECTED:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    _simulateDragSelectWords($elem[1], $elem[2]);
+                    _simulateDragSelectWords($elem[0], $elem[3]);
+
+                    __pushToExpected($elem[2]);
+                    break;
+
+                case TYPE.DRAG_TO_SELECTED:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    _simulateDragSelectWords($elem[1], $elem[3]);
+                    _simulateDragSelectWords($elem[0], $elem[2]);
+
+                    __pushToExpected($elem[1]);
+                    break;
+
+                case TYPE.DRAG_FROM_SELECTED:
+                    $elem = _selectFourUniqueValidWords(_wordList[i]);
+                    _simulateDragSelectWords($elem[1], $elem[3]);
+                    _simulateDragSelectWords($elem[2], $elem[0]);
+
+                    __pushToExpected($elem[1]);
+                    break;
+
+                case TYPE.DRAG_TO_INVALID:
+                    for (j = 0; j < _wordList[i].length; ++j) {
+                        if (!YPetTest.isValidWord(_wordList[i][j].text())) {
+                            var $invalid = _wordList[i][j];
+                        }
+                    }
+
+                    $elem = _randomElement(_wordList[i], (elem) => {
+                        return YPetTest.isValidWord(elem.text());
+                    });
+
+                    _simulateDragSelectWords($elem, $invalid);
+                    __pushToExpected($elem);
+
+                    break;
+
+                case TYPE.DRAG_FROM_INVALID:
+                    for (j = 0; j < _wordList[i].length; ++j) {
+                        if (!YPetTest.isValidWord(_wordList[i][j].text())) {
+                            $invalid = _wordList[i][j];
+                        }
+                    }
+
+                    $elem = _randomElement(_wordList[i], (elem) => {
+                        return YPetTest.isValidWord(elem.text());
+                    });
+
+                    _simulateDragSelectWords($invalid, $elem);
+                    __pushToExpected($elem);
+
+                    break;
+
+                default:
+                    // Click invalid words
+                    for (j = 0; j < _wordList[i].length; ++j) {
+                        if (!YPetTest.isValidWord(_wordList[i][j].text())) {
+                            $(_wordList[i][j]).mousedown().mouseup();
+                            ++invalidWordLength;
+                        }
+                    }
+            }
+        }
+
+        // Verify expected against what's fetched
+        var got = YPet.getView().getRegion(1).currentView.collection.parentDocument.get("annotations").toJSON();
+
+        console.log("   %cVerifying word length", "background:#888; color:#fff");
+        var invalidWords = _.where(got, {"text": ""});
+        // console.assert(invalidWords.length === invalidWordLength, `Incorrect invalid word length. Expect ${invalidWordLength}, got ${invalidWords.length}`);
+
+        got = _.difference(got, invalidWords);
+        console.assert(got.length === expected.length, `Incorrect word length. Expect ${expected.length}, got ${got.length}`);
+
+        console.log("   %cVerifying word content", "background:#888; color:#fff");
+        got = _.map(got, (e)=> {
+            return _.omit(e, ["words", "start"]);
+        });
+        console.assert(JSON.stringify(got) === JSON.stringify(expected), `Annotations don't match`);
+
+    }
+
+    /**
      * Sanitize the stirng to leave out unnecessary information
      * The function was modifed from YPet.js, AnnotationList.sanitizeAnnotation
      * @param full_str
@@ -534,6 +767,7 @@ window.YPetTest = function() {
      * @private
      */
     function _sanitize(full_str) {
+        // todo try to use AnnotationList instead of creating a new function
         return _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
     }
 
@@ -549,7 +783,8 @@ window.YPetTest = function() {
                     YPetTest.lastResponse = model.toJSON();
 
                     var type = YPetTest.lastResponse.type_id;
-                    // console.log("%c" + YPetTest.lastResponse.text.substr(0, 50), `font-size:6px;color:${type == 0 ? "#d1f3ff" : (type == 1 ? "#B1FFA8" : "#ffd1dc")}`);
+                    // console.log("%c" + YPetTest.lastResponse.text.substr(0, 50), `font-size:6px;color:${type == 0 ?
+                    //     "#d1f3ff" : (type == 1 ? "#B1FFA8" : "#ffd1dc")}`);
                 });
             });
 
@@ -579,6 +814,8 @@ window.YPetTest = function() {
 
             _testClickOnWords();
             _testDragOnWords();
+
+            _testSubmitResults();
         }
     }
 }();
