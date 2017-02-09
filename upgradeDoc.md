@@ -103,6 +103,6 @@ YPet.start();
     }))());
     
     // To get the region, instead of using `[]`, we use:
-    YPet.getView.getRegion(passage_idx).show(...);
+    YPet.getView().getRegion(passage_idx).show(...);
   })();
   ```
