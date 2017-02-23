@@ -38,7 +38,7 @@ def settings(request):
     team_form = TeamForm(instance=None, data=request.POST or None)
 
     if request.method == 'POST':
-        user_change_form.save()
+        UserForm(user=request.user, data=request.POST or None)
         profile = user_profile_form.save()
 
         if team_form.is_valid() and team_form.instance.name != '':
