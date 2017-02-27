@@ -31,23 +31,30 @@ block content
             | Quick Stats
           .card-block
             .row
-              .col-xs-6
-                ol.list-unstyled
-                  li Total Contributions: #{team.total_annotations.count|intcomma}
-                  li Total Docs: #{team.total_documents.count|intcomma}
-                  li Quests Finished: #{team.finished_quests.count|intcomma}
-                  li Lifetime Score: #{team.total_score|intcomma}
+              if members
+                .col-xs-6
+                  ol.list-unstyled
+                    li Total Contributions: #{team.total_annotations.count|intcomma}
+                    li Total Docs: #{team.total_documents.count|intcomma}
+                    li Quests Finished: #{team.finished_quests.count|intcomma}
+                    li Lifetime Score: #{team.total_score|intcomma}
+              else
+                p There are no members in this group, so there are no contributions
 
               .col-xs-6
                 ol.list-unstyled
-                  - with user=team.last_active_user
-                    li
-                      p Last Active User:
-                        a(href='{% url "userprofile:public-profile" username=user.username %}')
-                          |  #{user.username}
+                  if members
+                    - with user=team.last_active_user
+                      li
+                        p Last Active User:
+                          a(href='{% url "userprofile:public-profile" username=user.username %}')
+                            if user.username
+                              #{user.username} lalalal
+
 
                     li
-                      p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
+                      if members
+                        p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
 
 
       .col-xs-4
@@ -65,24 +72,26 @@ block content
                       a(href='{% url "userprofile:public-profile" username=team.owner.username %}')
                         |  #{team.owner}
                   li
-                    p Members: #{team.members_count}
+                    if members
+                      p Members: #{team.members_count}
 
                   li
-                    - with userprofile=team.userprofile_set.last
-                      p Newest Member:
-                        a(href='{% url "userprofile:public-profile" username=userprofile.user.username %}')
-                          |  #{userprofile.user.username}
+                    if members
+                      - with userprofile=team.userprofile_set.last
+                        p Newest Member:
+                          a(href='{% url "userprofile:public-profile" username=userprofile.user.username %}')
+                            |  #{userprofile.user.username}
 
 
-
-    .row
-      .col-xs-10.col-xs-offset-1
-        .card
-          .card-header
-            | Members
-          .card-block
-            .row
-              - for member_profile in members
-                .col-xs-4
-                  a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
-                    p.lead.text-xs-center #{member_profile.user.username}
+    if members
+      .row
+        .col-xs-10.col-xs-offset-1
+          .card
+            .card-header
+              | Members
+            .card-block
+              .row
+                  - for member_profile in members
+                    .col-xs-4
+                      a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
+                        p.lead.text-xs-center #{member_profile.user.username}
