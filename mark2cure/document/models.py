@@ -315,7 +315,7 @@ class Annotation(models.Model):
         if self.kind == 'r':
             return 'Relationship Ann'
         elif self.kind == 'e':
-            return '{0} ({1}) [{2}]'.format(self.text, self.start, self.pk)
+            return '{0} ({1}) [{2}]'.format(self.metadata.text, self.metadata.start, self.pk)
         else:
             return 'Annotation {0}'.format(self.pk)
 
