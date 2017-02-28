@@ -48,7 +48,7 @@ function get_stype(the_current_relation) {
 /*
  * Views
  */
-RelationView = Backbone.Marionette.ItemView.extend({
+RelationView = Backbone.Marionette.View.extend({
   template: _.template('<%= text %>'),
   tagName: 'a',
   className: 'list-group-item',

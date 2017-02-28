@@ -181,6 +181,8 @@ block post-footer
       $.ajax({
         url: '/task/entity-recognition/{{task.pk}}/{{document.pk}}/results.json',
         dataType: 'json',
+        headers: {'X-CSRFTOKEN': '{{csrf_token}}'},
+        type: "POST",
         cache: false,
         async: false,
         success: function(data) {

@@ -103,6 +103,19 @@ YPet.start();
     }))());
     
     // To get the region, instead of using `[]`, we use:
-    YPet.getView.getRegion(passage_idx).show(...);
+    YPet.getView().getRegion(passage_idx).show(...);
   })();
   ```
+## Using `View` instead of `ItemView`
+
+Simply replacing `ItemView` in the code with `View`. For example (in `js/libs/tree.js`), 
+
+```
+RelationView = Backbone.Marionette.ItemView.extend({ 
+  ...
+```
+can be changed to
+```
+RelationView = Backbone.Marionette.View.extend({ 
+  ...
+```
