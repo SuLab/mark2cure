@@ -448,7 +448,9 @@ WordView = Backbone.Marionette.ItemView.extend({
   /* Triggers the proper class assignment
    * when the word <span> is redrawn */
   onRender : function() {
-    this.$el.css({'margin-right': this.model.get('neighbor') ? '5px' : '0px'});
+    this.$el.css(this.model.get('neighbor') ?
+      {'margin-right': '5px', 'padding-right': '0'} :
+      {'margin-right': '0px', 'padding-right': '5px'});
   },
 
   /* When clicking down, make sure to keep track
