@@ -2,7 +2,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:44:45Z",
-        "created": "2015-04-22T12:33:22Z",
         "title": "[ Prenatal symptoms and diagnosis of inherited metabolic diseases ] .",
         "source": "pubmed",
         "authors": "",
@@ -14,7 +13,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:44:34Z",
-        "created": "2015-04-22T12:33:48Z",
         "title": "A deletion-insertion mutation in the phosphomannomutase 2 gene in an African American patient with congenital disorders of glycosylation-Ia .",
         "source": "pubmed",
         "authors": "",
@@ -26,7 +24,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:44:20Z",
-        "created": "2015-04-22T12:34:30Z",
         "title": "Deficiency of UDP-GlcNAc : Dolichol Phosphate N-Acetylglucosamine-1 Phosphate Transferase ( DPAGT1 ) causes a novel congenital disorder of Glycosylation Type Ij .",
         "source": "pubmed",
         "authors": "",
@@ -38,7 +35,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:44:09Z",
-        "created": "2015-04-22T12:35:09Z",
         "title": "The heart and pericardial effusions in CDGS-I ( carbohydrate-deficient glycoprotein syndrome type I ) .",
         "source": "pubmed",
         "authors": "",
@@ -50,7 +46,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:43:17Z",
-        "created": "2015-04-22T12:37:56Z",
         "title": "[ The blood oxygen-transport system and oxygen tissue balance in patients with bronchial asthma ( BA ) concurrent with carbohydrate metabolic disturbances ] .",
         "source": "pubmed",
         "authors": "",
@@ -62,7 +57,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:42:21Z",
-        "created": "2015-04-22T12:41:00Z",
         "title": "Metabolism , cell surface organization , and disease .",
         "source": "pubmed",
         "authors": "",
@@ -74,7 +68,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:42:03Z",
-        "created": "2015-04-22T12:41:50Z",
         "title": "Solving glycosylation disorders : fundamental approaches reveal complicated pathways .",
         "source": "pubmed",
         "authors": "",
@@ -86,7 +79,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:41:38Z",
-        "created": "2015-04-22T12:43:08Z",
         "title": "Clinical and molecular studies of EXT1/EXT2 in Bulgaria .",
         "source": "pubmed",
         "authors": "",
@@ -98,7 +90,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:41:05Z",
-        "created": "2015-04-22T12:44:52Z",
         "title": "Fine mapping of the gene for carbohydrate-deficient glycoprotein syndrome , type I ( CDG1 ) : linkage disequilibrium and founder effect in Scandinavian families .",
         "source": "pubmed",
         "authors": "",
@@ -110,7 +101,6 @@
 {
     "fields": {
         "updated": "2015-04-28T17:40:35Z",
-        "created": "2015-04-22T12:46:23Z",
         "title": "A new capillary zone electrophoresis method for the screening of congenital disorders of glycosylation ( CDG ) .",
         "source": "pubmed",
         "authors": "",
@@ -122,7 +112,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:40:37Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:04Z",
         "session_id": "",
@@ -136,7 +125,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:40:38Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:04Z",
         "session_id": "",
@@ -150,7 +138,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:40:38Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:04Z",
         "session_id": "",
@@ -164,7 +151,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:41:39Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:09Z",
         "session_id": "",
@@ -178,7 +164,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:41:39Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:09Z",
         "session_id": "",
@@ -192,7 +177,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:41:40Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:09Z",
         "session_id": "",
@@ -206,7 +190,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:42:24Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:13Z",
         "session_id": "",
@@ -220,7 +203,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:42:25Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:13Z",
         "session_id": "",
@@ -234,7 +216,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:42:25Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:13Z",
         "session_id": "",
@@ -248,7 +229,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:42:52Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:15Z",
         "session_id": "",
@@ -262,7 +242,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:42:52Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:15Z",
         "session_id": "",
@@ -276,7 +255,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:42:53Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:15Z",
         "session_id": "",
@@ -290,7 +268,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:44:52Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:49Z",
         "session_id": "",
@@ -304,7 +281,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:44:52Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:49Z",
         "session_id": "",
@@ -318,7 +294,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:44:53Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:30:49Z",
         "session_id": "",
@@ -332,7 +307,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:46:41Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:04Z",
         "session_id": "",
@@ -346,7 +320,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:46:41Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:04Z",
         "session_id": "",
@@ -360,7 +333,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:46:41Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:04Z",
         "session_id": "",
@@ -374,7 +346,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:47:08Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:09Z",
         "session_id": "",
@@ -388,7 +359,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:47:08Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:09Z",
         "session_id": "",
@@ -402,7 +372,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:47:08Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:09Z",
         "session_id": "",
@@ -416,7 +385,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:47:36Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:12Z",
         "session_id": "",
@@ -430,7 +398,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:47:36Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:12Z",
         "session_id": "",
@@ -444,7 +411,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:47:36Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:12Z",
         "session_id": "",
@@ -458,7 +424,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T00:47:49Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:13Z",
         "session_id": "",
@@ -472,7 +437,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T00:47:50Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:13Z",
         "session_id": "",
@@ -486,7 +450,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T00:47:50Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:13Z",
         "session_id": "",
@@ -500,7 +463,6 @@
 {
     "fields": {
         "kind": "tmChem",
-        "created": "2015-05-05T02:16:25Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:15Z",
         "session_id": "",
@@ -514,7 +476,6 @@
 {
     "fields": {
         "kind": "DNorm",
-        "created": "2015-05-05T02:16:25Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:15Z",
         "session_id": "",
@@ -528,7 +489,6 @@
 {
     "fields": {
         "kind": "GNormPlus",
-        "created": "2015-05-05T02:16:26Z",
         "validate_cache": true,
         "updated": "2016-04-11T16:31:15Z",
         "session_id": "",
@@ -542,7 +502,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:40:35Z",
         "text": "A new capillary zone electrophoresis method for the screening of congenital disorders of glycosylation ( CDG ) .",
         "updated": "2015-04-28T17:40:35Z",
         "source": "images/figure.jpg",
@@ -554,7 +513,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:40:35Z",
         "text": "BACKGROUND : The Congenital Disorders of Glycosylation ( CDG ) are an expanding group of metabolic diseases with a broad clinical presentation . We sought to validate a new Capillary Zone Electrophoresis ( CZE ) method ( Sebia Capillarys CDT ) to screen for CDG . METHODS : We analyzed 119 serum samples from children of varying ages and of both sexes to establish a reference range of transferrin glycoforms including CDT ( Carbohydrate Deficient Transferrin ) . We then studied serums from 8 known CDG patients and compared the CZE results to the Isoelectric Focusing ( IEF ) profiles . We also analyzed serums after extraction from spotted Guthrie cards . RESULTS : The mean ( SD ) percentages of transferrin glycoforms are 18.5 ( 4.4 ) , 78.5 ( 4.2 ) , 2.5 ( 1.3 ) and 0.6 ( 0.3 ) for penta- , tetra- , trisialotransferrin and CDT , respectively . There is no statistically significant difference between the different age groups analyzed ( 0-5 , 6-11 , 12-15 , 16-18 , and > 18 y ) or between sexes . We observed a good correlation between the CZE and IEF profiles with both fresh serum and serum extracted from Guthrie cards . CONCLUSIONS : The Sebia Capillarys CDT system is a simple and reliable method to screen for CDG in pediatric and adult patients with an unexplained clinical syndrome , particularly when the nervous system is involved .",
         "updated": "2015-04-28T17:40:35Z",
         "source": "images/figure.jpg",
@@ -566,7 +524,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:41:05Z",
         "text": "Fine mapping of the gene for carbohydrate-deficient glycoprotein syndrome , type I ( CDG1 ) : linkage disequilibrium and founder effect in Scandinavian families .",
         "updated": "2015-04-28T17:41:05Z",
         "source": "images/figure.jpg",
@@ -578,7 +535,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:41:05Z",
         "text": "Carbohydrate-deficient glycoprotein syndrome type I ( CDG I ) is characterized clinically by severe nervous system involvement and biochemically by defects in the carbohydrate residues in a number of serum glycoproteins . The CDG1 gene was recently localized by us to a 13-cM interval in chromosome region 16p13 . In this study 44 CDG I families from nine countries were analyzed with available markers in a region ranging from marker D16S495 to D16S497 , and haplotype and linkage disequilibrium analyses were performed . One specific haplotype was found to be markedly overrepresented in CDG I patients from a geographically distinct region in Scandinavia , strongly indicating that CDG I families in this region share the same ancestral CDG1 mutation . furthermore , analysis of the extent of the common haplotype in these families indicates that the CDG1 gene is located in the region defined by markers D16S513-AFMa284wd5-D16S768-D16S406-D16S502 . The critical CDG1 region , in strong linkage disequilibrium with markers AFMa284wd5 , D16S768 , and D16S406 , thus constitutes less than 1 Mb of DNA and less than 1 cM in the very distal part of the CDG1 region defined by us previously .",
         "updated": "2015-04-28T17:41:05Z",
         "source": "images/figure.jpg",
@@ -590,7 +546,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:41:38Z",
         "text": "Clinical and molecular studies of EXT1 / EXT2 in Bulgaria .",
         "updated": "2015-05-04T16:24:47Z",
         "source": "images/figure.jpg",
@@ -602,7 +557,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:41:38Z",
         "text": "EXT1 / EXT2-CDG ( Multiple cartilagineous exostoses , hereditary multiple osteochondroma ( MO ) ; OMIM 133700 / 133701 ) are common defects of O-xylosylglycan glycosylation . The diagnostic criteria are at least two osteochondromas of the juxta-epiphyseal region of long bones with in the majority of cases a positive family history and / or mutation in one of the EXT genes . The authors report data on clinical symptoms and complications of 23 patients ( from 16 families ) , discussing the family history , age of diagnosis , new clinical and molecular data . Fifteen mutations and large deletions , of which nine are new , were detected in the EXT1 and EXT2 gene by sequence analysis , FISH and MLPA analysis .",
         "updated": "2015-05-04T16:24:47Z",
         "source": "images/figure.jpg",
@@ -614,7 +568,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:42:03Z",
         "text": "Solving glycosylation disorders : fundamental approaches reveal complicated pathways .",
         "updated": "2015-04-28T17:42:03Z",
         "source": "images/figure.jpg",
@@ -626,7 +579,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:42:03Z",
         "text": "Over 100 human genetic disorders result from mutations in glycosylation-related genes . In 2013 , a new glycosylation disorder was reported every 17 days . This trend will probably continue given that at least 2 % of the human genome encodes glycan-biosynthesis and -recognition proteins . Established biosynthetic pathways provide many candidate genes , but finding unanticipated mutated genes will offer new insights into glycosylation . Simple glycobiomarkers can be used in narrowing the candidates identified by exome and genome sequencing , and those can be validated by glycosylation analysis of serum or cells from affected individuals . Model organisms will expand the understanding of these mutations ' impact on glycosylation and pathology . Here , we highlight some recently discovered glycosylation disorders and the barriers , breakthroughs , and surprises they presented . We predict that some glycosylation disorders might occur with greater frequency than current estimates of their prevalence . Moreover , the prevalence of some disorders differs substantially between European and African Americans .",
         "updated": "2015-04-28T17:42:03Z",
         "source": "images/figure.jpg",
@@ -638,7 +590,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:42:21Z",
         "text": "Metabolism , cell surface organization , and disease .",
         "updated": "2015-04-28T17:42:21Z",
         "source": "images/figure.jpg",
@@ -650,7 +601,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:42:21Z",
         "text": "Genetic information flows from DNA to macromolecular structures-the dominant force in the molecular organization of life . However , recent work suggests that metabolite availability to the hexosamine and Golgi N-glycosylation pathways exerts control over the assembly of macromolecular complexes on the cell surface and , in this capacity , acts upstream of signaling and gene expression . The structure and number of N-glycans per protein molecule cooperate to regulate lectin binding and thereby the distribution of glycoproteins at the cell surface . Congenital disorders of glycosylation provide insight as extreme hypomorphisms , whereas milder deficiencies may encompass many common chronic conditions , including autoimmunity , metabolic syndrome , and aging .",
         "updated": "2015-04-28T17:42:21Z",
         "source": "images/figure.jpg",
@@ -662,7 +612,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:43:17Z",
         "text": "[ The blood oxygen-transport system and oxygen tissue balance in patients with bronchial asthma ( BA ) concurrent with carbohydrate metabolic disturbances ] .",
         "updated": "2015-04-28T17:43:17Z",
         "source": "images/figure.jpg",
@@ -674,7 +623,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:43:17Z",
         "text": "Examining the parameters of the blood oxygen-transport system and oxygen tissue balance in 71 patients with bronchial asthma ( BA ) and in 60 patients with BA concurrent with varying carbohydrate metabolic disturbances ( CMDs ) revealed differences in oxygen transport . In asthmatic patients without CMDs , the pattern of changes in oxygen balance permitted identification of arteriohypoxemic hypoxia . The high frequency of factors ( alkalosis , hypocapnia ) that enhance hemoglobin affinity for oxygen , which are compensated for by the increase in 2,3-DPH , as well as hypoxia of peripheral shunting are the specific features of impaired oxygen balance in asthmatic patients with concomitant CMDs that predispose to the development and progression of pulmonary hypertension and cor pulmonale which cause early disability . The determination of the leading link in impaired oxygen transport individualizes treatment approaches and provides evidence for a need for earlier use of metabolic and antihypoxic agents in asthmatic patients with CMDs .",
         "updated": "2015-04-28T17:43:17Z",
         "source": "images/figure.jpg",
@@ -686,7 +634,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:44:09Z",
         "text": "The heart and pericardial effusions in CDGS-I ( carbohydrate-deficient glycoprotein syndrome type I ) .",
         "updated": "2015-04-28T17:44:09Z",
         "source": "images/figure.jpg",
@@ -698,7 +645,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:44:09Z",
         "text": "Pericardial effusions were found in 6 of 10 children with carbohydrate-deficient glycoprotein syndrome type I ( CDGS-I ) . In three cases pericardectomy was necessary . Blood concentrations of several glycoproteins and albumin were low . Similar abnormal isoforms of four glycoproteins were found in blood ( B ) and pericardial fluid ( PF ) . There was a significant negative correlation between the mean concentration ratio PF / B and the molecular mass ( MW ) of 11 proteins . For proteins with MW < 100 kDa there were significant correlations in the controls , but not in the patients , between the PF / B ratio and both the MW and the sialic acid contents in the ( glyco- ) proteins . The pericardium exhibited focal mixed inflammatory changes with mesothelial proliferation , with widened endoplasmic reticulum and flocculent and / or lamellated material . Damage to a pericardial protein barrier is suggested to be involved in pericardial effusion in CDGS-I .",
         "updated": "2015-05-04T16:30:27Z",
         "source": "images/figure.jpg",
@@ -710,7 +656,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:44:20Z",
         "text": "Deficiency of UDP-GlcNAc : Dolichol Phosphate N-Acetylglucosamine-1 Phosphate Transferase ( DPAGT1 ) causes a novel congenital disorder of Glycosylation Type Ij .",
         "updated": "2015-04-28T17:44:20Z",
         "source": "images/figure.jpg",
@@ -722,7 +667,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:44:20Z",
         "text": "Defects in the assembly of dolichol-linked oligosaccharide or its transfer to proteins result in severe , multi-system human diseases called Type I congenital disorders of glycosylation . We have identified a novel CDG type , CDG-Ij , resulting from deficiency in UDP-GlcNAc : dolichol phosphate N-acetyl-glucosamine-1 phosphate transferase ( GPT ) activity encoded by DPAGT1 . The patient presents with severe hypotonia , medically intractable seizures , mental retardation , microcephaly , and exotropia . Metabolic labeling of cultured dermal fibroblasts from the patient with [ 2- ( 3 ) H ] -mannose revealed lowered incorporation of radiolabel into full-length dolichol-linked oligosaccharides and glycoproteins . In vitro enzymatic analysis of microsomal fractions from the cultured cells indicated that oligosaccharyltransferase activity is normal , but the GPT activity is reduced to approximately 10 % of normal levels while parents have heterozygous levels . The patient 's paternal DPAGT1 allele contains a point mutation ( 660A > G ) that replaces a highly conserved tyrosine with a cysteine ( Y170C ) . The paternal allele cDNA produces a full-length protein with almost no activity when over-expressed in CHO cells . The maternal allele makes only about 12 % normal mature mRNA , while the remainder shows a complex exon skipping pattern that shifts the reading frame encoding a truncated non-functional GPT protein . Thus , we conclude that the DPAGT1 gene defects are responsible for the CDG symptoms in this patient . Hum Mutat 22:144-150 , 2003 .",
         "updated": "2015-04-28T17:44:20Z",
         "source": "images/figure.jpg",
@@ -734,7 +678,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:44:34Z",
         "text": "A deletion-insertion mutation in the phosphomannomutase 2 gene in an African American patient with congenital disorders of glycosylation-Ia .",
         "updated": "2015-04-28T17:44:34Z",
         "source": "images/figure.jpg",
@@ -746,7 +689,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:44:34Z",
         "text": "Congenital disorders of glycosylation ( CDG ) are a group of metabolic disorders with multisystemic involvement characterized by abnormalities in the synthesis of N-linked oligosaccharides . The most common form , CDG-Ia , resulting from mutations in the gene encoding the enzyme phosphomannomutase ( PMM2 ) , manifests with severe abnormalities in psychomotor development , dysmorphic features and visceral involvement . While this disorder is panethnic , we present the first cases of CDG-Ia identified in an African American family with two affected sisters . The proband had failure to thrive in infancy , hypotonia , ataxia , cerebellar hypoplasia and developmental delay . On examination , she also exhibited strabismus , inverted nipples and an atypical perineal fat distribution , all features characteristic of CDG-Ia . Direct sequencing demonstrated that the patient had a unique genotype , T237M / c.565-571 delAGAGAT insGTGGATTTCC . The novel deletion-insertion mutation , which was confirmed by subcloning and sequencing of each allele , introduces a stop codon 11 amino acids downstream from the site of the deletion . The presence of this deletion-insertion mutation at cDNA position 565 suggests that this site in the PMM2 gene may be a hotspot for chromosomal breakage .",
         "updated": "2015-05-04T18:06:55Z",
         "source": "images/figure.jpg",
@@ -758,7 +700,6 @@
 {
     "fields": {
         "kind": "t",
-        "created": "2015-04-28T17:44:45Z",
         "text": "[ Prenatal symptoms and diagnosis of inherited metabolic diseases ] .",
         "updated": "2015-04-28T17:44:45Z",
         "source": "images/figure.jpg",
@@ -770,7 +711,6 @@
 {
     "fields": {
         "kind": "a",
-        "created": "2015-04-28T17:44:45Z",
         "text": "Inherited metabolic diseases are mostly due to enzyme deficiency in one of numerous metabolic pathways , leading to absence of a compound downstream from and the accumulation of a compound upstream from the deficient metabolite ( s ) . Diseases of intoxication by proteins ( aminoacidopathies , organic acidurias , urea cycle defects ) and by sugars ( galactosemia , fructosemia ) usually do not give prenatal symptoms since mothers protect their fetuses from pathological metabolite accumulation . A well-known exception is hypoplasia of corpus callosum , as is sometimes observed in nonketotic hyperglycinemia and sulfite oxidase deficiency . Conversely , women with phenylketonuria `` poison '' their fetus if they are not treated ( spontaneous abortions , intrauterine growth restriction [ IUGR ] , cardiac malformations , and brain disease ) . Amino acid synthesis defects can lead to prenatal symptoms : microcephaly in serine deficiency ( detectable by amino acid analysis in fetal cord blood ) , and brain malformations in glutamine synthetase deficiency . Impaired folate metabolism is involved in a large fraction of neurodevelopmental defects referred to as spina bifida , yet the underlying genetic component ( s ) are largely unknown . Energy metabolism diseases caused by defects in the synthesis or utilization of relevant metabolites lead to organ dysfunctions or malformations , but prenatal diagnosis is usually impossible unless genetic analysis can rely on a previously affected child in the family . A somewhat intermediate condition is defects of mitochondrial beta-oxidation of fatty acids , as they may sometimes be symptomatic prenatally ( notably the HELLP syndrome or other presentations ) , and in this case , organic acid and acylcarnitine analysis in amniotic fluid can be informative in the absence of an index case . In contrast , complex molecule diseases commonly give prenatal symptoms that may permit the diagnosis even in the absence of index cases : hydrops fetalis and skeletal anomalies in lysosomal storage diseases , hydrops fetalis in congenital disorders of glycosylation ( CDG ) and transaldolase deficiency , brain malformations in O-glycosylation defects , brain malformations , kidney cysts and skeletal anomalies in peroxysomal diseases ( Zellweger syndrome ) , syndactyly , genitalia malformations , and IUGR in Smith-Lemli-Opitz ( SLO ) syndrome . Although many metabolic disorders show biochemical abnormalities during fetal development that are informative for prenatal diagnosis , only a fraction of them are clinically / sonographically symptomatic before birth , thus allowing for prenatal diagnosis in the absence of an index case , i.e . , serine deficiency , some fatty acid beta-oxidation defects , transaldolase deficiency , lysosomal diseases , CDG , Zellweger syndrome , and SLO syndrome .",
         "updated": "2015-05-04T18:06:56Z",
         "source": "images/figure.jpg",
