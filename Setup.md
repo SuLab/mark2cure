@@ -1,8 +1,8 @@
 # System Setup
 
-This document describes a relatively detailed way to set up Mark2Cure so it could be run locally on your computer.
+This document describes a relatively detailed way to set up Mark2Cure so it could run locally on your computer.
 
-The whole guide was tested on a Ubuntu machine. Mac users may find some difference when following this guide
+The whole guide was tested on a Ubuntu machine. Mac users may find some difference when following this guide. Remember, whenever you have any trouble, Google is your best friend. 
 
 ## Requirements
 
@@ -106,7 +106,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 ## Running server
 
-Now we have finish setting up the database, it is time to run the server locally. However, make sure you have checked the tables under scheme `mark2cure` in the database. If you are seeing many tables, go ahead.
+Now we have finished setting up the database, it is time to run the server locally. However, make sure you have checked the tables under scheme `mark2cure` in the database. If you are seeing many tables, go ahead.
 
 * Run the server by typing `python manage.py runserver`. If nothing goes wrong, you should see something below.
 
@@ -196,11 +196,13 @@ mark2cure.document.tasks.get_pubmed_document(27834101);
 After the documents are fetched, type the following into the shell. Note that you can edit the group property (name and description) later through the database.
 
 ```
-from mark2cure.common.models import Group
+from mark2cure.common.models import Group, Document
 
 G = Group()
+G.save()
 G.assign(Document.objects.all()) # Here, you can modify it to only put specific documents
-G.enabled = true
+G.save()
+G.enabled = True
 G.save()
 ```
 
@@ -209,6 +211,6 @@ To know more about `assign` function used above, read the source code [here](htt
 
 # Credit
 
-The original document was written by Runjie Guan, who was an intern working for this project between Sep 2016 to Mar 2017. I have gone over the same procedure described above and can make sure it is accurate as of Mar 2017. This guide is not comprehensive since I did not have the chance to work on every feature of Mark2Cure, so please contact Max if you need help. For example, this guide doesn't tell people how to create relationship tasks, so if you do, please add it into this guide to complete it.
+The original document was written by [Runjie Guan](https://github.com/AnoXDD), who was an intern working for this project between Sep 2016 to Mar 2017. I have gone over the same procedure described above and can make sure it is accurate as of Mar 2017. This guide is not comprehensive since I did not have the chance to work on every feature of Mark2Cure, so please contact Max if you need help. For example, this guide doesn't tell people how to create relationship tasks, so if you do, please add it into this guide to complete it.
 
 Since the project is developing quite quickly, if you see any problems in this guide, you will probably want to figure it out by yourself, which is what I did before I know how to write this.
