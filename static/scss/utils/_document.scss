@@ -12,6 +12,12 @@ p.paragraph {
   -webkit-touch-callout: none;
   @include user-select(none);
 
+  span {
+    display: inline-block;
+    padding-right: 5px;
+    line-height: 1em;
+  }
+
   span:hover {
     color: $color_picton_blue;
   }
