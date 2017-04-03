@@ -210,7 +210,7 @@ block post-footer
 
       /* Do not save data if the annotation is empty */
       annotations = _.flatten(_.values(ann_dict));
-      annotations = _.without(annotations, _.findWhere(annotations, {'text': ""}));
+      annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
       annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
       annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
 
