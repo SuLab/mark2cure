@@ -1,12 +1,8 @@
 var gulp = require('gulp');
-var compass = require('gulp-compass');
-var gulpif = require('gulp-if');
-var livereload = require('gulp-livereload');
-var cleanCSS = require('gulp-clean-css');
-var gutil = require('gulp-util');
-var csso = require('gulp-csso');
-var sass = require('gulp-sass');
-var rename = require('gulp-rename');
+var glibs = require('gulp-load-plugins')({
+  pattern: ['gulp-*', 'gulp.*', 'main-bower-files'],
+  camelize: true,
+});
 
 var path = require('path');
 var tinylr = require('tiny-lr');
@@ -14,9 +10,6 @@ var server = tinylr();
 
 var SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler();
-
-var PRODUCTION_MODE = gutil.env.production;
-
 
 gulp.task('watch', function () {
   server.listen(35729, function (err) {
@@ -32,6 +25,57 @@ gulp.task('fonts', function() {
     .src(path.join(__dirname, 'bower_components', 'font-awesome', 'fonts/*'))
     .pipe(gulp.dest('static/fonts/'))
     .pipe( livereload(server));
+});
+
+gulp.task('js', function() {
+  var project_js_files = [
+    './node_modules/backbone/backbone.js',
+    './node_modules/backbone-relational/backbone-relational.js',
+    './node_modules/backbone.marionette/lib/backbone.marionette.js',
+    './node_modules/backbone.radio/build/backbone.radio.js',
+    './node_modules/bootstrap/dist/js/bootstrap.js',
+    './node_modules/d3/d3.js',
+    './node_modules/intro.js/intro.js',
+    './node_modules/jquery/dist/jquery.js',
+    './node_modules/md5/md5.js',
+    './node_modules/moment/moment.js',
+    './node_modules/odometer/odometer.js',
+    './node_modules/sifter/sifter.js',
+    './node_modules/sigma/build/sigma.min.js',
+    './node_modules/sigma/build/plugins/sigma.parsers.json.min.js',
+    './node_modules/sigma/build/plugins/sigma.plugins.filter.min.js',
+    './node_modules/tether/dist/js/tether.js',
+    './node_modules/underscore/underscore.js',
+    './node_modules/underscore.string/dist/underscore.string.min.js',
+    './node_modules/jquery-ui/jquery-ui.js',
+    './node_modules/@rq/sly-scrolling/dist/sly.js',
+    './node_modules/raven-js/dist/raven.js',
+
+    './static/js-src/libs/ypet.js',
+    './static/js-src/libs/tree.js',
+    './static/js-src/libs/leaderboard.js',
+
+    './static/js-src/pages/training/entity-recognition/basic.js',
+    './static/js-src/pages/cloud.js',
+    './static/js-src/pages/group_home.js',
+    './static/js-src/pages/landing2.js',
+
+    './static/js-src/tasks/relation-list.js',
+    './static/js-src/tasks/relation-synopsis.js',
+    './static/js-src/tasks/relation-training.js',
+    './static/js-src/tasks/relation.js',
+
+    './static/js-src/demo.js',
+    './static/js-src/app.js'
+  ];
+
+  return gulp.src(project_js_files)
+    .pipe(glibs.uglify())
+    .pipe(glibs.concat('mark2cure.min.js'))
+    .pipe(gulp.dest('./static/js/'))
+    .on('error', function(err) {
+      console.error('Error in compress task', err.toString());
+    });
 });
 
 gulp.task('css', ['fonts'], function() {
@@ -54,5 +98,5 @@ gulp.task('css', ['fonts'], function() {
       .pipe(gulp.dest('css/'));
 });
 
-gulp.task('default', ['css']);
+gulp.task('default', ['js']);
 

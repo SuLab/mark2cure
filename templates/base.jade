@@ -70,38 +70,7 @@ head
       include includes/footer
 
     block js-libs
-      // Generic Requirements
-      script(src="#{STATIC_URL}js/libs/jquery-1.11.2.min.js")
-
-      // Bootstrap JS Requirements (we use tooltips)
-      script(src="#{STATIC_URL}js/libs/tether.min.js")
-      script(src="#{STATIC_URL}js/libs/bootstrap.min.js")
-
-      // Marionette Requirements (YPet & Tree Applications)
-      script(src="#{STATIC_URL}js/libs/underscore-min.js")
-      script(src="#{STATIC_URL}js/libs/backbone.min.js")
-      script(src='#{STATIC_URL}js/libs/backbone-relational.js')
-      script(src='#{STATIC_URL}js/libs/backbone.radio.min.js')
-      script(src='#{STATIC_URL}js/libs/backbone.marionette.min.js')
-
-      // Other Various JS libs
-      script(src='#{STATIC_URL}js/libs/underscore.string.min.js')
-      script(src='#{STATIC_URL}js/libs/d3.min.js')
-      script(src='#{STATIC_URL}js/libs/md5.js')
-      script(src='#{STATIC_URL}js/libs/moment.js')
-      script(src='#{STATIC_URL}js/libs/selectize.js')
-      script(src='#{STATIC_URL}js/libs/intro.min.js')
-      script(src='#{STATIC_URL}js/libs/odometer.min.js')
-      script(src='//cdn.ravenjs.com/2.0.1/raven.min.js')
-
-      // Network Requirements
-      script(src='#{STATIC_URL}js/libs/sigma.min.js')
-      script(src='#{STATIC_URL}js/libs/plugins/sigma.parsers.json.min.js')
-      script(src='#{STATIC_URL}js/libs/plugins/sigma.plugins.filter.min.js')
-
-      // Custom Application JS Requirements
-      script(src='#{STATIC_URL}js/ypet.js')
-      script(src='#{STATIC_URL}js/app.js')
+      script(src='#{STATIC_URL}js/mark2cure.min.js')
 
     a#support-icon(data-toggle="modal", data-target="#support-modal")
       img(src='#{STATIC_URL}images/support-icon.png')
@@ -136,31 +105,21 @@ head
         fetchContext: true,
         linesOfContext: 30
       };
-      Raven.config('{% sentry_public_dsn %}').install()
+      Raven.config('https://2e8a4df0f5a640409c45630cb43472b4@sentry.io/61810').install()
       Raven.setUser({
         email: "{{ request.user.email }}",
         id: "{{ request.user.pk }}"
       });
 
-    - if not debug
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-43341013-1', 'auto');
+      ga('send', 'pageview');
+
+    - if debug
       script.
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-43341013-1', 'auto');
-        ga('send', 'pageview');
-
-    - else
-      script.
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics_debug.js','ga');
-
-        ga('create', 'UA-43341013-1', 'auto');
-        ga('send', 'pageview');
         ga('set', 'sendHitTask', null);
 
     block post-footer

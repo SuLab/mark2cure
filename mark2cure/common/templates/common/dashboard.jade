@@ -202,7 +202,6 @@ block post-footer
     <hr />
     </script>
 
-    script(src='#{STATIC_URL}js/tasks/relation-list.js')
     script.
       if($('#document-relation-board').length) {
         DocumentRelationBoard.addInitializer(function(options) {
@@ -215,7 +214,6 @@ block post-footer
 
 
   block post-footer-sidebar
-    script(src='#{STATIC_URL}js/leaderboard.js')
     script.
       LeaderBoard.addInitializer(function(options) {
         LeaderBoard.addRegions({'leaderboard': '#leaderboard'});

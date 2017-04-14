@@ -143,13 +143,6 @@ block content
 block js-libs
   {{ block.super }}
 
-  // Homepage specific requirements
-  // Other Various JS libs
-  script(src='#{STATIC_URL}js/libs/jquery-ui.min.js')
-  script(src='#{STATIC_URL}js/libs/sly.min.js')
-  // Using sly lib (for 'completed/incomplete document carousel')
-  script(src='#{STATIC_URL}js/pages/landing2.js')
-
 
 block post-footer
   script.
