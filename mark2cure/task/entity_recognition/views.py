@@ -48,7 +48,7 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
 
 
 @login_required
-@require_http_methods(['POST'])
+@require_http_methods(['GET', 'POST'])
 def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     '''
         Returns back the modified BioC file with additional collection metadata that allow us to compare you to a user and show score data
@@ -56,7 +56,6 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
     '''
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
-    print task, document
 
     if not document:
         return HttpResponseServerError()
@@ -68,6 +67,7 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         annotated a new document
     '''
     opponent = select_best_opponent(task, document, request.user)
+
     if not opponent:
         # No other work has ever been done on this apparently
         # so we reward the user and let them know they were

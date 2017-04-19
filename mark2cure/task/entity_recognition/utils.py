@@ -65,13 +65,18 @@ def select_best_opponent(task, document, player):
             df = report.dataframe
             df = df[df['user_id'].isin(previous_users_pks)]
 
+            if df.shape[0] == 0:
+                previous_users_pks = [int(u.pk) for u in previous_users]
+                df = report.dataframe
+                df = df[df['user_id'].isin(previous_users_pks)]
+
             row_length = df.shape[0]
             if row_length:
                 # Top 1/2 of the users (sorted by F)
                 df = df.iloc[:row_length / 2]
 
                 # Select 1 at random
-                top_half_user_pks = list(df.user)
+                top_half_user_pks = list(df.user_id)
                 random.shuffle(top_half_user_pks)
                 selected_user_pk = top_half_user_pks[0]
 
