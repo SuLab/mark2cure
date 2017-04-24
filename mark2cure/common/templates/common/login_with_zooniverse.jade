@@ -1,0 +1,45 @@
+extends base
+
+
+block header
+  include includes/header-generic
+
+
+block content
+  .container
+    .row.m-y-1
+      .col-xs-12
+        h2.text-xs-center Login with Zooniverse
+        p.text-xs-center Use your Zooniverse account to login into Mark2Cure
+
+    .row.m-y-1
+      .col-xs-10.col-xs-offset-1
+        .form-group.m-y-1
+          .row
+            .col-xs-12.text-center
+              input(id='zooniverse-signin', type='submit', value='Login with Zooniverse').btn.btn-primary.center-block.btn-blockextends flatpages/base
+
+
+
+block js-libs
+  {{ block.super }}
+
+block post-footer
+
+    script.
+        // Prepare Zooniverse OAuth login URL
+        var oauthUrl = [
+            'https://panoptes.zooniverse.org',
+            '/oauth/authorize',
+            '?response_type=token',
+            '&client_id={{ zooniverse_app_id }}',
+            '&redirect_uri={{ zooniverse_callback_url }}'
+        ].join('');
+
+        $('#zooniverse-signin').click(function (e) {
+            e.preventDefault();
+
+            // Redirect user to sign-in page, with the specified callback URL (that will receive the access token)
+            window.location.href = oauthUrl;
+        });
+

@@ -1,0 +1,13 @@
+[
+{
+    "fields": {
+        "provider": "zooniverse",
+        "name": "Zooniverse Social App",
+        "client_id": "17a0d7de558a4a847311f46181d121128e423f48865dd38ab396b6c53db97ee4",
+        "secret": "a8ae9003cd1a7e7309f97af4e1a3c5fa7bb8a956555e9c41114571e6052626d3",
+        "sites": [1]
+    },
+    "model": "socialaccount.socialapp",
+    "pk": 2
+}
+]
