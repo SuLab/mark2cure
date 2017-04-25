@@ -17,6 +17,7 @@ gulp.task('watch', function () {
       return console.log(err);
     }
     gulp.watch('static/scss/**/*.scss', ['css']);
+    gulp.watch('static/js-src/**/*.js', ['js']);
   });
 });
 
@@ -29,26 +30,30 @@ gulp.task('fonts', function() {
 
 gulp.task('js', function() {
   var project_js_files = [
+    './node_modules/jquery/dist/jquery.js',
+    './static/js-src/libs/jquery-ui.js',
+    './node_modules/underscore/underscore.js',
+    './node_modules/underscore.string/dist/underscore.string.min.js',
+
     './node_modules/backbone/backbone.js',
+    './node_modules/backbone.radio/build/backbone.radio.js',
     './node_modules/backbone-relational/backbone-relational.js',
     './node_modules/backbone.marionette/lib/backbone.marionette.js',
-    './node_modules/backbone.radio/build/backbone.radio.js',
+
+    './node_modules/tether/dist/js/tether.js',
     './node_modules/bootstrap/dist/js/bootstrap.js',
+
     './node_modules/d3/d3.js',
     './node_modules/intro.js/intro.js',
-    './node_modules/jquery/dist/jquery.js',
-    './node_modules/md5/md5.js',
     './node_modules/moment/moment.js',
     './node_modules/odometer/odometer.js',
     './node_modules/sifter/sifter.js',
+    './node_modules/@rq/sly-scrolling/dist/sly.js',
+
     './node_modules/sigma/build/sigma.min.js',
     './node_modules/sigma/build/plugins/sigma.parsers.json.min.js',
     './node_modules/sigma/build/plugins/sigma.plugins.filter.min.js',
-    './node_modules/tether/dist/js/tether.js',
-    './node_modules/underscore/underscore.js',
-    './node_modules/underscore.string/dist/underscore.string.min.js',
-    './node_modules/jquery-ui/jquery-ui.js',
-    './node_modules/@rq/sly-scrolling/dist/sly.js',
+
     './node_modules/raven-js/dist/raven.js',
 
     './static/js-src/libs/ypet.js',
@@ -70,7 +75,7 @@ gulp.task('js', function() {
   ];
 
   return gulp.src(project_js_files)
-    .pipe(glibs.uglify())
+    // .pipe(glibs.uglify())
     .pipe(glibs.concat('mark2cure.min.js'))
     .pipe(gulp.dest('./static/js/'))
     .on('error', function(err) {

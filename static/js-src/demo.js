@@ -101,69 +101,73 @@ var data = {
 
 };
 
-Tree.addInitializer(function(options) {
+if(typeof file_key !== 'undefined') {
 
-  /* data fetches the original document and annotations
-  $.getJSON('http://localhost:12345/data/relationships.json', function( data ) {
-  */
-    Tree.addRegions({'start': '#tree-insert'});
-    /* When the app is first loaded */
-    var coll = new RelationList(data[file_key]);
+  Tree.addInitializer(function(options) {
 
-    Tree['start'].show( new RelationCompositeView({
-      collection: coll,
-      concepts: concepts,
-      choice: false
-    }));
+    /* data fetches the original document and annotations
+    $.getJSON('http://localhost:12345/data/relationships.json', function( data ) {
+    */
+      Tree.addRegions({'start': '#tree-insert'});
+      /* When the app is first loaded */
+      var coll = new RelationList(data[file_key]);
 
-    Backbone.Radio.DEBUG = true;
-    Tree['convoChannel'] = Backbone.Radio.channel('convo');
-
-    /* When an item is selected */
-    Tree['convoChannel'].on('click', function(obj) {
-      Tree['start'].show( new RelationCompositeView({
-        collection: obj['collection'],
-        concepts: concepts,
-        choice: obj['choice']
-      }));
-      console.log(obj['choice'].id);
-    });
-
-    /* When the back toggle is selected */
-    Tree['convoChannel'].on('back', function(opts) {
-      var collection;
-
-      var parentRel = opts['choice'].get('parentRelation');
-      if(parentRel) { collection = parentRel.get('children'); }
-
-      if(opts['collection']) { collection = opts['collection']; }
-
-      /* Backup: Go to the top of the stack */
-      collection = coll;
-
-      /* Call the View Redraw */
       Tree['start'].show( new RelationCompositeView({
         collection: coll,
         concepts: concepts,
         choice: false
       }));
 
+      Backbone.Radio.DEBUG = true;
+      Tree['convoChannel'] = Backbone.Radio.channel('convo');
+
+      /* When an item is selected */
+      Tree['convoChannel'].on('click', function(obj) {
+        Tree['start'].show( new RelationCompositeView({
+          collection: obj['collection'],
+          concepts: concepts,
+          choice: obj['choice']
+        }));
+        console.log(obj['choice'].id);
+      });
+
+      /* When the back toggle is selected */
+      Tree['convoChannel'].on('back', function(opts) {
+        var collection;
+
+        var parentRel = opts['choice'].get('parentRelation');
+        if(parentRel) { collection = parentRel.get('children'); }
+
+        if(opts['collection']) { collection = opts['collection']; }
+
+        /* Backup: Go to the top of the stack */
+        collection = coll;
+
+        /* Call the View Redraw */
+        Tree['start'].show( new RelationCompositeView({
+          collection: coll,
+          concepts: concepts,
+          choice: false
+        }));
+
+      });
+
+    /*
     });
-
-  /*
+    */
   });
-  */
-});
 
-Tree.start();
+  Tree.start();
 
-/* Other stuff for Rel demo */
-$('.entity').on('mouseover', function(evt) {
-  $(this).find('.text').hide();
-  $(this).find('.message').show();
-});
+  /* Other stuff for Rel demo */
+  $('.entity').on('mouseover', function(evt) {
+    $(this).find('.text').hide();
+    $(this).find('.message').show();
+  });
 
-$('.entity').on('mouseout', function(evt) {
-  $(this).find('.text').show();
-  $(this).find('.message').hide();
-});
+  $('.entity').on('mouseout', function(evt) {
+    $(this).find('.text').show();
+    $(this).find('.message').hide();
+  });
+
+}

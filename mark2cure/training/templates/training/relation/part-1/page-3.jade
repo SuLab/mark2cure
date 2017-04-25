@@ -20,29 +20,6 @@ block interactive
 
   #tree-insert
 
-  script.
-    relation_task_settings = {};
-    relation_task_settings['data'] = {{ relation_data|safe }};
-
-    task_data = [{
-      "id": 0,
-      "document": 0,
-      "relation_type": "c_d",
-      "concepts": {
-        "c2": {
-          "text": "Astrology",
-          "type": "d",
-          "id": "0"
-        },
-        "c1": {
-          "text": "Citizen Scientists",
-          "type": "c",
-          "id": "0"
-        }
-      },
-      "user_completed": false
-    }];
-
 
 block post-footer
   <script type="html/template" id="tree-template">
@@ -66,12 +43,29 @@ block post-footer
 
   </script>
 
-
-
-  script(src="/static/js/libs/tree.js")
-  script(src="/static/js/tasks/relation-training.js")
-
   script.
+    relation_task_settings = {};
+    relation_task_settings['data'] = {{ relation_data|safe }};
+
+    task_data = [{
+      "id": 0,
+      "document": 0,
+      "relation_type": "c_d",
+      "concepts": {
+        "c2": {
+          "text": "Astrology",
+          "type": "d",
+          "id": "0"
+        },
+        "c1": {
+          "text": "Citizen Scientists",
+          "type": "c",
+          "id": "0"
+        }
+      },
+      "user_completed": false
+    }];
+
     var passages, regions, tmp_passages;
 
     function look_right() {

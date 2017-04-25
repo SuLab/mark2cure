@@ -1,3 +1,4 @@
+if($('#word-cloud').length){
 function flatten(t, e) {
     if ("string" == typeof t) return t;
     var n = [];
@@ -308,7 +309,7 @@ var fill = d3.scale.category20b(),
     echoForm = d3.select("body").append("form").attr("action", "https://www.jasondavies.com/echo").attr("target", "_blank").attr("method", "POST"),
     echoContentType = echoForm.append("input").attr("type", "hidden").attr("name", "content-type"),
     echoInput = echoForm.append("input").attr("type", "hidden").attr("name", "echo"),
-    svg = d3.select("#vis").append("svg").attr("width", w).attr("height", h),
+    svg = d3.select("#word-cloud").append("svg").attr("width", w).attr("height", h),
     background = svg.append("g"),
     vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
 d3.select("#download-svg").on("click", downloadSVG), d3.select("#download-png").on("click", downloadPNG);
@@ -388,3 +389,4 @@ parseText(d3.select("#text").property("value")), d3.select("#random-palette").on
             f = d3.svg.arc().innerRadius(0).outerRadius(r);
         d3.selectAll("#angle-count, #angle-from, #angle-to").on("change", t).on("mouseup", t), t()
     }();
+}

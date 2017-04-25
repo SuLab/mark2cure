@@ -65,9 +65,6 @@ block content
 
 block post-footer
 
-  script(src="/static/js/libs/tree.js")
-  script(src="/static/js/tasks/relation.js")
-
   script(type="html/template", id="tree-template")
     div#tree.row.text-xs-center
 
@@ -92,7 +89,7 @@ block post-footer
       'document_pk': "{{ document.pk }}",
       'document_pmid': "{{ document.document_id }}"
     };
-    $.getJSON('/static/js/tasks/relation-data.json', function(data) {
+    $.getJSON('/static/js-src/tasks/relation-data.json', function(data) {
       relation_task_settings['data'] = data;
     });
 

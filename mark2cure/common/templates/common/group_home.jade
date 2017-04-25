@@ -114,7 +114,7 @@ block content
       .col-md-10.col-md-offset-1.m-t-1
         p.lead Top contributor word cloud:
 
-        #vis
+        #word-cloud
 
         form#form(style='display:none;')
           #custom-area
@@ -183,5 +183,3 @@ block post-footer
       });
       pk = #{group.pk};
 
-    script(src='#{STATIC_URL}js/pages/group_home.js')
-    script(src='#{STATIC_URL}js/pages/cloud.js')
