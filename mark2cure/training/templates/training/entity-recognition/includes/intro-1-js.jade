@@ -73,6 +73,7 @@ script.
       model_json['help_message'] = '';
       model_json['instructions_link'] = '';
       incorrect_counter++;
+      if(ga) { ga('send', 'event', 'ER Training', 'error', key); }
 
       /*
       * Overlaps (start or before) check

@@ -55,6 +55,7 @@ block post-footer
   block answers
 
   script.
+      if(ga) { ga('send', 'event', 'ER Training', 'start', key); }
       var validation_check = function(collection) {
         if(validate(collection, answers)) { correct(); }
       };

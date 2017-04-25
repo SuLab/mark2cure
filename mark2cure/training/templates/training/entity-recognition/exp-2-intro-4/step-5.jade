@@ -59,6 +59,7 @@ block ypet
       });
     });
     YPet.start();
+    if(ga) { ga('send', 'event', 'ER Training', 'start', '4-5'); }
 
     $('#next').one('click', function(evt) {
         evt.preventDefault();

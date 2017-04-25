@@ -50,6 +50,7 @@ block ypet
             }) );
           });
 
+          if(ga) { ga('send', 'event', 'ER Training', 'start', key); }
           YPet[0].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) { validation_check(collection); });
           YPet[0].currentView.collection.parentDocument.get('annotations').on('change', function(model) { validation_check(model.collection); });
           YPet[0].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) { validation_check(collection); });
@@ -66,9 +67,11 @@ block ypet
 
     setTimeout(function() {
       $('#TrainingHelpModal').modal('show');
+      if(ga) { ga('send', 'event', 'ER Training', 'help-modal', key); }
     }, 75 * 1000);
 
     $('#hint-trigger').click(function() {
+      if(ga) { ga('send', 'event', 'ER Training', 'hint', key); }
       $('#hint').slideDown();
     });
 
@@ -79,6 +82,7 @@ block ypet
       }, 75 * 1000);
     });
 
+    var key = '4-4';
     var answers = [
       {text: "Ehlers–Danlos syndrome", start: 0, type_id: 0},
       {text: "EDS", start: 25, type_id: 0},
