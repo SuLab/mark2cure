@@ -10,7 +10,7 @@ DocumentList = Backbone.Collection.extend({
 /*
  * Views
  */
-DocumentView = Backbone.Marionette.ItemView.extend({
+DocumentView = Backbone.Marionette.View.extend({
   template: '#relation-list-item-template',
   tagName: 'a',
   className: 'relation-item-container',

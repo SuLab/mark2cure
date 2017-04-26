@@ -1,7 +1,15 @@
-Tree.addInitializer(function(options) {
-  Tree.addRegions({'start': '#tree-insert'});
-  Backbone.Radio.DEBUG = true;
-  Tree['convoChannel'] = Backbone.Radio.channel('convo');
+var RelationApp = Backbone.Marionette.Application.extend({
+  regions: {
+    start: '#tree-insert'
+  },
+
+  onStart: function() {
+    Backbone.Radio.DEBUG = true;
+    RelationApp['convoChannel'] = Backbone.Radio.channel('convo');
+
+    var main = this.getRegion();  // Has all the properties of a `Region`
+    main.show(new SomeView());
+  }
 });
 
 
@@ -50,7 +58,7 @@ RelationTaskCollection = Backbone.Collection.extend({
     var next_relationship = collection.findWhere({user_completed: false, available: true});
     if (next_relationship) {
       var self = this;
-      if( Tree['convoChannel'] ) { Tree['convoChannel'].unbind(); }
+      if( RelationApp['convoChannel'] ) { RelationApp['convoChannel'].unbind(); }
 
       /* Assign an uncompleted relationship as the current focused task */
       collection.each(function(r) { r.set('current', false); })
@@ -69,35 +77,35 @@ RelationTaskCollection = Backbone.Collection.extend({
       var coll = new RelationList( relation_task_settings['data'][ current_relationship.get('relation_type') ] );
       var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false, first_draw: true };
 
-      Tree['start'].show(new RelationCompositeView(view_options));
+      RelationApp['start'].show(new RelationCompositeView(view_options));
       add_relation_classes(current_relationship);
 
       /* When an item is selected */
-      Tree['convoChannel'].on('click', function(obj) {
+      RelationApp['convoChannel'].on('click', function(obj) {
         var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'], first_draw: false });
-        Tree['start'].show(rcv);
+        RelationApp['start'].show(rcv);
         submit_status();
         add_relation_classes(current_relationship);
       });
 
       /* When the back toggle is selected */
-      Tree['convoChannel'].on('back', function(opts) {
+      RelationApp['convoChannel'].on('back', function(opts) {
         /* Clicking back always completely resets. Backup: Go to the top of the stack */
         view_options['first_draw'] = false;
-        Tree['start'].show(new RelationCompositeView(view_options));
+        RelationApp['start'].show(new RelationCompositeView(view_options));
         submit_status();
         add_relation_classes(current_relationship);
       });
 
       /* When C1 or C2 is incorrect */
-      Tree['convoChannel'].on('error', function(obj) {
+      RelationApp['convoChannel'].on('error', function(obj) {
         var rcv = new RelationCompositeView({
           collection: new RelationList([]),
           concepts: concepts,
           choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] ),
           first_draw: false
         })
-        Tree['start'].show(rcv);
+        RelationApp['start'].show(rcv);
         submit_status();
         add_relation_classes(current_relationship);
       });
@@ -141,7 +149,7 @@ RelationTaskCollection = Backbone.Collection.extend({
 });
 
 
-var ProgressItem = Backbone.Marionette.ItemView.extend({
+var ProgressItem = Backbone.Marionette.View.extend({
   tagName: 'li',
   className: 'list-inline-item uncompleted',
   template: _.template('&#8226;'),
@@ -175,7 +183,7 @@ var ProgressView = Backbone.Marionette.CollectionView.extend({
 
 var submit_status = function() {
   /* Submit button status changes accordingly */
-  if( Tree.start.currentView.options.choice ) {
+  if( RelationApp.start.currentView.options.choice ) {
     $('#submit_button').attr('disabled', false).removeClass('disabled');
   } else {
     $('#submit_button').attr('disabled', true).addClass('disabled');
@@ -284,7 +292,7 @@ var incorrect_flag_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEO
 $('#submit_button').on('click', function(evt) {
   /* When a user is confirming their Tree choice selection */
 
-  var current_selection = Tree.start.currentView.options.choice;
+  var current_selection = RelationApp.start.currentView.options.choice;
   var current_relationship = collection.findWhere({'current': true});
 
   if(current_selection.get('id')) {

@@ -48,7 +48,7 @@ function get_stype(the_current_relation) {
 /*
  * Views
  */
-RelationView = Backbone.Marionette.ItemView.extend({
+RelationView = Backbone.Marionette.View.extend({
   template: _.template('<%= text %>'),
   tagName: 'a',
   className: 'list-group-item',
@@ -180,4 +180,4 @@ RelationCompositeView = Backbone.Marionette.CompositeView.extend({
   }
 });
 
-Tree = new Backbone.Marionette.Application();
+// Tree = new Backbone.Marionette.Application();

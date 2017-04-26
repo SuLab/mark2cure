@@ -15,7 +15,9 @@ urlpatterns = [
         views.four, name='four'),
 
     # Relation training
-    url(r'^relation/(?P<part_num>\w+)/step/(?P<step_num>\w+)/$', views.relation_training, name='relation-training'),
+    url(r'^relation/1/$', views.relation_training_one, name='relation-training'),
+    url(r'^relation/2/$', views.relation_training_two, name='relation-training-two'),
+    url(r'^relation/3/$', views.relation_training_three, name='relation-training-three'),
 
     url(r'', views.route, name='route'),
 ]

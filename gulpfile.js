@@ -64,6 +64,7 @@ gulp.task('js', function() {
 
     './static/js-src/libs/ypet.js',
     './static/js-src/libs/tree.js',
+    './static/js-src/tasks/relation-data-var-assigned.js',
     './static/js-src/libs/leaderboard.js',
 
     './static/js-src/pages/cloud.js',

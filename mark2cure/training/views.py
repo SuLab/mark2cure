@@ -119,6 +119,21 @@ def four(request, step_num):
     return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-4/step-{step_num}.jade'.format(step_num=step_num), ctx)
 
 
+def relation_training_one(request):
+    request.session['initial_training'] = 'r'
+    return TemplateResponse(request, 'training/relation/part-1/base.jade')
+
+
+def relation_training_two(request):
+    request.session['initial_training'] = 'r'
+    return TemplateResponse(request, 'training/relation/part-2/base.jade')
+
+
+def relation_training_three(request):
+    request.session['initial_training'] = 'r'
+    return TemplateResponse(request, 'training/relation/part-3/base.jade')
+
+
 def relation_training(request, part_num=1, step_num=1):
     json_data = json.dumps(relation_data)
     request.session['initial_training'] = 'r'

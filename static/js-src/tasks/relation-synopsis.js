@@ -14,7 +14,7 @@ if(typeof relation_task_settings !== 'undefined') {
       .domain([0, .5, 1])
       .range(['red', 'yellow', 'green']);
 
-  RelationItem = Backbone.Marionette.ItemView.extend({
+  RelationItem = Backbone.Marionette.View.extend({
     template: _.template('&#8226;'),
     tagName: 'li',
     className: 'list-inline-item',

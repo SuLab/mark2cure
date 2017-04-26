@@ -215,10 +215,19 @@ block post-footer
 
   block post-footer-sidebar
     script.
-      LeaderBoard.addInitializer(function(options) {
-        LeaderBoard.addRegions({'leaderboard': '#leaderboard'});
-        var settings = new LeaderBoardSettings();
-        var users = new UserList();
-        LeaderBoard['leaderboard'].show( new UserCompositeView({'model': settings, 'collection': users}) );
+
+
+      var LeaderBoard = Backbone.Marionette.Application.extend({
+        region: '#leaderboard',
+
+        onStart: function() {
+          var settings = new LeaderBoardSettings();
+          var users = new UserList();
+
+          var main= this.getRegion();
+          main.show( new UserCompositeView({'model': settings, 'collection': users}) );
+        }
       });
-      LeaderBoard.start();
+      var app = new LeaderBoard();
+      app.start();
+

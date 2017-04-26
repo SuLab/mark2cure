@@ -42,7 +42,7 @@ UserList = Backbone.Collection.extend({
 /*
  * Views
  */
-UserView = Backbone.Marionette.ItemView.extend({
+UserView = Backbone.Marionette.View.extend({
   template: _.template('<p><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></p>'),
   tagName: 'a',
   className: 'list-group-item',

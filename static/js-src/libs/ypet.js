@@ -332,7 +332,7 @@ Paragraph = Backbone.RelationalModel.extend({
 /*
  * Views
  */
-WordView = Backbone.Marionette.ItemView.extend({
+WordView = Backbone.Marionette.View.extend({
   template: _.template('<% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %>'),
   tagName: 'span',
 
