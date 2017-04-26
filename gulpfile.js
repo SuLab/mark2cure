@@ -8,6 +8,12 @@ var path = require('path');
 var tinylr = require('tiny-lr');
 var server = tinylr();
 
+var livereload = require('gulp-livereload');
+var compass = require('gulp-compass');
+var csso = require('gulp-csso');
+var cleanCSS = require('gulp-clean-css');
+var rename = require("gulp-rename");
+
 var SegfaultHandler = require('segfault-handler');
 SegfaultHandler.registerHandler();
 
@@ -23,7 +29,7 @@ gulp.task('watch', function () {
 
 gulp.task('fonts', function() {
   return gulp
-    .src(path.join(__dirname, 'bower_components', 'font-awesome', 'fonts/*'))
+    .src(path.join(__dirname, 'node_modules', 'font-awesome', 'fonts/*'))
     .pipe(gulp.dest('static/fonts/'))
     .pipe( livereload(server));
 });
@@ -60,15 +66,18 @@ gulp.task('js', function() {
     './static/js-src/libs/tree.js',
     './static/js-src/libs/leaderboard.js',
 
-    './static/js-src/pages/training/entity-recognition/basic.js',
     './static/js-src/pages/cloud.js',
     './static/js-src/pages/group_home.js',
     './static/js-src/pages/landing2.js',
 
-    './static/js-src/tasks/relation-list.js',
     './static/js-src/tasks/relation-synopsis.js',
-    './static/js-src/tasks/relation-training.js',
     './static/js-src/tasks/relation.js',
+
+    './static/js-src/training/entity-recognition/basic.js',
+    './static/js-src/training/relation/relation-training.js',
+    './static/js-src/training/relation/relation-1.js',
+
+    './static/js-src/common/relation-list.js',
 
     './static/js-src/demo.js',
     './static/js-src/app.js'
@@ -89,15 +98,15 @@ gulp.task('css', ['fonts'], function() {
         project: path.join(__dirname, 'static'),
         sass: 'scss',
         import_path: [
-          path.join(__dirname, 'bower_components', 'bootstrap', 'scss'),
-          path.join(__dirname, 'bower_components', 'font-awesome', 'scss'),
+          path.join(__dirname, 'node_modules', 'bootstrap', 'scss'),
+          path.join(__dirname, 'node_modules', 'font-awesome', 'scss'),
         ],
         time: true,
         debug: true
       }))
       .pipe(csso())
       .pipe(livereload(server))
-      .on('error', sass.logError)
+      // .on('error', sass.logError)
       .pipe(cleanCSS({compatibility: 'ie8'}))
       .pipe(rename({suffix: '.min'}))
       .pipe(gulp.dest('css/'));
