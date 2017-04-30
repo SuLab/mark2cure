@@ -65,19 +65,25 @@ block content
 
   <script id="reextraction-template" type="x-template/underscore">
   <div id="tree" class="row text-xs-center">
+
   <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
   <i id="c1_not_correct" class="fa fa-times-circle"></i>
   <h3><%= concepts.c1.text %></h3>
   <p class="not_correct_stype"></p>
   </div>
+
   <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
-  <h3 id="relation" class="disabled">Select a Relationship below...</h3>
+  <div id="selected-choice"></div>
   <div id="rechoices-list"></div>
   </div>
+
   <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2">
   <i id="c2_not_correct" class="fa fa-times-circle"></i>
   <h3><%= concepts.c2.text %></h3>
   <p class="not_correct_stype"></p>
   </div>
+  </div>
+
+  <div id="tree-confirm" class="row"></div>
   </script>
 

@@ -90,36 +90,6 @@ REExtractionList = Backbone.Collection.extend({
   //     RelationApp['start'].show(new RelationCompositeView(view_options));
   //     add_relation_classes(current_relationship);
   //
-  //     #<{(| When an item is selected |)}>#
-  //     RelationApp['convoChannel'].on('click', function(obj) {
-  //       var rcv = new RelationCompositeView({collection: obj['collection'], concepts: concepts, choice: obj['choice'], first_draw: false });
-  //       RelationApp['start'].show(rcv);
-  //       submit_status();
-  //       add_relation_classes(current_relationship);
-  //     });
-  //
-  //     #<{(| When the back toggle is selected |)}>#
-  //     RelationApp['convoChannel'].on('back', function(opts) {
-  //       #<{(| Clicking back always completely resets. Backup: Go to the top of the stack |)}>#
-  //       view_options['first_draw'] = false;
-  //       RelationApp['start'].show(new RelationCompositeView(view_options));
-  //       submit_status();
-  //       add_relation_classes(current_relationship);
-  //     });
-  //
-  //     #<{(| When C1 or C2 is incorrect |)}>#
-  //     RelationApp['convoChannel'].on('error', function(obj) {
-  //       var rcv = new RelationCompositeView({
-  //         collection: new RelationList([]),
-  //         concepts: concepts,
-  //         choice: new Backbone.Model( relation_task_settings['data'][ obj+'_broken' ] ),
-  //         first_draw: false
-  //       })
-  //       RelationApp['start'].show(rcv);
-  //       submit_status();
-  //       add_relation_classes(current_relationship);
-  //     });
-  //
   //
   //     // This to the else is different from the training (it's not in the training)
   //     var concept_uids = [concepts['c1'].id, concepts['c2'].id];
@@ -332,35 +302,59 @@ REExtractionList = Backbone.Collection.extend({
 //     }
 //   }
 // });
-//
+
 // var ProgressView = Backbone.Marionette.CollectionView.extend({
 //   childView: ProgressItem
 // });
+
+REConfirm = Backbone.Marionette.View.extend({
+  template: _.template('<button id="submit_button" class="btn btn-primary btn-block disabled" disabled="disabled">Submit</button>'),
+  tagName: 'div',
+  className: 'col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4',
+  ui: {
+    'button': 'button'
+  },
+  triggers: {
+    'mousedown @ui.button': 'rechoice:selected:confirm'
+  },
+  onRender: function() {
+    if(this.model) {
+      this.ui.button.attr('disabled', false).removeClass('disabled');
+    }
+  }
+});
+
+RESelectedChoiceView = Backbone.Marionette.View.extend({
+  template: _.template(''),
+  tagName: 'h3',
+  triggers : {
+    'mousedown': 'rechoice:selected:click'
+  },
+  onRender: function() {
+    if(this.model) {
+      this.$el.html(this.model.get('text'));
+    } else {
+      this.$el.html('Select a Relationship below...');
+      this.$el.attr('class', 'disabled');
+    }
+  }
+});
 
 REChoiceView = Backbone.Marionette.View.extend({
   template: _.template('<%= text %>'),
   tagName: 'a',
   className: 'list-group-item',
 
-  // events : {
-  //   'mousedown' : 'mousedown',
-  // },
-  //
-  // mousedown : function(evt) {
-  //   #<{(|
-  //    * 1. Set the current choice to the ID
-  //    * 2. Set the backbutton reference if available
-  //    * 3. Set the list updated to any children
-  //    *
-  //    |)}>#
-  //   var children = this.model.get('children');
-  //   Tree['convoChannel'].trigger('click', {'collection': children, 'choice': this.model});
-  // },
+  triggers : {
+    'mousedown': 'click'
+  }
+
 });
 
 REChoicesView = Backbone.Marionette.CollectionView.extend({
   tagName: 'ul',
-  childView: REChoiceView
+  childView: REChoiceView,
+  childViewEventPrefix: 'rechoice'
 });
 
 
@@ -369,33 +363,28 @@ REExtractionView = Backbone.Marionette.View.extend({
   * A relates to B
   * this.model = a REExtraction instance
   * this.collection = REChoices
-  * - - - - -
-  childView  : RelationView,
-  childViewContainer: "ul",
   */
   template: '#reextraction-template',
 
   regions: {
     'list': '#rechoices-list',
+    'selected_choice': '#selected-choice',
+    'confirm': '#tree-confirm'
   },
 
   ui: {
     'c1': '#c1',
     'c2': '#c2',
-    'relation': '#relation',
     'c1_not_correct': '#c1_not_correct',
     'c2_not_correct': '#c2_not_correct',
     'incorrect_buttons': '.fa.fa-times-circle',
-    'submit_button': '#submit_button'
   },
 
   events : {
     // 'mouseover @ui.incorrect_buttons': 'hoverIncorrect',
     // 'mouseout @ui.incorrect_buttons': 'hoverOutIncorrect',
-    // 'mousedown @ui.relation': 'resetRelationship',
-    // 'mousedown @ui.c1_not_correct': 'c1Error',
-    // 'mousedown @ui.c2_not_correct': 'c2Error',
-    // 'mousedown @ui.submit_button': 'submit_fade_in',
+    'mousedown @ui.c1_not_correct': 'c1Error',
+    'mousedown @ui.c2_not_correct': 'c2Error',
   },
 
   // hoverIncorrect: function(evt) {
@@ -408,24 +397,99 @@ REExtractionView = Backbone.Marionette.View.extend({
   //     $(evt.target).parent().removeClass('incorrect');
   //   }
   // },
-  //
-  // resetRelationship: function(evt) {
-  //   Tree['convoChannel'].trigger('back', this.options);
-  // },
-  //
-  // c1Error: function(evt) {
-  //   Tree['convoChannel'].trigger('error', 'c_1');
-  // },
-  //
-  // c2Error: function(evt) {
-  //   Tree['convoChannel'].trigger('error', 'c_2');
-  // },
-  //
+
+  c1Error: function(evt) {
+      /* When C1 is incorrect */
+      var model = new REChoice(relation_data.c_1_broken);
+      this.showChildView('confirm', new REConfirm({'model': model}));
+      this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': model}));
+  },
+
+  c2Error: function(evt) {
+      /* When C2 is incorrect */
+      var model = new REChoice(relation_data.c_2_broken);
+      this.showChildView('confirm', new REConfirm({'model': model}));
+      this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': model}));
+  },
+
+  childViewEvents: {
+    'rechoice:click': function(childView, evt) {
+      /* When an item is selected */
+      /*
+       * 1. Set the current choice to the ID
+       * 2. Set the backbutton reference if available
+       * 3. Set the list updated to any children
+       *
+       */
+      var children = childView.model.get('children');
+      this.showChildView('confirm', new REConfirm({'model': childView.model}));
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': childView.model}));
+      this.showChildView('list', new REChoicesView({'collection': children}));
+    },
+
+    'rechoice:selected:click': function(childView, evt) {
+      /* When the back toggle is selected */
+      /* Clicking back always completely resets. Backup: Go to the top of the stack */
+      var choices_collection = new REChoices(relation_data['g_d']);
+      this.showChildView('confirm', new REConfirm({'model': null}));
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
+      this.showChildView('list', new REChoicesView({'collection': choices_collection}));
+    },
+
+    'rechoice:selected:confirm': function(childView, evt) {
+      /* When the selection was confirmed */
+
+      // var current_selection = RelationApp.start.currentView.options.choice;
+      // var current_relationship = collection.findWhere({'current': true});
+
+      /* Submit the data from the current selection to the server */
+      $.ajax({
+        type: 'POST',
+        url: '/task/relation/'+ relation_task_settings.document_pk +'/'+ current_relationship.id +'/submit/',
+        data: $.extend({'csrfmiddlewaretoken': relation_task_settings.csrf_token },
+                         {'relation': current_selection.get('id')}),
+          cache: false,
+          // success: function() {
+
+      //       #<{(| If they flag a concept as incorrect, remove it from the
+      //        * availability pool of tasks for this relationship document |)}>#
+      //       if( _.contains(incorrect_flag_arr, current_selection.get('id')) ) {
+      //         var incorrect_key = 'c'+(1+incorrect_flag_arr.indexOf(current_selection.get('id')));
+      //         var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
+      //         collection.each(function(relation) {
+      //           var concepts = relation.get('concepts');
+      //           if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
+      //             relation.set('available', false);
+      //           }
+      //         });
+      //       }
+      //
+      //       #<{(| Have them review the community's answers |)}>#
+      //       show_results(current_relationship.get('document_id'), current_relationship.get('id'));
+      //       update_score();
+      //
+      //     },
+      //     error: function() { alert('Please refresh your browser and try again.') },
+      });
+
+
+      // var choices_collection = new REChoices(relation_data['g_d']);
+      // this.showChildView('confirm', new REConfirm({'model': null}));
+      // this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
+      // this.showChildView('list', new REChoicesView({'collection': choices_collection}));
+    }
+
+  },
 
   onRender: function() {
-    console.log('REExtractionView', this.model);
     var choices_collection = new REChoices(relation_data['g_d']);
+
+    this.showChildView('confirm', new REConfirm({'model': null}));
+    this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
     this.showChildView('list', new REChoicesView({'collection': choices_collection}));
+
 
     // var self = this;
     // var choice = this.options['choice'];
@@ -514,18 +578,3 @@ Tree = Backbone.Marionette.View.extend({
 
 
 });
-
-// Tree = new Backbone.Marionette.Application();
-// var RelationApp = Backbone.Marionette.Application.extend({
-//   regions: {
-//     start: '#tree-insert'
-//   },
-//
-//   onStart: function() {
-//     Backbone.Radio.DEBUG = true;
-//     RelationApp['convoChannel'] = Backbone.Radio.channel('convo');
-//
-//     var main = this.getRegion();  // Has all the properties of a `Region`
-//     main.show(new SomeView());
-//   }
-// });

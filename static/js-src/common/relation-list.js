@@ -21,7 +21,7 @@ DocumentView = Backbone.Marionette.View.extend({
 
 });
 
-DocumentCompositeView = Backbone.Marionette.CompositeView.extend({
+DocumentCompositeView = Backbone.Marionette.CollectionView.extend({
   template: _.template('<div id="relation-task-list"></div>'),
   childView  : DocumentView,
   childViewContainer: "#relation-task-list",
@@ -32,4 +32,3 @@ DocumentCompositeView = Backbone.Marionette.CompositeView.extend({
 
 });
 
-DocumentRelationBoard = new Backbone.Marionette.Application();

@@ -204,12 +204,22 @@ block post-footer
 
     script.
       if($('#document-relation-board').length) {
-        DocumentRelationBoard.addInitializer(function(options) {
-          DocumentRelationBoard.addRegions({'doclist': '#document-relation-board'});
-          var docs = new DocumentList();
-          DocumentRelationBoard['doclist'].show( new DocumentCompositeView({'collection': docs}) );
+
+
+        var DocumentRelationBoard = Backbone.Marionette.Application.extend({
+          region: '#document-relation-board',
+
+          onStart: function() {
+            var docs = new DocumentList();
+
+
+            var main= this.getRegion();
+            main.show( new DocumentCompositeView({'collection': docs}) );
+          }
         });
-        DocumentRelationBoard.start();
+        var doc_rel_board_app = new DocumentRelationBoard();
+        doc_rel_board_app.start();
+
       }
 
 

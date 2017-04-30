@@ -65,23 +65,42 @@ block content
 
 block post-footer
 
-  script(type="html/template", id="tree-template")
-    div#tree.row.text-xs-center
+  <script id="tree-template" type="x-template/underscore">
+  <div id="tree" class="row text-xs-center">
 
-      div.concept.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3#c1
-        i#c1_not_correct.fa.fa-times-circle
-        h3 <%= c1.text %>
-        p.not_correct_stype
+  <div id="tree-progress" class="col-xs-12"></div>
+  <div id="tree-selection" class="col-xs-12"></div>
+  <div id="tree-selection-results" class="col-xs-12"></div>
+  <div id="tree-text" class="col-xs-12"></div>
 
-      div.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-6(style="padding-bottom:10px; padding-top:10px;")
-        h3#relation.disabled Select a Relationship below...
-        ul.list-group
+  </div>
+  </script>
 
-      div.concept.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3#c2
-        i#c2_not_correct.fa.fa-times-circle
-        h3 <%= c2.text %>
-        p.not_correct_stype
 
+
+  <script id="reextraction-template" type="x-template/underscore">
+  <div id="tree" class="row text-xs-center">
+
+  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c1">
+  <i id="c1_not_correct" class="fa fa-times-circle"></i>
+  <h3><%= concepts.c1.text %></h3>
+  <p class="not_correct_stype"></p>
+  </div>
+
+  <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
+  <div id="selected-choice"></div>
+  <div id="rechoices-list"></div>
+  </div>
+
+  <div class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3" id="c2">
+  <i id="c2_not_correct" class="fa fa-times-circle"></i>
+  <h3><%= concepts.c2.text %></h3>
+  <p class="not_correct_stype"></p>
+  </div>
+  </div>
+
+  <div id="tree-confirm" class="row"></div>
+  </script>
 
   script.
     var relation_task_settings = {
@@ -93,87 +112,87 @@ block post-footer
       relation_task_settings['data'] = data;
     });
 
-    var collection;
-    var passages, regions, tmp_passages;
-
-    YPet.addInitializer(function(options) {
-
-      Backbone.Radio.DEBUG = true;
-      YPet['convoChannel'] = Backbone.Radio.channel('ypet');
-
-      $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
-        /* The Annotation information has been returned from the server at this point
-           it is now safe to start YPET */
-        passages = data.collection.document.passage;
-        regions = {};
-
-        _.each(passages, function(passage, passage_idx) {
-          var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-          var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-          $('.paragraphs').append(p_body);
-          regions[''+passage_idx] = '#'+section_id;
-        });
-        YPet.addRegions(regions);
-
-        _.each(passages, function(passage, passage_idx) {
-          var p = new Paragraph({'text': passage.text});
-          YPet[''+passage_idx].show( new WordCollectionView({
-            collection: p.get('words'),
-          }) );
-          YPet[''+passage_idx].currentView.drawBioC(null, true);
-        });
-
-        /* The Annotation information has been returned from the server at this point
-           it is now safe to start Tree */
-
-        /* Initalize the page by loading all relation tasks
-         * and fetching all required data */
-        $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', function(data) {
-          if(relation_task_settings) {
-
-            /* Initalize the Application, but load events later */
-            Tree.start();
-
-            /* Onload request all relation tasks to complete */
-            collection = new RelationTaskCollection(data);
-            /* Sort the collection by C1 on initial data load */
-            var new_collection = _.sortBy(collection.models, function(c) {
-              return c.attributes.concepts.c1.text;
-            });
-            collection.models = new_collection;
-            collection.next();
-
-            var current_relationship = collection.findWhere({'current': true});
-            add_relation_classes(current_relationship);
-            /* Init Progressbar event listner */
-            (new ProgressView({
-              collection: collection,
-              el: '#progress-bar'
-            })).render();
-
-          } else {
-            /* There were no relation tasks to complete for this document (scoped to this user) */
-            alert('Sorry, there was a problem.');
-          }
-        });
-
-
-      });
-
-      var show_alert = _.debounce(function(evt) {
-        var $box = $(evt.target).closest('div[class^="paragraph-box"]');
-        if( $box.hasClass('paragraph-box-error-alert') ) {
-          $box.removeClass('paragraph-box-error-alert');
-        } else {
-          $box.addClass('paragraph-box-error-alert');
-        }
-      }, 500);
-
-      YPet['convoChannel'].on('mouse-down', function(evt) {
-        show_alert(evt);
-      });
-
-    });
-    YPet.start();
-
+    // var collection;
+    // var passages, regions, tmp_passages;
+    //
+    // YPet.addInitializer(function(options) {
+    //
+    //   Backbone.Radio.DEBUG = true;
+    //   YPet['convoChannel'] = Backbone.Radio.channel('ypet');
+    //
+    //   $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
+    //     /* The Annotation information has been returned from the server at this point
+    //        it is now safe to start YPET */
+    //     passages = data.collection.document.passage;
+    //     regions = {};
+    //
+    //     _.each(passages, function(passage, passage_idx) {
+    //       var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
+    //       var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
+    //       $('.paragraphs').append(p_body);
+    //       regions[''+passage_idx] = '#'+section_id;
+    //     });
+    //     YPet.addRegions(regions);
+    //
+    //     _.each(passages, function(passage, passage_idx) {
+    //       var p = new Paragraph({'text': passage.text});
+    //       YPet[''+passage_idx].show( new WordCollectionView({
+    //         collection: p.get('words'),
+    //       }) );
+    //       YPet[''+passage_idx].currentView.drawBioC(null, true);
+    //     });
+    //
+    //     /* The Annotation information has been returned from the server at this point
+    //        it is now safe to start Tree */
+    //
+    //     /* Initalize the page by loading all relation tasks
+    //      * and fetching all required data */
+    //     $.getJSON('/task/relation/'+ relation_task_settings.document_pk +'/api/', function(data) {
+    //       if(relation_task_settings) {
+    //
+    //         /* Initalize the Application, but load events later */
+    //         Tree.start();
+    //
+    //         /* Onload request all relation tasks to complete */
+    //         collection = new RelationTaskCollection(data);
+    //         /* Sort the collection by C1 on initial data load */
+    //         var new_collection = _.sortBy(collection.models, function(c) {
+    //           return c.attributes.concepts.c1.text;
+    //         });
+    //         collection.models = new_collection;
+    //         collection.next();
+    //
+    //         var current_relationship = collection.findWhere({'current': true});
+    //         add_relation_classes(current_relationship);
+    //         /* Init Progressbar event listner */
+    //         (new ProgressView({
+    //           collection: collection,
+    //           el: '#progress-bar'
+    //         })).render();
+    //
+    //       } else {
+    //         /* There were no relation tasks to complete for this document (scoped to this user) */
+    //         alert('Sorry, there was a problem.');
+    //       }
+    //     });
+    //
+    //
+    //   });
+    //
+    //   var show_alert = _.debounce(function(evt) {
+    //     var $box = $(evt.target).closest('div[class^="paragraph-box"]');
+    //     if( $box.hasClass('paragraph-box-error-alert') ) {
+    //       $box.removeClass('paragraph-box-error-alert');
+    //     } else {
+    //       $box.addClass('paragraph-box-error-alert');
+    //     }
+    //   }, 500);
+    //
+    //   YPet['convoChannel'].on('mouse-down', function(evt) {
+    //     show_alert(evt);
+    //   });
+    //
+    // });
+    // YPet.start();
+    //
 
