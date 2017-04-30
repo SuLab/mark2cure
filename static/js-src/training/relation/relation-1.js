@@ -20,44 +20,39 @@ Step1 = Backbone.Marionette.View.extend({
     'next': '#next',
   },
 
+  regions: {
+    'interactive': '#interactive'
+  },
+
   events: {
     'click @ui.next': function() { this.triggerMethod('step:complete:2', this); },
   },
 
-  onAttach: function() {
-    var RelationApp = Backbone.Marionette.Application.extend({
-      region: '#tree-insert',
+  onRender: function() {
+    var main = this.getRegion('interactive');
 
-      onStart: function() {
-        Backbone.Radio.DEBUG = true;
-        RelationApp['convoChannel'] = Backbone.Radio.channel('convo');
+    var collection = new REExtractionList([{
+        "id": 0,
+        "document": 0,
+        "relation_type": "g_d",
+        "concepts": {
+          "c2": {
+            "text": "Physics",
+            "type": "d",
+            "id": "0"
+          },
+          "c1": {
+            "text": "Volunteers",
+            "type": "g",
+            "id": "0"
+          }
+        },
+        "user_completed": false}]);
+    var tree = new Tree({'collection': collection});
+    main.show(tree.render());
 
-        var main = this.getRegion();
-        main.show(new TreeView());
-        main.show(new RelationCompositeView({
-          'collection': new RelationTaskCollection([{
-            "id": 0,
-            "document": 0,
-            "relation_type": "g_d",
-            "concepts": {
-              "c2": {
-                "text": "Physics",
-                "type": "d",
-                "id": "0"
-              },
-              "c1": {
-                "text": "Volunteers",
-                "type": "g",
-                "id": "0"
-              }
-            },
-            "user_completed": false}])
-        }));
-      }
-    });
-
-    var app = new RelationApp();
-    app.start();
+    // var sub_view = new Tree({'collection': collection});
+    // sub_view.render();
 
   //
   //   Tree['start'].onShow = function(m, c) {
@@ -94,6 +89,7 @@ Step1 = Backbone.Marionette.View.extend({
   //     });
   //     $el2.popover('show');
   //   }
+
   }
 });
 
