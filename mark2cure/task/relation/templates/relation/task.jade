@@ -29,13 +29,7 @@ block content
         button(id='next_button').btn.btn-primary.btn-block Next
 
     #tree-action-area
-      .row.top-tree-div
-        .col-xs-12.col-md-10.col-md-offset-1
-          #tree-insert
 
-      .row.bottom-tree-div
-        .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1.col-md-4.col-md-offset-4
-          button(id='submit_button', disabled).btn.btn-primary.btn-block.disabled Submit
 
     #document-action-area
       .row
@@ -103,14 +97,23 @@ block post-footer
   </script>
 
   script.
-    var relation_task_settings = {
-      'csrf_token': "{{csrf_token}}",
-      'document_pk': "{{ document.pk }}",
-      'document_pmid': "{{ document.document_id }}"
-    };
-    $.getJSON('/static/js-src/tasks/relation-data.json', function(data) {
-      relation_task_settings['data'] = data;
+    var RETreeApp = Backbone.Marionette.Application.extend({
+      region: '#tree-action-area',
+
+      onStart: function() {
+        var main = this.getRegion();
+
+        main.show( new Tree({
+          'csrf_token': "{{csrf_token}}",
+          'document_pk': "{{ document.pk }}",
+          'document_pmid': "{{ document.document_id }}"
+          })
+        );
+      }
     });
+    var tree_app = new RETreeApp();
+    tree_app.start();
+
 
     // var collection;
     // var passages, regions, tmp_passages;

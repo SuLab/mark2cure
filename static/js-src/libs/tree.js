@@ -570,9 +570,42 @@ Tree = Backbone.Marionette.View.extend({
     },
   },
 
+  initialize: function() {
+    this.options.training = false;
+    if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
+      this.options.training = true
+    };
+  },
+
   onRender: function() {
     // this.showChildView('progress', new View({'collection': this.collection}));
     this.model = this.collection.first();
+
+    if(!this.options.training && !this.collection) {
+      var self = this;
+      /* Initalize the page by loading all relation tasks
+       * and fetching all required data */
+      $.getJSON('/task/relation/'+ this.options.document_pk +'/api/', function(data) {
+        /* Onload request all relation tasks to complete */
+        self.collection = new REExtractionList(data);
+
+        /* Sort the collection by C1 on initial data load */
+        var new_collection = _.sortBy(collection.models, function(c) {
+          return c.attributes.concepts.c1.text;
+        });
+        self.collection.models = new_collection;
+        self.collection.next();
+      });
+
+      // var current_relationship = collection.findWhere({'current': true});
+      // add_relation_classes(current_relationship);
+      // /* Init Progressbar event listner */
+      // (new ProgressView({
+      //   collection: collection,
+      //   el: '#progress-bar'
+      // })).render();
+
+    }
     this.showChildView('selection', new REExtractionView({'model': this.model}));
   }
 

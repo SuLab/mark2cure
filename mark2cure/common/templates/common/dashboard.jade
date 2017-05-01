@@ -205,7 +205,6 @@ block post-footer
     script.
       if($('#document-relation-board').length) {
 
-
         var DocumentRelationBoard = Backbone.Marionette.Application.extend({
           region: '#document-relation-board',
 
@@ -213,7 +212,7 @@ block post-footer
             var docs = new DocumentList();
 
 
-            var main= this.getRegion();
+            var main = this.getRegion();
             main.show( new DocumentCompositeView({'collection': docs}) );
           }
         });
