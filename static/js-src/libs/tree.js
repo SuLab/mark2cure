@@ -22,20 +22,6 @@ REChoice = Backbone.RelationalModel.extend({
     }
   }],
 
-  // get_selected: function() {
-  //   #<{(| Try to find an instance of 'this' model type in the store |)}>#
-  //   var model = Backbone.Relational.store.find( this, {"selected": true});
-  //
-  //   if ( !model && _.isObject( attributes ) ) {
-  //     var coll = Backbone.Relational.store.getCollection( this );
-  //
-  //     model = coll.find( function( m ) {
-  //       return m.selected === true;
-  //     });
-  //   }
-  //   return model;
-  // }
-
 });
 
 REChoices = Backbone.Collection.extend({
@@ -64,78 +50,17 @@ REExtractionList = Backbone.Collection.extend({
   // initialize: function (models, options) {
   //   this.on('change:user_completed', this.next, this);
   // },
-  // next: function() {
-  //   var next_relationship = collection.findWhere({user_completed: false, available: true});
-  //   if (next_relationship) {
-  //     var self = this;
-  //     if( RelationApp['convoChannel'] ) { RelationApp['convoChannel'].unbind(); }
-  //
-  //     #<{(| Assign an uncompleted relationship as the current focused task |)}>#
-  //     collection.each(function(r) { r.set('current', false); })
-  //     next_relationship.set('current', true);
-  //     var current_relationship = collection.findWhere({'current': true});
-  //     var concepts = current_relationship.get('concepts');
-  //
-  //     var current_idx = collection.indexOf(current_relationship);
-  //     if(current_idx >= 1) {
-  //       var previous_concepts = collection.at(current_idx-1).get('concepts');
-  //
-  //       if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
-  //       if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
-  //     }
-  //
-  //     // var coll = new RelationList( relation_task_settings['data'][ current_relationship.get('relation_type') ] );
-  //     // var view_options = {collection: coll, concepts: current_relationship.get('concepts'), choice: false, first_draw: true };
-  //
-  //     RelationApp['start'].show(new RelationCompositeView(view_options));
-  //     add_relation_classes(current_relationship);
-  //
-  //
-  //     // This to the else is different from the training (it's not in the training)
-  //     var concept_uids = [concepts['c1'].id, concepts['c2'].id];
-  //     tmp_passages = [];
-  //
-  //     _.each(passages, function(p, p_idx) {
-  //       #<{(| Deep clone passage objects |)}>#
-  //       tmp_passage = $.extend({}, p);
-  //
-  //       tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
-  //         if(annotation) {
-  //           return _.any(annotation.infon, function(infon) {
-  //             return infon['@key'] == 'uid' && _.contains(concept_uids, infon['#text']);
-  //             #<{(| var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
-  //              * return infon['@key'] == 'uid' && match; |)}>#
-  //           });
-  //         } else { return []; }
-  //
-  //       });
-  //
-  //       var p = new Paragraph({'text': tmp_passage.text});
-  //       YPet[''+p_idx].show( new WordCollectionView({
-  //         collection: p.get('words'),
-  //         passage_json: tmp_passage,
-  //       }) );
-  //       YPet[''+p_idx].currentView.drawBioC(tmp_passage, false);
-  //       YPet[''+p_idx].currentView.drawBioC(null, true);
-  //
-  //     });
-  //
-  //   } else {
-  //     #<{(| If no other relations to complete, submit document
-  //     * This condition should be accounted for earlier, but
-  //     * keeping here just incase |)}>#
-  //     $('#tree-action-area').hide();
-  //     $('#task_relation_submit_document_set').submit();
-  //
-  //
-  //     // From the relation-training.js file
-  //     #<{(| If no other relations to complete, submit document |)}>#
-  //     $('#feedback_modal').on('hidden.bs.modal', function (e) {
-  //       $('#task_relation_results').submit();
-  //     });
-  //
-  //   }
-  // }
+  next: function() {
+    var next_relationship = this.findWhere({user_completed: false, available: true});
+    if (next_relationship) {
+      /* Assign an uncompleted relationship as the current focused task */
+      this.each(function(r) { r.set('current', false); })
+      next_relationship.set('current', true);
+      return next_relationship;
+    } else {
+      return false;
+    }
+  }
 });
 
 
@@ -265,8 +190,7 @@ REExtractionList = Backbone.Collection.extend({
 //   });
 // }
 
-// var incorrect_id_arr = ["zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy", "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer"];
-// var incorrect_flag_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
+var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 // var lookup_kinds = {
 //   'g': 'gene',
 //   'd': 'disease',
@@ -358,6 +282,10 @@ REChoicesView = Backbone.Marionette.CollectionView.extend({
 });
 
 
+RELoadingView = Backbone.Marionette.View.extend({
+  template: _.template('<h1>Loading!</h1>'),
+});
+
 REExtractionView = Backbone.Marionette.View.extend({
   /* The tool for describing how
   * A relates to B
@@ -439,39 +367,27 @@ REExtractionView = Backbone.Marionette.View.extend({
     },
 
     'rechoice:selected:confirm': function(childView, evt) {
-      /* When the selection was confirmed */
-
-      // var current_selection = RelationApp.start.currentView.options.choice;
-      // var current_relationship = collection.findWhere({'current': true});
-
-      /* Submit the data from the current selection to the server */
+      var self = this;
+      /* When the selection was confirmed, submit the data from the current selection to the server */
       $.ajax({
         type: 'POST',
-        url: '/task/relation/'+ relation_task_settings.document_pk +'/'+ current_relationship.id +'/submit/',
-        data: $.extend({'csrfmiddlewaretoken': relation_task_settings.csrf_token },
-                         {'relation': current_selection.get('id')}),
-          cache: false,
-          // success: function() {
+        url: '/task/relation/'+ self.model.get('document_id') +'/'+ self.model.get('id') +'/submit/',
+        data: $.extend({'csrfmiddlewaretoken': self.options.csrf_token },
+                         {'relation': childView.model.get('id')}),
+        cache: false,
+        success: function() {
 
-      //       #<{(| If they flag a concept as incorrect, remove it from the
-      //        * availability pool of tasks for this relationship document |)}>#
-      //       if( _.contains(incorrect_flag_arr, current_selection.get('id')) ) {
-      //         var incorrect_key = 'c'+(1+incorrect_flag_arr.indexOf(current_selection.get('id')));
-      //         var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
-      //         collection.each(function(relation) {
-      //           var concepts = relation.get('concepts');
-      //           if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
-      //             relation.set('available', false);
-      //           }
-      //         });
-      //       }
-      //
-      //       #<{(| Have them review the community's answers |)}>#
-      //       show_results(current_relationship.get('document_id'), current_relationship.get('id'));
-      //       update_score();
-      //
-      //     },
-      //     error: function() { alert('Please refresh your browser and try again.') },
+          /* If they flag a concept as incorrect, remove it from the
+           * availability pool of tasks for this relationship document */
+          if( _.contains(incorrect_id_arr, childView.model.get('id')) ) {
+            self.triggerMethod('reextraction:concept:flagged', childView.model);
+          }
+
+          /* Have them review the community's answers */
+          // show_results(current_relationship.get('document_id'), current_relationship.get('id'));
+          // update_score();
+        },
+        error: function() { alert('Please refresh your browser and try again.') },
       });
 
 
@@ -490,6 +406,15 @@ REExtractionView = Backbone.Marionette.View.extend({
     this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
     this.showChildView('list', new REChoicesView({'collection': choices_collection}));
 
+    /* Determine if the concept names shoudl fade in (to indicate that they're new) */
+    // var current_relationship = collection.findWhere({'current': true});
+    // var concepts = current_relationship.get('concepts');
+    // var current_idx = collection.indexOf(current_relationship);
+    // if(current_idx >= 1) {
+    //   var previous_concepts = collection.at(current_idx-1).get('concepts');
+    //   if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
+    //   if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
+    // }
 
     // var self = this;
     // var choice = this.options['choice'];
@@ -544,6 +469,41 @@ REExtractionView = Backbone.Marionette.View.extend({
 
 });
 
+RelationTextView = Backbone.Marionette.View.extend({
+  template: _.template('<p>Text / YPet will go here</p>'),
+  onRender: function() {
+    // RelationApp['start'].show(new RelationCompositeView(view_options));
+    // add_relation_classes(current_relationship);
+    //
+    // // This to the else is different from the training (it's not in the training)
+    // var concept_uids = [concepts['c1'].id, concepts['c2'].id];
+    // tmp_passages = [];
+    //
+    // _.each(passages, function(p, p_idx) {
+    //   #<{(| Deep clone passage objects |)}>#
+    //   tmp_passage = $.extend({}, p);
+    //
+    //   tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
+    //     if(annotation) {
+    //       return _.any(annotation.infon, function(infon) {
+    //         return infon['@key'] == 'uid' && _.contains(concept_uids, infon['#text']);
+    //         #<{(| var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
+    //          * return infon['@key'] == 'uid' && match; |)}>#
+    //       });
+    //     } else { return []; }
+    //
+    //   });
+    //
+    //   var p = new Paragraph({'text': tmp_passage.text});
+    //   YPet[''+p_idx].show( new WordCollectionView({
+    //     collection: p.get('words'),
+    //     passage_json: tmp_passage,
+    //   }) );
+    //   YPet[''+p_idx].currentView.drawBioC(tmp_passage, false);
+    //   YPet[''+p_idx].currentView.drawBioC(null, true);
+    // });
+  }
+});
 
 Tree = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
@@ -560,14 +520,43 @@ Tree = Backbone.Marionette.View.extend({
 
   childViewEvents: {
     'selection:submit': function(childView) {
+      /* Submitting results for a REExtraction */
       this.emptyRegions();
       this.showChildView('selection-results', new View({}));
     },
 
     'selection:results:next': function(childView) {
+      /* Go next after reviewing the results */
       this.emptyRegions();
       this.showChildView('selection-results', new REExtractionView({}));
+
+      /* If no other relations to complete, submit document
+      * This condition should be accounted for earlier, but
+      * keeping here just incase */
+      // $('#tree-action-area').hide();
+      // $('#task_relation_submit_document_set').submit();
+
+      // From the relation-training.js file
+      /* If no other relations to complete, submit document */
+      // $('#feedback_modal').on('hidden.bs.modal', function (e) {
+      //   $('#task_relation_results').submit();
+      // });
+
     },
+
+    'reextraction:concept:flagged': function(childView) {
+      console.log(childView);
+      var incorrect_key = 'c'+(1+incorrect_id_arr.indexOf(childView.id));
+      console.log('flagged', this, incorrect_key);
+      // var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
+
+      // collection.each(function(relation) {
+      //   var concepts = relation.get('concepts');
+      //   if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
+      //     relation.set('available', false);
+      //   }
+      // });
+    }
   },
 
   initialize: function() {
@@ -575,11 +564,6 @@ Tree = Backbone.Marionette.View.extend({
     if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
       this.options.training = true
     };
-  },
-
-  onRender: function() {
-    // this.showChildView('progress', new View({'collection': this.collection}));
-    this.model = this.collection.first();
 
     if(!this.options.training && !this.collection) {
       var self = this;
@@ -590,24 +574,33 @@ Tree = Backbone.Marionette.View.extend({
         self.collection = new REExtractionList(data);
 
         /* Sort the collection by C1 on initial data load */
-        var new_collection = _.sortBy(collection.models, function(c) {
+        var new_collection = _.sortBy(self.collection.models, function(c) {
           return c.attributes.concepts.c1.text;
         });
         self.collection.models = new_collection;
-        self.collection.next();
+        self.model = self.collection.next();
+
+        self.render();
       });
 
-      // var current_relationship = collection.findWhere({'current': true});
-      // add_relation_classes(current_relationship);
-      // /* Init Progressbar event listner */
-      // (new ProgressView({
-      //   collection: collection,
-      //   el: '#progress-bar'
-      // })).render();
-
+    } else {
+      this.model = this.collection.next();
     }
-    this.showChildView('selection', new REExtractionView({'model': this.model}));
-  }
 
+  },
+
+  onRender: function() {
+    // this.showChildView('progress', new View({'collection': this.collection}));
+
+    if(this.collection && this.model) {
+      this.options['model'] = this.model;
+      this.showChildView('selection', new REExtractionView(this.options));
+      this.showChildView('text', new RelationTextView(this.options));
+
+    } else {
+      this.showChildView('selection', new RELoadingView());
+    };
+
+  }
 
 });
