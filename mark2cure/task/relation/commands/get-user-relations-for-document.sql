@@ -1,5 +1,3 @@
-/* Breaks on 5.7.12 */
-
 SELECT  `relationship`.`relation_id`,
         `relationship`.`document_id`,
         `relationship`.`relation_type`,
@@ -107,7 +105,7 @@ FROM (
 
   WHERE `relation_relation`.`document_id` = @document_id
 
-  GROUP BY `relation_id`
+  GROUP BY `relation_relation`.`id`
 
   ORDER BY `progress` DESC
 ) as `relationship`
