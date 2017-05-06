@@ -35,10 +35,10 @@ class ZooniverseAdapter(OAuth2Adapter):
     supports_state = False
 
     # User gets redirected to:
-    # https://panoptes.zooniverse.org/oauth/authorize?response_type=token&client_id=17a0d7de558a4a847311f46181d121128e423f48865dd38ab396b6c53db97ee4&redirect_uri=https://localhost.getshopmatch.com:8000/accounts/zooniverse/login/callback
+    # https://panoptes.zooniverse.org/oauth/authorize?response_type=token&client_id=17a0d&redirect_uri=https://localhost.getshopmatch.com:8000/accounts/zooniverse/login/callback
     #
     # Which then redirects to:
-    # https://localhost.getshopmatch.com:8000/accounts/zooniverse/login/callback/?env=production#access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJkYXRhIjp7ImlkIjoxNjM0NjMyLCJsb2dpbiI6ImJ1ZG93c2tpIiwiZG5hbWUiOiJidWRvd3NraSIsInNjb3BlIjpbInVzZXIiLCJwdWJsaWMiXSwiYWRtaW4iOmZhbHNlfSwiZXhwIjoxNDkyNjM2NjYwLCJpc3MiOiJwYW4tcHJvZCIsInJuZyI6ImEwYWEifQ.YuwY2Y1FwI9zVZTJpEjlVFxYmd86QnKs0o5AaoiQf942oWlT1VpNUS6iFmB5YzRdhsugoUlRmQAdyLsOTgrDuwRBhBgjQcgP7wdDb3TqhDTUIWH2A_zBjjMNusZtUshRmB__nzhLIlTPaRvTKOm464pWAt_3xt8nk9QGf6BwREfUrSGsED59gNgYnyAq-cogKs7jsVAwGMtbHMHgmYPy8zD2vXQRgLr4vMcwzqZe-p7Gsr1gtICqg55iBmuyP5l2nqO9GDeFnyOgd9bJ7dCCk6TSMIkYgL43jOOjGcLtcRG0kwmdNnsUE9DFuc38D5tyY8yNHwq4XsaKRn_WepnpndmQzUJ8UBno9CWHCyYn2XrFf22qt-ft6_rETKI0oOBryZPRwzh6mNZFUUEvKBIspqPFaDXGX-CKPXJuGPDzwn9OudQtOQEjyB00PJOkFc2ukYWqKB2JcumrB4lS1RKjAavH4VsFUiSMqLr0B8Wzh30urBk3UbaLtI_76hGb9dSPiyF6MEwOu7Oqf-mWTOoN6xljHxHz5WoIIvrnOJRSnj6gm__BLy8OzV9hmJvg0G7gcyXkuicyrvEUP9yi-iAzoaPv8wlzALNom4v6rAsClXngQIoc3U0Wk-p7RYlAJwhnNZOoyv7b4S_zSI6vsgCg6f0qI_aFaEkcww_iSlwemcM&token_type=bearer&expires_in=7200
+    # https://localhost.getshopmatch.com:8000/accounts/zooniverse/login/callback/?env=production#access_token=Md30PEUP9yisgCg6f0qI_aFaEkcww_iSlwemcM&token_type=bearer&expires_in=7200
     # (notice access_token + token_type=bearer + expires_in above - no refresh_token)
 
     # To refresh token: Open up the same login page (above) and parse the redirected URI (same domain) to get access_token
