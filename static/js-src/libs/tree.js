@@ -1,65 +1,12 @@
 var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 
-//
-/* Determine if the concept names shoudl fade in (to indicate that they're new) */
-// var current_relationship = collection.findWhere({'current': true});
-// var concepts = current_relationship.get('concepts');
-// var current_idx = collection.indexOf(current_relationship);
-// if(current_idx >= 1) {
-//   var previous_concepts = collection.at(current_idx-1).get('concepts');
-//   if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
-//   if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
-// }
-
-// var self = this;
-// var choice = this.options['choice'];
-// var concepts = this.options['concepts'];
-//
-// if(this.options.first_draw) {
-//   if( _.has(concepts['c1'], 'fadeIn') ) {
-//     this.ui.c1.addClass('fade-in one');
-//   };
-//   if( _.has(concepts['c2'], 'fadeIn') ) {
-//     this.ui.c2.addClass('fade-in one');
-//   };
-// }
-//
-//   if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
-//     this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
-//     this.ui.c1.addClass('incorrect');
-//
-//   } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
-//     this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
-//     this.ui.c2.addClass('incorrect');
-//
-//     #<{(| Training specific
-//      * (TODO) get out of here
-//      |)}>#
-//     if(concepts['c2']['text'] == 'Astrology') {
-//       this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
-//     };
-//
-//   } else {
-//     this.ui.relation.removeClass('disabled').text( choice.get('text') );
-//   };
-// };
-//
-// if(choice || this.collection.parentREChoice) {
-//   this.ui.relation.removeClass('disabled');
-//   this.ui.relation.addClass('relation-go-back');
-// }
-
 /*
  * ETC
  */
 
-// #<{(| Sort the collection by C1 on initial data load |)}>#
-// var new_collection = _.sortBy(collection.models, function(c) {
-//   return c.attributes.concepts.c1.text;
-// });
-// collection.models = new_collection;
-// collection.next();
-//
+// if(concepts['c2']['text'] == 'Astrology') {
+//  this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
+// };
 //   #<{(| Special for training |)}>#
 //   if( current_relationship.get('concepts')['c1']['text'] == 'Citizen Scientists' ) {
 //     $('#c1 .not_correct_stype').text('is not a group of people?');
@@ -143,7 +90,8 @@ REExtraction = Backbone.Model.extend({
     concepts: {},
     user_completed: false,
     available: true,
-    current: false
+    current: false,
+    results: null,
   }
 });
 
@@ -164,13 +112,42 @@ REExtractionList = Backbone.Collection.extend({
   }
 });
 
+REExtractionAnswer = Backbone.Model.extend({
+  /*
+  * The A => B submission answer
+  */
+  defaults: {
+    percentage: 10.0,
+    self: false,
+    color: '#0cf'
+  }
+});
+
+REExtractionAnswerList = Backbone.Collection.extend({
+  /* The list of REExtractionAnswer results for a single Relationship ID */
+  model: REExtractionAnswer,
+  url: '',
+  // data = _.sortBy(data, function(d) { return -d['value'] });
+  comparator: 'value',
+
+  initialize: function() {
+    console.log('answer list', this);
+
+    this.listenTo(this, 'change', this._onChange);
+  },
+
+  _onChange: function() {
+    console.log('on change');
+  }
+
+});
+
 /*
  * Views
  */
 
 REProgressItem = Backbone.Marionette.View.extend({
   /* Drop down list of REChoices */
-  // template: _.template('•'),
   template: _.template('&#8226;'),
   tagName: 'li',
   className: 'list-inline-item',
@@ -202,6 +179,7 @@ RENavigation = Backbone.Marionette.View.extend({
   * - Collection: REExtractionList
   */
   template: '#tree-navigation-template',
+  className: 'row',
 
   regions: {
     'progress': '#progress-bar'
@@ -211,13 +189,29 @@ RENavigation = Backbone.Marionette.View.extend({
   }
 });
 
-REExtractionResult = Backbone.Marionette.View.extend({
+REExtractionAnswerItem = Backbone.Marionette.View.extend({
+  template: '#reextraction-result-answer-item-template',
+  tagName: 'li',
+  className: 'list-inline-item'
+});
+
+REExtractionAnswerView = Backbone.Marionette.CollectionView.extend({
+  tagName: 'ul',
+  className: 'list-unstyled',
+  childView: REExtractionAnswerItem,
+});
+
+REExtractionResultView = Backbone.Marionette.View.extend({
   /* The results interface for a single REExtraction
   * – Modal: REExtraction
-  * - Collection: None */
+  * - Collection: REExtractionAnswerList */
   template: '#reextraction-results-template',
   ui: {
     'button': 'button'
+  },
+
+  regions: {
+    'answers-list': '#reextraction-answers-list'
   },
 
   triggers: {
@@ -225,71 +219,24 @@ REExtractionResult = Backbone.Marionette.View.extend({
   },
 
   onAttach: function() {
-    $.getJSON('/task/relation/'+ this.model.get('document_id') +'/analysis/' + this.model.get('id') + '/', function(api_data) {
-      var answers = api_data[0]['answers']
-      /* obj, key = identifier, value = count */
-      var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
+      //
+      // var max = d3.sum(data.map(function(i){ return i['value']; }));
+      // var color = d3.scale.category20c();
+    //
 
-      var answer_text = {};
-      var personal_ann = '';
+    console.log( this.collection.pluck('value') )
 
-      var c_1_broken = "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy";
-      var c_2_broken = "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer";
+    this.showChildView('answers-list', new REExtractionAnswerView({'collection': this.collection}));
 
-      _.each(answers, function(a) {
-        answer_text[a.answer.id] = a.answer.text;
-        if(a['self']) { personal_ann = a.answer.id; }
-      });
+    // var chart = d3.select('#chart').style('width', '100%');
+    // var bar = chart.selectAll('div')
+    //   .data(data)
+    //   .enter()
+    //     .append('div')
+    //       .attr('class', 'bar-component')
+    //       .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
+    //       .style('background-color', function(d, i) { return color(i); });
 
-      var data = [];
-      _.each(_.keys(answer_counts), function(answer_key) {
-        var label = answer_text[answer_key];
-        if(answer_key == c_1_broken) {
-          label = api_data[0]['concept_a']['text'] + label + lookup_kinds[api_data[0]['kind'][0]] + ' concept';
-        } else if(answer_key == c_2_broken) {
-          label = api_data[0]['concept_b']['text'] + label + lookup_kinds[api_data[0]['kind'][2]] + ' concept';
-        }
-
-        data.push({
-          'id': answer_key,
-          'value': answer_counts[answer_key],
-          'label': label,
-          'self': answer_key == personal_ann
-       });
-      });
-
-      data = _.sortBy(data, function(d) { return -d['value'] });
-
-      var max = d3.sum(data.map(function(i){ return i['value']; }));
-      var color = d3.scale.category20c();
-
-      var chart = d3.select('#chart').style('width', '100%');
-      var bar = chart.selectAll('div')
-        .data(data)
-        .enter()
-          .append('div')
-            .attr('class', 'bar-component')
-            .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
-            .style('background-color', function(d, i) { return color(i); });
-
-      var bold = function(d, i) {
-        if( i == 1 && d['self'] ) {
-          return '<strong>';
-        } else if( i == 2 && d['self'] ) {
-          return '</strong>';
-        } else {
-          return '';
-        }
-      }
-
-      var list = d3.select('#chart-list');
-      var bar = list.selectAll('li')
-        .data(data)
-        .enter()
-          .append('li')
-            .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p>' + bold(d, 1) + ((d['value']/max)*100).toFixed() + '% – ' + d['label'] + bold(d, 2) + '</p>'; });
-
-    });
   }
 });
 
@@ -330,6 +277,7 @@ RESelectedChoiceView = Backbone.Marionette.View.extend({
   onRender: function() {
     if(this.model) {
       this.$el.html(this.model.get('text'));
+      this.$el.attr('class', 'relation-go-back');
     } else {
       this.$el.html('Select a Relationship below...');
       this.$el.attr('class', 'disabled');
@@ -360,7 +308,8 @@ RELoadingView = Backbone.Marionette.View.extend({
   * - Model = None
   * - Collection = None
   */
-  template: _.template('<h1>Loading!</h1>'),
+  template: _.template('<div class="loader"></div>'),
+  className: 'loader-container'
 });
 
 REConceptView = Backbone.Marionette.View.extend({
@@ -370,17 +319,43 @@ REConceptView = Backbone.Marionette.View.extend({
   * - Collection: None
   */
   template: '#reextraction-concept-template',
+  className: 'concept row',
 
-  events : {
-    'mouseover': function(evt) {
-      this.$el.addClass('concept-incorrect');
+  ui: {
+    'flag': 'div.flag'
+  },
+  events: {
+    'mouseover @ui.flag': function(evt) {
+      this.$el.addClass('incorrect');
     },
-    'mouseout': function(evt) {
-      this.$el.removeClass('concept-incorrect');
+    'mouseout @ui.flag': function(evt) {
+      this.$el.removeClass('incorrect');
     }
   },
   triggers: {
-    'mousedown i': 'reconcept:incorrect',
+    'mousedown .flag': 'reconcept:incorrect',
+  },
+
+  onRender: function() {
+    this.$el.addClass(this.model.get('type'));
+
+    /* Determine if the concept names shoudl fade in (to indicate that they're new) */
+    // var current_relationship = collection.findWhere({'current': true});
+    // var concepts = current_relationship.get('concepts');
+    // var current_idx = collection.indexOf(current_relationship);
+    // if(current_idx >= 1) {
+    //   var previous_concepts = collection.at(current_idx-1).get('concepts');
+    //   if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
+    //   if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
+    // }
+    // if(this.options.first_draw) {
+    //   if( _.has(concepts['c1'], 'fadeIn') ) {
+    //     this.ui.c1.addClass('fade-in one');
+    //   };
+    //   if( _.has(concepts['c2'], 'fadeIn') ) {
+    //     this.ui.c2.addClass('fade-in one');
+    //   };
+    // }
   }
 });
 
@@ -501,6 +476,59 @@ RelationTextView = Backbone.Marionette.View.extend({
     //   YPet[''+p_idx].currentView.drawBioC(tmp_passage, false);
     //   YPet[''+p_idx].currentView.drawBioC(null, true);
     // });
+    // var collection;
+    // var passages, regions, tmp_passages;
+    //
+    // YPet.addInitializer(function(options) {
+    //
+    //   Backbone.Radio.DEBUG = true;
+    //   YPet['convoChannel'] = Backbone.Radio.channel('ypet');
+    //
+    //   $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
+    //     /* The Annotation information has been returned from the server at this point
+    //        it is now safe to start YPET */
+    //     passages = data.collection.document.passage;
+    //     regions = {};
+    //
+    //     _.each(passages, function(passage, passage_idx) {
+    //       var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
+    //       var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
+    //       $('.paragraphs').append(p_body);
+    //       regions[''+passage_idx] = '#'+section_id;
+    //     });
+    //     YPet.addRegions(regions);
+    //
+    //     _.each(passages, function(passage, passage_idx) {
+    //       var p = new Paragraph({'text': passage.text});
+    //       YPet[''+passage_idx].show( new WordCollectionView({
+    //         collection: p.get('words'),
+    //       }) );
+    //       YPet[''+passage_idx].currentView.drawBioC(null, true);
+    //     });
+    //
+    //     /* The Annotation information has been returned from the server at this point
+    //        it is now safe to start Tree */
+    //
+
+    //
+    //   });
+    //
+    //   var show_alert = _.debounce(function(evt) {
+    //     var $box = $(evt.target).closest('div[class^="paragraph-box"]');
+    //     if( $box.hasClass('paragraph-box-error-alert') ) {
+    //       $box.removeClass('paragraph-box-error-alert');
+    //     } else {
+    //       $box.addClass('paragraph-box-error-alert');
+    //     }
+    //   }, 500);
+    //
+    //   YPet['convoChannel'].on('mouse-down', function(evt) {
+    //     show_alert(evt);
+    //   });
+    //
+    // });
+    // YPet.start();
+    //
   }
 });
 
@@ -510,6 +538,7 @@ Tree = Backbone.Marionette.View.extend({
   * - Collection = REExtractionList
   */
   template: '#tree-template',
+  className: 'row',
 
   regions: {
     'navigation': '#tree-navigation',
@@ -525,17 +554,45 @@ Tree = Backbone.Marionette.View.extend({
       * 2. Flag future REExtraction models of concept corrections
       * 3. Show REExtraction results
       */
+      var self = this;
+      var answers_collection = new REExtractionAnswerList([]);
 
-      if( _.contains(incorrect_id_arr, confirmView.model.get('id')) ) {
-        console.log('flag that shit', this);
-      }
+      $.getJSON('/task/relation/'+ this.model.get('document_id') +'/analysis/' + this.model.get('id') + '/', function(api_data) {
+        // Extend any naming labels
+        var answer_text = {};
+        _.each(api_data[0]['answers'], function(a) {
+          var val = a.answer.text;
+          if( _.contains(incorrect_id_arr, a.answer.id) ) {
+            var flagged_concept = new REConcept( self.model.get('concepts')['c'+(_.indexOf(incorrect_id_arr, a.answer.id)+1)] );
+            val = flagged_concept.get('text')+' is not a '+ flagged_concept.get('type') +' concept';
+          }
+          answer_text[a.answer.id] = val;
+        });
+
+        // Add them all to the REExtractionAnswersList
+        var answer_counts = _.countBy( _.map(api_data[0]['answers'], function(x) { return x['answer']['id']; }) );
+        _.each(_.keys(answer_counts), function(answer_key) {
+           answers_collection.add(new REExtractionAnswer({
+             'id': answer_key,
+             'value': answer_counts[answer_key],
+             'label': answer_text[answer_key],
+             'self': answer_key == confirmView.model.get('id')
+          }) );
+        });
+      });
+
+
+      // if( _.contains(incorrect_id_arr, confirmView.model.get('id')) ) {
+      //   console.log('flag dat', this);
+      // }
 
       /* Submitting results for a REExtraction */
       this.emptyRegions();
-      this.showChildView('extraction-results', new REExtractionResult({'model': this.model}));
+      this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+      this.showChildView('extraction-results', new REExtractionResultView({'model': this.model, 'collection': answers_collection}));
     },
     'reconfirm:confirm:error': function(childView) {
-      alert('fuck');
+      alert('error error');
     },
     'reextractionresult:next': function(childView) {
       /* Go next after reviewing the results */
@@ -548,7 +605,17 @@ Tree = Backbone.Marionette.View.extend({
         this.showChildView('extraction', new REExtractionView(this.options));
         this.showChildView('text', new RelationTextView(this.options));
       } else {
+
         alert('all out!');
+        var self = this;
+        $.ajax({
+          type: 'POST',
+          url: '/task/relation/'+ self.model.get('document_id') +'/',
+          data: {'csrfmiddlewaretoken': self.options.csrf_token },
+          cache: false,
+          success: function() { self.triggerMethod('reconfirm:confirm:success', childView); },
+        });
+
       }
 
       /* If no other relations to complete, submit document

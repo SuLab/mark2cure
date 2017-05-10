@@ -21,9 +21,7 @@ block content
           div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}", style="cursor: not-allowed;").document
             .paragraphs(style="cursor: not-allowed;")
 
-      .row(style="display:none;")
-        form(id="task_relation_submit_document_set", action='{% url "task-relation:task" document_pk=document.pk %}', method='POST')
-          - csrf_token
+
 
       .row.m-t-1
         .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
@@ -44,24 +42,27 @@ block content
 block post-footer
 
   <script id="tree-template" type="x-template/underscore">
-  <div id="tree" class="row text-xs-center">
   <div id="tree-navigation" class="col-xs-12"></div>
   <div id="tree-selection" class="col-xs-10 col-xs-offset-1"></div>
-  <div id="tree-selection-results" class="col-xs-10"></div>
+  <div id="tree-selection-results" class="col-xs-12"></div>
   <div id="tree-text" class="col-xs-10"></div>
-  </div>
   </script>
 
   <script id="tree-navigation-template" type="x-template/underscore">
-  <div id="quest-guide" class="row">
-
   <div id="progress-bar" class="col-xs-10 col-xs-offset-1 col-md-7 col-md-offset-1 col-lg-8 col-lg-offset-1"></div>
-
   <div class="col-xs-10 col-xs-offset-1 col-md-3 col-md-offset-0 col-lg-2 col-lg-offset-0">
   <p class="text-xs-center">Score: <span id='score'>0</span></p>
   </div>
+  </script>
 
-  </div>
+  <script id="reextraction-result-answer-item-template" type="x-template/underscore">
+  <div class="box" style="background-color: <%= color %>;"></div>
+
+  <% if(self) { %>
+  <p><strong><%= percentage %>% – <%= label %></strong></p>
+  <% } else { %>
+  <p><%= percentage %>% – <%= label %></p>
+  <% } %>
   </script>
 
   <script id="reextraction-results-template" type="x-template/underscore">
@@ -69,9 +70,9 @@ block post-footer
   <div class="col-xs-12 col-md-10 col-md-offset-1">
   <div id="chart"></div>
   </div>
-  <div class="col-xs-12 col-md-10 col-md-offset-1">
-  <ul id="chart-list" class="list-unstyled"></ul>
-  </div>
+
+  <div id="reextraction-answers-list" class="col-xs-12 col-md-10 col-md-offset-1"></div>
+
   <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4">
   <button class="btn btn-primary btn-block">Next</button>
   </div>
@@ -79,19 +80,19 @@ block post-footer
   </script>
 
   <script id="reextraction-concept-template" type="x-template/underscore">
-  <i class="fa fa-times-circle"></i>
-  <h3><%= text %></h3>
-  <p class="not_correct_stype"></p>
+  <div class="flag">&#10005;</div>
+  <div class="text col-xs-12"><p><%= text %></p></div>
+  <div class="desc col-xs-12"><p>is not a <%= type %> concept?</p></div>
   </script>
 
   <script id="reextraction-template" type="x-template/underscore">
-  <div id="tree" class="row text-xs-center">
-  <div id="c1" class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
+  <div id="tree-extraction" class="row text-xs-center">
+  <div id="c1" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
   <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
   <div id="selected-choice"></div>
   <div id="rechoices-list"></div>
   </div>
-  <div id="c2" class="concept col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
+  <div id="c2" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
   </div>
   <div id="tree-confirm" class="row"></div>
   </script>
@@ -113,59 +114,4 @@ block post-footer
     });
     var tree_app = new RETreeApp();
     tree_app.start();
-
-
-    // var collection;
-    // var passages, regions, tmp_passages;
-    //
-    // YPet.addInitializer(function(options) {
-    //
-    //   Backbone.Radio.DEBUG = true;
-    //   YPet['convoChannel'] = Backbone.Radio.channel('ypet');
-    //
-    //   $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
-    //     /* The Annotation information has been returned from the server at this point
-    //        it is now safe to start YPET */
-    //     passages = data.collection.document.passage;
-    //     regions = {};
-    //
-    //     _.each(passages, function(passage, passage_idx) {
-    //       var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-    //       var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-    //       $('.paragraphs').append(p_body);
-    //       regions[''+passage_idx] = '#'+section_id;
-    //     });
-    //     YPet.addRegions(regions);
-    //
-    //     _.each(passages, function(passage, passage_idx) {
-    //       var p = new Paragraph({'text': passage.text});
-    //       YPet[''+passage_idx].show( new WordCollectionView({
-    //         collection: p.get('words'),
-    //       }) );
-    //       YPet[''+passage_idx].currentView.drawBioC(null, true);
-    //     });
-    //
-    //     /* The Annotation information has been returned from the server at this point
-    //        it is now safe to start Tree */
-    //
-
-    //
-    //   });
-    //
-    //   var show_alert = _.debounce(function(evt) {
-    //     var $box = $(evt.target).closest('div[class^="paragraph-box"]');
-    //     if( $box.hasClass('paragraph-box-error-alert') ) {
-    //       $box.removeClass('paragraph-box-error-alert');
-    //     } else {
-    //       $box.addClass('paragraph-box-error-alert');
-    //     }
-    //   }, 500);
-    //
-    //   YPet['convoChannel'].on('mouse-down', function(evt) {
-    //     show_alert(evt);
-    //   });
-    //
-    // });
-    // YPet.start();
-    //
 
