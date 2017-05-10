@@ -1,8 +1,86 @@
+var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
+
+//
+/* Determine if the concept names shoudl fade in (to indicate that they're new) */
+// var current_relationship = collection.findWhere({'current': true});
+// var concepts = current_relationship.get('concepts');
+// var current_idx = collection.indexOf(current_relationship);
+// if(current_idx >= 1) {
+//   var previous_concepts = collection.at(current_idx-1).get('concepts');
+//   if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
+//   if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
+// }
+
+// var self = this;
+// var choice = this.options['choice'];
+// var concepts = this.options['concepts'];
+//
+// if(this.options.first_draw) {
+//   if( _.has(concepts['c1'], 'fadeIn') ) {
+//     this.ui.c1.addClass('fade-in one');
+//   };
+//   if( _.has(concepts['c2'], 'fadeIn') ) {
+//     this.ui.c2.addClass('fade-in one');
+//   };
+// }
+//
+//   if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
+//     this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
+//     this.ui.c1.addClass('incorrect');
+//
+//   } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
+//     this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
+//     this.ui.c2.addClass('incorrect');
+//
+//     #<{(| Training specific
+//      * (TODO) get out of here
+//      |)}>#
+//     if(concepts['c2']['text'] == 'Astrology') {
+//       this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
+//     };
+//
+//   } else {
+//     this.ui.relation.removeClass('disabled').text( choice.get('text') );
+//   };
+// };
+//
+// if(choice || this.collection.parentREChoice) {
+//   this.ui.relation.removeClass('disabled');
+//   this.ui.relation.addClass('relation-go-back');
+// }
+
+/*
+ * ETC
+ */
+
+// #<{(| Sort the collection by C1 on initial data load |)}>#
+// var new_collection = _.sortBy(collection.models, function(c) {
+//   return c.attributes.concepts.c1.text;
+// });
+// collection.models = new_collection;
+// collection.next();
+//
+//   #<{(| Special for training |)}>#
+//   if( current_relationship.get('concepts')['c1']['text'] == 'Citizen Scientists' ) {
+//     $('#c1 .not_correct_stype').text('is not a group of people?');
+//   }
+//   if( current_relationship.get('concepts')['c2']['text'] == 'Astrology' ) {
+//     $('#c2 .not_correct_stype').text('is not a field of science?');
+//   }
+//   if( current_relationship.get('concepts')['c1']['text'] == 'citizen scientist' ) {
+//     $('#c1 .not_correct_stype').text('is not a helpful person?');
+//   }
+//   if( current_relationship.get('concepts')['c2']['text'] == 'Biomedical research' ) {
+//     $('#c2 .not_correct_stype').text('is not a field of study?');
+//   }
+
+
 /*
  *  Models & Collections
  */
 
 REChoice = Backbone.RelationalModel.extend({
+  /* The comparison between A => B */
   defaults: {
     id: '',
     text: '',
@@ -21,35 +99,58 @@ REChoice = Backbone.RelationalModel.extend({
       includeInJSON: false,
     }
   }],
-
 });
 
 REChoices = Backbone.Collection.extend({
+  /* The relationship tree of options from a
+   * pre-defined selection pool */
   model: REChoice,
   url: '/api/v1/words',
 });
 
+REConcept = Backbone.Model.extend({
+  defaults: {
+    id: null,
+    text: null,
+    index: null,
+    type: null
+  },
+  initialize: function(obj) {
+    if(obj.type.length<=1) {
+
+      try {
+        var val = {
+          'g': 'gene',
+          'd': 'disease',
+          'c': 'drug'
+        }[obj.type]
+      } catch(err) {
+        throw 'Value not an acceptable option'
+      }
+
+      this.set('type', val);
+    }
+  }
+});
 
 REExtraction = Backbone.Model.extend({
   /*
   * The A => B proposition
   */
   defaults: {
-      id: null,
-      document: null,
-      relation_type: null,
-      concepts: {},
-      user_completed: false,
-      available: true,
-      current: false
-    }
+    id: null,
+    relation_type: null,
+    concepts: {},
+    user_completed: false,
+    available: true,
+    current: false
+  }
 });
 
 REExtractionList = Backbone.Collection.extend({
+  /* The list of REExtraction events for a single
+   * PMID */
   model: REExtraction,
-  // initialize: function (models, options) {
-  //   this.on('change:user_completed', this.next, this);
-  // },
   next: function() {
     var next_relationship = this.findWhere({user_completed: false, available: true});
     if (next_relationship) {
@@ -63,175 +164,143 @@ REExtractionList = Backbone.Collection.extend({
   }
 });
 
-
-    // #<{(| Sort the collection by C1 on initial data load |)}>#
-    // var new_collection = _.sortBy(collection.models, function(c) {
-    //   return c.attributes.concepts.c1.text;
-    // });
-    // collection.models = new_collection;
-    // collection.next();
-
-
-/*
- * ETC
- */
-// var add_relation_classes = function(current_relationship) {
-//   if (!current_relationship) { return; }
-//
-//   var relation_type = current_relationship.get('relation_type');
-//   if (relation_type == 'g_c') {
-//     $('#c1').addClass('gene');
-//     $('#c1 .not_correct_stype').text('is not a gene concept?');
-//     $('#c2').addClass('chemical');
-//     $('#c2 .not_correct_stype').text('is not a drug concept?');
-//
-//   } else if (relation_type == 'c_d') {
-//     $('#c1').addClass('chemical');
-//     $('#c1 .not_correct_stype').text('is not a drug concept?');
-//     $('#c2').addClass('disease');
-//     $('#c2 .not_correct_stype').text('is not a disease concept?');
-//
-//   } else if (relation_type == 'g_d') {
-//     $('#c1').addClass('gene');
-//     $('#c1 .not_correct_stype').text('is not a gene concept?');
-//     $('#c2').addClass('disease');
-//     $('#c2 .not_correct_stype').text('is not a disease concept?');
-//   };
-//
-//   #<{(| Special for training |)}>#
-//   if( current_relationship.get('concepts')['c1']['text'] == 'Citizen Scientists' ) {
-//     $('#c1 .not_correct_stype').text('is not a group of people?');
-//   }
-//   if( current_relationship.get('concepts')['c2']['text'] == 'Astrology' ) {
-//     $('#c2 .not_correct_stype').text('is not a field of science?');
-//   }
-//   if( current_relationship.get('concepts')['c1']['text'] == 'citizen scientist' ) {
-//     $('#c1 .not_correct_stype').text('is not a helpful person?');
-//   }
-//   if( current_relationship.get('concepts')['c2']['text'] == 'Biomedical research' ) {
-//     $('#c2 .not_correct_stype').text('is not a field of study?');
-//   }
-// };
-//
-// function get_stype(the_current_relation) {
-//   return $(this).hasClass('.gene');
-// };
-
-// function show_results(document_pk, relation_pk) {
-//   $('#tree-action-area').hide();
-//
-//   $.getJSON('/task/relation/'+ document_pk +'/analysis/' + relation_pk + '/', function(api_data) {
-//     var answers = api_data[0]['answers']
-//
-//     #<{(| obj, key = identifier, value = count |)}>#
-//     var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
-//
-//     var answer_text = {};
-//     var personal_ann = '';
-//
-//     var c_1_broken = "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy";
-//     var c_2_broken = "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer";
-//
-//     _.each(answers, function(a) {
-//       answer_text[a.answer.id] = a.answer.text;
-//       if(a['self']) { personal_ann = a.answer.id; }
-//     });
-//
-//     var data = [];
-//     _.each(_.keys(answer_counts), function(answer_key) {
-//
-//       var label = answer_text[answer_key];
-//       if(answer_key == c_1_broken) {
-//         label = api_data[0]['concept_a']['text'] + label + lookup_kinds[api_data[0]['kind'][0]] + ' concept';
-//       } else if(answer_key == c_2_broken) {
-//         label = api_data[0]['concept_b']['text'] + label + lookup_kinds[api_data[0]['kind'][2]] + ' concept';
-//       }
-//
-//       data.push({
-//         'id': answer_key,
-//         'value': answer_counts[answer_key],
-//         'label': label,
-//         'self': answer_key == personal_ann
-//       });
-//     });
-//
-//     data = _.sortBy(data, function(d) { return -d['value'] });
-//
-//     var max = d3.sum(data.map(function(i){ return i['value']; }));
-//     var color = d3.scale.category20c();
-//
-//     var chart = d3.select('#chart').style('width', '100%');
-//     var bar = chart.selectAll('div')
-//       .data(data)
-//       .enter()
-//         .append('div')
-//           .attr('class', 'bar-component')
-//           .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
-//           .style('background-color', function(d, i) { return color(i); });
-//
-//     var bold = function(d, i) {
-//       if( i == 1 && d['self'] ) {
-//         return '<strong>';
-//       } else if( i == 2 && d['self'] ) {
-//         return '</strong>';
-//       } else {
-//         return '';
-//       }
-//     }
-//
-//     var list = d3.select('#chart-list');
-//     var bar = list.selectAll('li')
-//       .data(data)
-//       .enter()
-//         .append('li')
-//           .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p>' + bold(d, 1) + ((d['value']/max)*100).toFixed() + '% – ' + d['label'] + bold(d, 2) + '</p>'; });
-//
-//     $('#feedback-next-action-area').addClass('shown').slideDown('fast');
-//   });
-// }
-
-var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
-// var lookup_kinds = {
-//   'g': 'gene',
-//   'd': 'disease',
-//   'c': 'drug'
-// }
-
 /*
  * Views
  */
 
-// var ProgressItem = Backbone.Marionette.View.extend({
-//   tagName: 'li',
-//   className: 'list-inline-item uncompleted',
-//   template: _.template('&#8226;'),
-//   initialize : function(options) {
-//     this.listenTo(this.model, 'change:user_completed', this.render);
-//     this.listenTo(this.model, 'change:current', this.render);
-//     this.listenTo(this.model, 'change:available', this.render);
-//   },
-//   onRender: function() {
-//     var class_options = ['uncompleted', 'completed', 'skip', 'active']
-//     var self = this;
-//     _.each(class_options, function(c) { self.$el.removeClass(c); });
-//
-//     if ( !this.model.get('available') ) {
-//       this.$el.addClass('skip');
-//     }
-//     if ( this.model.get('user_completed') ) {
-//       this.$el.addClass('completed');
-//     }
-//     if ( this.model.get('current') ) {
-//       this.$el.addClass('active');
-//     }
-//   }
-// });
+REProgressItem = Backbone.Marionette.View.extend({
+  /* Drop down list of REChoices */
+  // template: _.template('•'),
+  template: _.template('&#8226;'),
+  tagName: 'li',
+  className: 'list-inline-item',
 
-// var ProgressView = Backbone.Marionette.CollectionView.extend({
-//   childView: ProgressItem
-// });
+  onRender: function() {
+    if ( !this.model.get('available') ) {
+      this.$el.addClass('skip');
+    }
+    if ( this.model.get('user_completed') ) {
+      this.$el.addClass('completed');
+    }
+    if ( this.model.get('current') ) {
+      this.$el.addClass('active');
+    }
+  }
+});
 
-REConfirm = Backbone.Marionette.View.extend({
+REProgressView = Backbone.Marionette.CollectionView.extend({
+  /* Parent list for REProgressItem */
+  tagName: 'ul',
+  className: 'list-unstyled list-inline',
+  childView: REProgressItem,
+  childViewEventPrefix: 'progress'
+});
+
+RENavigation = Backbone.Marionette.View.extend({
+  /*
+  * - Modal: None
+  * - Collection: REExtractionList
+  */
+  template: '#tree-navigation-template',
+
+  regions: {
+    'progress': '#progress-bar'
+  },
+  onRender: function() {
+    this.showChildView('progress', new REProgressView({'collection': this.collection}));
+  }
+});
+
+REExtractionResult = Backbone.Marionette.View.extend({
+  /* The results interface for a single REExtraction
+  * – Modal: REExtraction
+  * - Collection: None */
+  template: '#reextraction-results-template',
+  ui: {
+    'button': 'button'
+  },
+
+  triggers: {
+    'mousedown @ui.button': 'reextractionresult:next'
+  },
+
+  onAttach: function() {
+    $.getJSON('/task/relation/'+ this.model.get('document_id') +'/analysis/' + this.model.get('id') + '/', function(api_data) {
+      var answers = api_data[0]['answers']
+      /* obj, key = identifier, value = count */
+      var answer_counts = _.countBy( _.map(answers, function(x) { return x['answer']['id']; }) );
+
+      var answer_text = {};
+      var personal_ann = '';
+
+      var c_1_broken = "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy";
+      var c_2_broken = "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer";
+
+      _.each(answers, function(a) {
+        answer_text[a.answer.id] = a.answer.text;
+        if(a['self']) { personal_ann = a.answer.id; }
+      });
+
+      var data = [];
+      _.each(_.keys(answer_counts), function(answer_key) {
+        var label = answer_text[answer_key];
+        if(answer_key == c_1_broken) {
+          label = api_data[0]['concept_a']['text'] + label + lookup_kinds[api_data[0]['kind'][0]] + ' concept';
+        } else if(answer_key == c_2_broken) {
+          label = api_data[0]['concept_b']['text'] + label + lookup_kinds[api_data[0]['kind'][2]] + ' concept';
+        }
+
+        data.push({
+          'id': answer_key,
+          'value': answer_counts[answer_key],
+          'label': label,
+          'self': answer_key == personal_ann
+       });
+      });
+
+      data = _.sortBy(data, function(d) { return -d['value'] });
+
+      var max = d3.sum(data.map(function(i){ return i['value']; }));
+      var color = d3.scale.category20c();
+
+      var chart = d3.select('#chart').style('width', '100%');
+      var bar = chart.selectAll('div')
+        .data(data)
+        .enter()
+          .append('div')
+            .attr('class', 'bar-component')
+            .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
+            .style('background-color', function(d, i) { return color(i); });
+
+      var bold = function(d, i) {
+        if( i == 1 && d['self'] ) {
+          return '<strong>';
+        } else if( i == 2 && d['self'] ) {
+          return '</strong>';
+        } else {
+          return '';
+        }
+      }
+
+      var list = d3.select('#chart-list');
+      var bar = list.selectAll('li')
+        .data(data)
+        .enter()
+          .append('li')
+            .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p>' + bold(d, 1) + ((d['value']/max)*100).toFixed() + '% – ' + d['label'] + bold(d, 2) + '</p>'; });
+
+    });
+  }
+});
+
+REConfirmView = Backbone.Marionette.View.extend({
+  /* The actionable interface for submitting
+  * the selected REChoice.
+  *
+  * Note: Used as a mechanism for storing the final REChoice to submit
+  *
+  * – Modal: REChoice
+  * - Collection: None */
   template: _.template('<button id="submit_button" class="btn btn-primary btn-block disabled" disabled="disabled">Submit</button>'),
   tagName: 'div',
   className: 'col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4',
@@ -239,7 +308,7 @@ REConfirm = Backbone.Marionette.View.extend({
     'button': 'button'
   },
   triggers: {
-    'mousedown @ui.button': 'rechoice:selected:confirm'
+    'mousedown @ui.button': 'reconfirm:confirm'
   },
   onRender: function() {
     if(this.model) {
@@ -249,10 +318,14 @@ REConfirm = Backbone.Marionette.View.extend({
 });
 
 RESelectedChoiceView = Backbone.Marionette.View.extend({
+  /* The display for showing the currently
+  * selected REChoice, or a prompt to take action
+  * – Modal: REChoice
+  * - Collection: None */
   template: _.template(''),
   tagName: 'h3',
   triggers : {
-    'mousedown': 'rechoice:selected:click'
+    'mousedown': 'reselectedchoice:clear'
   },
   onRender: function() {
     if(this.model) {
@@ -265,6 +338,7 @@ RESelectedChoiceView = Backbone.Marionette.View.extend({
 });
 
 REChoiceView = Backbone.Marionette.View.extend({
+  /* Drop down list of REChoices */
   template: _.template('<%= text %>'),
   tagName: 'a',
   className: 'list-group-item',
@@ -272,18 +346,42 @@ REChoiceView = Backbone.Marionette.View.extend({
   triggers : {
     'mousedown': 'click'
   }
-
 });
 
 REChoicesView = Backbone.Marionette.CollectionView.extend({
+  /* Parent list for REChoices */
   tagName: 'ul',
   childView: REChoiceView,
   childViewEventPrefix: 'rechoice'
 });
 
-
 RELoadingView = Backbone.Marionette.View.extend({
+  /* Initial HTML before a REExtractionList is available
+  * - Model = None
+  * - Collection = None
+  */
   template: _.template('<h1>Loading!</h1>'),
+});
+
+REConceptView = Backbone.Marionette.View.extend({
+  /* The display + actionable area for the
+  * REConcepts being compared
+  * - Modal: REConcept
+  * - Collection: None
+  */
+  template: '#reextraction-concept-template',
+
+  events : {
+    'mouseover': function(evt) {
+      this.$el.addClass('concept-incorrect');
+    },
+    'mouseout': function(evt) {
+      this.$el.removeClass('concept-incorrect');
+    }
+  },
+  triggers: {
+    'mousedown i': 'reconcept:incorrect',
+  }
 });
 
 REExtractionView = Backbone.Marionette.View.extend({
@@ -295,181 +393,82 @@ REExtractionView = Backbone.Marionette.View.extend({
   template: '#reextraction-template',
 
   regions: {
-    'list': '#rechoices-list',
-    'selected_choice': '#selected-choice',
-    'confirm': '#tree-confirm'
-  },
-
-  ui: {
     'c1': '#c1',
+    'selected_choice': '#selected-choice',
+    'list': '#rechoices-list',
     'c2': '#c2',
-    'c1_not_correct': '#c1_not_correct',
-    'c2_not_correct': '#c2_not_correct',
-    'incorrect_buttons': '.fa.fa-times-circle',
-  },
-
-  events : {
-    // 'mouseover @ui.incorrect_buttons': 'hoverIncorrect',
-    // 'mouseout @ui.incorrect_buttons': 'hoverOutIncorrect',
-    'mousedown @ui.c1_not_correct': 'c1Error',
-    'mousedown @ui.c2_not_correct': 'c2Error',
-  },
-
-  // hoverIncorrect: function(evt) {
-  //   $(evt.target).parent().addClass('incorrect');
-  // },
-  //
-  // hoverOutIncorrect: function(evt) {
-  //   var choice = this.options['choice'];
-  //   if( !_.contains(incorrect_id_arr, choice.id) ) {
-  //     $(evt.target).parent().removeClass('incorrect');
-  //   }
-  // },
-
-  c1Error: function(evt) {
-      /* When C1 is incorrect */
-      var model = new REChoice(relation_data.c_1_broken);
-      this.showChildView('confirm', new REConfirm({'model': model}));
-      this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
-      this.showChildView('selected_choice', new RESelectedChoiceView({'model': model}));
-  },
-
-  c2Error: function(evt) {
-      /* When C2 is incorrect */
-      var model = new REChoice(relation_data.c_2_broken);
-      this.showChildView('confirm', new REConfirm({'model': model}));
-      this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
-      this.showChildView('selected_choice', new RESelectedChoiceView({'model': model}));
+    'confirm': '#tree-confirm'
   },
 
   childViewEvents: {
     'rechoice:click': function(childView, evt) {
-      /* When an item is selected */
-      /*
-       * 1. Set the current choice to the ID
-       * 2. Set the backbutton reference if available
-       * 3. Set the list updated to any children
-       *
+      /* When a REChoice is selected
+       * 1. Set the RESelectionView (backbutton) text
+       * 2. Set the list updated to any REChoice children
+       * 3. Set the confirmation to the REChoice
        */
-      var children = childView.model.get('children');
-      this.showChildView('confirm', new REConfirm({'model': childView.model}));
       this.showChildView('selected_choice', new RESelectedChoiceView({'model': childView.model}));
-      this.showChildView('list', new REChoicesView({'collection': children}));
+      this.showChildView('list', new REChoicesView({'collection': childView.model.get('children')}));
+      this.showChildView('confirm', new REConfirmView({'model': childView.model}));
     },
-
-    'rechoice:selected:click': function(childView, evt) {
-      /* When the back toggle is selected */
-      /* Clicking back always completely resets. Backup: Go to the top of the stack */
-      var choices_collection = new REChoices(relation_data['g_d']);
-      this.showChildView('confirm', new REConfirm({'model': null}));
+    'reselectedchoice:clear': function(childView, evt) {
+      /* Clicking back always completely resets (top of the stack) the RESelection */
       this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
+      var choices_collection = new REChoices(relation_data[this.model.get('relation_type')]);
       this.showChildView('list', new REChoicesView({'collection': choices_collection}));
+      this.showChildView('confirm', new REConfirmView({'model': null}));
     },
-
-    'rechoice:selected:confirm': function(childView, evt) {
+    'reconcept:incorrect': function(childView, evt) {
+      /* Flag a concept as being incorrect
+      * 1. Display informative text in the RESelectionView
+      * 2. Clear any potential REChoice listings
+      * 3. Set the incorrect concept REChoice to the confirmation
+      */
+      var m = new REChoice(relation_data['c_'+childView.model.get('index')+1+'_broken'])
+      m.set('text', childView.model.get('text') + ' is not a ' + childView.model.get('type') + ' concept');
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': m}));
+      this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
+      this.showChildView('confirm', new REConfirmView({'model': new REChoice(relation_data['c_'+(childView.model.get('index')+1)+'_broken'])}));
+    },
+    'reconfirm:confirm': function(childView, evt) {
+      /* Submit the selected REChoice to the server */
       var self = this;
-      /* When the selection was confirmed, submit the data from the current selection to the server */
       $.ajax({
         type: 'POST',
         url: '/task/relation/'+ self.model.get('document_id') +'/'+ self.model.get('id') +'/submit/',
-        data: $.extend({'csrfmiddlewaretoken': self.options.csrf_token },
-                         {'relation': childView.model.get('id')}),
+        data: $.extend({'csrfmiddlewaretoken': self.options.csrf_token }, {'relation': childView.model.get('id')}),
         cache: false,
-        success: function() {
-
-          /* If they flag a concept as incorrect, remove it from the
-           * availability pool of tasks for this relationship document */
-          if( _.contains(incorrect_id_arr, childView.model.get('id')) ) {
-            self.triggerMethod('reextraction:concept:flagged', childView.model);
-          }
-
-          /* Have them review the community's answers */
-          // show_results(current_relationship.get('document_id'), current_relationship.get('id'));
-          // update_score();
-        },
-        error: function() { alert('Please refresh your browser and try again.') },
+        success: function() { self.triggerMethod('reconfirm:confirm:success', childView); },
+        error: function() { self.triggerMethod('reconfirm:confirm:error'); },
       });
-
-
-      // var choices_collection = new REChoices(relation_data['g_d']);
-      // this.showChildView('confirm', new REConfirm({'model': null}));
-      // this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
-      // this.showChildView('list', new REChoicesView({'collection': choices_collection}));
-    }
-
+    },
   },
 
   onRender: function() {
-    var choices_collection = new REChoices(relation_data['g_d']);
+    /* Prepare the REExtraction subviews
+    * 1. Initalize Concept 1 and Concept 2
+    * 2. Initalize an empty RESelectionView
+    * 3. Initalize the REChoices for this comparison type
+    * 4. Initalize the Confirmation with an empty value (how we store the selected answer)
+    */
+    var c_a = new REConcept(_.extend(this.model.get('concepts')['c1'], {index: 0}));
+    this.showChildView('c1', new REConceptView({'model': c_a}));
 
-    this.showChildView('confirm', new REConfirm({'model': null}));
+    var c_b = new REConcept(_.extend(this.model.get('concepts')['c2'], {index: 1}));
+    this.showChildView('c2', new REConceptView({'model': c_b}));
+
     this.showChildView('selected_choice', new RESelectedChoiceView({'model': null}));
+    var choices_collection = new REChoices(relation_data[this.model.get('relation_type')]);
     this.showChildView('list', new REChoicesView({'collection': choices_collection}));
-
-    /* Determine if the concept names shoudl fade in (to indicate that they're new) */
-    // var current_relationship = collection.findWhere({'current': true});
-    // var concepts = current_relationship.get('concepts');
-    // var current_idx = collection.indexOf(current_relationship);
-    // if(current_idx >= 1) {
-    //   var previous_concepts = collection.at(current_idx-1).get('concepts');
-    //   if(previous_concepts['c1'].id != concepts['c1'].id) { concepts['c1']['fadeIn'] = true; };
-    //   if(previous_concepts['c2'].id != concepts['c2'].id) { concepts['c2']['fadeIn'] = true; };
-    // }
-
-    // var self = this;
-    // var choice = this.options['choice'];
-    // var concepts = this.options['concepts'];
-    //
-    // if(this.options.first_draw) {
-    //   if( _.has(concepts['c1'], 'fadeIn') ) {
-    //     this.ui.c1.addClass('fade-in one');
-    //   };
-    //   if( _.has(concepts['c2'], 'fadeIn') ) {
-    //     this.ui.c2.addClass('fade-in one');
-    //   };
-    // }
-    //
-    // if(choice) {
-    //   function get_stype_word(stype){
-    //     if (stype == 'g'){
-    //       stype_word = 'gene';
-    //     } else if ( stype == 'c'){
-    //       stype_word = 'drug';
-    //     } else {
-    //       stype_word = 'disease';
-    //     }
-    //     return stype_word;
-    //   };
-    //
-    //   if (choice.id == "zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy") {
-    //     this.ui.relation.removeClass('disabled').text( concepts['c1'].text + choice.get('text') + get_stype_word(concepts['c1'].type) + ' concept' );
-    //     this.ui.c1.addClass('incorrect');
-    //
-    //   } else if (choice.id == "RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer") {
-    //     this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + get_stype_word(concepts['c2'].type) + ' concept' );
-    //     this.ui.c2.addClass('incorrect');
-    //
-    //     #<{(| Training specific
-    //      * (TODO) get out of here
-    //      |)}>#
-    //     if(concepts['c2']['text'] == 'Astrology') {
-    //       this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
-    //     };
-    //
-    //   } else {
-    //     this.ui.relation.removeClass('disabled').text( choice.get('text') );
-    //   };
-    // };
-    //
-    // if(choice || this.collection.parentREChoice) {
-    //   this.ui.relation.removeClass('disabled');
-    //   this.ui.relation.addClass('relation-go-back');
-    // }
+    this.showChildView('confirm', new REConfirmView({'model': null}));
   }
-
 });
 
 RelationTextView = Backbone.Marionette.View.extend({
+  /* Display the YPet interface
+  * this.model = a REExtraction instance
+  * this.collection = None
+  */
   template: _.template('<p>Text / YPet will go here</p>'),
   onRender: function() {
     // RelationApp['start'].show(new RelationCompositeView(view_options));
@@ -507,28 +506,50 @@ RelationTextView = Backbone.Marionette.View.extend({
 
 Tree = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
-  * the relationship interface
+  * - Model = current / active REExtraction event
+  * - Collection = REExtractionList
   */
   template: '#tree-template',
 
   regions: {
-    'progress': '#tree-progress',
-    'selection': '#tree-selection',
-    'selection-results': '#tree-selection-results',
+    'navigation': '#tree-navigation',
+    'extraction': '#tree-selection',
+    'extraction-results': '#tree-selection-results',
     'text': '#tree-text'
   },
 
   childViewEvents: {
-    'selection:submit': function(childView) {
+    'reconfirm:confirm:success': function(confirmView) {
+      /* Selected REChoice submitted to the server
+      * X 1. Start to download the results
+      * 2. Flag future REExtraction models of concept corrections
+      * 3. Show REExtraction results
+      */
+
+      if( _.contains(incorrect_id_arr, confirmView.model.get('id')) ) {
+        console.log('flag that shit', this);
+      }
+
       /* Submitting results for a REExtraction */
       this.emptyRegions();
-      this.showChildView('selection-results', new View({}));
+      this.showChildView('extraction-results', new REExtractionResult({'model': this.model}));
     },
-
-    'selection:results:next': function(childView) {
+    'reconfirm:confirm:error': function(childView) {
+      alert('fuck');
+    },
+    'reextractionresult:next': function(childView) {
       /* Go next after reviewing the results */
       this.emptyRegions();
-      this.showChildView('selection-results', new REExtractionView({}));
+
+      this.model = this.collection.next();
+      if(this.model) {
+        this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+        this.options['model'] = this.model;
+        this.showChildView('extraction', new REExtractionView(this.options));
+        this.showChildView('text', new RelationTextView(this.options));
+      } else {
+        alert('all out!');
+      }
 
       /* If no other relations to complete, submit document
       * This condition should be accounted for earlier, but
@@ -541,25 +562,13 @@ Tree = Backbone.Marionette.View.extend({
       // $('#feedback_modal').on('hidden.bs.modal', function (e) {
       //   $('#task_relation_results').submit();
       // });
-
     },
-
-    'reextraction:concept:flagged': function(childView) {
-      console.log(childView);
-      var incorrect_key = 'c'+(1+incorrect_id_arr.indexOf(childView.id));
-      console.log('flagged', this, incorrect_key);
-      // var incorrect_concept = current_relationship.get('concepts')[ incorrect_key ];
-
-      // collection.each(function(relation) {
-      //   var concepts = relation.get('concepts');
-      //   if( concepts['c1'].id == incorrect_concept['id'] || concepts['c2'].id == incorrect_concept['id'] ) {
-      //     relation.set('available', false);
-      //   }
-      // });
-    }
   },
 
   initialize: function() {
+    /* Perform any library state preparation like loading collections
+    * or differentiating between Task and Training
+    */
     this.options.training = false;
     if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
       this.options.training = true
@@ -586,21 +595,16 @@ Tree = Backbone.Marionette.View.extend({
     } else {
       this.model = this.collection.next();
     }
-
   },
 
   onRender: function() {
-    // this.showChildView('progress', new View({'collection': this.collection}));
-
     if(this.collection && this.model) {
       this.options['model'] = this.model;
-      this.showChildView('selection', new REExtractionView(this.options));
+      this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+      this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new RelationTextView(this.options));
-
     } else {
-      this.showChildView('selection', new RELoadingView());
+      this.showChildView('extraction', new RELoadingView());
     };
-
   }
-
 });
