@@ -217,6 +217,45 @@
 
   #tree-selection-results {
     // border-bottom: 8px solid $color_gray_light;
+  border-bottom: 8px solid $color_gray_lightest;
+
+    #reextraction-answers-list {
+
+      li {
+        .box {
+          float: left;
+          height: 20px;
+          width: 20px;
+          margin: 2px 10px;
+        }
+      }
+
+    }
+
+    #feedback-next-action-area {
+
+      .bar-component {
+        float: left;
+        margin: 10px 0px;
+        height: 25px;
+      }
+
+      li {
+        .box {
+          float: left;
+          height: 20px;
+          width: 20px;
+          margin: 2px 10px;
+        }
+      }
+
+      button {
+        margin-bottom: 20px;
+      }
+    }
+
+
+
   }
 
 }
@@ -284,40 +323,4 @@
 //     background-image: linear-gradient(to right, $color_white, $color_gray_lighter, $color_gray_lightest);
 //   }
 // }
-//
-// #feedback-next-action-area.shown {
-//   border-bottom: 8px solid $color_gray_lightest;
-// }
-//
-// li {
-//   .box {
-//     float: left;
-//     height: 20px;
-//     width: 20px;
-//     margin: 2px 10px;
-//   }
-// }
-//
-// #feedback-next-action-area {
-//
-//   .bar-component {
-//     float: left;
-//     margin: 10px 0px;
-//     height: 25px;
-//   }
-//
-//   li {
-//     .box {
-//       float: left;
-//       height: 20px;
-//       width: 20px;
-//       margin: 2px 10px;
-//     }
-//   }
-//
-//   button {
-//     margin-bottom: 20px;
-//   }
-// }
-//
 //

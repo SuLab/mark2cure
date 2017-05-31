@@ -80,40 +80,6 @@ block content
               include common/includes/dashboard-sidebar
 
 
-      <script type="text/template" id="relation-item-template">
-      <div class='row'>
-      <div class='col-xs-12 text-xs-center'>
-      <% if(d.progress.completed) { %>
-      <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
-      <% } else if (d.user.completed) { %>
-      <span class='fa fa-check' title='You have completed this Quest.'></span>
-      <% } else if (!d.user.enabled) { %>
-      <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
-      <% } else { %>
-      <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'>
-      <p style='font-size: 1.75em; line-height: 1.8em;'>
-      <%- d.name %>
-      </p>
-      </a>
-      <% } %>
-      </div>
-      </div>
-
-      <% if(d.user.enabled) { %>
-      <div class='row'>
-      <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
-      <progress value='<%- progress %>' max='100' class='progress'>
-      <div class='progress'>
-      <span style='width: <%- progress %>%;' class='progress-bar'>
-      <%- d.progress.current %> Completions
-      </span>
-      </div>
-      </progress>
-      </div>
-      </div>
-      <% } %>
-      </script>
-
 
 block post-footer
   {{ block.super }}
@@ -185,22 +151,7 @@ block post-footer
 
 
   block post-footer-relation
-    <script type="text/template" id="relation-list-item-template">
-    <div class="relation-item">
 
-    <p class="steps pull-right"><%= user_document_relationships %> steps</p>
-    <p class="main-text"><%= title %></p>
-
-    <progress value='<%- community_progress*100 %>' max='100' class='progress'>
-    <div class='progress'>
-    <span style='width: <%- community_progress*100 %>%;' class='progress-bar'>
-    </span>
-    </div>
-    </progress>
-
-    </div>
-    <hr />
-    </script>
 
     script.
       if($('#document-relation-board').length) {

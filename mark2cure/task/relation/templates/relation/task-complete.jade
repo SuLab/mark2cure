@@ -52,28 +52,5 @@ block post-footer
       'document_pmid': "{{ document.document_id }}"
     };
 
-  script(type='html/template', id='relation-synopsis-template')
-    p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
-    ul#relation-synopsis-bar.list-unstyled.list-inline
-    #feedback-next-action-area
-    #chart-context(style='display:none;').row
-      .col-xs-4.col-xs-offset-1.text-right
-        p#concept-a.lead
-      .col-xs-2.text-xs-center
-        | <i class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>
-      .col-xs-4.text-left
-        p#concept-b.lead
-    ul#chart-list.list-unstyled
-
-  script(type='html/template', id='relation-synopsis-feedback-template')
-    div(id="c1-word-{{ reln.relation_id }}")
-    div(id="c2-word-{{ reln.relation_id }}")
-
-    div(id="chart-{{ reln.relation_id }}")
-    div(id="chart-list-{{ reln.relation_id }}").list-unstyled
-
-    div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
-
-
   script(src="/static/js/libs/tree.js")
   script(src="/static/js/tasks/relation-synopsis.js")

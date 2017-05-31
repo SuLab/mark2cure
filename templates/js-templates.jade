@@ -1,0 +1,203 @@
+script(id='ypet-para-templates', type='html/template')
+  .row
+    .col-xs-12.col-md-10.col-md-offset-1
+
+script(id='ypet-help-template', type='html/template')
+  .row.m-t-1
+    .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
+      div(role="group").btn-group-vertical
+        a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
+          | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
+
+        a(href='{% url "instructions:relation-definition-disease" %}', style='background-color: #d1f3ff;').btn.btn-default
+          | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
+
+        a(href='{% url "instructions:relation-definition-gene" %}', style='background-color:rgb(177, 255, 168);').btn.btn-default
+          | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
+
+        a(href='{% url "instructions:relation-definition-drug" %}', style='background-color:rgb(255, 209, 220);').btn.btn-default
+          | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
+
+
+script(id='ypet-template', type='html/template')
+  #ypet-text.col-xs-12
+  #ypet-footer.col-xs-12
+
+
+
+<script id="tree-template" type="x-template/underscore">
+
+<div id="tree-navigation" class="col-xs-12"></div>
+<div id="tree-selection" class="col-xs-10 col-xs-offset-1"></div>
+<div id="tree-selection-results" class="col-xs-12"></div>
+<div id="tree-text" class="col-xs-12"></div>
+</script>
+
+
+<script id="tree-navigation-template" type="x-template/underscore">
+
+<div id="progress-bar" class="col-xs-10 col-xs-offset-1 col-md-7 col-md-offset-1 col-lg-8 col-lg-offset-1"></div>
+<div class="col-xs-10 col-xs-offset-1 col-md-3 col-md-offset-0 col-lg-2 col-lg-offset-0">
+<p class="text-xs-center">Score: <span id='score'>0</span></p>
+</div>
+</script>
+
+
+<script id="reextraction-result-answer-item-template" type="x-template/underscore">
+
+<div class="box" style="background-color: <%= color %>;"></div>
+<% if(self) { %>
+<p><strong><%= percentage %>% – <%= label %></strong></p>
+<% } else { %>
+<p><%= percentage %>% – <%= label %></p>
+<% } %>
+</script>
+
+
+<script id="reextraction-results-template" type="x-template/underscore">
+
+<div class="row">
+<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div id="chart"></div>
+</div>
+<div id="reextraction-answers-list" class="col-xs-12 col-md-10 col-md-offset-1"></div>
+<div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4">
+<button class="btn btn-primary btn-block">Next</button>
+</div>
+</div>
+</script>
+
+
+<script id="reextraction-concept-template" type="x-template/underscore">
+
+<div class="flag">&#10005;</div>
+<div class="text col-xs-12"><p><%= text %></p></div>
+<div class="desc col-xs-12"><p>is not a <%= type %> concept?</p></div>
+</script>
+
+
+<script id="reextraction-template" type="x-template/underscore">
+
+<div id="tree-extraction" class="row text-xs-center">
+<div id="c1" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
+<div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
+<div id="selected-choice"></div>
+<div id="rechoices-list"></div>
+</div>
+<div id="c2" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
+</div>
+<div id="tree-confirm" class="row"></div>
+</script>
+
+
+
+<script id="relation-list-item-template" type="text/template">
+<div class="relation-item">
+
+<p class="steps pull-right"><%= user_document_relationships %> steps</p>
+<p class="main-text"><%= title %></p>
+
+<progress value='<%- community_progress*100 %>' max='100' class='progress'>
+<div class='progress'>
+<span style='width: <%- community_progress*100 %>%;' class='progress-bar'>
+</span>
+</div>
+</progress>
+
+</div>
+<hr />
+</script>
+
+
+<script id="relation-item-template" type="text/template">
+<div class='row'>
+<div class='col-xs-12 text-xs-center'>
+<% if(d.progress.completed) { %>
+<span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
+<% } else if (d.user.completed) { %>
+<span class='fa fa-check' title='You have completed this Quest.'></span>
+<% } else if (!d.user.enabled) { %>
+<span class='fa fa-circle muted' title='This quest is not enabled.'></span>
+<% } else { %>
+<a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'>
+<p style='font-size: 1.75em; line-height: 1.8em;'>
+<%- d.name %>
+</p>
+</a>
+<% } %>
+</div>
+</div>
+
+<% if(d.user.enabled) { %>
+<div class='row'>
+<div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
+<progress value='<%- progress %>' max='100' class='progress'>
+<div class='progress'>
+<span style='width: <%- progress %>%;' class='progress-bar'>
+<%- d.progress.current %> Completions
+</span>
+</div>
+</progress>
+</div>
+</div>
+<% } %>
+</script>
+
+
+script(id='relation-synopsis-template', type='html/template')
+  p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
+  ul#relation-synopsis-bar.list-unstyled.list-inline
+  #feedback-next-action-area
+  #chart-context(style='display:none;').row
+    .col-xs-4.col-xs-offset-1.text-right
+      p#concept-a.lead
+    .col-xs-2.text-xs-center
+      | <i class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>
+    .col-xs-4.text-left
+      p#concept-b.lead
+  ul#chart-list.list-unstyled
+
+
+script(id='relation-synopsis-feedback-template', type='html/template')
+  div(id="c1-word-{{ reln.relation_id }}")
+  div(id="c2-word-{{ reln.relation_id }}")
+
+  div(id="chart-{{ reln.relation_id }}")
+  div(id="chart-list-{{ reln.relation_id }}").list-unstyled
+
+  div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
+
+
+script(id='quest-icon-template', type='text/template')
+  <div class='row'>
+  <div class='col-xs-12 text-xs-center'>
+  <% if(d.progress.completed) { %>
+  <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
+  <% } else if (d.user.completed) { %>
+  <span class='fa fa-check' title='You have completed this Quest.'></span>
+  <% } else if (!d.user.enabled) { %>
+  <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
+  <% } else { %>
+  <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
+  <% } %>
+  </div>
+  </div>
+  <% if(d.user.enabled) { %>
+  <div class='row'>
+  <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
+  <progress value='<%- progress %>' max='100' class='progress'>
+  <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
+  </progress>
+  </div>
+  </div>
+  <% } %>
+
+
+script(id='group-template', type='text/template')
+  <h3><%- name %></h3>
+  <div id='group-<%- pk %>' class='row head-space paragraph-box'>
+  <div class='col-xs-12 text-xs-center'>
+  <p class='quest-loading'>Loading...</p>
+  </div>
+  </div>
+

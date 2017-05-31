@@ -117,9 +117,9 @@ REExtractionAnswer = Backbone.Model.extend({
   * The A => B submission answer
   */
   defaults: {
-    percentage: 10.0,
+    percentage: 0.0,
     self: false,
-    color: '#0cf'
+    color: '#000'
   }
 });
 
@@ -131,15 +131,19 @@ REExtractionAnswerList = Backbone.Collection.extend({
   comparator: 'value',
 
   initialize: function() {
-    console.log('answer list', this);
+    var self = this;
+    var color = d3.scale.category20c();
 
-    this.listenTo(this, 'change', this._onChange);
+    this.listenTo(this, 'add', function(answer) {
+      var max = d3.sum( self.pluck('value') );
+
+      this.each(function(a) {
+        a.set('percentage', ((a.get('value')/max)*100).toFixed() );
+        a.set('color', color( self.indexOf(a)) )
+      });
+
+    });
   },
-
-  _onChange: function() {
-    console.log('on change');
-  }
-
 });
 
 /*
@@ -192,7 +196,6 @@ RENavigation = Backbone.Marionette.View.extend({
 REExtractionAnswerItem = Backbone.Marionette.View.extend({
   template: '#reextraction-result-answer-item-template',
   tagName: 'li',
-  className: 'list-inline-item'
 });
 
 REExtractionAnswerView = Backbone.Marionette.CollectionView.extend({
@@ -211,6 +214,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   },
 
   regions: {
+    'answers-chart': '#reextraction-answers-chart',
     'answers-list': '#reextraction-answers-list'
   },
 
@@ -220,12 +224,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
 
   onAttach: function() {
       //
-      // var max = d3.sum(data.map(function(i){ return i['value']; }));
-      // var color = d3.scale.category20c();
     //
-
-    console.log( this.collection.pluck('value') )
-
     this.showChildView('answers-list', new REExtractionAnswerView({'collection': this.collection}));
 
     // var chart = d3.select('#chart').style('width', '100%');
@@ -439,13 +438,33 @@ REExtractionView = Backbone.Marionette.View.extend({
   }
 });
 
-RelationTextView = Backbone.Marionette.View.extend({
-  /* Display the YPet interface
-  * this.model = a REExtraction instance
-  * this.collection = None
-  */
-  template: _.template('<p>Text / YPet will go here</p>'),
-  onRender: function() {
+// RelationTextView = Backbone.Marionette.View.extend({
+//   #<{(| Display the YPet interface
+//   * this.model = a REExtraction instance
+//   * this.collection = None
+//   |)}>#
+//   template: '<p>help</p>',
+//
+//   onRender: function() {
+//     var self = this;
+//     console.log('text onrender:', this, this.getRegion() );
+
+    // var NERYpetApp = Backbone.Marionette.Application.extend({
+    //   region: '#tree-text',
+    //
+    //   onStart: function() {
+    //     var main = self.getRegion();
+    //     main.show( new YPet({
+    //       'mode': 're',
+    //       'document_id': self.options.document_pk,
+    //       'document_pmid': self.options.document_pmid,
+    //       'training': self.options.training
+    //     }) );
+    //   }
+    // });
+    // var ypet_app = new NERYpetApp();
+    // ypet_app.start();
+
     // RelationApp['start'].show(new RelationCompositeView(view_options));
     // add_relation_classes(current_relationship);
     //
@@ -478,7 +497,7 @@ RelationTextView = Backbone.Marionette.View.extend({
     // });
     // var collection;
     // var passages, regions, tmp_passages;
-    //
+
     // YPet.addInitializer(function(options) {
     //
     //   Backbone.Radio.DEBUG = true;
@@ -529,8 +548,8 @@ RelationTextView = Backbone.Marionette.View.extend({
     // });
     // YPet.start();
     //
-  }
-});
+//   }
+// });
 
 Tree = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
@@ -603,7 +622,7 @@ Tree = Backbone.Marionette.View.extend({
         this.showChildView('navigation', new RENavigation({'collection': this.collection}));
         this.options['model'] = this.model;
         this.showChildView('extraction', new REExtractionView(this.options));
-        this.showChildView('text', new RelationTextView(this.options));
+        this.showChildView('text', new YPet(this.options));
       } else {
 
         alert('all out!');
@@ -637,6 +656,8 @@ Tree = Backbone.Marionette.View.extend({
     * or differentiating between Task and Training
     */
     this.options.training = false;
+    this.options.mode = 're';
+
     if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
       this.options.training = true
     };
@@ -669,7 +690,7 @@ Tree = Backbone.Marionette.View.extend({
       this.options['model'] = this.model;
       this.showChildView('navigation', new RENavigation({'collection': this.collection}));
       this.showChildView('extraction', new REExtractionView(this.options));
-      this.showChildView('text', new RelationTextView(this.options));
+      this.showChildView('text', new YPet(this.options));
     } else {
       this.showChildView('extraction', new RELoadingView());
     };

@@ -141,37 +141,6 @@ block content
 block post-footer
     #fb-root
 
-    script#quest-icon-template(type='text/template')
-      <div class='row'>
-      <div class='col-xs-12 text-xs-center'>
-      <% if(d.progress.completed) { %>
-      <span class='fa fa-certificate muted' title='The community has completed this Quest.'></span>
-      <% } else if (d.user.completed) { %>
-      <span class='fa fa-check' title='You have completed this Quest.'></span>
-      <% } else if (!d.user.enabled) { %>
-      <span class='fa fa-circle muted' title='This quest is not enabled.'></span>
-      <% } else { %>
-      <a href='/task/entity-recognition/quest/<%- d.id %>/' title='Click to start this quest!'><p style='font-size: 1.75em; line-height: 1.8em;'><%- d.name %></p></a>
-      <% } %>
-      </div>
-      </div>
-      <% if(d.user.enabled) { %>
-      <div class='row'>
-      <div class='col-xs-12' title='This quest is <%- Math.round(progress) %>% complete.'>
-      <progress value='<%- progress %>' max='100' class='progress'>
-      <div class='progress'><span style='width: <%- progress %>%;' class='progress-bar'><%- d.progress.current %> Completions</span></div>
-      </progress>
-      </div>
-      </div>
-      <% } %>
-
-    script#group-template(type='text/template')
-      <h3><%- name %></h3>
-      <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-      <div class='col-xs-12 text-xs-center'>
-      <p class='quest-loading'>Loading...</p>
-      </div>
-      </div>
 
     script.
       $( document ).ready(function() {
