@@ -102,8 +102,16 @@ NERAnnotationTypeList = Backbone.Collection.extend({
    * Annotations that the application allows
    * for paragraphs */
   model: Backbone.Model.extend({}),
-  url: function() { return false; }
+
+  url: function() { return false; },
+  sync: function () { return false; },
 });
+
+NERAnnotationTypes = new NERAnnotationTypeList([
+  {name: 'Disease', color: '#d1f3ff'},
+  {name: 'Gene', color: '#B1FFA8'},
+  {name: 'Drug', color: '#ffd1dc'}
+]);
 
 NERWord = Backbone.RelationalModel.extend({
   /* A Word model represents each tokenized word present
@@ -113,15 +121,21 @@ NERWord = Backbone.RelationalModel.extend({
     start: null,
     latest: null,
     neighbor: false,
-  }
+  },
+
+  url: function() { return false; },
+  sync: function () { return false; }
 });
 
 NERWordList = Backbone.Collection.extend({
   /* Common utils to perform on an array of Word
    * models for house keeping and search */
   model: NERWord,
-  url: '/api/v1/words',
 
+  url: function() { return false; },
+  sync: function () { return false; },
+
+  /* (TODO) Can this be removed? */
   clone: function(deep) {
     if(deep) {
       return new this.constructor(_.map(this.models, function(m) { return m.clone(); }));
@@ -146,6 +160,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
     start: null,
   },
 
+  url: function() { return false; },
   sync: function () { return false; },
 
   relations: [{
@@ -161,10 +176,57 @@ NERAnnotation = Backbone.RelationalModel.extend({
     }
   }],
 
+  initialize: function() {
+    var self = this;
+    /* Santize BioC passage or other sources of
+     * Annotation information into the Backbone model
+     */
+    this.set('id', +this.get('@id'));
+    this.unset('@id');
+    if(this.get('infon')) {
+      _.each(this.get('infon'), function(i) {
+        if(!isNaN(i['#text'])) {
+          self.set(i['@key'], +i['#text'])
+        } else {
+          self.set(i['@key'], i['#text'])
+        }
+      });
+      this.unset('infon');
+    }
+    if(this.get('location')) {
+      this.set('start', +this.get('location')['@offset']);
+      if(!this.get('text')){
+        return false;
+      }
+      if(this.get('text').length != +this.get('location')['@length']) {
+        Raven.captureMessage('Text length and reported @length failure', {extra: {'ann_db_pk': this.get('uid')}});
+      }
+      this.unset('location');
+    }
+
+    /* Extract (tokenize) the individual words */
+    var step = 0,
+        space_padding,
+        word_obj,
+        text = this.get('text'),
+        words = _.map(_.str.words( text ), function(word) {
+          word_obj = {
+            'text': word,
+            'start': step,
+          }
+          space_padding = (text.substring(step).match(/\s+/g) || [""])[0].length;
+          step = step + word.length + space_padding;
+          return word_obj;
+        });
+    this.get('words').each(function(word) { word.destroy(); });
+    this.get('words').add(words);
+
+  },
+
   toggleType: function() {
     /* Removes (if only 1 Annotation type) or changes
      * the Annotation type when clicked after existing */
-    if( this.get('type_id') == YPet.AnnotationTypes.length-1 || this.get('text') == "") {
+    if( this.get('type_id') == NERAnnotationTypes.length-1 || this.get('text') == "") {
       this.destroy();
     } else {
       this.set('type_id', this.get('type_id')+1 );
@@ -177,7 +239,9 @@ NERAnnotationList = Backbone.Collection.extend({
   /* Utils for the Paragraph Annotations lists
    * collectively */
   model: NERAnnotation,
-  url: '/api/v1/annotations',
+
+  url: function() { return false; },
+  sync: function () { return false; },
 
   sanitizeAnnotation : function(full_str, start) {
     /* Return the cleaned string and the (potentially) new start position */
@@ -212,8 +276,15 @@ NERAnnotationList = Backbone.Collection.extend({
     });
   },
 
+  /* (TODO) Can I remove this? */
+  // add : function(ann) {
+  //   console.log('> ann', ann);
+  //   if (ann.get('words').length==0) { return false; }
+  //   Backbone.Collection.prototype.add.call(this, ann);
+  // },
+
   drawAnnotations: function(annotation) {
-    var annotation_type = YPet.AnnotationTypes.at(annotation.get('type_id')),
+    var annotation_type = NERAnnotationTypes.at(annotation.get('type_id')),
         words_len = annotation.get('words').length;
     var parent_document = this.parentDocument || this._parentDocument;
 
@@ -257,14 +328,7 @@ NERAnnotationList = Backbone.Collection.extend({
         });
       }
     }
-
-  },
-
-  add : function(ann) {
-    if (ann.get('words').length==0) { return false; }
-    Backbone.Collection.prototype.add.call(this, ann);
   }
-
 });
 
 
@@ -275,6 +339,9 @@ NERParagraph = Backbone.RelationalModel.extend({
     text: '',
     offset: 0,
   },
+
+  url: function() { return false; },
+  sync: function () { return false; },
 
   relations: [{
     type: 'HasMany',
@@ -312,13 +379,13 @@ NERParagraph = Backbone.RelationalModel.extend({
     }
   }],
 
-  /* Required step after attaching YPet to a <p> to
-   * extract the individual words */
-  initialize : function(options) {
+  initialize : function() {
+    /* Extract (tokenize) the individual words */
+    var self = this;
     var step = 0,
         space_padding,
         word_obj,
-        text = options.text,
+        text = this.get('text'),
         words = _.map(_.str.words( text ), function(word) {
           word_obj = {
             'text': word,
@@ -328,15 +395,37 @@ NERParagraph = Backbone.RelationalModel.extend({
           step = step + word.length + space_padding;
           return word_obj;
         });
+    this.set('words', new NERWordList(words));
 
-    this.get('words').each(function(word) { word.destroy(); });
-    this.get('words').add(words);
+    // Normalize BioC values
+    this.set('offset', +this.get('offset'));
+    if(this.get('infon')) {
+      _.each(this.get('infon'), function(i) {
+        if(!isNaN(i['#text'])) {
+          self.set(i['@key'], +i['#text'])
+        } else {
+          self.set(i['@key'], i['#text'])
+        }
+      });
+      this.unset('infon');
+    }
+    if(this.get('annotation') && Array.isArray(this.get('annotation'))) {
+      var ann_models = _.compact(_.map(this.get('annotation'), function(ann) {
+        if(ann.text !== null) {
+          return new NERAnnotation(ann);
+        }
+      }));
+      // this.set('annotations', new NERAnnotationList(this.get('annotation')));
+    }
+
   },
 });
 
 NERParagraphList = Backbone.Collection.extend({
   model: NERParagraph,
-  url: function() { return false; }
+
+  url: function() { return false; },
+  sync: function () { return false; },
 })
 
 
@@ -346,6 +435,10 @@ NERParagraphList = Backbone.Collection.extend({
 
 
 NERWordView = Backbone.Marionette.View.extend({
+  /* View for all direct actions on a word
+  * - Model = NERWord
+  * - Collection = None
+  */
   template: _.template('<% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %>'),
   tagName: 'span',
 
@@ -387,82 +480,80 @@ NERWordView = Backbone.Marionette.View.extend({
         this.$el.css({'color': '#000', 'cursor': 'default', 'opacity': '.5'});
       }
     });
-  },
 
-//
-//     this.listenTo(this.model, 'underline', function(options) {
-//       var $container = this.$el.parent(),
-//           pos = this.$el.position(),
-//           split_end = this.$el.height() >= 30; #<{(| (TODO) Compare to reference single height unit |)}>#
-//
-//       var yaxis = pos.top + this.$el.height() + 2;
-//       var width = this.$el.width() + 1;
-//
-//       if (split_end) {
-//         #<{(| The first part of the word that wraps to the second line |)}>#
-//         var absolute_left = $container.find('span').first().position().left;
-//         var split_left = $prev.position().left + $prev.width();
-//         var $prev = this.$el.prev(),
-//             $next = this.$el.next();
-//
-//         $container.append('<div class="underline" style=" \
-//           position: absolute; \
-//           height: 4px; \
-//           width: '+ (Math.abs( pos.left+width - split_left)) +'px; \
-//           top: '+ (pos.top+(this.$el.height()/2)-5)  +'px; \
-//           left: '+ split_left +'px; \
-//           background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
-//
-//         #<{(| The reminder on the line below |)}>#
-//         #<{(| (TODO) sometimes it'll split and there will be no next word |)}>#
-//         $container.append('<div class="underline" style=" \
-//           position: absolute; \
-//           height: 4px; \
-//           width: '+ ($next.position().left - absolute_left) +'px; \
-//           top: '+ yaxis +'px; \
-//           left: '+ absolute_left +'px; \
-//           background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
-//
-//       } else {
-//         $container.append('<div class="underline" style=" \
-//           position: absolute; \
-//           height: 4px; \
-//           width: '+ width +'px; \
-//           top: '+ yaxis +'px; \
-//           left: '+ pos.left +'px; \
-//           background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
-//       }
-//     });
-//
-//     this.listenTo(this.model, 'underline-space', function(options) {
-//       var $container = this.$el.parent(),
-//       pos = this.$el.position(),
-//       color = d3.rgb(options.color).darker(2);
-//
-//       var yaxis = pos.top + this.$el.height() + 2;
-//       var width = this.$el.width();
-//       if(options.last_word) {
-//         width = width - 5;
-//         color = '#fff';
-//       }
-//
-//       $container.append('<div class="underline-space" style=" \
-//         position: absolute; \
-//         height: 4px; \
-//         width: 5px; \
-//         top: '+ yaxis +'px; \
-//         left: '+ (pos.left+width) +'px; \
-//         background-color: '+ color +';"></div>');
-//     });
-//  },
-//
-//   #<{(| Triggers the proper class assignment
-//    * when the word <span> is redrawn |)}>#
-//   onRender : function() {
-//     this.$el.css(this.model.get('neighbor') ?
-//       {'margin-right': '5px', 'padding-right': '0'} :
-//       {'margin-right': '0px', 'padding-right': '5px'});
-//   },
+    this.listenTo(this.model, 'underline', function(options) {
+      var $container = this.$el.parent(),
+          pos = this.$el.position(),
+          split_end = this.$el.height() >= 30; /* (TODO) Compare to reference single height unit */
+
+      var yaxis = pos.top + this.$el.height() + 2;
+      var width = this.$el.width() + 1;
+
+      if (split_end) {
+        /* The first part of the word that wraps to the second line */
+        var absolute_left = $container.find('span').first().position().left;
+        var split_left = $prev.position().left + $prev.width();
+        var $prev = this.$el.prev(),
+            $next = this.$el.next();
+
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ (Math.abs( pos.left+width - split_left)) +'px; \
+          top: '+ (pos.top+(this.$el.height()/2)-5)  +'px; \
+          left: '+ split_left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+
+        /* The reminder on the line below */
+        /* (TODO) sometimes it'll split and there will be no next word */
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ ($next.position().left - absolute_left) +'px; \
+          top: '+ yaxis +'px; \
+          left: '+ absolute_left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+
+      } else {
+        $container.append('<div class="underline" style=" \
+          position: absolute; \
+          height: 4px; \
+          width: '+ width +'px; \
+          top: '+ yaxis +'px; \
+          left: '+ pos.left +'px; \
+          background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+      }
+    });
+
+    this.listenTo(this.model, 'underline-space', function(options) {
+      var $container = this.$el.parent(),
+      pos = this.$el.position(),
+      color = d3.rgb(options.color).darker(2);
+
+      var yaxis = pos.top + this.$el.height() + 2;
+      var width = this.$el.width();
+      if(options.last_word) {
+        width = width - 5;
+        color = '#fff';
+      }
+
+      $container.append('<div class="underline-space" style=" \
+        position: absolute; \
+        height: 4px; \
+        width: 5px; \
+        top: '+ yaxis +'px; \
+        left: '+ (pos.left+width) +'px; \
+        background-color: '+ color +';"></div>');
+    });
+ },
+
+  /* Triggers the proper class assignment
+   * when the word <span> is redrawn */
+  onRender : function() {
+    this.$el.css(this.model.get('neighbor') ?
+      {'margin-right': '5px', 'padding-right': '0'} :
+      {'margin-right': '0px', 'padding-right': '5px'});
+  },
 
   /* When clicking down, make sure to keep track
    * that that word has been the latest interacted
@@ -548,7 +639,7 @@ NERWordsView = Backbone.Marionette.CollectionView.extend({
 NERParagraphView = Backbone.Marionette.View.extend({
   /* Initial HTML before a REExtractionList is available
   * - Model = NERParagraph
-  * - Collection = NERWordList
+  * - Collection = None
   */
   template: _.template('<div class="paragraph-box m-t-1"></div>'),
   className: 'paragraphs',
@@ -564,85 +655,85 @@ NERParagraphView = Backbone.Marionette.View.extend({
   //   'mouseleave': 'captureAnnotation',
   // },
 
-  initialize: function() {
-    console.log('NER Para View init', this.model);
-  },
-
   onRender : function() {
-    console.log('words', this.model.get('words'));
     this.showChildView('words', new NERWordsView({'collection': this.model.get('words')}));
-    // this.drawBioC(this.options.passage_json);
+    this.drawBioC(this.options.passage_json);
   },
 
-  // drawBioC : function(passage, opponent) {
-  //   opponent = opponent || false
-  //   var words = this.collection,
-  //       parentDocument = words.parentDocument;
-  //
-  //   if(opponent) {
-  //     #<{(| If you're showing a partner's results, disallow highlighting |)}>#
-  //     this.$el.css({'color': '#000', 'cursor': 'default'});;
-  //     words.each(function(w) {
-  //       w.set('disabled', true);
-  //     });
-  //     this.$el.css('cursor', 'not-allowed');
-  //   }
-  //
-  //   if(passage) {
-  //
-  //     #<{(|
-  //      * Make selections if Annotations are present
-  //      |)}>#
-  //     var annotations = _.compact(_.flatten([passage.annotation]));
-  //     var passage_offset = +passage.offset;
-  //     if(annotations.length) {
-  //
-  //       var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user_id';})['#text']; }));
-  //       if(user_ids.length != 1) { console.log('throw error'); }
-  //       var user_id = +user_ids[0];
-  //       if(passage_offset != 0) {
-  //         passage_offset++;
-  //       }
-  //
-  //       _.each(annotations, function(annotation, annotation_idx) {
-  //         try {
-  //           var ann_start = +annotation.location['@offset'] - passage_offset;
-  //           var ann_length = +annotation.location['@length'];
-  //           var ann_type_id = +_.find(annotation.infon, function(o){return o['@key']=='type_id';})['#text'];
-  //
-  //           var start_match = false;
-  //           var selected = words.filter(function(word) {
-  //             #<{(| The Annotation found a word which matches start position exactly |)}>#
-  //             var starts = word.get('start') == ann_start;
-  //             if (starts) { start_match = true; }
-  //             return starts || ( word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
-  //           });
-  //
-  //           if(selected.length) {
-  //             if(opponent) {
-  //               var opp_anns = parentDocument.get('opponent_annotations');
-  //               opp_anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
-  //             } else {
-  //               var anns = parentDocument.get('annotations');
-  //               anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
-  //             }
-  //           }
-  //
-  //           var words_match = selected.length == _.str.words(annotation.text).length;
-  //           if(words_match==false && start_match==false) {
-  //             Raven.captureMessage('Imperfect Pubtator >> YPet Match', {extra: {
-  //               'selected': selected,
-  //               'annotation': annotation,
-  //               'passage': passage
-  //             }});
-  //           }
-  //
-  //         } catch(e) { Raven.captureException(e); }
-  //
-  //       });
-  //     }
-  //   }
-  // },
+  drawBioC : function(passage, opponent) {
+    /*
+    * Passage:
+    * Opponent: a Boolean value for disabling interaction with the words
+    */
+    // console.log('passage', passage, this);
+    opponent = opponent || false
+    var words = this.model.get('words'),
+        parentDocument = words.parentDocument;
+
+    if(opponent) {
+      /* If you're showing a partner's results, disallow highlighting */
+      this.$el.css({'color': '#000', 'cursor': 'default'});;
+      words.each(function(w) {
+        w.set('disabled', true);
+      });
+      this.$el.css('cursor', 'not-allowed');
+    }
+
+    if(passage) {
+
+      /*
+       * Make selections if Annotations are present
+       */
+      var annotations = _.compact(_.flatten([passage.annotation]));
+      var passage_offset = +passage.offset;
+      if(annotations.length) {
+
+        var user_ids = _.uniq(_.map(annotations, function(v) { return _.find(v.infon, function(o){return o['@key']=='user_id';})['#text']; }));
+        if(user_ids.length != 1) { console.log('throw error'); }
+        var user_id = +user_ids[0];
+        if(passage_offset != 0) {
+          passage_offset++;
+        }
+
+        _.each(annotations, function(annotation, annotation_idx) {
+          try {
+            var ann_start = +annotation.location['@offset'] - passage_offset;
+            var ann_length = +annotation.location['@length'];
+            var ann_type_id = +_.find(annotation.infon, function(o){return o['@key']=='type_id';})['#text'];
+
+            var start_match = false;
+            var selected = words.filter(function(word) {
+              /* The Annotation found a word which matches start position exactly */
+              var starts = word.get('start') == ann_start;
+              if (starts) { start_match = true; }
+              return starts || ( word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
+            });
+
+            if(selected.length) {
+              if(opponent) {
+                var opp_anns = parentDocument.get('opponent_annotations');
+                opp_anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
+              } else {
+                var anns = parentDocument.get('annotations');
+                anns.create({words: selected, type_id: ann_type_id, opponent: opponent});
+              }
+            }
+
+            var words_match = selected.length == _.str.words(annotation.text).length;
+            if(words_match==false && start_match==false) {
+              Raven.captureMessage('Imperfect Pubtator >> YPet Match', {extra: {
+                'selected': selected,
+                'annotation': annotation,
+                'passage': passage
+              }});
+            }
+
+          } catch(e) { Raven.captureException(e); }
+
+        });
+      }
+    }
+  },
   // outsideBox: function(evt) {
   //   var x = evt.pageX,
   //       y = evt.pageY;
@@ -786,31 +877,3 @@ YPet = Backbone.Marionette.View.extend({
   }
 });
 
-
-
-// ETC
-//
-// passages = data.collection.document.passage;
-// regions = {};
-
-// _.each(passages, function(passage, passage_idx) {
-//   var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-//   var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-//   $('.paragraphs').append(p_body);
-//   regions[''+passage_idx] = '#'+section_id;
-// });
-// YPet.addRegions(regions);
-
-// _.each(passages, function(passage, passage_idx) {
-//   var p = new Paragraph({'text': passage.text});
-//   YPet[''+passage_idx].show( new WordCollectionView({
-//     collection: p.get('words'),
-//   }) );
-//   YPet[''+passage_idx].currentView.drawBioC(null, true);
-// });
-//
-// YPet.AnnotationTypes = new NERAnnotationTypeList([
-//   {name: 'Disease', color: '#d1f3ff'},
-//   {name: 'Gene', color: '#B1FFA8'},
-//   {name: 'Drug', color: '#ffd1dc'}
-// ]);
