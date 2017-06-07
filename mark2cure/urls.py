@@ -7,6 +7,8 @@ from django.contrib.auth import views as reset_views
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 
+import common.views
+
 # from common.accounts.views import signup
 
 
@@ -25,6 +27,7 @@ urlpatterns = [
 
     # Password / Account based changes
     # url(r'^accounts/signup/$', signup, name='account_signup'),
+    url(r'^accounts/', include('mark2cure.userprofile.providers.zooniverse.urls')),
     url(r'^accounts/', include('allauth.urls')),
 
     # Response / Confirm Changes

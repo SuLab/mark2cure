@@ -15,6 +15,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # Application definition
 INSTALLED_APPS = (
+    'sslserver',  # HTTPS local development server
     'grappelli',
     'django.contrib.admin',
 
@@ -35,6 +36,7 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'mark2cure.userprofile.providers.zooniverse',
 
     'djrill',
     'djcelery',
@@ -172,6 +174,9 @@ TIME_ZONE = 'America/Los_Angeles'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+# Auto signup a user after social login (using Zooniverse) - so the user won't have to go through our sign-up form after initial login
+AUTO_SIGNUP = True
 
 TEMPLATES = [
     {

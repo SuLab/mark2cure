@@ -1,0 +1,13 @@
+[
+  {
+    fields: {
+      provider: "zooniverse",
+      name: "Zooniverse Social App",
+      client_id: "",
+      secret: "",
+      sites: [1]
+    },
+    model: "socialaccount.socialapp",
+    pk: 2
+  }
+]
