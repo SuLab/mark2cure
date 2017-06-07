@@ -6,13 +6,15 @@ from django.forms.models import model_to_dict
 class EntityRecognitionAnnotation(models.Model):
     # Only access through Document.Annotation.metadata.RelationAnnotation
 
-    # Disease, Gene, Protein, et cetera...
-    ANNOTATION_TYPE_CHOICE = (
-        'disease',
-        'gene_protein',
-        'drug',
+    DISEASE = 0
+    GENE = 1
+    TREATMENT = 2
+    TYPE_CHOICES = (
+        (DISEASE, 'Disease'),
+        (GENE, 'Gene'),
+        (TREATMENT, 'Treatment')
     )
-    type = models.CharField(max_length=40, blank=True, null=True, default='disease')
+    type_idx = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
 
     text = models.TextField(blank=True, null=True)
 
