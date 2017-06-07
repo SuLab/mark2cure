@@ -35,6 +35,8 @@ block post-footer
             '&client_id={{ zooniverse_app_id }}',
             '&redirect_uri={{ zooniverse_callback_url }}'
         ].join('');
+        // Auto jump into auth
+        window.location.href = oauthUrl;
 
         $('#zooniverse-signin').click(function (e) {
             e.preventDefault();

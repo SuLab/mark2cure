@@ -101,7 +101,7 @@ class OAuth2CallbackView(OAuth2View):
                 login.state = SocialLogin.unstash_state(request)
 
             # Make sure the user is initiated with some training in the DB
-            request.session['initial_training'] = 'e'
+            request.session['initial_training'] = 'zooniverse'
 
             return complete_social_login(request, login)
         except (PermissionDenied,

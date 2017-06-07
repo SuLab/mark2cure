@@ -21,10 +21,12 @@ def route(request):
     if Level.objects.filter(user=request.user, task_type='r').exists():
         relation_level = Level.objects.filter(user=request.user, task_type='r').first()
 
-        if relation_level.level == 1:
-            return redirect(reverse('training:relation-training', kwargs={'part_num': 2, 'step_num': 1}))
+        if relation_level.level == 0:
+            return redirect(reverse('training:relation-training'))
+        elif relation_level.level == 1:
+            return redirect(reverse('training:relation-training-two'))
         elif relation_level.level == 2:
-            return redirect(reverse('training:relation-training', kwargs={'part_num': 3, 'step_num': 1}))
+            return redirect(reverse('training:relation-training-three'))
 
     user_level = Level.objects.filter(user=request.user, task_type='e').first().level
     if user_level <= 3:

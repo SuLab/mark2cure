@@ -438,40 +438,7 @@ REExtractionView = Backbone.Marionette.View.extend({
   }
 });
 
-// RelationTextView = Backbone.Marionette.View.extend({
-//   #<{(| Display the YPet interface
-//   * this.model = a REExtraction instance
-//   * this.collection = None
-//   |)}>#
-//   template: '<p>help</p>',
-//
-//   onRender: function() {
-//     var self = this;
-//     console.log('text onrender:', this, this.getRegion() );
 
-    // var NERYpetApp = Backbone.Marionette.Application.extend({
-    //   region: '#tree-text',
-    //
-    //   onStart: function() {
-    //     var main = self.getRegion();
-    //     main.show( new YPet({
-    //       'mode': 're',
-    //       'document_id': self.options.document_pk,
-    //       'document_pmid': self.options.document_pmid,
-    //       'training': self.options.training
-    //     }) );
-    //   }
-    // });
-    // var ypet_app = new NERYpetApp();
-    // ypet_app.start();
-
-    // RelationApp['start'].show(new RelationCompositeView(view_options));
-    // add_relation_classes(current_relationship);
-    //
-    // // This to the else is different from the training (it's not in the training)
-    // var concept_uids = [concepts['c1'].id, concepts['c2'].id];
-    // tmp_passages = [];
-    //
     // _.each(passages, function(p, p_idx) {
     //   #<{(| Deep clone passage objects |)}>#
     //   tmp_passage = $.extend({}, p);
@@ -498,39 +465,9 @@ REExtractionView = Backbone.Marionette.View.extend({
     // var collection;
     // var passages, regions, tmp_passages;
 
-    // YPet.addInitializer(function(options) {
-    //
-    //   Backbone.Radio.DEBUG = true;
-    //   YPet['convoChannel'] = Backbone.Radio.channel('ypet');
-    //
-    //   $.getJSON('/document/pubtator/'+relation_task_settings.document_pmid+'.json', function( data ) {
-    //     /* The Annotation information has been returned from the server at this point
-    //        it is now safe to start YPET */
-    //     passages = data.collection.document.passage;
-    //     regions = {};
-    //
-    //     _.each(passages, function(passage, passage_idx) {
-    //       var section_id =  _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-    //       var p_body = '<div id="'+ section_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-    //       $('.paragraphs').append(p_body);
-    //       regions[''+passage_idx] = '#'+section_id;
-    //     });
-    //     YPet.addRegions(regions);
-    //
-    //     _.each(passages, function(passage, passage_idx) {
-    //       var p = new Paragraph({'text': passage.text});
-    //       YPet[''+passage_idx].show( new WordCollectionView({
-    //         collection: p.get('words'),
-    //       }) );
-    //       YPet[''+passage_idx].currentView.drawBioC(null, true);
-    //     });
-    //
-    //     /* The Annotation information has been returned from the server at this point
-    //        it is now safe to start Tree */
-    //
 
     //
-    //   });
+
     //
     //   var show_alert = _.debounce(function(evt) {
     //     var $box = $(evt.target).closest('div[class^="paragraph-box"]');
@@ -688,6 +625,7 @@ Tree = Backbone.Marionette.View.extend({
   onRender: function() {
     if(this.collection && this.model) {
       this.options['model'] = this.model;
+      this.options['mode'] = 'er';
       this.showChildView('navigation', new RENavigation({'collection': this.collection}));
       this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new YPet(this.options));
