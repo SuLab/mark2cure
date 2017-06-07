@@ -2,11 +2,13 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.core.urlresolvers import reverse
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.messages import get_messages
 
+from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
 from ..document.models import Annotation, Document, View
 from ..task.models import Level, UserQuestRelationship
@@ -17,6 +19,27 @@ from .forms import SupportMessageForm
 from .models import Group
 
 import random
+
+
+def login_with_zooniverse(request):
+    # The view that allows the user to login with their Zooniverse account
+
+    # The public Zooniverse app ID (used for Zoonivser login/authentication) - use the SocialApp DB record to retrieve the app ID
+    zooniverseSocialApp = SocialApp.objects.get(provider='zooniverse')
+    appId = zooniverseSocialApp.client_id
+
+    ctx = {
+        'zooniverse_app_id': appId,
+        'zooniverse_callback_url': request.build_absolute_uri(reverse('common:zooniverse-callback'))
+    }
+    return TemplateResponse(request, 'common/login_with_zooniverse.jade', ctx)
+
+
+def zooniverse_callback(request):
+    # The view that is called after the user logged-in using Zooniverse (this view receives
+    # the access token and sends it forward to the allauth module's callback view)
+    ctx = {'zooniverse_allauth_callback_url': request.build_absolute_uri(reverse('zooniverse_callback'))}
+    return TemplateResponse(request, 'common/zooniverse_callback.jade', ctx)
 
 
 def home(request):
