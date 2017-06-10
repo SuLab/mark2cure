@@ -66,6 +66,7 @@ gulp.task('js', function() {
     './static/js-src/libs/tree.js',
     './static/js-src/tasks/relation-data-var-assigned.js',
     './static/js-src/libs/leaderboard.js',
+    './static/js-src/libs/dashboard.js',
 
     './static/js-src/pages/cloud.js',
     './static/js-src/pages/group_home.js',
@@ -77,8 +78,6 @@ gulp.task('js', function() {
     './static/js-src/training/entity-recognition/basic.js',
     './static/js-src/training/relation/relation-training.js',
     './static/js-src/training/relation/relation-1.js',
-
-    './static/js-src/common/relation-list.js',
 
     './static/js-src/demo.js',
     './static/js-src/app.js'

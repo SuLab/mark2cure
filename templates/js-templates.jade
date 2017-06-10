@@ -1,3 +1,29 @@
+script(id='dashboard-template', type='html/template')
+  .row
+    #dashboard-ner
+    #dashboard-re
+    #dashbaord-leaderboard
+
+script(id='dashboard-ner-template', type='html/template')
+
+script(id='dashboard-re-template', type='html/template')
+
+script(id='dashboard-re-template', type='html/template')
+  .row
+    .col-xs-12.col-xs-offset-0
+      .card.my-stats
+        .card-header.text-xs-center
+          | My Stats
+        .card-block
+          ol.list-unstyled
+            li Total Annotations: #{user.userprofile.all_annotations.count|intcomma}
+            li Total Score: #{user.userprofile.score|intcomma}
+
+  .row
+    .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
+      #leaderboard
+
+
 script(id='ypet-para-templates', type='html/template')
   .row
     .col-xs-12.col-md-10.col-md-offset-1
@@ -24,89 +50,67 @@ script(id='ypet-template', type='html/template')
   #ypet-footer.col-xs-12
 
 
-
-<script id="tree-template" type="x-template/underscore">
-
-<div id="tree-navigation" class="col-xs-12"></div>
-<div id="tree-selection" class="col-xs-10 col-xs-offset-1"></div>
-<div id="tree-selection-results" class="col-xs-12"></div>
-<div id="tree-text" class="col-xs-12"></div>
-</script>
+script(id='tree-template', type='x-template/underscore')
+  #tree-navigation.col-xs-12
+  #tree-selection.col-xs-10.col-xs-offset-1
+  #tree-selection-results.col-xs-12
+  #tree-text.col-xs-12
 
 
-<script id="tree-navigation-template" type="x-template/underscore">
-
-<div id="progress-bar" class="col-xs-10 col-xs-offset-1 col-md-7 col-md-offset-1 col-lg-8 col-lg-offset-1"></div>
-<div class="col-xs-10 col-xs-offset-1 col-md-3 col-md-offset-0 col-lg-2 col-lg-offset-0">
-<p class="text-xs-center">Score: <span id='score'>0</span></p>
-</div>
-</script>
+script(id='tree-navigation-template', type="x-template/underscore')
+  #progress-bar.col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-1.col-lg-8.col-lg-offset-1
+  .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
+    p.text-xs-center Score: <span id='score'>0</span>
 
 
-<script id="reextraction-result-answer-item-template" type="x-template/underscore">
-
-<div class="box" style="background-color: <%= color %>;"></div>
-<% if(self) { %>
-<p><strong><%= percentage %>% – <%= label %></strong></p>
-<% } else { %>
-<p><%= percentage %>% – <%= label %></p>
-<% } %>
-</script>
+script(id='reextraction-result-answer-item-template', type='x-template/underscore')
+  <div class="box" style="background-color: <%= color %>;"></div>
+  <% if(self) { %>
+  <p><strong><%= percentage %>% – <%= label %></strong></p>
+  <% } else { %>
+  <p><%= percentage %>% – <%= label %></p>
+  <% } %>
 
 
-<script id="reextraction-results-template" type="x-template/underscore">
+script(id='reextraction-results-template', type='x-template/underscore')
+  .row
+    .col-xs-12.col-md-10.col-md-offset-1
+      #chart
 
-<div class="row">
-<div class="col-xs-12 col-md-10 col-md-offset-1">
-<div id="chart"></div>
-</div>
-<div id="reextraction-answers-list" class="col-xs-12 col-md-10 col-md-offset-1"></div>
-<div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4">
-<button class="btn btn-primary btn-block">Next</button>
-</div>
-</div>
-</script>
+    #reextraction-answers-list.col-xs-12.col-md-10.col-md-offset-1
+    .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1 col-md-4 col-md-offset-4">
+      <button class="btn btn-primary btn-block">Next</button>
+    </div>
 
 
-<script id="reextraction-concept-template" type="x-template/underscore">
-
-<div class="flag">&#10005;</div>
-<div class="text col-xs-12"><p><%= text %></p></div>
-<div class="desc col-xs-12"><p>is not a <%= type %> concept?</p></div>
-</script>
-
-
-<script id="reextraction-template" type="x-template/underscore">
-
-<div id="tree-extraction" class="row text-xs-center">
-<div id="c1" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
-<div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-6" style="padding-bottom:10px; padding-top:10px;">
-<div id="selected-choice"></div>
-<div id="rechoices-list"></div>
-</div>
-<div id="c2" class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-0 col-md-3"></div>
-</div>
-<div id="tree-confirm" class="row"></div>
-</script>
+script(id='reextraction-concept-template', type='x-template/underscore')
+  div.flag &#10005;
+  div.text.col-xs-12
+    p <%= text %>
+  div.desc.col-xs-12
+    p is not a <%= type %> concept?
 
 
+script(id='reextraction-template', type='x-template/underscore')
+  #tree-extraction.row.text-xs-center
+    #c1.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3
+    div(style='padding-bottom:10px; padding-top:10px;').col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-6
+      #selected-choice
+      #rechoices-list
+    #c2.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3
+  #tree-confirm.row
 
-<script id="relation-list-item-template" type="text/template">
-<div class="relation-item">
 
-<p class="steps pull-right"><%= user_document_relationships %> steps</p>
-<p class="main-text"><%= title %></p>
+script(id='relation-list-item-template', type='text/template')
+  .relation-item
 
-<progress value='<%- community_progress*100 %>' max='100' class='progress'>
-<div class='progress'>
-<span style='width: <%- community_progress*100 %>%;' class='progress-bar'>
-</span>
-</div>
-</progress>
+  p.steps.pull-right <%= user_document_relationships %> steps
+  p.main-text <%= title %>
 
-</div>
-<hr />
-</script>
+  progress(value='<%- community_progress*100 %>', max='100').progress
+    .progress
+      span(style='width: <%- community_progress*100 %>%;').progress-bar
+  hr
 
 
 <script id="relation-item-template" type="text/template">
@@ -194,10 +198,8 @@ script(id='quest-icon-template', type='text/template')
 
 
 script(id='group-template', type='text/template')
-  <h3><%- name %></h3>
-  <div id='group-<%- pk %>' class='row head-space paragraph-box'>
-  <div class='col-xs-12 text-xs-center'>
-  <p class='quest-loading'>Loading...</p>
-  </div>
-  </div>
+  h3 <%- name %>
+  div(id='group-<%- pk %>').row.head-space.paragraph-box
+    div.col-xs-12.text-xs-center
+      p.quest-loading Loading...
 

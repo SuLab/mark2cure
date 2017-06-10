@@ -2,17 +2,4 @@
 - load group
 
 
-.row
-  .col-xs-12.col-xs-offset-0
-    .card.my-stats
-      .card-header.text-xs-center
-        | My Stats
-      .card-block
-        ol.list-unstyled
-          li Total Annotations: #{user.userprofile.all_annotations.count|intcomma}
-          li Total Score: #{user.userprofile.score|intcomma}
-
-.row
-  .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
-    #leaderboard
 
