@@ -17,16 +17,19 @@ urlpatterns = [
     url(r'^analysis/group/(?P<group_pk>\d+)/$',
         views.analysis_group, name='analysis-group'),
 
-    # REST Framework
-    url(r'^quest/(?P<group_pk>\d+)/$',
+    # Tasks
+    # - [Dashboard] Named Entity Recognition
+    url(r'^ner/list/(?P<group_pk>\d+)/$',
         views.quest_group_list, name='quest-group-api'),
 
-    url(r'^groups/$',
+    url(r'^ner/list/$',
         views.group_list, name='groups-api'),
 
-    url(r'relationships',
+    # - [Dashboard] Relationship Extraction
+    url(r're/list',
         views.relation_list, name='relations-api'),
 
+    # - [Dashboard] User Scoreboard
     url(r'^leaderboard/users/(?P<day_window>\d+)/$',
         views.leaderboard_users, name='leaderboard-users'),
 

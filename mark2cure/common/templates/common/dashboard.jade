@@ -18,6 +18,20 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
-
   #dashboard.container-fluid
+
+
+block post-footer
+
+  script.
+    var DashboardApp = Backbone.Marionette.Application.extend({
+      region: '#dashboard',
+
+      onStart: function() {
+        var main = this.getRegion();
+        main.show( new DashboardView() );
+      }
+    });
+    var dashboard_app = new DashboardApp();
+    dashboard_app.start();
 

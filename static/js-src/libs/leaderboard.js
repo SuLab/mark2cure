@@ -23,15 +23,14 @@ LeaderBoardSettings = Backbone.RelationalModel.extend({
     if(idx==3) { idx = 0; }
     this.set('time_range', idx);
   },
-
 });
 
-User = Backbone.RelationalModel.extend({
+LeaderBoardUser = Backbone.RelationalModel.extend({
   defaults: {'user': false, 'hover': false}
 });
 
-UserList = Backbone.Collection.extend({
-  model: User,
+LeaderBoardUserList = Backbone.Collection.extend({
+  model: LeaderBoardUser,
   initialize: function() {
     this.api = 'users';
     this.days = 31;
@@ -42,7 +41,7 @@ UserList = Backbone.Collection.extend({
 /*
  * Views
  */
-UserView = Backbone.Marionette.View.extend({
+LeaderBoardUserView = Backbone.Marionette.View.extend({
   template: _.template('<p><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></p>'),
   tagName: 'a',
   className: 'list-group-item',
@@ -79,42 +78,48 @@ UserView = Backbone.Marionette.View.extend({
       $el.text(this.numberWithCommas($el.text()));
     }
   },
-
 });
 
-UserCompositeView = Backbone.Marionette.CompositeView.extend({
-  template: _.template('<h2 class="text-xs-center">Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h2><h4 class="text-xs-center"><%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span></h4><ol class="list-unstyled list-group"></ol>'),
-  childView  : UserView,
-  childViewContainer: "ol",
 
-  initialize : function(options) {
-    this.listenTo(this.model, 'change:time_range', function() {
-      var time_obj = this.model.time_key[this.model.get('time_range')];
-      this.model.set('text', time_obj.text);
-      this.model.set('days', time_obj.days);
-      this.collection.days = time_obj.days;
-      this.collection.fetch();
-    });
-
-    this.listenTo(this.model, 'change:api', function() {
-      this.collection.api = this.model.get('api');
-      this.collection.fetch();
-      this.render();
-    });
-
-    this.listenTo(this.model, 'change:text', function() {
-      this.render();
-    });
-
-    this.collection.fetch();
-  },
-
-  onRender : function() {
-    var self = this;
-    this.$('h2').on('click', function() { self.model.toggle_api(); });
-    this.$('h4').on('click', function() { self.model.toggle_time_range(); });
-  },
-
+LeaderBoardUserListView = Backbone.Marionette.CollectionView.extend({
+  childView  : LeaderBoardUserView,
+  childViewEventPrefix: 'leaderboard:user',
 });
 
-LeaderBoard = new Backbone.Marionette.Application();
+
+LeaderBoardView = Backbone.Marionette.View.extend({
+  template: '#dashboard-leaderboard-template',
+
+  regions: {
+    'list': 'ol.list-group'
+  },
+
+  initialize: function() {
+    // var settings = new LeaderBoardSettings();
+    // var users = new UserList();
+    // var self = this;
+    // this.$('h2').on('click', function() { self.model.toggle_api(); });
+    // this.$('h4').on('click', function() { self.model.toggle_time_range(); });
+    // this.listenTo(this.model, 'change:time_range', function() {
+    //   var time_obj = this.model.time_key[this.model.get('time_range')];
+    //   this.model.set('text', time_obj.text);
+    //   this.model.set('days', time_obj.days);
+    //   this.collection.days = time_obj.days;
+    //   this.collection.fetch();
+    // });
+    // this.listenTo(this.model, 'change:api', function() {
+    //   this.collection.api = this.model.get('api');
+    //   this.collection.fetch();
+    //   this.render();
+    // });
+    // this.listenTo(this.model, 'change:text', function() {
+    //   this.render();
+    // });
+    // this.collection.fetch();
+  },
+
+  onRender: function() {
+    this.showChildView('list', new LeaderBoardUserListView({'collection': users}) );
+  }
+
+});
