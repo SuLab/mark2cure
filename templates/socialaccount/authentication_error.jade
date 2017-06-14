@@ -1,0 +1,15 @@
+extends flatpages/base.jade
+
+- load i18n
+
+
+block head_title
+  {% trans "Social Network Login Failure" %}
+
+
+block content
+  .container
+    .row
+      .col-xs-12.text-xs-center
+        h1 {% trans "Social Network Login Failure" %}</h1>
+        p {% trans "An error occurred while attempting to login via your social network account." %}
