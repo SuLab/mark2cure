@@ -4,10 +4,10 @@ from django.http import HttpResponse
 from django.db import connection
 from django.conf import settings
 
-from ..document.models import Annotation, Document, View
+from ..document.models import Annotation, View
 from ..task.models import Level, UserQuestRelationship
 
-from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
+from .serializers import QuestSerializer, LeaderboardSerializer, NERGroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
 from ..common.models import Group
 from ..analysis.models import Report
@@ -109,40 +109,6 @@ def analysis_group(request, group_pk):
     return Response(response)
 
 
-# @login_required
-@api_view(['GET'])
-def quest_group_list(request, group_pk):
-    group = get_object_or_404(Group, pk=group_pk)
-
-    # we now allow users to see a group 'home page' for detailed information whether or
-    # not they are logged in
-    if request.user.is_authenticated():
-        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
-            "current_submissions_count": """
-                SELECT COUNT(*) AS current_submissions_count
-                FROM task_userquestrelationship
-                WHERE (task_userquestrelationship.completed = 1
-                    AND task_userquestrelationship.task_id = task_task.id)""",
-            "user_completed": """
-                SELECT COUNT(*) AS user_completed
-                FROM task_userquestrelationship
-                WHERE (task_userquestrelationship.completed = 1
-                    AND task_userquestrelationship.user_id = %d
-                    AND task_userquestrelationship.task_id = task_task.id)""" % (request.user.pk,)
-        }).prefetch_related('documents')
-    else:
-        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
-            "current_submissions_count": """
-                SELECT COUNT(*) AS current_submissions_count
-                FROM task_userquestrelationship
-                WHERE (task_userquestrelationship.completed = 1
-                    AND task_userquestrelationship.task_id = task_task.id)"""
-        }).prefetch_related('documents')
-
-    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
-    return Response({'tasks': serializer.data})
-
-
 @login_required
 @api_view(['GET'])
 def user_task_stats(request):
@@ -176,9 +142,51 @@ def re_stats(request):
     })
 
 
+# @login_required
+@api_view(['GET'])
+def ner_quest(request, group_pk):
+    group = get_object_or_404(Group, pk=group_pk)
+
+    # we now allow users to see a group 'home page' for detailed information whether or
+    # not they are logged in
+    if request.user.is_authenticated():
+        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+            "current_submissions_count": """
+                SELECT COUNT(*) AS current_submissions_count
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)""",
+            "user_completed": """
+                SELECT COUNT(*) AS user_completed
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.user_id = %d
+                    AND task_userquestrelationship.task_id = task_task.id)""" % (request.user.pk,)
+        }).prefetch_related('documents')
+    else:
+        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+            "current_submissions_count": """
+                SELECT COUNT(*) AS current_submissions_count
+                FROM task_userquestrelationship
+                WHERE (task_userquestrelationship.completed = 1
+                    AND task_userquestrelationship.task_id = task_task.id)"""
+        }).prefetch_related('documents')
+
+    serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
+    return Response(serializer.data)
+
+
+# @login_required
+@api_view(['GET'])
+def ner_list(request):
+    queryset = Group.objects.exclude(stub='training').order_by('-order')
+    serializer = NERGroupSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
 @login_required
 @api_view(['GET'])
-def relation_list(request):
+def re_list(request):
     """ Returns the available relation tasks for a specific user
         Accessed through a JSON API endpoint
     """
@@ -215,25 +223,6 @@ def relation_list(request):
     c.close()
 
     serializer = DocumentRelationSerializer(queryset, many=True)
-    return Response(serializer.data)
-
-
-# from django.contrib.auth.decorators import login_required
-# from django.utils.decorators import method_decorator
-# from django.views.generic import TemplateView
-# class ExportView(TemplateView):
-#     template_name = 'api/export'
-#
-#     @method_decorator(login_required)
-#     def dispatch(self, *args, **kwargs):
-#         return super(ProtectedView, self).dispatch(*args, **kwargs)
-
-
-# @login_required
-@api_view(['GET'])
-def group_list(request):
-    queryset = Group.objects.exclude(stub='training').order_by('-order')
-    serializer = GroupSerializer(queryset, many=True)
     return Response(serializer.data)
 
 

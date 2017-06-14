@@ -2,7 +2,12 @@
  *  Models & Collections
  */
 LeaderBoardSettings = Backbone.RelationalModel.extend({
-  defaults: {'time_range': 0, 'text': 'This Month', 'days': 31, 'api': 'users'},
+  defaults: {
+    'time_range': 0,
+    'text': 'This Month',
+    'days': 31,
+    'api': 'users'
+  },
   time_key: [
       {'text': 'This Month', 'days': 31},
       {'text': 'This Week', 'days': 7},
@@ -25,9 +30,14 @@ LeaderBoardSettings = Backbone.RelationalModel.extend({
   },
 });
 
+
 LeaderBoardUser = Backbone.RelationalModel.extend({
-  defaults: {'user': false, 'hover': false}
+  defaults: {
+    'user': false,
+    'hover': false
+  }
 });
+
 
 LeaderBoardUserList = Backbone.Collection.extend({
   model: LeaderBoardUser,
@@ -38,9 +48,11 @@ LeaderBoardUserList = Backbone.Collection.extend({
   url: function() { return '/api/leaderboard/'+ this.api +'/'+ this.days +'/?format=json'; },
 });
 
+
 /*
  * Views
  */
+
 LeaderBoardUserView = Backbone.Marionette.View.extend({
   template: _.template('<p><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></p>'),
   tagName: 'a',
@@ -95,27 +107,40 @@ LeaderBoardView = Backbone.Marionette.View.extend({
     'list': 'ol.list-group'
   },
 
+  ui: {
+    'api': 'h2',
+    'time': 'h4'
+  },
+
+  events: {
+    'click @ui.api': function() {
+      this.model.toggle_api();
+    },
+    'click @ui.time': function() {
+      this.model.toggle_time_range();
+    },
+  },
+
+  modelEvents: {
+    'change:text': function() { this.render(); },
+    'change:api': function() {
+        this.collection.api = this.model.get('api');
+        this.collection.fetch();
+        this.render();
+    },
+    'change:time_range': function() {
+      var time_obj = this.model.time_key[this.model.get('time_range')];
+      this.model.set('text', time_obj.text);
+      this.model.set('days', time_obj.days);
+      this.collection.days = time_obj.days;
+      this.collection.fetch();
+    }
+
+  },
+
   initialize: function() {
-    var settings = new LeaderBoardSettings();
+    this.model = new LeaderBoardSettings();
     this.collection = new LeaderBoardUserList();
-    // var self = this;
-    // this.$('h2').on('click', function() { self.model.toggle_api(); });
-    // this.$('h4').on('click', function() { self.model.toggle_time_range(); });
-    // this.listenTo(this.model, 'change:time_range', function() {
-    //   var time_obj = this.model.time_key[this.model.get('time_range')];
-    //   this.model.set('text', time_obj.text);
-    //   this.model.set('days', time_obj.days);
-    //   this.collection.days = time_obj.days;
-    //   this.collection.fetch();
-    // });
-    // this.listenTo(this.model, 'change:api', function() {
-    //   this.collection.api = this.model.get('api');
-    //   this.collection.fetch();
-    //   this.render();
-    // });
-    // this.listenTo(this.model, 'change:text', function() {
-    //   this.render();
-    // });
     this.collection.fetch();
   },
 

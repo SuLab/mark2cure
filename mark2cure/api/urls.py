@@ -20,23 +20,20 @@ urlpatterns = [
     # Tasks
     url(r'task/stats/',
         views.user_task_stats, name='task-stats-api'),
-
-    # - [Dashboard] Named Entity Recognition
     url(r'ner/stats/',
         views.ner_stats, name='ner-stats-api'),
-
-    url(r'^ner/list/(?P<group_pk>\d+)/$',
-        views.quest_group_list, name='quest-group-api'),
-
-    url(r'^ner/list/$',
-        views.group_list, name='groups-api'),
-
-    # - [Dashboard] Relationship Extraction
     url(r're/stats/',
         views.re_stats, name='re-stats-api'),
 
+    # - [Dashboard] Named Entity Recognition (NER)
+    url(r'^ner/list/(?P<group_pk>\d+)/$',
+        views.ner_quest, name='ner-quest-api'),
+    url(r'^ner/list/$',
+        views.ner_list, name='ner-list-api'),
+
+    # - [Dashboard] Relationship Extraction (RE)
     url(r're/list',
-        views.relation_list, name='relations-api'),
+        views.re_list, name='re-list-api'),
 
     # - [Dashboard] User Scoreboard
     url(r'^leaderboard/users/(?P<day_window>\d+)/$',

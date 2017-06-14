@@ -439,7 +439,7 @@ NERWordView = Backbone.Marionette.View.extend({
   tagName: 'span',
 
   modelEvents: {
-    'change:neighbor': function() { this.render; },
+    'change:neighbor': function() { this.render(); },
     'change:disabled': 'actOnChangeDisabled',
     'change:latest': 'actOnChangeLatest',
     'change:masked': 'actOnChangeMasked',
