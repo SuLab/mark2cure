@@ -96,34 +96,11 @@ def dashboard(request):
             welcome = True
 
     uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
-    document_ids = list(set(Relation.objects.all().values_list('document', flat=True)))
-
-    er_level = Level.objects.filter(user=request.user, task_type='e').first()
-    r_level = Level.objects.filter(user=request.user, task_type='r').first()
 
     ctx = {'welcome': welcome,
            'mobile': uai.detectMobileLong(),
            'available_tasks': available_tasks,
-           'documents': Document.objects.filter(id__in=document_ids)[:100],
-           'training_levels': {
-               'entity_recognition': er_level.level if er_level else 0,
-               'relation': r_level.level if r_level else 0
-           },
-           'task_stats': {
-               'entity_recognition': {
-                   'total_score': request.user.profile.score(task='entity_recognition'),
-                   'quests_completed': UserQuestRelationship.objects.filter(user=request.user, completed=True).count(),
-                   'papers_reviewed': View.objects.filter(user=request.user, completed=True, task_type='cr').count(),
-                   'annotations': Annotation.objects.filter(kind='e', view__user=request.user).count()
-               },
-               'relation': {
-                   'total_score': request.user.profile.score(task='relation'),
-                   'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='ri').count(),
-                   'annotations': Annotation.objects.filter(kind='r', view__user=request.user).count()
-               }
            }
-           }
-
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 

@@ -89,14 +89,15 @@ LeaderBoardUserListView = Backbone.Marionette.CollectionView.extend({
 
 LeaderBoardView = Backbone.Marionette.View.extend({
   template: '#dashboard-leaderboard-template',
+  className: 'col-xs-2',
 
   regions: {
     'list': 'ol.list-group'
   },
 
   initialize: function() {
-    // var settings = new LeaderBoardSettings();
-    // var users = new UserList();
+    var settings = new LeaderBoardSettings();
+    this.collection = new LeaderBoardUserList();
     // var self = this;
     // this.$('h2').on('click', function() { self.model.toggle_api(); });
     // this.$('h4').on('click', function() { self.model.toggle_time_range(); });
@@ -115,11 +116,11 @@ LeaderBoardView = Backbone.Marionette.View.extend({
     // this.listenTo(this.model, 'change:text', function() {
     //   this.render();
     // });
-    // this.collection.fetch();
+    this.collection.fetch();
   },
 
   onRender: function() {
-    this.showChildView('list', new LeaderBoardUserListView({'collection': users}) );
+    this.showChildView('list', new LeaderBoardUserListView({'collection': this.collection}) );
   }
 
 });

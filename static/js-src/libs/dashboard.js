@@ -2,35 +2,115 @@
  * Models + Collections
  */
 
-NERQuest = Backbone.Collection.extend({
+NERQuestDetails = Backbone.RelationalModel.extend({
+  initialize: function() {
+    this.fetch();
+  },
+
+  url: function() {
+    return '/api/ner/list/'+this.get('quest').get('pk')+'/';
+  }
 });
+
+
+NERQuest = Backbone.RelationalModel.extend({
+  defaults: {},
+
+  relations: [{
+    type: 'HasOne',
+    key: 'details',
+    relatedModel: NERQuestDetails,
+    reverseRelation : {
+      key : 'quest',
+      type: 'HasOne',
+      includeInJSON: false,
+    }
+  }],
+
+  initialize: function() {
+    if(this.get('enabled')) {
+      this.set('details', new NERQuestDetails({'quest': this}) );
+    }
+  }
+});
+
 
 NERQuestList = Backbone.Collection.extend({
   model: NERQuest,
+  url: '/api/ner/list/'
 });
+
+
+NERStats = Backbone.Model.extend({
+  url: '/api/ner/stats/',
+  defaults: {
+    'total_score': 0,
+    'papers_reviewed': 0,
+    'annotations': 0,
+    'quests_completed': 0
+  }
+});
+
 
 REDocument = Backbone.RelationalModel.extend({
   defaults: {}
 });
 
+
 REDocumentList = Backbone.Collection.extend({
   model: REDocument,
-  url: function() { return '/api/relationships/?format=json'; },
+  url: '/api/re/list/',
 });
+
+
+REStats = Backbone.Model.extend({
+  url: '/api/re/stats/',
+  defaults: {
+    'total_score': 0,
+    'annotations': 0,
+    'quests_completed': 0
+  }
+});
+
+DashboardTaskStats = Backbone.Model.extend({
+  url: '/api/task/stats/'
+});
+
 
 /*
  * Views
  */
+
+NERQuestTaskView = Backbone.Marionette.View.extend({
+  template: '#dashboard-ner-quest-task-template',
+});
+
+NERQuestTaskListView = Backbone.Marionette.CollectionView.extend({
+  childView: NERQuestTaskView,
+  childViewEventPrefix: 'task',
+});
+
 NERQuestView = Backbone.Marionette.View.extend({
-  template: _.template('GOD QUEST.')
+  template: '#dashboard-ner-quest-template',
+
+  regions: {
+    'list': '.paragraph-box'
+  },
+
+  onRender: function() {
+    this.showChildView('list', new NERQuestTaskListView({'collection': this.model.get('details').get('tasks')}) );
+  }
 });
 
 
-NERQuestList = Backbone.Marionette.CollectionView.extend({
-  tagName: 'ul',
-  className: '',
+NERQuestListView = Backbone.Marionette.CollectionView.extend({
   childView: NERQuestView,
-  childViewEventPrefix: 'questlist'
+  childViewEventPrefix: 'questlist',
+
+  filter: function (child, index, collection) {
+    /* Only show the Quests that are enabled */
+    return child.get('enabled');
+  }
 });
 
 
@@ -41,22 +121,29 @@ NEREmptyListView = Backbone.Marionette.View.extend({
 
 NERDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-template',
+  className: 'col-xs-5',
 
   regions: {
     'list': '#dashboard-ner-list'
   },
 
   initialize: function() {
-    /* > /api/groups/ – list available NER groups
+    /* > /api/ner/list/ – list available NER groups
      * > /api/quest/41/ - detail specific NER Group
      */
+    this.collection = new NERQuestList();
+    this.collection.fetch();
+    this.model = new NERStats();
+    this.model.fetch();
+  },
+
+  modelEvents: {
+    'sync': function() { this.render(); }
   },
 
   onRender: function() {
-    this.showChildView('list', new NERQuestList());
-      //  var draw_dashboard = function(group, quests) {
-      //   $('#group-'+ group.pk).html('');
-      //   var canvas = d3.select('#group-'+ group.pk);
+    this.showChildView('list', new NERQuestListView({'collection': this.collection}));
+
       //   var available_quests = _.filter(quests, function(item) { return item.enabled && !item.completed });
       //   var completion_size = _.map(available_quests, function(item) { return item.completions; });
       //   var completion_scale = d3.scale.linear()
@@ -83,29 +170,6 @@ NERDashboardView = Backbone.Marionette.View.extend({
       //   quest.transition().attr(attrs);
       //   quest.exit().remove();
       // };
-      // $.ajax({
-      //   'type': 'GET',
-      //   'url': '/api/groups/',
-      //   'success': function(data) {
-      //     _.each(data, function(v) {
-      //       if(v.enabled) {
-      //         var template = _.template("<div class='row m-t-1'><div class='col-xs-12'><h3><a href='/group/<%- stub %>/'><%- name %></a></h3><a href='/group/<%- stub %>'><p class='text-muted'><%- _.str.prune(description, 100) %></p></a></div><div id='group-<%- pk %>' class='col-xs-12 paragraph-box'><p class='quest-loading text-xs-center'>Loading...</p></div></div>");
-      //         $('#group-selection').append(template(v));
-      //         $.ajax({
-      //           'type': 'GET',
-      //           'url': '/api/quest/'+ v.pk +'/',
-      //           'success': function(data) {
-      //             draw_dashboard(v, data);
-      //             $('#group-selection .quest').click(function(evt) {
-      //               var link = $(this).find('a');
-      //               if(link.length) { location.href=link.attr('href'); }
-      //             });
-      //           }
-      //         });
-      //       };
-      //     });
-      //   }
-      // });
   }
 });
 
@@ -120,6 +184,15 @@ REDocumentView = Backbone.Marionette.View.extend({
   }
 });
 
+REDocumentListView = Backbone.Marionette.CollectionView.extend({
+  childView: REDocumentView,
+  childViewEventPrefix: 'relist',
+
+  // filter: function (child, index, collection) {
+  //   #<{(| Only show the Quests that are enabled |)}>#
+  //   return child.get('enabled');
+  // }
+});
 
 REEmptyListView = Backbone.Marionette.View.extend({
   template: _.template('Sorry, no relationship tasks currently available for you to work on.')
@@ -128,15 +201,29 @@ REEmptyListView = Backbone.Marionette.View.extend({
 
 REDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-re-template',
+  className: 'col-xs-5',
 
   regions: {
-    'stats': '',
     'list': '#dashboard-re-list',
   },
 
+  modelEvents: {
+    'sync': function() { this.render(); }
+  },
+
+  initialize: function() {
+    /* this.collection =
+     * /api/re/list/
+     */
+    this.collection = new REDocumentList();
+    this.collection.fetch();
+    this.model = new REStats();
+    this.model.fetch();
+  },
+
   onRender: function() {
-    // var docs = new DocumentList();
-    // this.showChildView('list', new DocumentCompositeView({'collection': docs}) );
+    this.showChildView('list', new REDocumentListView({'collection': this.collection}));
+
     // var doc_rel_board_app = new DocumentRelationBoard();
     // doc_rel_board_app.start();
   }
@@ -153,9 +240,24 @@ DashboardView = Backbone.Marionette.View.extend({
     'leaderboard': '#dashbaord-leaderboard',
   },
 
+  initialize: function() {
+    this.model = new DashboardTaskStats();
+    this.model.fetch();
+  },
+
+  modelEvents: {
+    'sync': function() { this.render(); }
+  },
+
   onRender: function() {
-    this.showChildView('ner', new NERDashboardView());
-    // this.showChildView('re', new REDashboardView());
-    // this.showChildView('leaderboard', new LeaderBoardView());
+    if(this.model.get('ner') >= 7) {
+      this.showChildView('ner', new NERDashboardView());
+    }
+
+    if(this.model.get('re') >= 3) {
+      this.showChildView('re', new REDashboardView());
+    }
+
+    this.showChildView('leaderboard', new LeaderBoardView());
   }
 });

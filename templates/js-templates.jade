@@ -13,24 +13,28 @@ script(id='dashboard-ner-template', type='html/template')
     .col-xs-12.col-md-10.col-md-offset-1.task-score
       .row.sep
         .col-xs-4.task-value
+          <%- total_score %>
         .col-xs-8.task-label
           | task score
       hr
 
       .row.sep
         .col-xs-4.task-value
+          <%- quests_completed %>
         .col-xs-8.task-label
           | quests completed
       hr
 
       .row.sep
         .col-xs-4.task-value
+          <%- papers_reviewed %>
         .col-xs-8.task-label
           | papers reviewed
       hr
 
       .row.sep
         .col-xs-4.task-value
+          <%- annotations %>
         .col-xs-8.task-label
           | task annotations
       hr
@@ -48,6 +52,44 @@ script(id='dashboard-ner-template', type='html/template')
 
   #dashboard-ner-list
 
+script(id='dashboard-ner-quest-template', type='html/template')
+  .row.m-t-1
+    .col-xs-12
+      h3
+        a(href='/group/<%- stub %>/')
+          <%- name %>
+  a(href='/group/<%- stub %>')
+    p.text-muted
+      <%- _.str.prune(description, 100) %>
+
+  div(id='group-<%- pk %>').col-xs-12.paragraph-box
+    p.quest-loading.text-xs-center Loading...
+
+
+script(id='dashboard-ner-quest-task-template', type='text/template')
+  .row
+    .col-xs-12.text-xs-center
+      <% if(d.progress.completed) { %>
+      span(title='The community has completed this Quest.').fa.fa-certificate.muted
+      <% } else if (d.user.completed) { %>
+      span(title='You have completed this Quest.').fa.fa-check
+      <% } else if (!d.user.enabled) { %>
+      span(title='This quest is not enabled.').fa.fa-circle.muted
+      <% } else { %>
+      a(href='/task/entity-recognition/quest/<%- d.id %>/', title='Click to start this quest!')
+        p(style='font-size: 1.75em; line-height: 1.8em;') <%- d.name %>
+      <% } %>
+
+  <% if(d.user.enabled) { %>
+  .row
+    div(title='This quest is <%- Math.round(progress) %>% complete.').col-xs-12
+      progress(value='<%- progress %>', max='100').progress
+        .progress
+          span(style='width: <%- progress %>%;').progress-bar
+            <%- d.progress.current %> Completions
+  <% } %>
+
+
 
 script(id='dashboard-re-template', type='html/template')
   .row
@@ -58,21 +100,21 @@ script(id='dashboard-re-template', type='html/template')
     .col-xs-12.col-md-10.col-md-offset-1.task-score
       .row.sep
         .col-xs-4.task-value
-          | <%- total_score %>
+          <%- total_score %>
         .col-xs-8.task-label
           | task score
       hr
 
       .row.sep
         .col-xs-4.task-value
-          | <%- quests_completed %>
+          <%- quests_completed %>
         .col-xs-8.task-label
           | docs completed
       hr
 
       .row.sep
         .col-xs-4.task-value
-          | <%- annotations %>
+          <%- annotations %>
         .col-xs-8.task-label
           | task step contributions
       hr
@@ -95,13 +137,13 @@ script(id='dashboard-leaderboard-template', type='html/template')
           | My Stats
         .card-block
           ol.list-unstyled
-            li Total Annotations: <%- all_annotations %>
-            li Total Score: <%- score %>
+            li Total Annotations:
+            li Total Score:
 
   .row
     .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
-      h2.text-xs-center Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
-      h4.text-xs-center <%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+      h2.text-xs-center Top $API <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+      h4.text-xs-center $TEXT <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
       ol.list-unstyled.list-group
 
 
@@ -244,33 +286,4 @@ script(id='relation-synopsis-feedback-template', type='html/template')
   div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
 
 
-script(id='quest-icon-template', type='text/template')
-  .row
-    .col-xs-12.text-xs-center
-      <% if(d.progress.completed) { %>
-      span(title='The community has completed this Quest.').fa.fa-certificate.muted
-      <% } else if (d.user.completed) { %>
-      span(title='You have completed this Quest.').fa.fa-check
-      <% } else if (!d.user.enabled) { %>
-      span(title='This quest is not enabled.').fa.fa-circle.muted
-      <% } else { %>
-      a(href='/task/entity-recognition/quest/<%- d.id %>/', title='Click to start this quest!')
-        p(style='font-size: 1.75em; line-height: 1.8em;') <%- d.name %>
-      <% } %>
-
-  <% if(d.user.enabled) { %>
-  .row
-    div(title='This quest is <%- Math.round(progress) %>% complete.').col-xs-12
-      progress(value='<%- progress %>', max='100').progress
-        .progress
-          span(style='width: <%- progress %>%;').progress-bar
-            <%- d.progress.current %> Completions
-  <% } %>
-
-
-script(id='group-template', type='text/template')
-  h3 <%- name %>
-  div(id='group-<%- pk %>').row.head-space.paragraph-box
-    div.col-xs-12.text-xs-center
-      p.quest-loading Loading...
 

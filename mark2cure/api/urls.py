@@ -18,7 +18,13 @@ urlpatterns = [
         views.analysis_group, name='analysis-group'),
 
     # Tasks
+    url(r'task/stats/',
+        views.user_task_stats, name='task-stats-api'),
+
     # - [Dashboard] Named Entity Recognition
+    url(r'ner/stats/',
+        views.ner_stats, name='ner-stats-api'),
+
     url(r'^ner/list/(?P<group_pk>\d+)/$',
         views.quest_group_list, name='quest-group-api'),
 
@@ -26,6 +32,9 @@ urlpatterns = [
         views.group_list, name='groups-api'),
 
     # - [Dashboard] Relationship Extraction
+    url(r're/stats/',
+        views.re_stats, name='re-stats-api'),
+
     url(r're/list',
         views.relation_list, name='relations-api'),
 

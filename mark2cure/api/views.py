@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from django.db import connection
 from django.conf import settings
 
+from ..document.models import Annotation, Document, View
+from ..task.models import Level, UserQuestRelationship
+
 from .serializers import QuestSerializer, LeaderboardSerializer, GroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
 from ..common.models import Group
@@ -137,7 +140,40 @@ def quest_group_list(request, group_pk):
         }).prefetch_related('documents')
 
     serializer = QuestSerializer(queryset, many=True, context={'user': request.user})
-    return Response(serializer.data)
+    return Response({'tasks': serializer.data})
+
+
+@login_required
+@api_view(['GET'])
+def user_task_stats(request):
+    ner_level = Level.objects.filter(user=request.user, task_type='e').first()
+    re_level = Level.objects.filter(user=request.user, task_type='r').first()
+
+    return Response({
+        'ner': ner_level.level if ner_level else 0,
+        're': re_level.level if re_level else 0
+    })
+
+
+@login_required
+@api_view(['GET'])
+def ner_stats(request):
+    return Response({
+        'total_score': request.user.profile.score(task='entity_recognition'),
+        'quests_completed': UserQuestRelationship.objects.filter(user=request.user, completed=True).count(),
+        'papers_reviewed': View.objects.filter(user=request.user, completed=True, task_type='cr').count(),
+        'annotations': Annotation.objects.filter(kind='e', view__user=request.user).count()
+    })
+
+
+@login_required
+@api_view(['GET'])
+def re_stats(request):
+    return Response({
+        'total_score': request.user.profile.score(task='relation'),
+        'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='ri').count(),
+        'annotations': Annotation.objects.filter(kind='r', view__user=request.user).count()
+    })
 
 
 @login_required
