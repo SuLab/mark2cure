@@ -5,115 +5,85 @@ extends base
 - load humanize
 
 block content
-  #landing-2
+  #homepage
     include includes/header-generic
 
     #bg-case-study
       .container
+        .cta.row.justify-content-center
+          .col-10
+            h1.text-center Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.
+            .row.justify-content-center
+              .col-8.text-center
+                p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
+
+            .row.justify-content-center
+              div(style="margin-top: 8px; margin-bottom: 8px;").col-3
+                a(href='https://www.ngly1.org/', target='_blank').btn.btn-block.btn-white.btn-outline About NGLY1
+
+              .col-4
+                a(href='{% url "common:get-started" %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
+
+              div(style="margin-top: 8px; margin-bottom: 8px;").col-3
+                a(href="#learnMore").hidden-sm-down
+                  button.btn.btn-block.btn-white.btn-outline
+                    <i class="fa fa-play"></i> Watch Video
+                a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md-up
+                  button.btn.btn-block.btn-white.btn-outline
+                    <i class="fa fa-play"></i> Watch Video
+
+      .cta-bar.container-fluid
         .row
-          .col-xs-12
-            .cta.text-xs-center
-              h1 Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.
-              .row
-                .col-sm-8.col-sm-offset-2
-                  p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
-
-              .row.push30
-                div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-3.col-md-offset-1
-                  a(href='https://www.ngly1.org/', target='_blank').btn.btn-block.btn-white.btn-outline About NGLY1
-
-                .col-xs-10.col-xs-offset-1.col-sm-8.col-sm-offset-2.col-md-4.col-md-offset-0
-                  a(href='{% url "common:get-started" %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
-
-                div(style="margin-top: 8px; margin-bottom: 8px;").col-xs-8.col-xs-offset-2.col-md-3.col-md-offset-0
-                  a(href="#learnMore").hidden-sm-down
-                    button.btn.btn-block.btn-white.btn-outline
-                      <i class="fa fa-play"></i> Watch Video
-                  a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md-up
-                    button.btn.btn-block.btn-white.btn-outline
-                      <i class="fa fa-play"></i> Watch Video
-
-
-      .cta-bar
-        .container-fluid.text-xs-center
-          .row
-            .col-xs-12
-              p
-                a(href='http://sulab.org/2015/09/please-help-now/', target='_blank')
-                  | #{ann_count|intcomma} annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
+          .col
+            p.text-center
+              a(href='http://sulab.org/2015/09/please-help-now/', target='_blank')
+                | #{ann_count|intcomma} annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
 
     .clearfix
 
     .container-fluid.sci-comm-cs
       .row
 
+    #quest-explorer.container-fluid
+
+
+    .container.py-4
+      .row.justify-content-center
+        .col-12.text-center
+          h2 Scientific <span class="font-red text-uppercase">communication</span> is broken.
+          p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
+
+      .row.justify-content-center
+        .col-8
+          img(src="#{STATIC_URL}images/landing/words.jpg", alt="").img-fluid
+
     .container
-      .row
-        .col-sm-12.text-xs-center
-          h2 Current <span class="font-red text-uppercase">missions.</span>
-
-    .container-fluid
-      .row
-        .home-frame
-
-          div.frame#basic
-            ul.clearfix
-              each group in groups
-                - if group.enabled == False and group.percentage_complete < 100
-                  pass
-                - else
-                  li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
-                    a(href='{% url "common:group" group_stub=group.stub %}' target='_blank')
-                          - if group.percentage_complete > 99
-                            h2
-                              i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
-                            h5.text-xs-center(style="color: #818a91") {{ group.name }}
-                            h5.text-xs-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
-                          - else
-                            h2
-                              i.fa.fa-pencil(aria-hidden="true")
-                            h5.text-xs-center {{ group.name }}
-                            h5.text-xs-center Total Docs: {{ group.doc_count }}
-            <ul class="pages"></ul>
-
-      .container
-        .row.m-t-1
-          .col-sm-12.text-xs-center
-            h2 Scientific <span class="font-red text-uppercase">communication</span> is broken.
-            p.medium Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.
-
-      .container.push30
-        .row
-          .col-xs-12
-            img(src="#{STATIC_URL}images/landing/words.jpg", alt="").aligncenter.img-responsive
-
-      .container.push30
-        .row
-          .col-sm-12.text-xs-center
-            h2 <span class="font-red text-uppercase">you</span> can fix it and help find cures.
-            p.medium The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.
+      .row.py-4
+        .col.text-center
+          h2 <span class="font-red text-uppercase">you</span> can fix it and help find cures.
+          p.medium The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.
 
 
-        .row.push50
-          .col-md-3.col-md-offset-3
-            img(src="#{STATIC_URL}images/landing/ngly1-child.png", alt="").aligncenter.img-responsive
+      .row.justify-content-center.my-2
+        .col-3
+          img(src="#{STATIC_URL}images/landing/ngly1-child.png", alt="").aligncenter.img-responsive
 
-          .col-md-3
-            p It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a>
+        .col-3
+          p It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a>
 
 
-      .container.push100
-        .row
-          .col-sm-12.text-xs-center
-            h2#learnMore Learn More
-            .center-block.push50
-              iframe(width="640", height="360", src="https://www.youtube.com/embed/uaD0-GTX0N8", frameborder="0", allowfullscreen)
+    .container
+      .row.justify-content-center.my-4
+        #learnMore.col-8
+          .embed-responsive.embed-responsive-16by9
+            iframe(width="640", height="360", src="https://www.youtube.com/embed/uaD0-GTX0N8", frameborder="0", allowfullscreen)
 
-        .row.push50
-          .col-sm-12.text-xs-center
-            p.font-purple.medium
-              | If you can read you can help.
-            a(href='{% url "common:get-started" %}').push15.btn.btn-large.btn-primary I want to help
+
+      .row.justify-content-center.my-4
+        .col-6.text-center
+          p.font-purple
+            | If you can read you can help.
+          a(href='{% url "common:get-started" %}').btn.btn-large.btn-primary I want to help
 
     a#support-icon(data-toggle="modal", data-target="#support-modal")
       img(src='#{STATIC_URL}images/support-icon.png')
@@ -140,24 +110,8 @@ block content
             button(type="button").btn.btn-default.modal-form-submit Submit
 
 
-block js-libs
-  {{ block.super }}
-
-
 block post-footer
   script.
-    $(function() {
-      $('a[href*=#]:not([href=#])').click(function() {
-        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-          var target = $(this.hash);
-          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-          if (target.length) {
-            $('html,body').animate({
-              scrollTop: target.offset().top
-            }, 1000);
-            return false;
-          }
-        }
-      });
-    });
+    var homepage_app = new HomePageView();
+    homepage_app.render();
 

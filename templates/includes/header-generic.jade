@@ -1,29 +1,26 @@
-#header-generic
-  nav.navbar.navbar-default
-    div.container
-      div.navbar-header
-        a.navbar-brand(href='{% url "common:home" %}')
-          img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
+nav#header-generic.navbar.navbar-default
+  div.container
+    a.navbar-brand(href='{% url "common:home" %}')
+      img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo-white.png", alt="Mark2Cure")
 
-      div(id="navbar")
-        ul.list-inline.nav.navbar-nav.pull-right
-          li.list-inline-item
-            a(href="/about/") About
-          li.list-inline-item
-            a(href="/faq/") FAQ
-          li.list-inline-item
-            a(href="/blog/") Blog
-          li.list-inline-item
-            a(href="/contact/") Contact
-          li.list-inline-item
-            a(href='{% url "account_login" %}') Login
+    ul.list-inline.pull-right
+      li.list-inline-item
+        a(href="/about/") About
+      li.list-inline-item
+        a(href="/faq/") FAQ
+      li.list-inline-item
+        a(href="/blog/") Blog
+      li.list-inline-item
+        a(href="/contact/") Contact
+      li.list-inline-item
+        a(href='{% url "account_login" %}') Login
 
-          li.list-inline-item.social.hidden-xs-down
-            a(href="blog/rss/", target='_blank')
-              <i class="fa fa-rss-square"></i>
-          li.list-inline-item.social.hidden-xs-down
-            a(href="https://www.facebook.com/pages/Mark2Cure/586806781439862", target='_blank')
-              <i class="fa fa-facebook-square"></i>
-          li.list-inline-item.social.hidden-xs-down
-            a(href="https://twitter.com/Mark2Cure", target='_blank')
-              <i class="fa fa-twitter-square"></i>
+      li.list-inline-item.social.hidden-xs-down
+        a(href="blog/rss/", target='_blank')
+          <i class="fa fa-rss-square"></i>
+      li.list-inline-item.social.hidden-xs-down
+        a(href="https://www.facebook.com/pages/Mark2Cure/586806781439862", target='_blank')
+          <i class="fa fa-facebook-square"></i>
+      li.list-inline-item.social.hidden-xs-down
+        a(href="https://twitter.com/Mark2Cure", target='_blank')
+          <i class="fa fa-twitter-square"></i>

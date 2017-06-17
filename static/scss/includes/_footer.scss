@@ -1,25 +1,32 @@
 #footer {
   margin-top: 60px;
-  @extend .better-helvetica;
 
-  .line {
-    background: $color_gray_light;
-    height: 1px;
-  }
+  background: rgba(128,60,255,1);
+  background: -moz-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(128,60,255,1)), color-stop(100%, rgba(0,204,255,1)));
+  background: -webkit-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -o-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -ms-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: linear-gradient(135deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#803cff', endColorstr='#00ccff', GradientType=1 );
 
-  .line-text {
-    background: $color_white;
-    color: $color_gray_light;
-    font-size: 1.6em;
+  .list-group {
+    .list-group-item {
+      background: none;
+      border-color: $color_white;
+      p {
+        margin-bottom: 0px;
+        color: $color_white;
+      }
+    }
 
-    position: relative;
-    display: inline;
-    top: -.7em;
-    padding: 0px 6px;
-  }
+    .list-group-item:hover {
+      background: $color_white;
+      p {
+        color: $color_purple;
+      }
+    }
 
-  a p {
-    color: $color_red;
   }
 
 }

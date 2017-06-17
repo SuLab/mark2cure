@@ -2,8 +2,6 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.conf import settings
-from django.core.urlresolvers import reverse
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -11,9 +9,6 @@ from django.contrib.messages import get_messages
 
 from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
-from ..document.models import Annotation, Document, View
-from ..task.models import Level, UserQuestRelationship
-from ..task.relation.models import Relation
 
 from .utils.mdetect import UAgentInfo
 from .forms import SupportMessageForm
@@ -30,17 +25,18 @@ def login_with_zooniverse(request):
     appId = zooniverseSocialApp.client_id
 
     ctx = {
-            'zooniverse_app_id': appId,
-            'zooniverse_callback_url': request.build_absolute_uri(reverse('common:zooniverse-callback'))
-            }
+        'zooniverse_app_id': appId,
+        'zooniverse_callback_url': 'https://mark2cure.org/zooniverse-callback/'
+    }
     return TemplateResponse(request, 'common/login_with_zooniverse.jade', ctx)
+
 
 def zooniverse_callback(request):
     # The view that is called after the user logged-in using Zooniverse (this view receives
     # the access token and sends it forward to the allauth module's callback view)
     ctx = {
-            'zooniverse_allauth_callback_url': request.build_absolute_uri(reverse('zooniverse_callback'))
-            }
+        'zooniverse_allauth_callback_url': 'https://mark2cure.org/accounts/zooniverse/login/callback/'
+    }
     return TemplateResponse(request, 'common/zooniverse_callback.jade', ctx)
 
 
@@ -49,17 +45,8 @@ def home(request):
         return redirect('common:dashboard')
 
     form = AuthenticationForm()
-    quotes = ["To help others.", "Rare disease dad!",
-              "In memory of my daughter who had Cystic Fibrosis.",
-              "curiosity.", "This is needed.",
-              "Goofing off productively.",
-              "Community.", "Science!"]
-    random.shuffle(quotes)
-    groups = Group.objects.all().exclude(name='Practice').order_by('-order')
-    ctx = {'form': form,
-           'quotes': quotes,
-           'groups': groups,
-           'ann_count': Annotation.objects.count()}
+
+    ctx = {'form': form}
     return TemplateResponse(request, 'common/landing2.jade', ctx)
 
 

@@ -95,6 +95,7 @@ REStats = Backbone.Model.extend({
   }
 });
 
+
 DashboardTaskStats = Backbone.Model.extend({
   url: '/api/task/stats/',
   defaults: {
