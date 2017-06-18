@@ -101,7 +101,7 @@ LeaderBoardUserListView = Backbone.Marionette.CollectionView.extend({
 
 LeaderBoardView = Backbone.Marionette.View.extend({
   template: '#dashboard-leaderboard-template',
-  className: 'col-xs-2',
+  className: 'row',
 
   regions: {
     'list': 'ol.list-group'

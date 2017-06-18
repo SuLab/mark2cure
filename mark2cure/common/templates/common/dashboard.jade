@@ -9,7 +9,7 @@ block header
 
 block content
 
-  .container
+  .container.content
     - if messages
       - for message in messages
         - if 'safe' in message.tags
@@ -29,7 +29,7 @@ block post-footer
 
       onStart: function() {
         var main = this.getRegion();
-        main.show( new Dashboard() );
+        main.show( new DashboardView() );
       }
     });
     var dashboard_app = new DashboardApp();

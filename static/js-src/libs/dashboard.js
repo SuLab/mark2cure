@@ -158,7 +158,7 @@ NERDashboardUnlockView = Backbone.Marionette.View.extend({
 
 NERDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-template',
-  className: 'col-xs-5',
+  className: 'col',
 
   regions: {
     'list': '#dashboard-ner-list'
@@ -180,7 +180,6 @@ NERDashboardView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     this.showChildView('list', new NERQuestListView({'collection': this.collection}));
-
   }
 });
 
@@ -217,7 +216,7 @@ REDashboardUnlockView = Backbone.Marionette.View.extend({
 
 REDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-re-template',
-  className: 'col-xs-5',
+  className: 'col',
 
   regions: {
     'list': '#dashboard-re-list',

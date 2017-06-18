@@ -4,10 +4,11 @@ extends base
 - load raven
 - load humanize
 
-block content
-  #homepage
-    include includes/header-generic
+block header
+  include includes/header-generic
 
+block content
+  #homepage.content
     #bg-case-study
       .container
         .cta.row.justify-content-center
