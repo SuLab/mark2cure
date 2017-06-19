@@ -5,51 +5,53 @@ script(id='dashboard-template', type='html/template')
 
 
 script(id='dashboard-ner-template', type='html/template')
-  .row
-    .col
-      h4.text-center Entity Recognition Tasks
+  .col-12
+    .row.justify-content-center
+      .col-12.col-md-10
+        h4.task-stats-title.text-center Named Entity Recognition
 
-  .row
-    .col-xs-12.col-md-10.col-md-offset-1.task-score
-      .row.sep
-        .col-xs-4.task-value
-          <%- total_score %>
-        .col-xs-8.task-label
-          | task score
-      hr
+    .row.justify-content-center.no-gutters
+      .col-12.col-md-10.task-score
+        .task-score-content.m-3
+          .row.no-gutters.py-2
+            .col-4.task-value
+              <%- total_score %>
+            .col-8.task-label
+              | task score
+          hr
 
-      .row.sep
-        .col-xs-4.task-value
-          <%- quests_completed %>
-        .col-xs-8.task-label
-          | quests completed
-      hr
+          .row.no-gutters.py-2
+            .col-4.task-value
+              <%- quests_completed %>
+            .col-8.task-label
+              | quests completed
+          hr
 
-      .row.sep
-        .col-xs-4.task-value
-          <%- papers_reviewed %>
-        .col-xs-8.task-label
-          | papers reviewed
-      hr
+          .row.no-gutters.py-2
+            .col-4.task-value
+              <%- papers_reviewed %>
+            .col-8.task-label
+              | papers reviewed
+          hr
 
-      .row.sep
-        .col-xs-4.task-value
-          <%- annotations %>
-        .col-xs-8.task-label
-          | task annotations
-      hr
+          .row.no-gutters.py-2
+            .col-4.task-value
+              <%- annotations %>
+            .col-8.task-label
+              | task annotations
+          hr
 
-      .row
-        .col-xs-12.text-xs-center
-          ul.list-inline
-            li.list-inline-item
-              a(href='{% url "common:group" group_stub="training" %}')
-                | Practice
+          .row
+            .col-12.text-center
+              ul.m-0.list-inline
+                li.list-inline-item
+                  a(href='{% url "common:group" group_stub="training" %}')
+                    | Practice
 
-            li.list-inline-item
-              a(href='{% url "instructions:entity-recognition" %}')
-                | Rules
-  #dashboard-ner-list
+                li.list-inline-item
+                  a(href='{% url "instructions:entity-recognition" %}')
+                    | Rules
+    #dashboard-ner-list.row
 
 
 script(id='dashboard-ner-unlock-template', type='html/template')
@@ -134,22 +136,21 @@ script(id='dashboard-ner-unlock-template', type='html/template')
 
 
 script(id='dashboard-ner-quest-template', type='html/template')
-  .row.m-t-1
-    .col-xs-12
-      h3
+  .col-10
+    .row
+      .col-12
         a(href='/group/<%- stub %>/')
-          <%- name %>
-  a(href='/group/<%- stub %>')
-    p.text-muted
-      <%- _.str.prune(description, 100) %>
+          h3.pull-right <%- name %>
 
-  div(id='group-<%- pk %>').col-xs-12.paragraph-box
-    p.quest-loading.text-xs-center Loading...
+    .task-list-view
+      .row
+        .col-12
+          p.quest-loading.text-center Loading...
 
 
 script(id='dashboard-ner-quest-task-template', type='text/template')
-  .row
-    .col-xs-12.text-xs-center
+  .row.no-gutters
+    .col-12.text-center
       <% if(progress.completed) { %>
       span(title='The community has completed this Quest.').fa.fa-certificate.muted
       <% } else if (user.completed) { %>
@@ -161,53 +162,60 @@ script(id='dashboard-ner-quest-task-template', type='text/template')
         p(style='font-size: 1.75em; line-height: 1.8em;') <%- d.name %>
       <% } %>
 
-  <% if(user.enabled) { %>
-  .row
-    div(title='This quest is <%- Math.round(percentage_progress) %>% complete.').col-xs-12
-      progress(value='<%- percentage_progress %>', max='100').progress
-        .progress
-          span(style='width: <%- percentage_progress %>%;').progress-bar
-            <%- progress.current %> Completions
-  <% } %>
-
+    <% if(user.enabled) { %>
+    div(title='This quest is <%- Math.round(percentage_progress) %>% complete.').col-12
+      .progress
+        div(role='progressbar', style='width: <%- percentage_progress %>%;', aria-valuenow='<%- percentage_progress %>', aria-valuemin='0', aria-valuemax='100').progress-bar <%- progress.current %> Completions
+    <% } %>
 
 
 script(id='dashboard-re-template', type='html/template')
-  .row
-    .col-xs-12
-      h4.text-xs-center Document Relation Tasks
+  .row.justify-content-center
+    .col-12.col-md-10
+      h4.task-stats-title.text-center Relationship Extraction
 
-  .row
-    .col-xs-12.col-md-10.col-md-offset-1.task-score
-      .row.sep
-        .col-xs-4.task-value
-          <%- total_score %>
-        .col-xs-8.task-label
-          | task score
-      hr
+  .row.justify-content-center.no-gutters
+    .col-12.col-md-10.task-score
+      .task-score-content.m-3
+        .row.no-gutters.py-2
+          .col-4.task-value
+            <%- total_score %>
+          .col-8.task-label
+            | task score
+        hr
 
-      .row.sep
-        .col-xs-4.task-value
-          <%- quests_completed %>
-        .col-xs-8.task-label
-          | docs completed
-      hr
+        .row.no-gutters.py-2
+          .col-4.task-value
+            <%- quests_completed %>
+          .col-8.task-label
+            | docs completed
+        hr
 
-      .row.sep
-        .col-xs-4.task-value
-          <%- annotations %>
-        .col-xs-8.task-label
-          | task step contributions
-      hr
+        .row.no-gutters.py-2
+          .col-4.task-value
+            <%- annotations %>
+          .col-8.task-label
+            | task step contributions
+        hr
 
-      .row
-        .col-xs-12.text-xs-center
-          ul.list-inline
-            li.list-inline-item
-              a(href='{% url "instructions:relation" %}')
-                | Rules
+        .row
+          .col-12.text-center
+            ul.m-0.list-inline
+              li.list-inline-item
+                a(href='{% url "instructions:relation" %}')
+                  | Rules
 
   #dashboard-re-list
+
+
+script(id='relation-list-item-template', type='text/template')
+  .d-flex.w-100.justify-content-between
+    small.pull-right <%= user_document_relationships %> steps
+  p.mb-1 <%= title %>
+
+  div(title='This Relationship Extraction task is <%- Math.round(community_progress*100) %>% complete.').col-12
+    .progress
+      div(role='progressbar', style='width: <%- community_progress*100 %>%;', aria-valuenow='<%- community_progress*100 %>', aria-valuemin='0', aria-valuemax='100').progress-bar
 
 
 script(id='dashboard-re-unlock-template', type='html/template')
@@ -263,12 +271,18 @@ script(id='dashboard-leaderboard-template', type='html/template')
   //           li Total Annotations:
   //           li Total Score:
 
-  .row
-    .col-xs-12.col-xs-offset-0.col-lg-10.col-lg-offset-1
-      h2.text-xs-center Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
-      h4.text-xs-center <%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
-      ol.list-unstyled.list-group
+  .col-12
+    h2.text-xs-center Top <%- api %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+    h4.text-xs-center <%- text %> <span><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+    #leaderboard-item-list.row
 
+script(id='dashboard-leaderboard-item-template', type='html/template')
+  p.m-0
+    <% if(hover){ %>
+    <%= score %>
+    <% } else {%>
+    <%= name %>
+    <% } %>
 
 
 script(id='ypet-para-templates', type='html/template')
@@ -293,21 +307,27 @@ script(id='ypet-help-template', type='html/template')
 
 
 script(id='ypet-template', type='html/template')
-  #ypet-text.col-xs-12
-  #ypet-footer.col-xs-12
+  #ypet-text.col-12
+  #ypet-footer.col-12
+
+
 
 
 script(id='tree-template', type='x-template/underscore')
-  #tree-navigation.col-xs-12
-  #tree-selection.col-xs-10.col-xs-offset-1
-  #tree-selection-results.col-xs-12
-  #tree-text.col-xs-12
+  .col-12
+    #tree-navigation
+    #tree-selection
+    #tree-selection-results
+    .row.justify-content-center.my-4
+      .col-10
+        #tree-text
 
 
 script(id='tree-navigation-template', type='x-template/underscore')
-  #progress-bar.col-xs-10.col-xs-offset-1.col-md-7.col-md-offset-1.col-lg-8.col-lg-offset-1
-  .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-0.col-lg-2.col-lg-offset-0
-    p.text-xs-center Score: <span id='score'>0</span>
+  #progress-bar.col-6
+
+  .col-2
+    p.text-center Score: <span id='score'>0</span>
 
 
 script(id='reextraction-result-answer-item-template', type='x-template/underscore')
@@ -339,25 +359,20 @@ script(id='reextraction-concept-template', type='x-template/underscore')
 
 
 script(id='reextraction-template', type='x-template/underscore')
-  #tree-extraction.row.text-xs-center
-    #c1.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3
-    div(style='padding-bottom:10px; padding-top:10px;').col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-6
-      #selected-choice
-      #rechoices-list
-    #c2.col-xs-10.col-xs-offset-1.col-sm-4.col-sm-offset-0.col-md-3
-  #tree-confirm.row
+  .col-10
+    #tree-extraction.row.text-center
+
+      #c1.col-10.col-sm-4.col-md-3
+      div(style='padding-bottom:10px; padding-top:10px;').col-10.col-sm-4.col-md-6
+        #selected-choice
+        #rechoices-list
+      #c2.col-10.col-sm-4.col-md-3
+
+    #tree-confirm.row.justify-content-center.mb-4
 
 
-script(id='relation-list-item-template', type='text/template')
-  .relation-item
 
-  p.steps.pull-right <%= user_document_relationships %> steps
-  p.main-text <%= title %>
 
-  progress(value='<%- community_progress*100 %>', max='100').progress
-    .progress
-      span(style='width: <%- community_progress*100 %>%;').progress-bar
-  hr
 
 
 script(id='relation-synopsis-template', type='html/template')

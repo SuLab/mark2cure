@@ -285,7 +285,6 @@ NERAnnotationList = Backbone.Collection.extend({
       });
 
       collection.each(function(annotation) {
-        console.log('coll drawing');
         collection.drawAnnotation(annotation);
       });
     });
@@ -466,7 +465,6 @@ NERWordView = Backbone.Marionette.View.extend({
   },
 
   actOnHighlight: function(options) {
-    console.log('NERWordView model event: highlight');
     this.$el.css({'backgroundColor': options.color});
   },
 
@@ -553,8 +551,7 @@ NERWordView = Backbone.Marionette.View.extend({
   onRender : function() {
     this.$el.css(this.model.get('neighbor') ?
       {'margin-right': '5px', 'padding-right': '0'} :
-      {'margin-right': '0px', 'padding-right': '5px'});
-
+      {'margin-right': '0px', 'padding-right': '.25rem'});
   },
 
   /* These events are only triggered when over
@@ -578,10 +575,7 @@ NERWordView = Backbone.Marionette.View.extend({
      * This is likely during dragging over words
      * to make a span selection */
     evt.stopPropagation();
-    if(this.model.get('disabled')) {
-      this.$el.css({'color': '#000'});
-      return;
-    };
+    if(this.model.get('disabled')) { return; };
     var word = this.model,
         words = word.collection;
 
@@ -642,13 +636,12 @@ NERWordView = Backbone.Marionette.View.extend({
 
     words.each(function(word) { word.set('latest', null); });
   }
-
 });
 
 NERWordsView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for REChoices */
   tagName: 'p',
-  className: 'paragraph',
+  className: 'paragraph m-0',
   childView: NERWordView,
   childViewEventPrefix: 'word'
 });
@@ -658,16 +651,32 @@ NERParagraphView = Backbone.Marionette.View.extend({
   * - Model = NERParagraph
   * - Collection = None
   */
-  template: _.template('<div class="paragraph-box m-t-1"></div>'),
-  className: 'paragraphs',
+  template: _.template('<div class="paragraph-content p-3"></div>'),
+  className: function() {
+    var enabled_status = this.getOption('enabled') ? 'ypet-enabled' : 'ypet-disabled';
+    return ['paragraph-box', 'mb-2', enabled_status].join(' ');
+  },
 
   regions: {
-    'words': '.paragraph-box'
+    'words': '.paragraph-content'
   },
 
   onRender : function() {
-    console.log('onRender Para:', this.model.get('annotations'));
-    this.showChildView('words', new NERWordsView({'collection': this.model.get('words')}));
+    if(!this.options.enabled) {
+      /* If you're showing a partner's results, disallow highlighting */
+      // this.$el.css({'color': '#000', 'cursor': 'default'});;
+      this.model.get('words').each(function(w) {
+        w.set('disabled', true);
+      });
+      this.$el.css('cursor', 'not-allowed');
+
+      console.log('onRender of NER Para View', this.$el);
+    }
+
+    this.showChildView('words', new NERWordsView(
+      {'collection': this.model.get('words'),
+        'enabled': this.options.enabled
+      }));
 
     var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
     if (has_opponent) {
@@ -677,12 +686,6 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 
   onViewOnly: function() {
-    /* If you're showing a partner's results, disallow highlighting */
-    this.$el.css({'color': '#000', 'cursor': 'default'});;
-    this.model.get('words').each(function(w) {
-      w.set('disabled', true);
-    });
-    this.$el.css('cursor', 'not-allowed');
   },
 
   events: {
@@ -691,92 +694,21 @@ NERParagraphView = Backbone.Marionette.View.extend({
     // 'mouseup': 'captureAnnotation',
     // 'mouseleave': 'captureAnnotation',
   },
-
-  // outsideBox: function(evt) {
-  //   var x = evt.pageX,
-  //       y = evt.pageY;
-  //
-  //   var obj;
-  //   var spaces = _.compact(this.children.map(function(view) {
-  //     obj = view.$el.offset();
-  //     if(obj.top && obj.left) {
-  //       obj.bottom = obj.top + view.$el.height();
-  //       obj.right = obj.left + view.$el.width();
-  //       return obj;
-  //     }
-  //   }));
-  //   return (_.first(spaces).left > x || x > _.max(_.pluck(spaces, 'right'))) || (_.first(spaces).top > y || y > _.last(spaces).bottom);
-  // },
-  //
-  // leftBox: function(evt) {
-  //   return evt.pageX <= this.children.first().$el.offset().left;
-  // },
-  //
-  // startCapture: function(evt) {
-  //   if(YPet['convoChannel']) {
-  //     YPet['convoChannel'].trigger('mouse-down', evt);
-  //   }
-  //   var closest_view = this.getClosestWord(evt);
-  //   if(closest_view) { closest_view.$el.trigger('mousedown'); }
-  // },
-  //
-  // timedHover: _.throttle(function(evt) {
-  //   if(this.outsideBox(evt)) {
-  //     var closest_view = this.getClosestWord(evt);
-  //     if(closest_view) { closest_view.$el.trigger('mouseover'); }
-  //   }
-  // }, 100),
-  //
-  // startHoverCapture: function(evt) { this.timedHover(evt); },
-  //
-  // captureAnnotation: function(evt) {
-  //   var selection = this.collection.reject(function(word) { return _.isNull(word.get('latest')); });
-  //   if(selection.length) {
-  //     #<{(| Doesn't actually matter which one |)}>#
-  //     var model = selection[0];
-  //     this.children.find(function(view, idx) { return model.get('start') == view.model.get('start'); }).$el.trigger('mouseup');
-  //   }
-  // },
-  //
-  // getClosestWord: function(evt) {
-  //   var x = evt.pageX,
-  //       y = evt.pageY,
-  //       closest_view = null,
-  //       word_offset,
-  //       dx, dy,
-  //       distance, minDistance,
-  //       left, top, right, bottom,
-  //       leftBox = this.leftBox(evt);
-  //
-  //   this.children.each(function(view, idx) {
-  //     word_offset = view.$el.offset();
-  //     left = word_offset.left;
-  //     top = word_offset.top;
-  //     right = left + view.$el.width();
-  //     bottom = top + view.$el.height();
-  //
-  //     if(leftBox) {
-  //       dx = Math.abs(left - x);
-  //     } else {
-  //       dx = Math.abs((left+right)/2 - x);
-  //     }
-  //     dy = Math.abs((top+bottom)/2 - y);
-  //     distance = Math.sqrt((dx*dx) + (dy*dy));
-  //
-  //     if (minDistance === undefined || distance < minDistance) {
-  //       minDistance = distance;
-  //       closest_view = view;
-  //     }
-  //
-  //   });
-  //   return closest_view;
-  // },
 });
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for NERParagraphs */
   childView: NERParagraphView,
-  childViewEventPrefix: 'paragraph'
+  className: 'paragraphs',
+  childViewEventPrefix: 'paragraph',
+
+  childViewOptions: function() {
+    var enabled = true;
+    if(this.options.mode == 'er') { enabled = false; }
+    return {
+      'enabled': enabled
+    }
+  }
 });
 
 NERLoadingView = Backbone.Marionette.View.extend({
@@ -793,6 +725,7 @@ YPet = Backbone.Marionette.View.extend({
    * this.collection = NERParagraphList
    */
   template: '#ypet-template',
+  className: 'row',
 
   regions: {
     'text': '#ypet-text',

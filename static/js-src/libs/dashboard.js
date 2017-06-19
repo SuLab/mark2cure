@@ -111,23 +111,25 @@ DashboardTaskStats = Backbone.Model.extend({
 
 NERQuestTaskView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-quest-task-template',
+  className: 'dashboard-ner-quest-task-item col-3 pb-3',
+
   templateContext: {
     'percentage_progress': function() { (progress.current/progress.required)*100 }
   },
-  className: 'quest col-xs-4 col-sm-3 col-md-3 col-lg-2',
-
 });
 
 NERQuestTaskListView = Backbone.Marionette.CollectionView.extend({
   childView: NERQuestTaskView,
+  className: 'dashboard-ner-task-list-box row',
   childViewEventPrefix: 'task',
 });
 
 NERQuestView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-quest-template',
+  className: 'row dashboard-ner-quest justify-content-center py-4',
 
   regions: {
-    'list': '.paragraph-box'
+    'list': '.task-list-view'
   },
 
   onRender: function() {
@@ -138,6 +140,7 @@ NERQuestView = Backbone.Marionette.View.extend({
 
 NERQuestListView = Backbone.Marionette.CollectionView.extend({
   childView: NERQuestView,
+  className: 'col-12',
   childViewEventPrefix: 'questlist',
 
   filter: function (child, index, collection) {
@@ -158,7 +161,7 @@ NERDashboardUnlockView = Backbone.Marionette.View.extend({
 
 NERDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-template',
-  className: 'col',
+  className: 'row',
 
   regions: {
     'list': '#dashboard-ner-list'
@@ -187,15 +190,18 @@ NERDashboardView = Backbone.Marionette.View.extend({
 REDocumentView = Backbone.Marionette.View.extend({
   template: '#relation-list-item-template',
   tagName: 'a',
-  className: 'relation-item-container',
+  className: 'list-group-item list-group-item-action flex-column align-items-start',
 
   onRender : function() {
     this.$el.attr('href', '/task/relation/'+ this.model.get('id') +'/')
+
+    console.log('RE Item:', this.model.attributes);
   }
 });
 
 REDocumentListView = Backbone.Marionette.CollectionView.extend({
   childView: REDocumentView,
+  className: 'list-group col-12 my-4',
   childViewEventPrefix: 'relist',
 
   // filter: function (child, index, collection) {

@@ -2,8 +2,10 @@
 #tree-action-area {
 
   #tree-navigation {
-    height: 34px;
-    background-color: $color_gray_lightest;
+    > .row {
+      height: 34px;
+      background-color: $color_gray_lightest;
+    }
 
     #progress-bar {
       ul {
@@ -20,6 +22,7 @@
     }
     p { margin-bottom: 0px; }
   }
+
 
   #tree-selection {
     .loader-container {

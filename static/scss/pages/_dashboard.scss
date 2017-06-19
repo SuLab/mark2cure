@@ -8,46 +8,114 @@
     padding: 0.5rem 1.25rem;
   }
 
+  #dashboard-ner {
+    .dashboard-ner-quest {
+      a {
+        h3 {
+          color: $color_gray;
+          font-size: 1.25rem;
+        }
+      }
+      a:hover {
+        text-decoration: none;
+      }
+
+      .dashboard-ner-task-list-box {
+        width: 100%;
+
+        .dashboard-ner-quest-task-item {
+          min-height: 4rem;
+          border-bottom: 1px solid $color_gray_lightest;
+          border-right: 1px solid $color_gray_lightest;
+          transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+
+          // Font-Awesome specifics
+          span.fa { font-size: 32px; }
+          .muted,
+          span.fa.fa-circle {
+            color: $color_gray_lightest;
+            margin-top: 26px;
+          }
+          .muted,
+          span.fa.fa-certificate {
+            color: $color_red;
+            margin-top: 16px;
+            margin-bottom: 8px;
+          }
+          span.fa.fa-check {
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: $color_green;
+          }
+        }
+        .dashboard-ner-quest-task-item:hover {
+          background-color: lighten($color_purple, 15%);
+          cursor: pointer;
+          a p { color: $color_white; }
+        }
+
+      }
+    }
+  }
+
+  #dashboard-re {
+    .progress-bar {
+      height: 0.25rem;
+    }
+  }
+
+  .progress-bar {
+    background: rgba(128,60,255,1);
+    background: -moz-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+    background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(128,60,255,1)), color-stop(100%, rgba(0,204,255,1)));
+    background: -webkit-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+    background: -o-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+    background: -ms-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+    background: linear-gradient(135deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#803cff', endColorstr='#00ccff', GradientType=1 );
+  }
+}
+
+.task-stats-title {
+  margin: 0;
+  position: relative;
 }
 
 .task-score {
-  border: solid 16px tint($color_bootstrap_blue, 90);
+  background: rgba(128,60,255,1);
+  background: -moz-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(128,60,255,1)), color-stop(100%, rgba(0,204,255,1)));
+  background: -webkit-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -o-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: -ms-linear-gradient(-45deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  background: linear-gradient(135deg, rgba(128,60,255,1) 0%, rgba(0,204,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#803cff', endColorstr='#00ccff', GradientType=1 );
 
-  .row.sep {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
+  .task-score-content {
+    background: $color_white;
+    background: rgba(255,255,255,.975);
 
-  hr {
-    border: 0;
-    margin: 0px;
-    height: 1px;
-    background: $color_gray_lighter;
-    background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
-  }
-
-  .row {
-    margin-top: 2px;
-    margin-bottom: 2px;
+    hr {
+      border: 0;
+      margin: 0px;
+      height: 1px;
+      background: $color_gray_lighter;
+      background-image: linear-gradient(to right, $color_gray_lightest, $color_gray_lighter, $color_gray_lightest);
+    }
 
     .task-value {
-      font-size: 1.25em;
-      line-height: 1.25em;
-
+      font-size: 1.25rem;
+      line-height: 1.25rem;
       text-align: right;
       color: $color_gray_dark;
     }
 
     .task-label {
-      font-size: 1.25em;
-      line-height: 1.25em;
-
+      font-size: .75rem;
+      top: .275rem;
+      padding-left: .25rem;
       text-align: left;
       color: $color_gray_light;
-    }
-
-    ul.list-inline {
-      margin: 2px;
     }
 
   }

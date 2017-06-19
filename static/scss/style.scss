@@ -8,20 +8,20 @@
 @import 'compass/utilities';
 @import 'font-awesome';
 
-
 @import 'includes/header';
 @import 'includes/footer';
 
 @import 'pages/landing';
+@import 'pages/dashboard';
 @import 'pages/network';
 @import 'pages/talk';
 @import 'pages/quest';
-@import 'pages/dashboard';
 @import 'pages/svg/shared';
 @import 'pages/instructions';
 
-@import 'pages/task/relation-dashboard';
-@import 'pages/task/relation';
+@import 'tasks/named_entity_recognition';
+@import 'tasks/relationship_extraction';
+
 @import 'pages/training/relation/general';
 
 @import 'utils/modal';
@@ -29,7 +29,6 @@
 @import 'utils/selectize_bootstrap3';
 @import 'utils/introjs';
 @import 'utils/introjs-nassim';
-@import 'utils/document';
 @import 'utils/odometer';
 @import 'utils/support';
 @import 'utils/training';

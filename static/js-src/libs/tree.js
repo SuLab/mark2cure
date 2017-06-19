@@ -183,7 +183,7 @@ RENavigation = Backbone.Marionette.View.extend({
   * - Collection: REExtractionList
   */
   template: '#tree-navigation-template',
-  className: 'row',
+  className: 'row justify-content-between',
 
   regions: {
     'progress': '#progress-bar'
@@ -249,7 +249,7 @@ REConfirmView = Backbone.Marionette.View.extend({
   * - Collection: None */
   template: _.template('<button id="submit_button" class="btn btn-primary btn-block disabled" disabled="disabled">Submit</button>'),
   tagName: 'div',
-  className: 'col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-4 col-md-offset-4',
+  className: 'col-10 col-md-4',
   ui: {
     'button': 'button'
   },
@@ -365,6 +365,7 @@ REExtractionView = Backbone.Marionette.View.extend({
   * this.collection = REChoices
   */
   template: '#reextraction-template',
+  className: 'row justify-content-center',
 
   regions: {
     'c1': '#c1',
@@ -439,62 +440,13 @@ REExtractionView = Backbone.Marionette.View.extend({
 });
 
 
-    // _.each(passages, function(p, p_idx) {
-    //   #<{(| Deep clone passage objects |)}>#
-    //   tmp_passage = $.extend({}, p);
-    //
-    //   tmp_passage['annotation'] = _.filter(tmp_passage.annotation, function(annotation) {
-    //     if(annotation) {
-    //       return _.any(annotation.infon, function(infon) {
-    //         return infon['@key'] == 'uid' && _.contains(concept_uids, infon['#text']);
-    //         #<{(| var match = _.filter(concept_uids, function(s) { return infon['#text'].indexOf(s) !== -1 || s.indexOf(infon['#text']) !== -1; }).length;
-    //          * return infon['@key'] == 'uid' && match; |)}>#
-    //       });
-    //     } else { return []; }
-    //
-    //   });
-    //
-    //   var p = new Paragraph({'text': tmp_passage.text});
-    //   YPet[''+p_idx].show( new WordCollectionView({
-    //     collection: p.get('words'),
-    //     passage_json: tmp_passage,
-    //   }) );
-    //   YPet[''+p_idx].currentView.drawBioC(tmp_passage, false);
-    //   YPet[''+p_idx].currentView.drawBioC(null, true);
-    // });
-    // var collection;
-    // var passages, regions, tmp_passages;
-
-
-    //
-
-    //
-    //   var show_alert = _.debounce(function(evt) {
-    //     var $box = $(evt.target).closest('div[class^="paragraph-box"]');
-    //     if( $box.hasClass('paragraph-box-error-alert') ) {
-    //       $box.removeClass('paragraph-box-error-alert');
-    //     } else {
-    //       $box.addClass('paragraph-box-error-alert');
-    //     }
-    //   }, 500);
-    //
-    //   YPet['convoChannel'].on('mouse-down', function(evt) {
-    //     show_alert(evt);
-    //   });
-    //
-    // });
-    // YPet.start();
-    //
-//   }
-// });
-
 Tree = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
   * - Model = current / active REExtraction event
   * - Collection = REExtractionList
   */
   template: '#tree-template',
-  className: 'row',
+  className: 'row justify-content-center',
 
   regions: {
     'navigation': '#tree-navigation',

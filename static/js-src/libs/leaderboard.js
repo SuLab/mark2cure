@@ -54,9 +54,9 @@ LeaderBoardUserList = Backbone.Collection.extend({
  */
 
 LeaderBoardUserView = Backbone.Marionette.View.extend({
-  template: _.template('<p><% if(hover){ %><%= score %><% } else {%><%= name %><% } %></p>'),
+  template: '#dashboard-leaderboard-item-template',
   tagName: 'a',
-  className: 'list-group-item',
+  className: 'list-group-item list-group-item-action flex-column align-items-start',
 
   /* These events are only triggered when over
    * a span in the paragraph */
@@ -95,16 +95,17 @@ LeaderBoardUserView = Backbone.Marionette.View.extend({
 
 LeaderBoardUserListView = Backbone.Marionette.CollectionView.extend({
   childView  : LeaderBoardUserView,
+  className: 'list-group col-12 my-4',
   childViewEventPrefix: 'leaderboard:user',
 });
 
 
 LeaderBoardView = Backbone.Marionette.View.extend({
   template: '#dashboard-leaderboard-template',
-  className: 'row',
+  className: 'row leaderboard-view',
 
   regions: {
-    'list': 'ol.list-group'
+    'list': '#leaderboard-item-list'
   },
 
   ui: {
