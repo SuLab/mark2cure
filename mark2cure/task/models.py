@@ -63,7 +63,7 @@ class Task(models.Model):
     group = models.ForeignKey('common.Group', blank=True, null=True)
 
     def total_points(self):
-        print self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
+        return self.points + sum(DocumentQuestRelationship.objects.filter(task=self).values_list('points', flat=True))
 
     def remaining_documents_count(self, completed_ids=[]):
         # Document pks for the Quest the user has left

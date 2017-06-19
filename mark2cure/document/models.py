@@ -10,7 +10,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 from .managers import DocumentManager
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
-from librabbitmq import ConnectionError
+# from librabbitmq import ConnectionError
 
 import pandas as pd
 pd.set_option('display.width', 1000)
@@ -154,7 +154,8 @@ class Pubtator(models.Model):
             submit_pubtator.apply_async(
                 args=[self.pk],
                 queue='mark2cure_tasks')
-        except ConnectionError:
+        # except ConnectionError:
+        except:
             submit_pubtator(self.pk)
 
 
@@ -191,7 +192,8 @@ class PubtatorRequest(models.Model):
             check_pubtator.apply_async(
                 args=[self.pk],
                 queue='mark2cure_tasks')
-        except ConnectionError:
+        # except ConnectionError:
+        except:
             check_pubtator(self.pk)
 
 

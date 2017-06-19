@@ -156,7 +156,6 @@ def document_pubtator_actions(request, pk):
     doc = get_object_or_404(Document, pk=pk)
 
     if request.method == 'POST':
-        print '> Reset doc pubtators'
         doc.pubtators.all().delete()
         doc.run_pubtator()
 

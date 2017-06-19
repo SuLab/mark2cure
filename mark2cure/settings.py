@@ -1,9 +1,5 @@
-import djcelery
 import raven
 import os
-
-
-djcelery.setup_loader()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.pardir))
@@ -15,7 +11,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # Application definition
 INSTALLED_APPS = (
-    'sslserver', # HTTPS local development server
+    'sslserver',  # HTTPS local development server
     'grappelli',
     'django.contrib.admin',
 
@@ -39,7 +35,7 @@ INSTALLED_APPS = (
     'mark2cure.userprofile.providers.zooniverse',
 
     'djrill',
-    'djcelery',
+    # 'djcelery',
     'robots',
     'corsheaders',
 
@@ -203,13 +199,13 @@ TEMPLATES = [
                 ('pyjade.ext.django.Loader', (
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader',
-                    'django.template.loaders.eggs.Loader',
                 )),
             ],
             'builtins': ['pyjade.ext.django.templatetags'],
         },
     },
 ]
+
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = 'media/'
@@ -312,31 +308,31 @@ DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
-CELERY_DEFAULT_DELIVERY_MODE = 'persistent'
-# (TODO) Look into setting this up, same cert as HTTPS?
-# BROKER_USE_SSL // http://celery.readthedocs.io/en/latest/userguide/security.html#message-signing
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-CELERY_TIMEZONE = 'America/Los_Angeles'
-CELERYD_CONCURRENCY = 2
-CELERYD_PREFETCH_MULTIPLIER = 2  # limit for the number of tasks (messages) a worker can reserve
-CELERY_TASK_RESULT_EXPIRES = 3600  # If results are sent back, that they expire after one hour if not picked up/acknowledged.
-CELERY_MAX_CACHED_RESULTS = 100
-CELERY_TRACK_STARTED = True
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_EVENT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['application/json']
-# These are just global standards
-CELERYD_TASK_TIME_LIMIT = 60 * 30
-CELERYD_TASK_SOFT_TIME_LIMIT = 60 * 5
-CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
-CELERY_SEND_EVENTS = True  # Send events so the worker can be monitored by tools like celerymon.
-CELERY_SEND_TASK_SENT_EVENT = True
-CELERY_EVENT_QUEUE_TTL = 10 * 60  # Message expiry time in seconds (int/float) for when messages sent to a monitor clients event queue is deleted
-CELERY_RESULT_PERSISTENT = True
-CELERY_ALWAYS_EAGER = False
+# CELERY_DEFAULT_QUEUE = 'default'
+# CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+# CELERY_DEFAULT_ROUTING_KEY = 'default'
+# CELERY_DEFAULT_DELIVERY_MODE = 'persistent'
+# # (TODO) Look into setting this up, same cert as HTTPS?
+# # BROKER_USE_SSL // http://celery.readthedocs.io/en/latest/userguide/security.html#message-signing
+# CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+# CELERY_TIMEZONE = 'America/Los_Angeles'
+# CELERYD_CONCURRENCY = 2
+# CELERYD_PREFETCH_MULTIPLIER = 2  # limit for the number of tasks (messages) a worker can reserve
+# CELERY_TASK_RESULT_EXPIRES = 3600  # If results are sent back, that they expire after one hour if not picked up/acknowledged.
+# CELERY_MAX_CACHED_RESULTS = 100
+# CELERY_TRACK_STARTED = True
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_EVENT_SERIALIZER = 'json'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# # These are just global standards
+# CELERYD_TASK_TIME_LIMIT = 60 * 30
+# CELERYD_TASK_SOFT_TIME_LIMIT = 60 * 5
+# CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
+# CELERY_SEND_EVENTS = True  # Send events so the worker can be monitored by tools like celerymon.
+# CELERY_SEND_TASK_SENT_EVENT = True
+# CELERY_EVENT_QUEUE_TTL = 10 * 60  # Message expiry time in seconds (int/float) for when messages sent to a monitor clients event queue is deleted
+# CELERY_RESULT_PERSISTENT = True
+# CELERY_ALWAYS_EAGER = False
 
 
 try:

@@ -1,15 +1,12 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.flatpages import views
 
+from django.contrib.flatpages import views
 from django.contrib.auth import views as reset_views
 
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
 
-import common.views
-
-# from common.accounts.views import signup
 
 sitemaps = {
     'flatpages': FlatPageSitemap
