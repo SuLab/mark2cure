@@ -1,19 +1,17 @@
 __all__ = ['BioCReader']
 
-import StringIO
-
 from lxml import etree
 
-from bioc_annotation import BioCAnnotation
-from bioc_collection import BioCCollection
-from bioc_document import BioCDocument
-from bioc_location import BioCLocation
-from bioc_passage import BioCPassage
-from bioc_sentence import BioCSentence
-from bioc_node import BioCNode
-from bioc_relation import BioCRelation
+from .bioc_annotation import BioCAnnotation
+from .bioc_collection import BioCCollection
+from .bioc_document import BioCDocument
+from .bioc_location import BioCLocation
+from .bioc_passage import BioCPassage
+from .bioc_sentence import BioCSentence
+from .bioc_node import BioCNode
+from .bioc_relation import BioCRelation
 
-from StringIO import StringIO
+import io
 
 
 class BioCReader:
@@ -33,7 +31,7 @@ class BioCReader:
         self.collection = BioCCollection()
 
         parser = etree.XMLParser(recover=True, encoding='utf-8')
-        self.xml_tree = etree.parse(StringIO(str(source)), parser)
+        self.xml_tree = etree.parse(io.StringIO(str(source)), parser)
 
         if dtd_valid_file is not None:
             dtd = etree.DTD(dtd_valid_file)

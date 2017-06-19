@@ -1,6 +1,6 @@
 __all__ = ['BioCAnnotation']
 
-from meta import _MetaId, _MetaInfons, _MetaText
+from .meta import _MetaId, _MetaInfons, _MetaText
 
 
 class BioCAnnotation(_MetaId, _MetaInfons, _MetaText):

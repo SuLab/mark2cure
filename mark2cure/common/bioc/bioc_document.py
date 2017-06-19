@@ -1,7 +1,7 @@
 __all__ = ['BioCDocument']
 
-from compat import _Py2Next
-from meta import _MetaId, _MetaInfons, _MetaRelations, _MetaIter
+from .compat import _Py2Next
+from .meta import _MetaId, _MetaInfons, _MetaRelations, _MetaIter
 
 
 class BioCDocument(_MetaId, _MetaInfons, _MetaRelations, _MetaIter, _Py2Next):

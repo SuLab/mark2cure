@@ -1,6 +1,6 @@
 __all__ = ['BioCLocation']
 
-from meta import _MetaOffset
+from .meta import _MetaOffset
 
 
 class BioCLocation(_MetaOffset):

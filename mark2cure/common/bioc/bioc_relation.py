@@ -1,7 +1,7 @@
 __all__ = ['BioCRelation']
 
-from compat import _Py2Next
-from meta import _MetaId, _MetaInfons, _MetaIter
+from .compat import _Py2Next
+from .meta import _MetaId, _MetaInfons, _MetaIter
 
 
 class BioCRelation(_MetaId, _MetaInfons, _Py2Next, _MetaIter):
