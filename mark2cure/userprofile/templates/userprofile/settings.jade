@@ -19,10 +19,9 @@ block content
               div(class='{{ message.tags }}').alert
                 {{ message|safe }}
 
-  .container
-    .row.m-t-1
-      .col-sm-6.col-xs-10.col-xs-offset-1
-
+  .container.content
+    .row.justify-content-center.mt-1
+      .col-10.col-sm-6
 
         form.form-horizontal
           .form-group
@@ -38,16 +37,17 @@ block content
                 input(type='text', value='{{user.email}}', disabled).form-control
 
     hr
+
     form(method='post').form-horizontal
       - csrf_token
 
-      .row
-        .col-md-12.col-xs-10.col-xs-offset-1
+      .row.justify-content-center
+        .col-10.col-md-12
           h2 Account Settings
 
-        .col-md-12.col-xs-10.col-xs-offset-1
+        .col-10.col-md-12
           .row
-            .col-sm-8
+            .col-8
               fieldset
                 .first_name.form-group
                   .row
@@ -66,11 +66,11 @@ block content
                 #{team_form.name|as_vertical_form}
 
       hr
-      .row
-        .col-md-12.col-xs-10.col-xs-offset-1
+      .row.justify-content-center
+        .col-10.col-md-12
           h2 Profile Information
 
-        .col-md-12.col-xs-10.col-xs-offset-1
+        .col-10.col-md-12
           .row
             .col-md-4.col-md-offset-1
               #{user_profile_form.motivation|as_vertical_form}

@@ -55,84 +55,87 @@ script(id='dashboard-ner-template', type='html/template')
 
 
 script(id='dashboard-ner-unlock-template', type='html/template')
-  .row
-    .col-xs-12.text-xs-center
-      .relations-title Entity Recognition Tasks
-  .row
-    .col-xs-12.text-xs-center.unlock-icon
-      i(aria-hidden='true').fa.fa-lock.fa-5x
-  .row
-    .col-xs-12.text-xs-center
-      p
+  .col-10
+    .row.justify-content-center
+      .col-12.text-center
+        h4.task-stats-title.text-center Named Entity Recognition
+
+    .row.justify-content-center
+      .col-12.text-center.unlock-icon
+        i(aria-hidden='true').fa.fa-lock.fa-5x
+
+    .row
+      .col-12.text-center
         small Complete the following training steps to unlock an entire new task!
-  .row
-    #relation-training-progress.col-xs-12
-      .list-group.dashboard.text-xs-center
 
-        <% if(ner <= 2) { %>
-        a(href='{% url "training:introduction" step_num=1 %}').list-group-item.current
-          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-        a(href='{% url "training:one" step_num=1 %}').list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Diseases
-        a(href='{% url "training:two" step_num=1 %}').list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
-        a(href='{% url "training:three" step_num=1 %}').list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-        a(href='{% url "training:four" step_num=1 %}').list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-        <% } %>
+    .row
+      #relation-training-progress.col-12
+        .list-group.dashboard.text-xcenter
 
-        <% if(ner == 3) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-        a(href='{% url "training:one" step_num=1 %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Diseases
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-        <% } %>
+          <% if(ner <= 2) { %>
+          a(href='{% url "training:introduction" step_num=1 %}').list-group-item.current
+            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+          a(href='{% url "training:one" step_num=1 %}').list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Diseases
+          a(href='{% url "training:two" step_num=1 %}').list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
+          a(href='{% url "training:three" step_num=1 %}').list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+          a(href='{% url "training:four" step_num=1 %}').list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+          <% } %>
 
-        <% if(ner == 4) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-        a(href='{% url "training:two" step_num=1 %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Genes
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-        <% } %>
+          <% if(ner == 3) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+          a(href='{% url "training:one" step_num=1 %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Diseases
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+          <% } %>
 
-        <% if(ner == 5) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-        .list-group-item.completed
-          | <i class='fa fa-check aria-hidden='true'></i>  Genes
-        a(href='{% url "training:three" step_num=1 %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Treatments
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-        <% } %>
+          <% if(ner == 4) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+          a(href='{% url "training:two" step_num=1 %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Genes
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+          <% } %>
 
-        <% if(ner == 6) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Genes
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Treatments
-        a(href='{% url "training:four" step_num=1 %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Multi-Marking
-        <% } %>
+          <% if(ner == 5) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+          .list-group-item.completed
+            | <i class='fa fa-check aria-hidden='true'></i>  Genes
+          a(href='{% url "training:three" step_num=1 %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Treatments
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
+          <% } %>
+
+          <% if(ner == 6) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Genes
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Treatments
+          a(href='{% url "training:four" step_num=1 %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Multi-Marking
+          <% } %>
 
 
 script(id='dashboard-ner-quest-template', type='html/template')
@@ -159,14 +162,15 @@ script(id='dashboard-ner-quest-task-template', type='text/template')
       span(title='This quest is not enabled.').fa.fa-circle.muted
       <% } else { %>
       a(href='/task/entity-recognition/quest/<%- id %>/', title='Click to start this quest!')
-        p(style='font-size: 1.75em; line-height: 1.8em;') <%- d.name %>
+        p(style='font-size: 1.75em; line-height: 1.8em;') <%- name %>
       <% } %>
 
     <% if(user.enabled) { %>
     div(title='This quest is <%- Math.round(percentage_progress) %>% complete.').col-12
       .progress
-        div(role='progressbar', style='width: <%- percentage_progress %>%;', aria-valuenow='<%- percentage_progress %>', aria-valuemin='0', aria-valuemax='100').progress-bar <%- progress.current %> Completions
+        div(role='progressbar', style='width: <%- percentage_progress %>%;', aria-valuenow='<%- percentage_progress %>', aria-valuemin='0', aria-valuemax='100').progress-bar
     <% } %>
+    small <%- progress.current %>/<%- progress.required %> Completes
 
 
 script(id='dashboard-re-template', type='html/template')
@@ -209,8 +213,8 @@ script(id='dashboard-re-template', type='html/template')
 
 
 script(id='relation-list-item-template', type='text/template')
-  .d-flex.w-100.justify-content-between
-    small.pull-right <%= user_document_relationships %> steps
+  .d-flex.w-100.justify-content-end
+    small <%= user_document_relationships %> steps
   p.mb-1 <%= title %>
 
   div(title='This Relationship Extraction task is <%- Math.round(community_progress*100) %>% complete.').col-12
@@ -219,45 +223,48 @@ script(id='relation-list-item-template', type='text/template')
 
 
 script(id='dashboard-re-unlock-template', type='html/template')
-  .row
-    .col-xs-12.text-xs-center
-      .relations-title Relation Tasks
-  .row
-    .col-xs-12.text-xs-center.unlock-icon
-      i(aria-hidden='true').fa.fa-lock.fa-5x
-  .row
-    .col-xs-12.text-xs-center
-      p
-        small Complete the following training steps to unlock an entire new task!
-  .row
-    #relation-training-progress.col-xs-12
-      .list-group.dashboard.text-xs-center
-        <% if(re == 0) { %>
-        a(href='{% url "training:relation-training" %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Rules for Relationship Extraction
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
-        <% } %>
+  .col-10
+    .row.justify-content-center
+      .col-12.text-center
+        h4.task-stats-title.text-center Relationship Extraction
 
-        <% if(re == 1) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
-        a(href='{% url "training:relation-training-two" %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Rules for Relationship Extraction
-        .list-group-item.locked.disabled
-          | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
-        <% } %>
+    .row.justify-content-center
+      .col-12.text-center.unlock-icon
+        i(aria-hidden='true').fa.fa-lock.fa-5x
 
-        <% if(re == 2) { %>
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
-        .list-group-item.completed
-          | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
-        a(href='{% url "training:relation-training-three" %}').list-group-item.current
-          | <i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad
-        <% } %>
+    .row
+      .col-12.text-center
+          small Complete the following training steps to unlock an entire new task!
+
+    .row
+      #relation-training-progress.col-12
+        .list-group.dashboard.text-center
+          <% if(re == 0) { %>
+          a(href='{% url "training:relation-training" %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Rules for Relationship Extraction
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
+          <% } %>
+
+          <% if(re == 1) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+          a(href='{% url "training:relation-training-two" %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Rules for Relationship Extraction
+          .list-group-item.locked.disabled
+            | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
+          <% } %>
+
+          <% if(re == 2) { %>
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
+          .list-group-item.completed
+            | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
+          a(href='{% url "training:relation-training-three" %}').list-group-item.current
+            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad
+          <% } %>
 
 
 script(id='dashboard-leaderboard-template', type='html/template')

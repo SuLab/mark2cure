@@ -13,69 +13,42 @@ block header
 
 
 block content
-  .container
-    .row
-      .col-xs-6.col-xs-offset-3
-        h1.text-xs-center #{player.username}
-      - if owner
+  .container.content
+    .row.justify-content-center
+      .col-6
+        h1.text-center #{player.username}
 
-        .col-xs-2.col-xs-offset-4.text-xs-center
+    - if owner
+      .row.justify-content-center
+        .col-2
           form(method="post", action='{% url "account_logout" %}')
             - csrf_token
             button(type="submit", style='margin:0px;padding:0px;').btn.btn-link
               p Logout
 
-        .col-xs-2
-          p.text-xs-center.text-muted.text-xs-center
+        .col-2
+          p.text-center.text-muted
             a(href='{% url "profile:settings" %}') Settings
 
 
     .row
-      .col-xs-8
+      .col-8
         .row
-          .col-xs-12
+          .col-12.mb-4
             .card
               .card-header
                 | Motivation
               .card-block
                 #{player.userprofile.motivation}
 
-          .col-xs-12
+          .col-12.mb-4
             .card
               .card-header
                 | Quote
               .card-block
                 #{player.userprofile.quote}
 
-          - if request.user|has_group:"Comment Moderators"
-            .col-xs-12
-              .card
-                .card-header
-                  h4 Quest Performance
-                .card-block
-                  ul(role="tablist").nav.nav-tabs
-                      - for group in contributed_groups
-                        - if forloop.counter0 == 0
-                          li(role="presentation").active
-                            a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
-                              | #{group.stub}
-
-                        - else
-                          li(role="presentation")
-                            a(href="#tab-{{group.stub}}", aria-controls="tab-{{group.stub}}", role="tab", data-toggle="tab")
-                              | #{group.stub}
-
-                    div.tab-content
-                      - for group in contributed_groups
-                        - if forloop.counter0 == 0
-                          div(role="tabpanel", id="tab-{{group.stub}}").tab-pane
-                            #chart.text-xs-center
-
-                        - else
-                          div(role="tabpanel", id="tab-{{group.stub}}").tab-pane.active
-                            #chart.text-xs-center
-
-      .col-xs-4
+      .col-4
         .card
           .card-header
             | Statistics

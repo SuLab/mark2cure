@@ -113,9 +113,15 @@ NERQuestTaskView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-quest-task-template',
   className: 'dashboard-ner-quest-task-item col-3 pb-3',
 
-  templateContext: {
-    'percentage_progress': function() { (progress.current/progress.required)*100 }
+  templateContext: function() {
+    return {
+      'percentage_progress': (this.model.get('progress').current/this.model.get('progress').required)*100
+    }
   },
+
+  // onRender: function() {
+  //   console.log('Quest Task:', this.model.attributes);
+  // }
 });
 
 NERQuestTaskListView = Backbone.Marionette.CollectionView.extend({
@@ -156,7 +162,7 @@ NEREmptyListView = Backbone.Marionette.View.extend({
 
 NERDashboardUnlockView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-unlock-template',
-  className: 'col-xs-5',
+  className: 'row justify-content-center',
 })
 
 NERDashboardView = Backbone.Marionette.View.extend({
@@ -194,8 +200,6 @@ REDocumentView = Backbone.Marionette.View.extend({
 
   onRender : function() {
     this.$el.attr('href', '/task/relation/'+ this.model.get('id') +'/')
-
-    console.log('RE Item:', this.model.attributes);
   }
 });
 
@@ -216,7 +220,7 @@ REEmptyListView = Backbone.Marionette.View.extend({
 
 REDashboardUnlockView = Backbone.Marionette.View.extend({
   template: '#dashboard-re-unlock-template',
-  className: 'col-xs-5',
+  className: 'row justify-content-center'
 })
 
 

@@ -15,15 +15,15 @@ block content
     - if messages
       - for message in messages
         - if 'safe' in message.tags
-          .row
-            .col-xs-10.col-xs-offset-1
-              div(class='{{ message.tags }}').alert
+          .row.justify-content-center
+            .col-8
+              div(class='{{ message.tags }}').alert.m-0.text-center
                 {{ message|safe }}
 
 
-  .container-fluid.m-t-1
+  .container-fluid.content.mt-1
     .row
-      .col-xs-4.col-xs-offset-1
+      .col-4
         h2 Most Discussed Documents
         .list-group
           - for doc in documents
@@ -33,7 +33,7 @@ block content
               p.list-group-item-text {{doc.comment_count}} Comments
 
 
-      .col-xs-3
+      .col-3
         h2 Recent Annotations
         table.table.table-condensed.table-striped
           thead
@@ -49,7 +49,7 @@ block content
                     | #{ann.0}
 
 
-      .col-xs-3
+      .col-3
         h2 Recent Comments
         .list-group
           - for comment in comments
@@ -60,11 +60,11 @@ block content
               p.list-group-item-text {{ comment.comment }}
 
               .row
-                .col-xs-6
+                .col-6
                   p.text-left.text-muted
                     a(href='{% url "talk:home" comment.pmid %}')
                       small {{ comment.pmid }}
 
-                .col-xs-6
+                .col-6
                   p.text-right.text-muted
                     small {{ comment.submit_date }}
