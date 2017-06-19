@@ -378,10 +378,6 @@ script(id='reextraction-template', type='x-template/underscore')
     #tree-confirm.row.justify-content-center.mb-4
 
 
-
-
-
-
 script(id='relation-synopsis-template', type='html/template')
   p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
   ul#relation-synopsis-bar.list-unstyled.list-inline
@@ -411,20 +407,10 @@ script(id='homepage-quest-explorer-template', type='html/template')
     h2 Current <span class="font-red text-uppercase">missions.</span>
   .col-12.list
 
-script(id='homepage-quest-explorer-item-template', type='html/template')
-  a(href='/group/<%- stub %>/')
-    p <%- name %>
 
-  //   - else
-  //     li(id='group-{{ group.pk }}' class='col-xs-3 paragraph-box', style='padding-top: 30px')
-  //       a(href='#' target='_blank')
-  //             - if group.percentage_complete > 99
-  //               h2
-  //                 i.fa.fa-check(aria-hidden="true", style="color: #b2f270")
-  //               h5.text-xs-center(style="color: #818a91") {{ group.name }}
-  //               h5.text-xs-center(style="color: #818a91") Total Docs: {{ group.doc_count }}
-  //             - else
-  //               h2
-  //                 i.fa.fa-pencil(aria-hidden="true")
-  //               h5.text-xs-center {{ group.name }}
-  //               h5.text-xs-center Total Docs: {{ group.doc_count }}
+script(id='homepage-quest-explorer-item-template', type='html/template')
+  .group-item-content.p-2.border-bottom-0
+    a(href='/group/<%- stub %>/')
+      p.text-center.m-0 <%- name %>
+      p.text-justify.m-0.description <%- description %>
+  .fadeout

@@ -17,6 +17,10 @@ urlpatterns = [
     url(r'^analysis/group/(?P<group_pk>\d+)/$',
         views.analysis_group, name='analysis-group'),
 
+    # Sitewide
+    url(r'mark2cure/stats/',
+        views.mark2cure_stats, name='mark2cure-stats-api'),
+
     # Tasks
     url(r'task/stats/',
         views.user_task_stats, name='task-stats-api'),

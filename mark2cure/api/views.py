@@ -12,6 +12,8 @@ from ..userprofile.models import Team
 from ..common.models import Group
 from ..analysis.models import Report
 from ..task.models import Task
+from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..task.relation.models import RelationAnnotation
 from ..score.models import Point
 
 from rest_framework.decorators import api_view
@@ -107,6 +109,14 @@ def analysis_group(request, group_pk):
                 'pairings': df['pairings'].sum()})
 
     return Response(response)
+
+
+@api_view(['GET'])
+def mark2cure_stats(request):
+    return Response({
+        'ner_annotations': EntityRecognitionAnnotation.objects.count(),
+        're_annotations': RelationAnnotation.objects.count(),
+    })
 
 
 @login_required

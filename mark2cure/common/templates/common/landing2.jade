@@ -12,20 +12,20 @@ block content
     #bg-case-study
       .container
         .cta.row.justify-content-center
-          .col-10
+          .col-12.col-md-10
             h1.text-center Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.
             .row.justify-content-center
-              .col-8.text-center
+              .col-10.col-md-8.text-center
                 p NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.
 
             .row.justify-content-center
-              div(style="margin-top: 8px; margin-bottom: 8px;").col-3
+              .col-4.col-md-3.my-1
                 a(href='https://www.ngly1.org/', target='_blank').btn.btn-block.btn-white.btn-outline About NGLY1
 
               .col-4
                 a(href='{% url "common:get-started" %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
 
-              div(style="margin-top: 8px; margin-bottom: 8px;").col-3
+              .col-4.col-md-3.my-1
                 a(href="#learnMore").hidden-sm-down
                   button.btn.btn-block.btn-white.btn-outline
                     <i class="fa fa-play"></i> Watch Video
@@ -38,7 +38,7 @@ block content
           .col
             p.text-center
               a(href='http://sulab.org/2015/09/please-help-now/', target='_blank')
-                | #{ann_count|intcomma} annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
+                | <span id='annotation-counter'></span> annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p>
 
     .clearfix
 
@@ -66,10 +66,10 @@ block content
 
 
       .row.justify-content-center.my-2
-        .col-3
-          img(src="#{STATIC_URL}images/landing/ngly1-child.png", alt="").aligncenter.img-responsive
+        .col-6.col-lg-3.text-right
+          img(src="#{STATIC_URL}images/landing/ngly1-child.png", alt="").img-fluid
 
-        .col-3
+        .col-6.col-lg-3
           p It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a>
 
 
@@ -82,9 +82,9 @@ block content
 
       .row.justify-content-center.my-4
         .col-6.text-center
-          p.font-purple
+          p.m-0.font-purple
             | If you can read you can help.
-          a(href='{% url "common:get-started" %}').btn.btn-large.btn-primary I want to help
+          a(href='{% url "common:get-started" %}').btn.btn-large.btn-primary.btn-lg I want to help
 
     a#support-icon(data-toggle="modal", data-target="#support-modal")
       img(src='#{STATIC_URL}images/support-icon.png')

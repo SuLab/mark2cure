@@ -1,3 +1,65 @@
+#quest-explorer {
+  .group-item {
+    position: relative;
+
+    .fadeout {
+      position: absolute;
+      bottom: 0px;
+      height: 8rem;
+      width: 100%;
+      background: -webkit-linear-gradient(
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 1) 100%
+      );
+      background-image: -moz-linear-gradient(
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 1) 100%
+      );
+      background-image: -o-linear-gradient(
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 1) 100%
+      );
+      background-image: linear-gradient(
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 1) 100%
+      );
+      background-image: -ms-linear-gradient(
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 1) 100%
+      );
+    }
+
+    .group-item-content {
+      border: 1px solid $color_gray;
+      height: 12rem;
+      overflow: hidden;
+      a {
+        color: $color_black;
+        p {
+          font-size: .75rem;
+          text-transform: uppercase;
+        }
+        p.description {
+          font-size: .5rem;
+        }
+      }
+    }
+    .group-item-content:hover {
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+  .group-item.active-group {
+    .group-item-content { border-color: $color_red; }
+    a { color: $color_red; }
+  }
+  .group-item.ended-group {
+    .group-item-content { border-color: $color_gray; }
+    a { color: $color_gray; }
+  }
+}
+
 .glyphicon {
   font-family: 'FontAwesome';
 }

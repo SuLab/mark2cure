@@ -32,19 +32,20 @@ HomePageQuestList = Backbone.Collection.extend({
 });
 
 
-// HomePageStats = Backbone.Model.extend({
-//   default: {
-//     'annotations': 12345
-//   },
-//   url: '/api/stats/'
-// });
+Mark2CureStats = Backbone.Model.extend({
+  default: {
+    'ner_annotations': 0,
+    're_annotations': 0
+  },
+  url: '/api/mark2cure/stats/'
+});
 
 
 HomePageQuestView = Backbone.Marionette.View.extend({
   template: '#homepage-quest-explorer-item-template',
-
-  onRender: function() {
-    console.log('quest item', this.model.attributes);
+  className: function() {
+    var group_status = this.model.get('enabled') ? 'active-group' : 'ended-group';
+    return ['col-4 col-sm-3 col-md-2 col-lg-1', 'group-item', 'p-1', group_status].join(' ');
   }
 });
 
@@ -52,10 +53,12 @@ HomePageQuestView = Backbone.Marionette.View.extend({
 HomePageQuestListView = Backbone.Marionette.CollectionView.extend({
   childView: HomePageQuestView,
   childViewEventPrefix: 'questlist',
+  className: 'row justify-content-center no-gutters',
 
   filter: function (child, index, collection) {
     /* Only show the Quests that are enabled */
-    return child.get('enabled');
+    // return child.get('enabled');
+    return child.get('description') && index < 11;
   }
 });
 
@@ -79,33 +82,33 @@ HomePageQuestExplorer = Backbone.Marionette.View.extend({
 });
 
 
-// HomePageStatsView = Backbone.Marionette.View.extend({
-//   el: '.cta-bar',
-//   template: false,
-//
-//   initialize: function() {
-//     this.model = new HomePageStats()
-//   },
-//
-//   onRender: function() {
-//     this.showChildView('stats', new HomePageStats());
-//     this.showChildView('quests', new HomePageQuestExplorer());
-//   }
-// });
-
-
 HomePageView = Backbone.Marionette.View.extend({
   el: '#homepage',
   template: false,
 
+  ui: {
+    'annotations': '#annotation-counter',
+  },
+
   regions: {
-    // 'stats': '#stats-div',
     'quests': '#quest-explorer',
   },
 
+  initialize: function() {
+    this.model = new Mark2CureStats();
+    this.model.fetch();
+  },
+
+  modelEvents: {
+    'sync': function() {
+      var total_annotations = this.model.get('ner_annotations') + this.model.get('re_annotations');
+      this.ui.annotations.text(total_annotations);
+    }
+  },
+
   onRender: function() {
-    // this.showChildView('stats', new HomePageStats());
     this.showChildView('quests', new HomePageQuestExplorer());
+
   }
 });
 
