@@ -16,6 +16,10 @@ nav#header-generic.navbar {
   }
 }
 
+nav.purple {
+  background-color: $color_purple;
+}
+
 #header-auth-generic {
   border-bottom: 8px solid $color_gray_lightest;
   padding-top: 0px;

@@ -1,39 +1,35 @@
 extends flatpages/base
 
 - load as_vertical_form from bootstrap
+- load as_horizontal_form from bootstrap
 
 block content
 
   .container.content
-    .row.justify-content-center.my-1
-      .col-6
+    .row.my-5.justify-content-center
+      .col-md-8.col-lg-6.col-xl-5
+
         h2.text-center Login
         p.text-center Don't have account? <a href='{% url "common:get-started" %}'>Get started now!</a>
 
-    .row.justify-content-center.m-y-1
-      .col-6
-        - if form.errors
-          p Your username and password didn't match. Please try again.
-
-        form(method='post')
+        form(method='post').mt-5
           - csrf_token
 
-          .form-group
-            .row
-              .col-12
-                #{form.login|as_vertical_form}
+          - if form.errors
+            .row.justify-content-center
+              .col-sm-8
+                p.text-danger.text-center Your username and password didn't match. Please try again.
 
-          .form-group
-            .row
-              .col-12
-                #{form.password|as_vertical_form}
+          #{form.login|as_horizontal_form}
+          #{form.password|as_horizontal_form}
 
-          .form-group.m-y-1
-            .row
-              .col-12
-                input(type='submit', value='Login').btn.btn-primary.btn-block
+          .form-group.row.mt-5.mb-0.justify-content-center
+            .col-sm-6
+              button(type="submit").btn.btn-block.btn-primary Sign in
 
-              .col-12
-                p.text-right
-                  small
-                    a(href='{% url "account_reset_password" %}') Forgot password?
+          .form-group.row.justify-content-center
+            .col-sm-6
+              p.text-right
+                small
+                  a(href='{% url "account_reset_password" %}') Forgot password?
+
