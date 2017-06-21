@@ -69,8 +69,7 @@ gulp.task('js', function() {
     './static/js-src/libs/dashboard.js',
     './static/js-src/libs/homepage.js',
 
-    './static/js-src/pages/cloud.js',
-    './static/js-src/pages/group_home.js',
+    './static/js-src/pages/ner-group.js',
 
     './static/js-src/tasks/relation-synopsis.js',
     './static/js-src/tasks/relation.js',

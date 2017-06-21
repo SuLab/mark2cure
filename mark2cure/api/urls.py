@@ -30,8 +30,12 @@ urlpatterns = [
         views.re_stats, name='re-stats-api'),
 
     # - [Dashboard] Named Entity Recognition (NER)
+    url(r'^ner/list/(?P<group_pk>\d+)/contributors/$',
+        views.ner_list_item_contributors, name='ner-quest-contributors-api'),
+    url(r'^ner/list/(?P<group_pk>\d+)/quests/$',
+        views.ner_list_item_quests, name='ner-quest-api'),
     url(r'^ner/list/(?P<group_pk>\d+)/$',
-        views.ner_quest, name='ner-quest-api'),
+        views.ner_list_item, name='ner-group-api'),
     url(r'^ner/list/$',
         views.ner_list, name='ner-list-api'),
 

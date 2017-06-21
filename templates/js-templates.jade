@@ -414,3 +414,20 @@ script(id='homepage-quest-explorer-item-template', type='html/template')
       p.text-center.m-0 <%- name %>
       p.text-justify.m-0.description <%- description %>
   .fadeout
+
+
+script(id='ner-group-homepage-contributor-item-template', type='html/template')
+  <%- username %>
+  span.badge.badge-default.badge-pill <%- count %>
+
+
+script(id='ner-group-homepage-stats-template', type='html/template')
+  ol
+    li
+      p Total number of contributors: <%- total_contributors %>
+    li
+      p Total documents: <%- document_count %>
+    li
+      p Current average f-score: <%- current_avg_f_score %>
+    li
+      p Start date: <%- start_date %>

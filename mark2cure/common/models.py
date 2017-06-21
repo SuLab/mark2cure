@@ -50,11 +50,11 @@ class Group(models.Model):
         # (TODO) rename of return time is reflected
         return DocumentQuestRelationship.objects.filter(task__group=self)
 
-    def doc_count(self):
+    def document_count(self):
         dqr_count = len(DocumentQuestRelationship.objects.filter(task__group=self))
         return dqr_count
 
-    def top_five_contributors(self):
+    def contributors(self):
         # (TODO) have this return a query set of User models
         """returns a user name list for the group"""
         uqrs = UserQuestRelationship.objects.filter(task__group=self)
@@ -64,8 +64,7 @@ class Group(models.Model):
                 # (TODO) not sure if this is the fastest approach
                 username_list.append(str.encode(str(uqr.user.username)))
         counter = Counter(username_list)
-        top_five_users = [tuple_i[0] for tuple_i in counter.most_common(5)]
-        return top_five_users, username_list
+        return counter.most_common()
 
     def total_contributors(self):
         """returns a user name list for the group"""
@@ -83,24 +82,24 @@ class Group(models.Model):
         uqrs = UserQuestRelationship.objects.filter(task__group=self)
         return Annotation.objects.filter(view=View.objects.filter(userquestrelationship=uqrs)).count()
 
-    def current_avg_f(self, weighted=True):
-        report_qs = self.report_set.filter(report_type=1).order_by('-created')
-
-        if report_qs.exists():
-            report = report_qs.first()
-            df = report.dataframe
-
-            if weighted:
-                df['wf'] = df['pairings'] * df['f-score']
-                try:
-                    return df['wf'].sum() / df['pairings'].sum()
-                except ZeroDivisionError:
-                    return 0.0
-            else:
-                return df['f-score'].mean()
-
-        else:
-            return 0.0
+    # def current_avg_f(self, weighted=True):
+    #     report_qs = self.report_set.filter(report_type=1).order_by('-created')
+    #
+    #     if report_qs.exists():
+    #         report = report_qs.first()
+    #         df = report.dataframe
+    #
+    #         if weighted:
+    #             df['wf'] = df['pairings'] * df['f-score']
+    #             try:
+    #                 return df['wf'].sum() / df['pairings'].sum()
+    #             except ZeroDivisionError:
+    #                 return 0.0
+    #         else:
+    #             return df['f-score'].mean()
+    #
+    #     else:
+    #         return 0.0
 
     def percentage_complete(self):
         task_queryset = self.task_set.extra(select={

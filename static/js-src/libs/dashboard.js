@@ -31,7 +31,7 @@ NERQuestTaskList = Backbone.Collection.extend({
   },
 
   url: function() {
-    return '/api/ner/list/'+this.pk+'/';
+    return '/api/ner/list/'+this.pk+'/quests/';
   }
 });
 

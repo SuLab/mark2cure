@@ -1,9 +1,5 @@
 extends base
 
-- load widget_tweaks
-- load humanize
-- load group
-
 
 block header
   - with headerMessage='Doc Set Details'
@@ -12,143 +8,99 @@ block header
 
 block content
 
-  .container
-    - if messages
-      - for message in messages
-        - if 'safe' in message.tags
-          .row
-            .col-xs-10.col-xs-offset-1
-              div(class='{{ message.tags }}').alert
-                {{ message|safe }}
+  #ner-group-home.container.content.my-3
+    .row.justify-content-center
+      .col-md-10
+        h2.text-center {{ group.name }}
+        p.lead #{group.description}
 
-  .container
-    .row
-      - if group.description
-        .col-md-10.col-md-offset-1.m-t-1
-          h2.text-xs-center {{ group.name }}
-          p.lead #{group.description}
-
-          - if user.is_authenticated
-            span
-          - else
-            - if group.enabled and group.percentage_complete < 100
-              h4 This doc set needs your help. <a href='{% url "account_login" %}'>Please sign in here</a>.
-
-        .col-md-10.col-md-offset-1.m-t-1
-          - with progress=group.percentage_complete
-            - if progress
-              h4.progress-label Community progress on this set:
-
-              progress(value="{{ progress }}", max="100").progress
-                .progress
-                  span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
+        // - if user.is_authenticated
+        //   span
+        // - else
+        // - if group.enabled and group.percentage_complete < 100
+        //   h4 This doc set needs your help. <a href='{% url "account_login" %}'>Please sign in here</a>.
+        //
+        //     .col-md-10.col-md-offset-1.m-t-1
+        //       // - with progress=group.percentage_complete
+        //       //   - if progress
+        //       //     h4.progress-label Community progress on this set:
+        //       //
+        //       //     progress(value="{{ progress }}", max="100").progress
+        //       //       .progress
+        //       //         span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
 
 
-  #group-network.container-fluid
-    .row
-      .col-xs-4.col-xs-offset-4
-        a
-          h4.text-xs-center Toggle Network <i class="fa fa-caret-down"></i>
+    // #group-network.row
+    //   .col-xs-4.col-xs-offset-4
+    //     a
+    //       h4.text-xs-center Toggle Network <i class="fa fa-caret-down"></i>
+    //
+    // #network-row(style="height:800px;display:none;").row
+    //   .col-xs-1
+    //     .row
+    //       .col-xs-12
+    //         i.fa.fa-plus-circle
+    //       .col-xs-12
+    //         i.fa.fa-minus-circle
+    //       .col-xs-12
+    //         i.fa.fa-rotate-right
+    //   .col-xs-11
+    //     #network(style="height:800px;")
 
-    #network-row(style="height:800px;display:none;").row
-      .col-xs-1
-        .row
-          .col-xs-12
-            i.fa.fa-plus-circle
-          .col-xs-12
-            i.fa.fa-minus-circle
-          .col-xs-12
-            i.fa.fa-rotate-right
-      .col-xs-11
-        #network(style="height:800px;")
-
-  .container
-    .row
-      .col-md-10.col-md-offset-1.m-t-1
-
-        - if user.is_authenticated
-          .container(style="padding-bottom: 20px")
-            .row
-              .col-md-10.col-md-offset-1
-                #group-selection
-
-    .row
-      .col-md-5.col-md-offset-1
+    // .row
+    //   .col-md-10.col-md-offset-1.m-t-1
+    //
+    //     - if user.is_authenticated
+    //       .container(style="padding-bottom: 20px")
+    //         .row
+    //           .col-md-10.col-md-offset-1
+    //             #group-selection
+    //
+    .row.justify-content-center
+      .col-md-5
         .card
           .card-header
             | Top doc set contributors:
-
-          .card-block
-            ul
-              - for name in top_five
-                li
-                  p {{ name }}
+          #group-contributors.card-block
 
       .col-md-5
         .card
           .card-header
             | Group Statistics
+          #group-statistics.card-block
 
-          .card-block
-            ol.list-unstyled
-              li
-                p Total number of contributors: {{ group.total_contributors }}
 
-              li
-                p Total documents: {{ group.doc_count }}
+    // .row
+    //   .col-md-10.col-md-offset-1.m-t-1
+    //     p.lead Top contributor word cloud:
+    //
+    //     #word-cloud
+    //
+    //     form#form(style='display:none;')
+    //       #custom-area
+    //         textarea#text {{ username_list }}
+    //         button#go(type="submit").btn.btn-default Go
+    //
+    //       div.form-group
+    //         input#max(type="number", value="250", min="1").form-control
+    //         input#per-line(type="checkbox").form-control
+    //
+    //       div.form-group
+    //         input#archimedean(type="radio", name="spiral", value="archimedean", checked="checked")
+    //         input#rectangular(type="radio", name="spiral", value="rectangular")
+    //         input#scale-log(type="radio", name="scale", value="log", checked="checked")
+    //         input#font(type="text", value="impact")
+    //
+    //       #angles.form-group
+    //         input(type="number", id="angle-count", value="30", min="1")
+    //         label(for="angle-count") orientations
+    //         input(type="number", id="angle-from", value="-0", min="-0", max="0") °
+    //         input(type="number", id="angle-to", value="0", min="-0", max="0") °
 
-              li
-                p Current average f-score: {{ group.current_avg_f|floatformat:3 }}
-
-              li
-                p Start date: {{ start_date }}
-
-              li
-                p End date:
-                  - if group.enabled
-                    |  in progress
-                  - else
-                    |  {{ end_date }}
-
-    .row
-      .col-md-10.col-md-offset-1.m-t-1
-        p.lead Top contributor word cloud:
-
-        #word-cloud
-
-        form#form(style='display:none;')
-          #custom-area
-            textarea#text {{ username_list }}
-            button#go(type="submit").btn.btn-default Go
-
-          div.form-group
-            input#max(type="number", value="250", min="1").form-control
-            input#per-line(type="checkbox").form-control
-
-          div.form-group
-            input#archimedean(type="radio", name="spiral", value="archimedean", checked="checked")
-            input#rectangular(type="radio", name="spiral", value="rectangular")
-            input#scale-log(type="radio", name="scale", value="log", checked="checked")
-            input#font(type="text", value="impact")
-
-          #angles.form-group
-            input(type="number", id="angle-count", value="30", min="1")
-            label(for="angle-count") orientations
-            input(type="number", id="angle-from", value="-0", min="-0", max="0") °
-            input(type="number", id="angle-to", value="0", min="-0", max="0") °
 
 
 block post-footer
-    #fb-root
-
-
-    script.
-      $( document ).ready(function() {
-          setTimeout(
-            function()
-            {
-              $('#go').click();
-            }, 5);
-      });
-      pk = #{group.pk};
+  script.
+    var ner_group_app = new NERGroupPageView({'group_pk': #{group.pk}});
+    ner_group_app.render();
 
