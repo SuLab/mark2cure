@@ -29,8 +29,11 @@ class Team(models.Model):
     class Meta:
         app_label = 'userprofile'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
+
+    def __unicode__(self):
+        return u'{0}'.format(self.name)
 
     def last_active_user(self):
         member_profile = self.userprofile_set.order_by('-last_seen').first()
