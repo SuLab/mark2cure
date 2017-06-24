@@ -18,6 +18,51 @@ APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
 
 class DocumentManager(models.Manager):
 
+    def as_json(self, documents=[]):
+        if len(documents):
+            from .models import Document
+            doc_arr = []
+            for d in documents:
+                if type(d) == Document:
+                    doc_arr.append(str(d.pk))
+                elif type(d) is str and d.isdigit():
+                    doc_arr.append(d)
+                elif type(d) is int:
+                    doc_arr.append(str(d))
+            str_doc_arr = list(set(doc_arr))
+        else:
+            raise ValueError('No documents supplied to generator writer')
+
+        cmd_str = ""
+        with open('mark2cure/document/commands/get-documents.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(','.join(str_doc_arr))
+
+        c = connection.cursor()
+        try:
+            c.execute(cmd_str)
+            db_res = [x for x in c.fetchall()]
+        finally:
+            c.close()
+
+        # [(8, 9360520, 't', 15, 'Autosomal ...')
+        data = []
+        for document_pk, document_sections in groupby(db_res, lambda x: x[0]):
+            passages = []
+            for row in document_sections:
+                passages.append({
+                    'section': row[2],
+                    'pk': row[3],
+                    'text': row[4]
+                })
+
+            data.append({
+                'pk': document_pk,
+                'passages': passages
+            })
+
+        return data
+
     def as_writer(self, documents=[]):
         '''
             Return a blank BioC Writer that is based off the pubtator content.
@@ -32,9 +77,9 @@ class DocumentManager(models.Manager):
             for d in documents:
                 if type(d) == Document:
                     doc_arr.append(str(d.pk))
-                elif type(d) is str or type(d) is unicode and d.isdigit():
+                elif type(d) is str and d.isdigit():
                     doc_arr.append(d)
-                elif type(d) is int or type(d) is long:
+                elif type(d) is int:
                     doc_arr.append(str(d))
             str_doc_arr = list(set(doc_arr))
         else:
@@ -104,9 +149,9 @@ class DocumentManager(models.Manager):
             for d in documents:
                 if type(d) == Document:
                     doc_arr.append(str(d.pk))
-                elif type(d) is str or type(d) is unicode and d.isdigit():
+                elif type(d) is str and d.isdigit():
                     doc_arr.append(d)
-                elif type(d) is int or type(d) is long:
+                elif type(d) is int:
                     doc_arr.append(str(d))
             filter_doc_level = 'WHERE `relation`.`document_id` IN ({0})'.format(','.join(doc_arr))
         else:
@@ -118,7 +163,7 @@ class DocumentManager(models.Manager):
             for u in users:
                 if type(u) == User:
                     user_arr.append(str(u.pk))
-                elif type(u) is str or type(u) is unicode and d.isdigit():
+                elif type(u) is str and d.isdigit():
                     user_arr.append(u)
                 elif type(u) is int:
                     user_arr.append(str(u))
@@ -181,16 +226,16 @@ class DocumentManager(models.Manager):
             'start_position': int(start_position), 'length': int(length)
         }
 
-    def entity_recognition_df(self, documents=[], users=[], include_pubtator=True, writer=None):
+    def ner_df(self, documents=[], users=[], include_pubtator=True, writer=None):
         if len(documents):
             from .models import Document
             doc_arr = []
             for d in documents:
                 if type(d) == Document:
                     doc_arr.append(str(d.pk))
-                elif type(d) is str or type(d) is unicode and d.isdigit():
+                elif type(d) is str and d.isdigit():
                     doc_arr.append(d)
-                elif type(d) is int or type(d) is long:
+                elif type(d) is int:
                     doc_arr.append(str(d))
             filter_doc_level = 'WHERE `document_section`.`document_id` IN ({0})'.format(','.join(doc_arr))
         else:
@@ -202,7 +247,7 @@ class DocumentManager(models.Manager):
             for u in users:
                 if type(u) == User:
                     user_arr.append(str(u.pk))
-                elif type(u) is str or type(u) is unicode and d.isdigit():
+                elif type(u) is str and d.isdigit():
                     user_arr.append(u)
                 elif type(u) is int:
                     user_arr.append(str(u))
@@ -219,7 +264,7 @@ class DocumentManager(models.Manager):
         df_arr = []
 
         cmd_str = ""
-        with open('mark2cure/document/commands/get-er-results.sql', 'r') as f:
+        with open('mark2cure/document/commands/get-ner-results.sql', 'r') as f:
             cmd_str = f.read()
         cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
 
@@ -262,7 +307,7 @@ class DocumentManager(models.Manager):
                 ordering and precedence for some annotations types / instances
             '''
             cmd_str = ""
-            with open('mark2cure/document/commands/get-er-pubtator-results.sql', 'r') as f:
+            with open('mark2cure/document/commands/get-ner-pubtator-results.sql', 'r') as f:
                 cmd_str = f.read()
             cmd_str = cmd_str.format(','.join(doc_arr))
 

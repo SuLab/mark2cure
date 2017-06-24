@@ -1,41 +1,16 @@
 - load humanize
 
-nav#header-auth-generic(role='navigation').navbar
+nav#header(role='navigation').navbar.navbar-default
   div.container
-    // Navbar for "all at once" content. SM >> up
-    .row.hidden-xs-down
+    .row.justify-content-between
+      .col-2
+        a.navbar-brand(href='{% url "common:dashboard" %}')
+          img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
 
-      .col-sm-3.col-md-2
-        div.navbar-header
-          a.navbar-brand(href='{% url "common:dashboard" %}')
-            img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
+      .col-8
+        h1.text-center #{headerMessage}
 
-      .col-sm-6.col-md-6.col-lg-7
-        // font-size: 1.25rem; for SM
-        h1.text-xs-center #{headerMessage}
+      .col-2
+          a(href='{% url "profile:public-profile" username=user.username %}').box-outline.text-right
+            p.m-0 {{user}}
 
-      .col-sm-3.col-md-4.col-lg-3
-        include includes/header-links
-
-    // Navbar  or expand based content. XS ONLY
-    .row.hidden-sm-up
-      .col-xs-12
-        .row
-          .col-xs-4
-            div.navbar-header
-              a.navbar-brand(href='{% url "common:dashboard" %}')
-                img(src="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png", alt="Mark2Cure")
-
-          .col-xs-4.col-xs-offset-4
-            button#expand-content(type='button', data-toggle='collapse', data-target='#site-nav', aria-controls='site-nav', aria-expanded='false', aria-label='Toggle navigation').btn-block.navbar-toggler.hidden-sm-up &#9776;
-
-        #site-nav.row.collapse
-          hr
-          - if headerMessage
-            .col-xs-12
-              // font-size: 1.25rem; for SM
-              h1.text-xs-center #{headerMessage}
-              hr
-
-          .col-xs-12
-            include includes/header-links

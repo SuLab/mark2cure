@@ -6,230 +6,33 @@ extends base
 
 block header
   - with headerMessage=task.name
-    include includes/header-task-entity-recognition
+    include includes/header
 
 
 block content
-  .container-fluid
-    // Document header Information
-    // 1) List of document Icons
-    // 2) Ongoing score (live)
-    // 3) Current Level (not live)
-    #quest-guide.row
-      .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
-        ol.list-unstyled.list-inline
-          - for doc in completed_doc_pks
-            li.list-inline-item.completed &#8226;
 
-          - each val, index in uncompleted_docs
-            - if index == 0
-              li.list-inline-item.active &#8226;
-            - else
-              li.list-inline-item.uncompleted &#8226;
-
-      .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
-        p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span>
-
-    #partner-results(style='display:none;').row
-      .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
-        .row.alert.alert-info.alert-info-minimal.alert-sticky
-          #partner-info.col-xs-4
-            p(style='margin-bottom: 0px;')
-              small You were paired with:
-
-            h3#partner-username(style='margin-top: 0px;')
-            p Level: <span id="partner-level"></span>
-
-          .col-xs-8
-            h2#flatter.text-xs-center
-            h4.text-xs-center
-              | Earned
-              | <span id='points'></span>
-              | points!
-
-    #new-alert-congrats(style='display:none;').row
-      .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
-        .row.alert.alert-info.alert-info-minimal.alert-sticky
-          .col-xs-10.col-xs-offset-1
-            h2.text-xs-center New Annotations!
-            h3.text-xs-center You earned 1,000 points for marking this new document
-            p.text-xs-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
-            //h2.text-xs-center New Document!
-            //h3.text-xs-center Unfortunately you didn't earn any points because no annotations were provided ;(
-
-    .row
-      .col-xs-12.col-md-10.col-md-offset-1
-        div(id="doc_{{document.pk}}", data-doc_pk="{{document.pk}}", data-pmid="{{document.document_id}}").document
-          .paragraphs
+  #ypet-action-area.container-fluid.content
 
 
-    .row.m-t-1
-      .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
-        div(role="group").btn-group-vertical
-          a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
-            | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
-            | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
-            | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
-
-      // Init all submission events
-      // 1) Submit the document
-      // 2) Go to next document (after review)
-      // 3) Submit the Quest as complete
-
-      .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-0
-        - get_comment_count for document.document document.pk as comment_count
-
-        #quest-submit.row
-          .col-xs-10.col-xs-offset-1
-            p.button.btn.btn-primary.btn-block.done Submit
-
-        #doc-talk(style='display:none;').row
-          .col-xs-10.col-xs-offset-1
-            a(href='{% url "talk:home" document.document_id %}', target='_blank')
-              p.text-muted.text-xs-center
-                small Annotations in this doc have been discussed #{comment_count} times. <strong>Discuss Now?</strong>
-          .col-xs-6
-            a(href='{% url "talk:home" document.document_id %}', target='_blank').button.btn.btn-default.btn-block.done
-              | Yes, Let's Talk
-
-          .col-xs-6
-            a(href='{% url "task-entity-recognition:quest-home" quest_pk=task.pk %}').button.btn.btn-primary.btn-block.done
-              | Next Doc
-
-
-      #google_annotation.col-xs-6.col-xs-offset-3.col-md-3.col-md-offset-0
-          a(href='#', target='_blank').btn.btn-info.btn-block
-            | Search <i class="fa fa-external-link fa-lg"></i>
-            br
-            small
 
 block post-footer
   script.
-    var passages;
+    var NERYPetApp = Backbone.Marionette.Application.extend({
+      region: '#ypet-action-area',
 
-    YPet.addInitializer(function(options) {
+      onStart: function() {
+        var main = this.getRegion();
 
-      /* Kick off the application with the document data
-      * - Even if pubtator is down / no annotations available
-      * - the passage text is still available to YPet
-      */
-      $.getJSON('/document/pubtator/{{document.document_id}}.json', function( data ) {
-        passages = data.collection.document.passage;
-        var regions = {};
-
-        _.each(passages, function(passage, passage_idx) {
-          var passage_id = _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-          var p_body = '<div id="'+ passage_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-          $('.paragraphs').append(p_body);
-          regions[''+passage_idx] = '#'+passage_id;
-        });
-        YPet.addRegions(regions);
-
-        /* Add paragraph words and pubtator annotations if available */
-        _.each(passages, function(passage, passage_idx) {
-          var p = new Paragraph({'text': passage.text});
-          YPet[''+passage_idx].show( new WordCollectionView({
-            collection: p.get('words'),
-            passage_json: passage,
-            bioc_json: data
-          }) );
-        });
-
-        /* Add event listener for recent annotation search helper */
-        _.each(passages, function(passage, passage_idx) {
-          YPet[''+passage_idx].currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
-            var model_json = model.toJSON();
-            set_google_annotation(model_json.text);
-          });
-        });
-
-      });
+        main.show( new YPet({
+          'csrf_token': '{{csrf_token}}',
+          'mode': 'ner',
+          'task_pk': {{ task_pk }},
+          'document_pk': {{ doc.pk }},
+          'pmid': {{ doc.document_id }},
+          })
+        );
+      }
     });
-    YPet.start();
-
-    function set_google_annotation(ann_text) {
-      var url = 'https://www.google.com/search?q='+ann_text;
-      $('#google_annotation a').attr('href', url);
-      $('#google_annotation a small').text(_.str.truncate(ann_text, 36));
-    };
-
-    function show_results() {
-      /* Show partner comparison */
-      $.ajax({
-        url:'/task/entity-recognition/{{task.pk}}/{{document.pk}}/results.json',
-        dataType: 'json',
-        cache: false,
-        async: false,
-        success: function(data) {
-
-          window.scrollTo(0,0);
-          var points = _.find(data.collection.infon, function(o){return o['@key']=='points';})['#text'];
-          var partner = _.find(data.collection.infon, function(o){return o['@key']=='partner';})['#text'];
-          var partner_level = _.find(data.collection.infon, function(o){return o['@key']=='partner_level';})['#text'];
-          var flatter = _.find(data.collection.infon, function(o){return o['@key']=='flatter';})['#text'];
-
-          $('#points').html(points);
-          $('#partner-username').html(partner);
-          $('#partner-level').html(partner_level);
-          $('#flatter').html(flatter);
-          $('#partner-results').slideDown(function() {
-            update_score();
-            /* Show underlines */
-            _.each(data.collection.document.passage, function(passage, passage_idx) {
-              YPet[passage_idx].currentView.drawBioC(passage, true);
-            });
-          });
-        },
-        error: function(error_res) {
-          /* No response so show them the annotation message */
-          _.each(passages, function(passage, passage_idx) {
-            YPet[passage_idx].currentView.drawBioC(null, true);
-          });
-          window.scrollTo(0,0);
-          $('#new-alert-congrats').slideDown()
-        }
-      });
-    };
-
-    $('#quest-submit').one('click', function(evt) {
-      /* AJAX submit all of the current Annotaitons */
-      var self = this;
-          ann_dict = {};
-
-      /* Iterate over each of the paragraphs or annotatable sections on the page */
-      _.each(passages, function(passage, passage_idx) {
-        ann_dict[+_.find(passage.infon, function(o){return o['@key']=='id';})['#text']] = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON();
-      });
-
-      /* Add the section to the objects */
-      _.each(_.keys(ann_dict), function(section_pk) {
-        ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': section_pk}) })
-      })
-
-      /* Do not save data if the annotation is empty */
-      annotations = _.flatten(_.values(ann_dict));
-      annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
-      annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
-      annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
-
-      /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
-      $.ajax({
-        type: 'POST',
-        url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
-        headers: {'X-CSRFTOKEN': '{{csrf_token}}'},
-        contentType: "application/json; charset=utf-8",
-        data:  JSON.stringify(annotations),
-        dataType: 'json',
-        cache: false,
-        async: false,
-        success: function() {
-          $('#doc-talk').show();
-          $(self).hide();
-          show_results();
-        }
-      });
-
-    });
+    var ypet_app = new NERYPetApp();
+    ypet_app.start();
 

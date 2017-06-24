@@ -34,7 +34,8 @@
 @import 'utils/training';
 
 .site {
-  display: flex;
+  // (this makes container-fluid small)
+  // display: flex;
   min-height: 100vh;
   flex-direction: column;
 

@@ -1,3 +1,7 @@
+//
+// Dashboard
+//
+
 script(id='dashboard-template', type='html/template')
   #dashboard-ner.col-5
   #dashboard-re.col-5
@@ -177,7 +181,6 @@ script(id='dashboard-re-template', type='html/template')
   .row.justify-content-center
     .col-12.col-md-10
       h4.task-stats-title.text-center Relationship Extraction
-
   .row.justify-content-center.no-gutters
     .col-12.col-md-10.task-score
       .task-score-content.m-3
@@ -208,9 +211,7 @@ script(id='dashboard-re-template', type='html/template')
               li.list-inline-item
                 a(href='{% url "instructions:relation" %}')
                   | Rules
-
   #dashboard-re-list
-
 
 script(id='relation-list-item-template', type='text/template')
   .d-flex.w-100.justify-content-end
@@ -292,6 +293,62 @@ script(id='dashboard-leaderboard-item-template', type='html/template')
     <% } %>
 
 
+//
+// Tasks (NER + RE)
+//
+
+script(id='ypet-partner-templates', type='html/template')
+    #partner-results(style='display:none;').row
+      .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
+        .row.alert.alert-info.alert-info-minimal.alert-sticky
+          #partner-info.col-xs-4
+            p(style='margin-bottom: 0px;')
+              small You were paired with:
+
+            h3#partner-username(style='margin-top: 0px;')
+            p Level: <span id="partner-level"></span>
+
+          .col-xs-8
+            h2#flatter.text-xs-center
+            h4.text-xs-center
+              | Earned
+              | <span id='points'></span>
+              | points!
+
+    #new-alert-congrats(style='display:none;').row
+      .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
+        .row.alert.alert-info.alert-info-minimal.alert-sticky
+          .col-xs-10.col-xs-offset-1
+            h2.text-xs-center New Annotations!
+            h3.text-xs-center You earned 1,000 points for marking this new document
+            p.text-xs-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
+            //h2.text-xs-center New Document!
+            //h3.text-xs-center Unfortunately you didn't earn any points because no annotations were provided ;(
+
+
+script(id='ypet-help-instructions-template', type='x-template/underscore')
+    .row.m-t-1
+      .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
+        div(role="group").btn-group-vertical
+          a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
+            | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
+          a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
+            | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
+          a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
+            | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
+
+
+script(id='ypet-navigation-template', type='x-template/underscore')
+  // Document header Information
+  // 1) List of document Icons
+  // 2) Ongoing score (live)
+  // 3) Current Level (not live)
+  #progress-bar.col-6
+
+  .col-2
+    p.text-center Score: <span id='score'>0</span>
+
+
 script(id='ypet-para-templates', type='html/template')
   .row
     .col-xs-12.col-md-10.col-md-offset-1
@@ -316,6 +373,57 @@ script(id='ypet-help-template', type='html/template')
 script(id='ypet-template', type='html/template')
   #ypet-text.col-12
   #ypet-footer.col-12
+
+
+  .col-12
+    #tree-navigation
+    #tree-selection
+    #tree-selection-results
+    .row.justify-content-center.my-4
+      .col-10
+        #tree-text
+
+
+script(id='ypet-confirm-template', type='html/template')
+      // Init all submission events
+      // 1) Submit the document
+      // 2) Go to next document (after review)
+      // 3) Submit the Quest as complete
+
+      .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-0
+        // - get_comment_count for document.document document.pk as comment_count
+
+        #quest-submit.row
+          .col-xs-10.col-xs-offset-1
+            p.button.btn.btn-primary.btn-block.done Submit
+
+        #doc-talk(style='display:none;').row
+          .col-xs-10.col-xs-offset-1
+            // a(href='', target='_blank')
+              p.text-muted.text-xs-center
+                small Annotations in this doc have been discussed #{comment_count} times. <strong>Discuss Now?</strong>
+          .col-xs-6
+            // a(href='', target='_blank').button.btn.btn-default.btn-block.done
+              | Yes, Let's Talk
+
+          .col-xs-6
+            // a(href='').button.btn.btn-primary.btn-block.done
+              | Next Doc
+
+
+script(id='ypet-search-template', type='html/template')
+    #google_annotation.col-xs-6.col-xs-offset-3.col-md-3.col-md-offset-0
+        a(href='#', target='_blank').btn.btn-info.btn-block
+          | Search <i class="fa fa-external-link fa-lg"></i>
+          br
+          small
+
+
+
+
+
+
+
 
 
 
@@ -401,6 +509,10 @@ script(id='relation-synopsis-feedback-template', type='html/template')
 
   div(id="user-answer-{{ reln.relation_id }}" style="display:none") {{ reln_ann_list.0.answer }}
 
+
+//
+// Miscellaneous
+//
 
 script(id='homepage-quest-explorer-template', type='html/template')
   .col-12.text-center

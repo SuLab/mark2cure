@@ -174,10 +174,11 @@ def quest_read_doc(request, quest_pk, doc_idx):
     document = task_doc_uncompleted[0]
     # task.create_views(document, request.user)
 
-    ctx = {'task': task,
+    ctx = {'task_pk': task.pk,
+           'doc': document,
            'completed_doc_pks': task_doc_pks_completed,
            'uncompleted_docs': task_doc_uncompleted,
-           'document': document}
+           }
     return TemplateResponse(request, 'entity_recognition/quest.jade', ctx)
 
 

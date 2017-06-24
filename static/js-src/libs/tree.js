@@ -177,7 +177,7 @@ REProgressView = Backbone.Marionette.CollectionView.extend({
   childViewEventPrefix: 'progress'
 });
 
-RENavigation = Backbone.Marionette.View.extend({
+RENavigationView = Backbone.Marionette.View.extend({
   /*
   * - Modal: None
   * - Collection: REExtractionList
@@ -496,7 +496,7 @@ Tree = Backbone.Marionette.View.extend({
 
       /* Submitting results for a REExtraction */
       this.emptyRegions();
-      this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+      this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.showChildView('extraction-results', new REExtractionResultView({'model': this.model, 'collection': answers_collection}));
     },
     'reconfirm:confirm:error': function(childView) {
@@ -508,7 +508,7 @@ Tree = Backbone.Marionette.View.extend({
 
       this.model = this.collection.next();
       if(this.model) {
-        this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+        this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
         this.options['model'] = this.model;
         this.showChildView('extraction', new REExtractionView(this.options));
         this.showChildView('text', new YPet(this.options));
@@ -578,7 +578,7 @@ Tree = Backbone.Marionette.View.extend({
     if(this.collection && this.model) {
       this.options['model'] = this.model;
       this.options['mode'] = 'er';
-      this.showChildView('navigation', new RENavigation({'collection': this.collection}));
+      this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new YPet(this.options));
     } else {

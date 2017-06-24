@@ -14,16 +14,31 @@ nav#header-generic.navbar {
   a {
     color: $color_white;
   }
+
+  a.box-outline {
+    border: 2px solid white;
+    padding: 0.25rem .5rem;
+  }
+
+  a.box-outline:hover {
+    text-decoration: none;
+    border: 2px solid white;
+    padding: 0.25rem .5rem;
+    color: $color_purple;
+    background-color: $color_white;
+  }
+}
+
+nav#header.navbar {
 }
 
 nav.purple {
   background-color: $color_purple;
 }
 
-#header-auth-generic {
+
+#header {
   border-bottom: 8px solid $color_gray_lightest;
-  padding-top: 0px;
-  padding-bottom: 0px;
 
   h1 {
     color: $color_gray_light;
@@ -53,37 +68,23 @@ nav.purple {
     max-height: 60px;
   }
 
-  #header-links {
-    @include media-breakpoint-only(xs) {
-      margin-bottom: .5rem;
-    }
-    .user-info { text-align: right; }
-    .site-links { text-align: left; }
-    ul { margin-bottom: 0px; }
-    li {
-      white-space: nowrap;
-      a p {
-        color: $color_black;
-      }
-      a:hover p {
-        color: $color_purple;
-        cursor: pointer;
-      }
-      a:active { text-decoration: none; }
-      p {
-        padding: 2px;
-        margin: 0px;
-
-        @include media-breakpoint-only(sm) {
-          font-size: .8rem;
-        }
-
-
-      }
+  a.box-outline {
+    border: 2px solid $color_purple;
+    padding: 0.25rem .5rem;
+    margin-top: 7px;
+    display: inline-block;
+    p {
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
     }
   }
 
-  #expand-content { font-size: 3rem; }
-  #expand-content:hover { color: $brand-primary; }
+  a.box-outline:hover {
+    text-decoration: none;
+    border: 2px solid $color_purple;
+    padding: 0.25rem .5rem;
+    color: $color_white;
+    background-color: $color_purple;
+  }
 
 }

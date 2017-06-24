@@ -12,8 +12,6 @@ nav#header-generic(class='{{ extraClassNames }}').navbar.navbar-default
         a(href="/blog/") Blog
       li.list-inline-item
         a(href="/contact/") Contact
-      li.list-inline-item
-        a(href='{% url "account_login" %}') Login
 
       li.list-inline-item.social.hidden-xs-down
         a(href="blog/rss/", target='_blank')
@@ -24,3 +22,7 @@ nav#header-generic(class='{{ extraClassNames }}').navbar.navbar-default
       li.list-inline-item.social.hidden-xs-down
         a(href="https://twitter.com/Mark2Cure", target='_blank')
           <i class="fa fa-twitter-square"></i>
+
+      - if not user.is_authenticated
+        li.list-inline-item
+          a(href='{% url "account_login" %}').box-outline Login
