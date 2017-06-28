@@ -422,7 +422,29 @@ NERParagraphList = Backbone.Collection.extend({
 
   url: function() { return false; },
   sync: function () { return false; },
-})
+});
+
+
+NERDocument = Backbone.RelationalModel.extend({
+  defaults: {
+    pk: 0,
+    pmid: ''
+  },
+
+  initialize: function() {
+    console.log('init ner doc', this);
+  },
+
+  relations: [{
+    type: 'HasMany',
+    key: 'passages',
+
+    relatedModel: NERParagraph,
+    collectionType: NERParagraphList
+  }]
+
+});
+
 
 
 /*
@@ -708,6 +730,9 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     return {
       'enabled': enabled
     }
+  },
+  initialize: function() {
+    console.log('ner para init', this);
   }
 });
 
@@ -737,7 +762,7 @@ NERNavigationView = Backbone.Marionette.View.extend({
      //          li.list-inline-item.uncompleted &#8226;
      //
      //  .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
-     //    p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span> 
+     //    p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span>
   }
 });
 
@@ -746,8 +771,8 @@ NERFooterView = Backbone.Marionette.View.extend({
 
 YPet = Backbone.Marionette.View.extend({
   /* The top level view for all interactions on text
-   * this.model = ?
-   * this.collection = NERParagraphList
+   * this.model = active NERDocument being annotated
+   * this.collection = NERDocumentList (Quest Documents)
    */
   template: '#ypet-template',
   className: 'row',
@@ -762,10 +787,10 @@ YPet = Backbone.Marionette.View.extend({
     var self = this;
 
     if(!self.options.training && !self.collection) {
-      $.getJSON('/document/pubtator/'+self.options.pmid+'.json', function( data ) {
+      $.getJSON('/document/'+self.options.pmid+'/', function( data ) {
         /* The Annotation information has been returned from the server at this point
            it is now safe to start YPET */
-        self.collection = new NERParagraphList(data.collection.document.passage);
+        self.model = new NERDocument(data);
         self.render();
       });
     }

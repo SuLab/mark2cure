@@ -15,7 +15,7 @@ def read_bioc(request, pubmed_id):
     """
     doc = get_object_or_404(Document, document_id=pubmed_id)
     data = Document.objects.as_json(documents=[doc])
-    return Response(data)
+    return Response(data[0])
 
 
 def read_pubtator_bioc(request, pubmed_id):
@@ -35,6 +35,7 @@ def read_pubtator_bioc(request, pubmed_id):
 
     data = Document.objects.as_json(documents=[doc])
     return Response(data)
+
 
 def read_pubtator(request, pk):
     """
