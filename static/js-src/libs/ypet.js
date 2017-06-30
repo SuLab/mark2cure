@@ -413,7 +413,6 @@ NERParagraph = Backbone.RelationalModel.extend({
       this.set('annotations', new NERAnnotationList(this.get('annotation')));
       this.unset('annotation');
     }
-
   },
 });
 
@@ -424,15 +423,19 @@ NERParagraphList = Backbone.Collection.extend({
   sync: function () { return false; },
 });
 
-
 NERDocument = Backbone.RelationalModel.extend({
+  /* A Document with all the children required
+   * for NER tasks such as:
+   * - Passage offset generation
+   * - Passage word tokenization
+   * - Passage user_annotations
+   * - Passage opponent_annotations
+   */
   defaults: {
     pk: 0,
-    pmid: ''
-  },
-
-  initialize: function() {
-    console.log('init ner doc', this);
+    pmid: '',
+    active: false, // If is the currently addressed Document in the Quest
+    completed: false, // If has previously been completed by the user
   },
 
   relations: [{
@@ -442,9 +445,15 @@ NERDocument = Backbone.RelationalModel.extend({
     relatedModel: NERParagraph,
     collectionType: NERParagraphList
   }]
-
 });
 
+NERDocumentList = Backbone.Collection.extend({
+  /* The Quest of Documents to Complete */
+  model: NERDocument,
+
+  url: function() { return false; },
+  sync: function () { return false; },
+})
 
 
 /*
@@ -661,7 +670,10 @@ NERWordView = Backbone.Marionette.View.extend({
 });
 
 NERWordsView = Backbone.Marionette.CollectionView.extend({
-  /* Parent list for REChoices */
+  /* List of individual words
+   * this.model = None
+   * this.collection = NERWordList
+  */
   tagName: 'p',
   className: 'paragraph m-0',
   childView: NERWordView,
@@ -669,9 +681,9 @@ NERWordsView = Backbone.Marionette.CollectionView.extend({
 });
 
 NERParagraphView = Backbone.Marionette.View.extend({
-  /* Initial HTML before a REExtractionList is available
-  * - Model = NERParagraph
-  * - Collection = None
+  /* Container item for the individual words
+   * this.model = NERParagraph
+   * this.collection = None
   */
   template: _.template('<div class="paragraph-content p-3"></div>'),
   className: function() {
@@ -719,7 +731,10 @@ NERParagraphView = Backbone.Marionette.View.extend({
 });
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
-  /* Parent list for NERParagraphs */
+  /* Parent list for NERParagraphs
+   * this.model = NERDocument
+   * this.collection = NERParagraphList
+   */
   childView: NERParagraphView,
   className: 'paragraphs',
   childViewEventPrefix: 'paragraph',
@@ -745,6 +760,10 @@ NERLoadingView = Backbone.Marionette.View.extend({
 });
 
 NERNavigationView = Backbone.Marionette.View.extend({
+  /* The Progress indicator view for all interactions on the Quest
+   * this.model = None
+   * this.collection = NERDocumentList (Quest Documents)
+   */
   template: '#ypet-navigation-template',
   className: 'row',
 
@@ -787,7 +806,7 @@ YPet = Backbone.Marionette.View.extend({
     var self = this;
 
     if(!self.options.training && !self.collection) {
-      $.getJSON('/document/'+self.options.pmid+'/', function( data ) {
+      $i.getJSON('/document/'+self.options.pmid+'/', function( data ) {
         /* The Annotation information has been returned from the server at this point
            it is now safe to start YPET */
         self.model = new NERDocument(data);
@@ -940,8 +959,6 @@ YPet = Backbone.Marionette.View.extend({
       //   });
       //
       // });
-
-
   }
 });
 
