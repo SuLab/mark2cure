@@ -24,4 +24,4 @@ ON `document_section`.`id` = `document_view`.`section_id`
 WHERE `task_documentquestrelationship`.`task_id` = {task_id}
 
 GROUP BY `task_documentquestrelationship`.`document_id`
-ORDER BY `task_documentquestrelationship`.`document_id` ASC
+

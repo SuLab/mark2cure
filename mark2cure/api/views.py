@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db import connection
 from django.conf import settings
 
-from ..document.models import Annotation, View
+from ..document.models import Document, Annotation, View
 from ..task.models import Level, UserQuestRelationship
 
 from .serializers import QuestSerializer, LeaderboardSerializer, NERGroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
@@ -144,6 +144,37 @@ def ner_stats(request):
 
 @login_required
 @api_view(['GET'])
+def ner_quest_read(request, quest_pk):
+
+    cmd_str = ""
+    with open('mark2cure/task/entity_recognition/commands/get-quest-progression.sql', 'r') as f:
+        cmd_str = f.read()
+
+    cmd_str = cmd_str.format(task_id=quest_pk, user_id=request.user.pk)
+
+    # Start the DB Connection
+    c = connection.cursor()
+    c.execute(cmd_str)
+
+    queryset = [{'pk': x[0],
+                 'task_completed': x[1],
+                 'view_count': x[2],
+                 'completed': x[3],
+                 'had_opponent': x[4]} for x in c.fetchall()]
+
+    # Close the connection
+    c.close()
+
+    documents = Document.objects.as_json(documents=[x['pk'] for x in queryset])
+
+    # Each query does ASC document_pk so we know they're in the same order!
+    res = [{**queryset[i], **documents[i]} for i in range(len(queryset))]
+
+    return Response(res)
+
+
+@login_required
+@api_view(['GET'])
 def re_stats(request):
     return Response({
         'total_score': request.user.profile.score(task='relation'),
@@ -207,7 +238,6 @@ def ner_list_item(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
     # total annotation count here, plus anns
-
 
     # (TODO) this should not be hardcoded here; could not open file? Quick Fix. -JF
     # data should come from file in static/data "group_release_dates.txt"

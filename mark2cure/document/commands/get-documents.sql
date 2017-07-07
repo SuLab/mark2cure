@@ -10,4 +10,4 @@ LEFT JOIN `document_section`
     ON `document_section`.`document_id` = `document_document`.`id`
 
 WHERE `document_document`.`id` IN ({0})
-
+ORDER BY `document_document`.`id` ASC

@@ -26,6 +26,9 @@ urlpatterns = [
         views.user_task_stats, name='task-stats-api'),
     url(r'ner/stats/',
         views.ner_stats, name='ner-stats-api'),
+    url(r'ner/quest/(?P<quest_pk>\d+)/$',
+        views.ner_quest_read, name='ner-quest-read-api'),
+
     url(r're/stats/',
         views.re_stats, name='re-stats-api'),
 

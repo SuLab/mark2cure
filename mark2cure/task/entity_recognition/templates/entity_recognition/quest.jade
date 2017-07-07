@@ -27,8 +27,6 @@ block post-footer
           'csrf_token': '{{csrf_token}}',
           'mode': 'ner',
           'task_pk': {{ task_pk }},
-          'document_pk': {{ doc.pk }},
-          'pmid': {{ doc.document_id }},
           })
         );
       }

@@ -4,8 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, permissions
+
 
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
@@ -311,8 +313,10 @@ def quest_feedback(request, quest_pk):
 
 
 @login_required
+@api_view(['GET'])
 def quest_read(request, quest_pk):
     task = get_object_or_404(Task, pk=quest_pk)
+    return TemplateResponse(request, 'entity_recognition/quest.jade', {'task_pk': task.pk})
 
     # Check if user has pre-existing relationship with Quest
     user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user)
@@ -321,6 +325,8 @@ def quest_read(request, quest_pk):
 
         # User has viewed this Quest before and Completed it
         # so show them the feedback page
+
+        # (TODO) Do in Javascript
         if user_quest_rel_queryset.filter(completed=True).exists():
             return redirect('task-entity-recognition:quest-feedback', quest_pk=task.pk)
 
@@ -330,13 +336,18 @@ def quest_read(request, quest_pk):
 
         # If there are no more documents to do, mark the Quest
         # as completed and go to dashboard
+        # (TODO) Do in Javascript
         task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
         if len(task_doc_uncompleted) == 0:
             quest_submit(request, task, True)
             return redirect('task-entity-recognition:quest-feedback', quest_pk=task.pk)
 
         next_doc_idx = len(task_doc_pks_completed) + 1
-        return redirect('task-entity-recognition:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
+        # return redirect('task-entity-recognition:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
+
+        # data = Document.objects.as_json(documents=[doc])
+        # return Response({'next':{'abc':123}})
+
 
     else:
         # Create the User >> Quest relationship

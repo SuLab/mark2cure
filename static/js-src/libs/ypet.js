@@ -432,10 +432,7 @@ NERDocument = Backbone.RelationalModel.extend({
    * - Passage opponent_annotations
    */
   defaults: {
-    pk: 0,
-    pmid: '',
     active: false, // If is the currently addressed Document in the Quest
-    completed: false, // If has previously been completed by the user
   },
 
   relations: [{
@@ -451,8 +448,23 @@ NERDocumentList = Backbone.Collection.extend({
   /* The Quest of Documents to Complete */
   model: NERDocument,
 
-  url: function() { return false; },
-  sync: function () { return false; },
+  url: '/api/ner/quest/674/',
+
+  initialize: function() {
+
+    console.log('collection init', this);
+
+    this.listenTo(this, 'add', function(model) {
+      console.log('add', model);
+    });
+
+    this.listenTo(this, 'sync', function() {
+      if( this.pluck('parent_task_completed').every(function(v) { return v == 1; }) ) {
+        // (TODO) Jump to review page b/c the Quest is complete!
+      }
+    });
+
+  }
 })
 
 
@@ -759,6 +771,35 @@ NERLoadingView = Backbone.Marionette.View.extend({
   template: '<p>Text Loading...</p>'
 });
 
+NERProgressItem = Backbone.Marionette.View.extend({
+  /* Drop down list of REChoices */
+  template: _.template('&#8226;'),
+  tagName: 'li',
+  className: 'list-inline-item',
+
+  onRender: function() {
+    if ( !this.model.get('available') ) {
+      this.$el.addClass('skip');
+    }
+    if ( this.model.get('completed') ) {
+      this.$el.addClass('completed');
+    }
+    if ( this.model.get('current') ) {
+      this.$el.addClass('active');
+    }
+  }
+});
+
+NERProgressView = Backbone.Marionette.CollectionView.extend({
+  /* Parent list for REProgressItem */
+  tagName: 'ul',
+  className: 'list-unstyled list-inline',
+  childView: NERProgressItem,
+  childViewEventPrefix: 'progress'
+});
+
+
+
 NERNavigationView = Backbone.Marionette.View.extend({
   /* The Progress indicator view for all interactions on the Quest
    * this.model = None
@@ -767,7 +808,13 @@ NERNavigationView = Backbone.Marionette.View.extend({
   template: '#ypet-navigation-template',
   className: 'row',
 
+  regions: {
+    'progress': '#progress-bar'
+  },
+
   onRender: function() {
+    this.showChildView('progress', new NERProgressView({'collection': this.collection}));
+
      // #quest-guide.row
      //  .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
      //    ol.list-unstyled.list-inline
@@ -803,28 +850,28 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    var self = this;
 
-    if(!self.options.training && !self.collection) {
-      $i.getJSON('/document/'+self.options.pmid+'/', function( data ) {
-        /* The Annotation information has been returned from the server at this point
-           it is now safe to start YPET */
-        self.model = new NERDocument(data);
-        self.render();
-      });
+    if(!this.options.training && !this.collection) {
+      this.collection = new NERDocumentList({'quest_pk': 674})
+      this.collection.fetch();
     }
+
+    // this.listenTo(this.collection, 'sync', function() {
+    //   this.render();
+    // });
+
   },
 
   onRender: function() {
     console.log('YPet onRender', this);
 
-    if(this.collection && this.model) {
+    if(this.collection) {
       this.options['collection'] = this.collection;
-      this.showChildView('text', new NERParagraphsView(this.options));
+      // this.showChildView('text', new NERParagraphsView(this.options));
 
       if(this.options.mode == 'ner') {
         this.showChildView('navigation', new NERNavigationView(this.options));
-        this.showChildView('footer', new RelationTextView(this.options));
+        // this.showChildView('footer', new RelationTextView(this.options));
 
       } else if (this.options.mode == 're') {
         // var concept_uids = [this.options.concepts['c1'].id, this.options.concepts['c2'].id];
