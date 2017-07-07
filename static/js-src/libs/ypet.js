@@ -373,6 +373,18 @@ NERParagraph = Backbone.RelationalModel.extend({
       key : 'paragraph',
       includeInJSON: false,
     }
+  }, {
+    /* Many Opponent Annotations */
+    type: 'HasMany',
+    key: 'opponent_annotations',
+
+    relatedModel: NERAnnotation,
+    collectionType: NERAnnotationList,
+
+    reverseRelation : {
+      key : 'paragraph',
+      includeInJSON: false,
+    }
   }],
 
   initialize : function() {
@@ -710,7 +722,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
   template: _.template('<div class="paragraph-content p-3"></div>'),
   className: function() {
     var enabled_status = this.getOption('enabled') ? 'ypet-enabled' : 'ypet-disabled';
-    return ['paragraph-box', 'mb-2', enabled_status].join(' ');
+    return ['paragraph-box', 'my-3', enabled_status].join(' ');
   },
 
   regions: {
@@ -718,22 +730,23 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 
   onRender : function() {
-    // if(!this.options.enabled) {
-    //   #<{(| If you're showing a partner's results, disallow highlighting |)}>#
-    //   // this.$el.css({'color': '#000', 'cursor': 'default'});;
-    //   this.model.get('words').each(function(w) {
-    //     w.set('disabled', true);
-    //   });
-    //   this.$el.css('cursor', 'not-allowed');
-    //
-    //   console.log('onRender of NER Para View', this.$el);
-    // }
-    //
-    // this.showChildView('words', new NERWordsView(
-    //   {'collection': this.model.get('words'),
-    //     'enabled': this.options.enabled
-    //   }));
-    //
+    if(!this.options.enabled) {
+      /* If you're showing a partner's results, disallow highlighting */
+      // this.$el.css({'color': '#000', 'cursor': 'default'});;
+      this.model.get('words').each(function(w) {
+        w.set('disabled', true);
+      });
+      this.$el.css('cursor', 'not-allowed');
+
+      console.log('onRender of NER Para View', this.$el);
+    }
+
+    this.showChildView('words', new NERWordsView(
+      { 'collection': this.model.get('words'),
+        'enabled': this.options.enabled
+      }
+    ));
+
     // var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
     // if (has_opponent) {
     //   #<{(| Warning: this allows paragraph specific disabiling |)}>#
@@ -806,7 +819,7 @@ NERProgressView = Backbone.Marionette.CollectionView.extend({
   tagName: 'ul',
   className: 'list-unstyled list-inline',
   childView: NERProgressItem,
-  childViewEventPrefix: 'progress'
+  childViewEventPrefix: 'progress',
 });
 
 
@@ -828,7 +841,70 @@ NERNavigationView = Backbone.Marionette.View.extend({
   }
 });
 
+
+NERFooterHelpView = Backbone.Marionette.View.extend({
+  /* The list of links for getting task instructions
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-footer-help-template',
+  templateContext: function() {
+    return {'mode': this.options.mode};
+  },
+  className: 'row'
+})
+
+
+NERFooterConfirmView = Backbone.Marionette.View.extend({
+  /* The Actionable button that submits the document
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-footer-confirm-template',
+  className: 'row',
+
+  events: {
+    'mousedown p.button': function() {
+      // (TODO) Trigger NER Document submission
+    }
+  }
+});
+
+
+NERFooterSearchView = Backbone.Marionette.View.extend({
+  /* The link that allows people to look up a term independently
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-footer-search-template',
+  className: 'row',
+
+  onRender: function() {
+    // var url = 'https://www.google.com/search?q='+ann_text;
+    // $('#google_annotation a').attr('href', url);
+    // $('#google_annotation a small').text(_.str.truncate(ann_text, 36));
+  }
+
+});
+
+
 NERFooterView = Backbone.Marionette.View.extend({
+  template: '#ypet-footer-template',
+  className: 'row my-3 justify-content-center',
+
+  regions: {
+    'help': '#ypet-footer-help',
+    'confirm': '#ypet-footer-confirm',
+    'search': '#ypet-footer-search'
+  },
+
+  onRender: function() {
+    this.showChildView('help', new NERFooterHelpView({'mode': this.options.mode}));
+    this.showChildView('confirm', new NERFooterConfirmView({}));
+    // (TODO) Pass NERAnnotation item into this
+    this.showChildView('search', new NERFooterSearchView({'model': false}));
+  }
+
 });
 
 YPet = Backbone.Marionette.View.extend({
@@ -837,7 +913,7 @@ YPet = Backbone.Marionette.View.extend({
    * this.collection = NERDocumentList (Quest Documents)
    */
   template: '#ypet-template',
-  className: 'row',
+  className: 'row justify-content-center',
 
   regions: {
     'navigation': '#ypet-navigation',
@@ -868,7 +944,7 @@ YPet = Backbone.Marionette.View.extend({
 
       if(this.options.mode == 'ner') {
         this.showChildView('navigation', new NERNavigationView(this.options));
-        // this.showChildView('footer', new RelationTextView(this.options));
+        this.showChildView('footer', new NERFooterView(this.options));
 
       } else if (this.options.mode == 're') {
         // var concept_uids = [this.options.concepts['c1'].id, this.options.concepts['c2'].id];
@@ -921,9 +997,6 @@ YPet = Backbone.Marionette.View.extend({
       // YPet.start();
       //
       // function set_google_annotation(ann_text) {
-      //   var url = 'https://www.google.com/search?q='+ann_text;
-      //   $('#google_annotation a').attr('href', url);
-      //   $('#google_annotation a small').text(_.str.truncate(ann_text, 36));
       // };
       //
       // function show_results() {

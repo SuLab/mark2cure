@@ -326,17 +326,6 @@ script(id='ypet-partner-templates', type='html/template')
             //h3.text-xs-center Unfortunately you didn't earn any points because no annotations were provided ;(
 
 
-script(id='ypet-help-instructions-template', type='x-template/underscore')
-    .row.m-t-1
-      .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
-        div(role="group").btn-group-vertical
-          a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
-            | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
-            | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
-          a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
-            | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
-
 
 script(id='ypet-navigation-template', type='x-template/underscore')
   // Document header Information
@@ -349,14 +338,37 @@ script(id='ypet-navigation-template', type='x-template/underscore')
     p.text-center Score: <span id='score'>0</span>
 
 
-script(id='ypet-para-templates', type='html/template')
-  .row
-    .col-xs-12.col-md-10.col-md-offset-1
+script(id='ypet-template', type='html/template')
+  #ypet-navigation.col-12
+  #ypet-text.col-10
+  #ypet-footer.col-12
 
-script(id='ypet-help-template', type='html/template')
-  .row.m-t-1
-    .col-sm-5.col-md-3.col-md-offset-1.hidden-xs-down
+
+script(id='ypet-footer-template', type='html/template')
+  #ypet-footer-help.col-4
+  #ypet-footer-confirm.col-4
+  #ypet-footer-search.col-4
+
+
+script(id='ypet-footer-help-template', type='html/template')
+  .col-12
+
       div(role="group").btn-group-vertical
+
+        <% if(mode == 'ner') { %>
+        // -- NER --
+        a(href='{% url "instructions:entity-recognition-diseases" %}', target='_blank', style='background-color: #d1f3ff;').btn.btn-default
+          | Disease Concept  <i class="fa fa-external-link fa-lg"></i>
+
+        a(href='{% url "instructions:entity-recognition-genes" %}', target='_blank', style='background-color: #B1FFA8;').btn.btn-default
+          | Genes Concept  <i class="fa fa-external-link fa-lg"></i>
+
+        a(href='{% url "instructions:entity-recognition-treatments" %}', target='_blank', style='background-color: #ffd1dc;').btn.btn-default
+          | Treatments Concept  <i class="fa fa-external-link fa-lg"></i>
+        <% } %>
+
+        <% if(mode == 're') { %>
+        // -- RE --
         a(href='{% url "instructions:relation" %}', style='background-color:#fff; color:#7F3CFF; border-color:#7F3CFF; border-width:3px').btn.btn-default
           | Relation Instructions  <i class="fa fa-external-link fa-lg"></i>
 
@@ -368,53 +380,38 @@ script(id='ypet-help-template', type='html/template')
 
         a(href='{% url "instructions:relation-definition-drug" %}', style='background-color:rgb(255, 209, 220);').btn.btn-default
           | Drugs Concept  <i class="fa fa-external-link fa-lg"></i>
+        <% } %>
 
 
-script(id='ypet-template', type='html/template')
-  #ypet-navigation.col-12
-  #ypet-text.col-12
-  #ypet-footer.col-12
+script(id='ypet-footer-confirm-template', type='html/template')
+  .col-12
+      p.button.btn.btn-primary.btn-block.done Submit
 
 
+script(id='ypet-footer-next-template', type='html/template')
+  .col-12
+    // - get_comment_count for document.document document.pk as comment_count
+      .col-xs-10.col-xs-offset-1
+        // a(href='', target='_blank')
+          p.text-muted.text-xs-center
+            small Annotations in this doc have been discussed #{comment_count} times. <strong>Discuss Now?</strong>
 
-script(id='ypet-confirm-template', type='html/template')
-      // Init all submission events
-      // 1) Submit the document
-      // 2) Go to next document (after review)
-      // 3) Submit the Quest as complete
+      .col-xs-6
+        // a(href='', target='_blank').button.btn.btn-default.btn-block.done
+          | Yes, Let's Talk
 
-      .col-xs-10.col-xs-offset-1.col-sm-7.col-sm-offset-0.col-md-4.col-md-offset-0
-        // - get_comment_count for document.document document.pk as comment_count
-
-        #quest-submit.row
-          .col-xs-10.col-xs-offset-1
-            p.button.btn.btn-primary.btn-block.done Submit
-
-        #doc-talk(style='display:none;').row
-          .col-xs-10.col-xs-offset-1
-            // a(href='', target='_blank')
-              p.text-muted.text-xs-center
-                small Annotations in this doc have been discussed #{comment_count} times. <strong>Discuss Now?</strong>
-          .col-xs-6
-            // a(href='', target='_blank').button.btn.btn-default.btn-block.done
-              | Yes, Let's Talk
-
-          .col-xs-6
-            // a(href='').button.btn.btn-primary.btn-block.done
-              | Next Doc
+      .col-xs-6
+        // a(href='').button.btn.btn-primary.btn-block.done
+          | Next Doc
 
 
-script(id='ypet-search-template', type='html/template')
+script(id='ypet-footer-search-template', type='html/template')
+  .col-12
     #google_annotation.col-xs-6.col-xs-offset-3.col-md-3.col-md-offset-0
         a(href='#', target='_blank').btn.btn-info.btn-block
           | Search <i class="fa fa-external-link fa-lg"></i>
           br
           small
-
-
-
-
-
 
 
 
