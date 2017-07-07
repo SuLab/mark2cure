@@ -1,3 +1,44 @@
+#ypet-action-area {
+
+  #ypet-navigation {
+    > .row {
+      height: 34px;
+      background-color: $color_gray_lightest;
+    }
+
+    #progress-bar {
+      ul {
+        margin-bottom: 0px;
+        li {
+          font-size: 2.5em;
+          line-height: .65em;
+          cursor: pointer;
+          color: $color_white;
+        }
+        li.completed { color: $color_gray_light; }
+        li.active { color: $color_purple; }
+      }
+    }
+    p { margin-bottom: 0px; }
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ypet-text {
   .paragraphs {
     .paragraph-box {

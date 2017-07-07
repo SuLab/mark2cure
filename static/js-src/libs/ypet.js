@@ -452,10 +452,8 @@ NERDocumentList = Backbone.Collection.extend({
 
   initialize: function() {
 
-    console.log('collection init', this);
-
     this.listenTo(this, 'add', function(model) {
-      console.log('add', model);
+      // (TODO) Cleanup any attributes?
     });
 
     this.listenTo(this, 'sync', function() {
@@ -464,7 +462,19 @@ NERDocumentList = Backbone.Collection.extend({
       }
     });
 
+  },
+
+  get_active: function() {
+    var available = this.where({'completed': 0});
+    if(available.length == 0) {
+      // (TODO) Jump to review page b/c the Quest is complete!
+    }
+
+    var m = available[_.random(0, available.length-1)]
+    m.set('active', true);
+    return m;
   }
+
 })
 
 
@@ -708,27 +718,27 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 
   onRender : function() {
-    if(!this.options.enabled) {
-      /* If you're showing a partner's results, disallow highlighting */
-      // this.$el.css({'color': '#000', 'cursor': 'default'});;
-      this.model.get('words').each(function(w) {
-        w.set('disabled', true);
-      });
-      this.$el.css('cursor', 'not-allowed');
-
-      console.log('onRender of NER Para View', this.$el);
-    }
-
-    this.showChildView('words', new NERWordsView(
-      {'collection': this.model.get('words'),
-        'enabled': this.options.enabled
-      }));
-
-    var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
-    if (has_opponent) {
-      /* Warning: this allows paragraph specific disabiling */
-      this.triggerMethod('view:only');
-    }
+    // if(!this.options.enabled) {
+    //   #<{(| If you're showing a partner's results, disallow highlighting |)}>#
+    //   // this.$el.css({'color': '#000', 'cursor': 'default'});;
+    //   this.model.get('words').each(function(w) {
+    //     w.set('disabled', true);
+    //   });
+    //   this.$el.css('cursor', 'not-allowed');
+    //
+    //   console.log('onRender of NER Para View', this.$el);
+    // }
+    //
+    // this.showChildView('words', new NERWordsView(
+    //   {'collection': this.model.get('words'),
+    //     'enabled': this.options.enabled
+    //   }));
+    //
+    // var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
+    // if (has_opponent) {
+    //   #<{(| Warning: this allows paragraph specific disabiling |)}>#
+    //   this.triggerMethod('view:only');
+    // }
   },
 
   onViewOnly: function() {
@@ -759,7 +769,11 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     }
   },
   initialize: function() {
-    console.log('ner para init', this);
+    if(this.model) {
+      this.collection = this.model.get('passages');
+    } else {
+      this.collection = new NERParagraphList({});
+    }
   }
 });
 
@@ -778,13 +792,10 @@ NERProgressItem = Backbone.Marionette.View.extend({
   className: 'list-inline-item',
 
   onRender: function() {
-    if ( !this.model.get('available') ) {
-      this.$el.addClass('skip');
-    }
     if ( this.model.get('completed') ) {
       this.$el.addClass('completed');
     }
-    if ( this.model.get('current') ) {
+    if ( this.model.get('active') ) {
       this.$el.addClass('active');
     }
   }
@@ -814,21 +825,6 @@ NERNavigationView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     this.showChildView('progress', new NERProgressView({'collection': this.collection}));
-
-     // #quest-guide.row
-     //  .col-xs-10.col-xs-offset-1.col-md-5.col-md-offset-1.col-lg-3.col-lg-offset-1
-     //    ol.list-unstyled.list-inline
-     //      - for doc in completed_doc_pks
-     //        li.list-inline-item.completed &#8226;
-     //
-     //      - each val, index in uncompleted_docs
-     //        - if index == 0
-     //          li.list-inline-item.active &#8226;
-     //        - else
-     //          li.list-inline-item.uncompleted &#8226;
-     //
-     //  .col-xs-10.col-xs-offset-1.col-md-3.col-md-offset-2.col-lg-3.col-lg-offset-4
-     //    p.text-xs-center Score: <span id='score'>#{user.userprofile.score}</span>
   }
 });
 
@@ -856,18 +852,19 @@ YPet = Backbone.Marionette.View.extend({
       this.collection.fetch();
     }
 
-    // this.listenTo(this.collection, 'sync', function() {
-    //   this.render();
-    // });
+    this.listenTo(this.collection, 'sync', function() {
+      this.model = this.collection.get_active();
+      this.render();
+    });
 
   },
 
   onRender: function() {
-    console.log('YPet onRender', this);
 
     if(this.collection) {
+      this.options['model'] = this.model;
       this.options['collection'] = this.collection;
-      // this.showChildView('text', new NERParagraphsView(this.options));
+      this.showChildView('text', new NERParagraphsView(this.options));
 
       if(this.options.mode == 'ner') {
         this.showChildView('navigation', new NERNavigationView(this.options));
