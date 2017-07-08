@@ -297,8 +297,8 @@ script(id='dashboard-leaderboard-item-template', type='html/template')
 // Tasks (NER + RE)
 //
 
-script(id='ypet-partner-templates', type='html/template')
-    #partner-results(style='display:none;').row
+script(id='ypet-document-results-template', type='html/template')
+    #partner-results.row
       .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
         .row.alert.alert-info.alert-info-minimal.alert-sticky
           #partner-info.col-xs-4
@@ -315,7 +315,7 @@ script(id='ypet-partner-templates', type='html/template')
               | <span id='points'></span>
               | points!
 
-    #new-alert-congrats(style='display:none;').row
+    #new-alert-congrats.row
       .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2
         .row.alert.alert-info.alert-info-minimal.alert-sticky
           .col-xs-10.col-xs-offset-1
@@ -340,6 +340,7 @@ script(id='ypet-navigation-template', type='x-template/underscore')
 
 script(id='ypet-template', type='html/template')
   #ypet-navigation.col-12
+  #ypet-results.col-10
   #ypet-text.col-10
   #ypet-footer.col-12
 
@@ -407,16 +408,10 @@ script(id='ypet-footer-next-template', type='html/template')
 
 script(id='ypet-footer-search-template', type='html/template')
   .col-12
-    #google_annotation.col-xs-6.col-xs-offset-3.col-md-3.col-md-offset-0
-        a(href='#', target='_blank').btn.btn-info.btn-block
-          | Search <i class="fa fa-external-link fa-lg"></i>
-          br
-          small
-
-
-
-
-
+    a(href='#', target='_blank').btn.btn-info.btn-block
+      | Search <i class="fa fa-external-link fa-lg"></i>
+      br
+      small
 
 script(id='tree-template', type='x-template/underscore')
   .col-12

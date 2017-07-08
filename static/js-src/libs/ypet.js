@@ -381,10 +381,10 @@ NERParagraph = Backbone.RelationalModel.extend({
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
 
-    reverseRelation : {
-      key : 'paragraph',
-      includeInJSON: false,
-    }
+    // reverseRelation : {
+    //   key : 'paragraph',
+    //   includeInJSON: false,
+    // }
   }],
 
   initialize : function() {
@@ -790,6 +790,19 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
   }
 });
 
+
+NERDocumentResultsView = Backbone.Marionette.View.extend({
+  /* ...
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-document-results-template',
+  onRender: function() {
+    console.log('NER Res', this);
+  }
+});
+
+
 NERLoadingView = Backbone.Marionette.View.extend({
   /* Initial HTML before a REExtractionList is available
   * - Model = None
@@ -863,21 +876,27 @@ NERFooterConfirmView = Backbone.Marionette.View.extend({
   template: '#ypet-footer-confirm-template',
   className: 'row',
 
-  events: {
-    'mousedown p.button': function() {
-      // (TODO) Trigger NER Document submission
-    }
+  ui: {
+    'button': 'p.button'
+  },
+
+  triggers: {
+    'mousedown @ui.button': 'confirm:submit'
   }
 });
 
 
 NERFooterSearchView = Backbone.Marionette.View.extend({
   /* The link that allows people to look up a term independently
-   * this.model = None
+   * this.model = NERAnnotation
    * this.collection = None
    */
   template: '#ypet-footer-search-template',
   className: 'row',
+
+  initialize: function() {
+    // this.model = new NERAnnotation({'text': ''});
+  },
 
   onRender: function() {
     // var url = 'https://www.google.com/search?q='+ann_text;
@@ -891,6 +910,7 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
 NERFooterView = Backbone.Marionette.View.extend({
   template: '#ypet-footer-template',
   className: 'row my-3 justify-content-center',
+  childViewEventPrefix: 'ner:footer',
 
   regions: {
     'help': '#ypet-footer-help',
@@ -917,6 +937,7 @@ YPet = Backbone.Marionette.View.extend({
 
   regions: {
     'navigation': '#ypet-navigation',
+    'results': '#ypet-results',
     'text': '#ypet-text',
     'footer': '#ypet-footer'
   },
@@ -933,6 +954,45 @@ YPet = Backbone.Marionette.View.extend({
       this.render();
     });
 
+  },
+
+  childViewEvents: {
+    'ner:footer:confirm:submit': function() {
+      /* Submit the User's annotations for the current Document */
+
+        var self = this;
+            ann_dict = {};
+        // #<{(| Iterate over each of the paragraphs or annotatable sections on the page |)}>#
+        // _.each(passages, function(passage, passage_idx) {
+        //   ann_dict[+_.find(passage.infon, function(o){return o['@key']=='id';})['#text']] = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON();
+        // });
+        // #<{(| Add the section to the objects |)}>#
+        // _.each(_.keys(ann_dict), function(section_pk) {
+        //   ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': section_pk}) })
+        // })
+        // #<{(| Do not save data if the annotation is empty |)}>#
+        // annotations = _.flatten(_.values(ann_dict));
+        // annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
+        // annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
+        // annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+
+        /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
+        $.ajax({
+          type: 'POST',
+          url: '/task/entity-recognition/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
+          headers: {'X-CSRFTOKEN': this.options.csrf_token},
+          contentType: "application/json; charset=utf-8",
+          data:  JSON.stringify([]),
+          dataType: 'json',
+          cache: false,
+          async: false,
+          success: function(a,b,c) {
+            console.log(self, a,b,c);
+            self.showChildView('results', new NERDocumentResultsView(self.options));
+          }
+        });
+
+    }
   },
 
   onRender: function() {
@@ -955,50 +1015,6 @@ YPet = Backbone.Marionette.View.extend({
 
 
       // var passages;
-      //
-      // YPet.addInitializer(function(options) {
-      //
-      //   #<{(| Kick off the application with the document data
-      //   * - Even if pubtator is down / no annotations available
-      //   * - the passage text is still available to YPet
-      //   |)}>#
-      //   $.getJSON('/document/pubtator/{{document.document_id}}.json', function( data ) {
-      //     passages = data.collection.document.passage;
-      //     var regions = {};
-      //
-      //     _.each(passages, function(passage, passage_idx) {
-      //       var passage_id = _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-      //       var p_body = '<div id="'+ passage_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-      //       $('.paragraphs').append(p_body);
-      //       regions[''+passage_idx] = '#'+passage_id;
-      //     });
-      //     YPet.addRegions(regions);
-      //
-      //     #<{(| Add paragraph words and pubtator annotations if available |)}>#
-      //     _.each(passages, function(passage, passage_idx) {
-      //       var p = new Paragraph({'text': passage.text});
-      //       YPet[''+passage_idx].show( new WordCollectionView({
-      //         collection: p.get('words'),
-      //         passage_json: passage,
-      //         bioc_json: data
-      //       }) );
-      //     });
-      //
-      //     #<{(| Add event listener for recent annotation search helper |)}>#
-      //     _.each(passages, function(passage, passage_idx) {
-      //       YPet[''+passage_idx].currentView.collection.parentDocument.get('annotations').on('change', function(model, collection) {
-      //         var model_json = model.toJSON();
-      //         set_google_annotation(model_json.text);
-      //       });
-      //     });
-      //
-      //   });
-      // });
-      // YPet.start();
-      //
-      // function set_google_annotation(ann_text) {
-      // };
-      //
       // function show_results() {
       //   #<{(| Show partner comparison |)}>#
       //   $.ajax({
@@ -1036,46 +1052,6 @@ YPet = Backbone.Marionette.View.extend({
       //     }
       //   });
       // };
-      //
-      // $('#quest-submit').one('click', function(evt) {
-      //   #<{(| AJAX submit all of the current Annotaitons |)}>#
-      //   var self = this;
-      //       ann_dict = {};
-      //
-      //   #<{(| Iterate over each of the paragraphs or annotatable sections on the page |)}>#
-      //   _.each(passages, function(passage, passage_idx) {
-      //     ann_dict[+_.find(passage.infon, function(o){return o['@key']=='id';})['#text']] = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON();
-      //   });
-      //
-      //   #<{(| Add the section to the objects |)}>#
-      //   _.each(_.keys(ann_dict), function(section_pk) {
-      //     ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': section_pk}) })
-      //   })
-      //
-      //   #<{(| Do not save data if the annotation is empty |)}>#
-      //   annotations = _.flatten(_.values(ann_dict));
-      //   annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
-      //   annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
-      //   annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
-      //
-      //   #<{(| Submit Task over ajax, then show correct page (new / gm / partner compare) |)}>#
-      //   $.ajax({
-      //     type: 'POST',
-      //     url: '/task/entity-recognition/quest/{{task.pk}}/{{document.pk}}/submit/',
-      //     headers: {'X-CSRFTOKEN': '{{csrf_token}}'},
-      //     contentType: "application/json; charset=utf-8",
-      //     data:  JSON.stringify(annotations),
-      //     dataType: 'json',
-      //     cache: false,
-      //     async: false,
-      //     success: function() {
-      //       $('#doc-talk').show();
-      //       $(self).hide();
-      //       show_results();
-      //     }
-      //   });
-      //
-      // });
   }
 });
 
