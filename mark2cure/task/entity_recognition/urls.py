@@ -10,8 +10,8 @@ urlpatterns = [
         views.user_pmid_results_bioc, name='user-pmid-results-bioc'),
 
     # BioC File for Partner for Task & PMID Paring
-    url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.(?P<format_type>\w+)$',
-        views.identify_annotations_results_bioc, name='results-bioc'),
+    url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.json',
+        views.identify_annotations_results, name='results-bioc'),
 
     #
     # Routes for Completing the task

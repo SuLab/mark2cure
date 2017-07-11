@@ -9,11 +9,13 @@ from rest_framework.response import Response
 
 
 @api_view(['GET'])
-def read_bioc(request, pubmed_id):
-    """
-        A plain (no annotations) BioC file for a PMID
-    """
-    doc = get_object_or_404(Document, document_id=pubmed_id)
+def read_document(request, document_pk):
+    '''
+        Return a JSON response with the generic document structure
+
+        No annotations of any kind are included
+    '''
+    doc = get_object_or_404(Document, pk=document_pk)
     data = Document.objects.as_json(documents=[doc])
     return Response(data[0])
 

@@ -268,6 +268,10 @@ class DocumentManager(models.Manager):
             cmd_str = f.read()
         cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
 
+        print('-'*20)
+        print(cmd_str)
+        print('-'*20)
+
         c = connection.cursor()
         try:
             c.execute(cmd_str)

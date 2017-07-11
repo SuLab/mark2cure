@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     # BioC File for PMID (basic / no annotations)
-    url(r'^(?P<pubmed_id>\d+)/$',
-        views.read_bioc, name='read-bioc'),
+    url(r'^(?P<document_pk>\d+)/$',
+        views.read_document, name='read-document'),
 
     # BioC File for Pubtator by PMID
     url(r'^pubtator/(?P<pubmed_id>\d+)/',

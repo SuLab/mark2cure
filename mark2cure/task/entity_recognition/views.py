@@ -8,9 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
-
 from django.shortcuts import get_object_or_404, redirect
-from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseServerError
 from django.template.response import TemplateResponse
 
@@ -50,8 +48,8 @@ def user_pmid_results_bioc(request, doc_pk, user_pk, format_type):
 
 
 @login_required
-@require_http_methods(['GET', 'POST'])
-def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
+@api_view(['GET'])
+def identify_annotations_results(request, task_pk, doc_pk):
     '''
         Returns back the modified BioC file with additional collection metadata that allow us to compare you to a user and show score data
             (TODO) Expand this section
@@ -68,77 +66,65 @@ def identify_annotations_results_bioc(request, task_pk, doc_pk, format_type):
         requirements then just tell the player they've
         annotated a new document
     '''
-    opponent = select_best_opponent(task, document, request.user)
+    try:
+        opponent = select_best_opponent(task, document, request.user)
 
-    if not opponent:
+    except TypeError:
+        # TypeError:
+        opponent = None
+
+    if opponent:
+        # Other results exist if other people have at least viewed
+        # the quest and we know other users have at least submitted
+        # results for this particular document
+        player_views = []
+        opponent_views = []
+        for section in document.available_sections():
+            # If paired against a player who has completed the task multiple times
+            # compare the to the first instance of the person completing that Document <==> Quest
+            # while taking the latest version of the player's
+
+            uqr = task.userquestrelationship_set.filter(user=request.user).first()
+            player_view = uqr.views.filter(user=request.user, section=section, completed=True).first()
+
+            quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
+            opponent_view = quest_rel.views.filter(section=section, completed=True).first()
+
+            player_views.append(player_view)
+            opponent_views.append(opponent_view)
+
+            # Save who the player was paired against
+            player_view.opponent = opponent_view
+            player_view.save()
+
+        results = generate_results(player_views, opponent_views)
+        points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
+
+    else:
         # No other work has ever been done on this apparently
         # so we reward the user and let them know they were
         # first via a different template / bonus points
         uqr = task.userquestrelationship_set.filter(user=request.user).first()
+        points = settings.ENTITY_RECOGNITION_DOC_POINTS
 
-        # Did the new user provide at least 1 annotation?
-        # (TODO) Did the new annotations differ from pubtator?
-        # it would make more sense to do that as a valid check of
-        # "contribution" effort
+    award = Point.objects.create(
+        user=request.user,
+        amount=points,
+        content_type=ContentType.objects.get_for_model(task),
+        object_id=task.id,
+        created=timezone.now())
 
-        content_type = ContentType.objects.get_for_model(task)
-        Point.objects.create(user=request.user,
-                             amount=settings.ENTITY_RECOGNITION_DOC_POINTS,
-                             content_type=content_type,
-                             object_id=task.id,
-                             created=timezone.now())
-        return HttpResponseServerError('points_awarded')
+    res = {
+        'flatter': random.choice(settings.POSTIVE_FLATTER) if award.amount > 500 else random.choice(settings.SUPPORT_FLATTER),
+        'award': {
+            'pk': award.pk,
+            'amount': int(round(award.amount))
+        },
+        'opponent': opponent,
+        # 'partner_level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
+    }
 
-    df = Document.objects.entity_recognition_df(documents=[document], users=[opponent], include_pubtator=False)
-    df = clean_df(df)
-
-    # BioC Writer Response that will serve all partner comparison information
-    writer = Document.objects.as_writer(documents=[document])
-    writer = apply_annotations(writer, er_df=df)
-
-    # Other results exist if other people have at least viewed
-    # the quest and we know other users have at least submitted
-    # results for this particular document
-    player_views = []
-    opponent_views = []
-    for section in document.available_sections():
-        # If paired against a player who has completed the task multiple times
-        # compare the to the first instance of the person completing that Document <==> Quest
-        # while taking the latest version of the player's
-
-        uqr = task.userquestrelationship_set.filter(user=request.user).first()
-        player_view = uqr.views.filter(user=request.user, section=section, completed=True).first()
-
-        quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
-        opponent_view = quest_rel.views.filter(section=section, completed=True).first()
-
-        player_views.append(player_view)
-        opponent_views.append(opponent_view)
-
-        # Save who the player was paired against
-        player_view.opponent = opponent_view
-        player_view.save()
-
-    results = generate_results(player_views, opponent_views)
-    score = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
-    if score > 0:
-        Point.objects.create(
-            user=request.user,
-            amount=score,
-            content_type=ContentType.objects.get_for_model(task),
-            object_id=task.id,
-            created=timezone.now())
-
-    writer.collection.put_infon('flatter', random.choice(settings.POSTIVE_FLATTER) if score > 500 else random.choice(settings.SUPPORT_FLATTER))
-    writer.collection.put_infon('points', str(int(round(score))))
-    writer.collection.put_infon('partner', str(opponent.username))
-    writer.collection.put_infon('partner_level', Level.objects.filter(user=opponent, task_type='e').first().get_name())
-
-    if format_type == 'json':
-        writer_json = bioc_as_json(writer)
-        return HttpResponse(writer_json, content_type='application/json')
-    else:
-        return HttpResponse(writer, content_type='text/xml')
+    return Response(res)
 
 
 @login_required
@@ -341,13 +327,6 @@ def quest_read(request, quest_pk):
         if len(task_doc_uncompleted) == 0:
             quest_submit(request, task, True)
             return redirect('task-entity-recognition:quest-feedback', quest_pk=task.pk)
-
-        next_doc_idx = len(task_doc_pks_completed) + 1
-        # return redirect('task-entity-recognition:quest-document', quest_pk=task.pk, doc_idx=next_doc_idx)
-
-        # data = Document.objects.as_json(documents=[doc])
-        # return Response({'next':{'abc':123}})
-
 
     else:
         # Create the User >> Quest relationship
