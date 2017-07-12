@@ -435,6 +435,18 @@ NERParagraphList = Backbone.Collection.extend({
   sync: function () { return false; },
 });
 
+NERDocumentResult = Backbone.RelationalModel.extend({
+  /* Provides the information for comparison between
+   * the User and a selected opponent */
+  defaults: {
+    'flatter': "",
+    'award': {
+      'amount': 0
+    },
+    'opponent': null
+  }
+})
+
 NERDocument = Backbone.RelationalModel.extend({
   /* A Document with all the children required
    * for NER tasks such as:
@@ -460,17 +472,25 @@ NERDocumentList = Backbone.Collection.extend({
   /* The Quest of Documents to Complete */
   model: NERDocument,
 
-  url: '/api/ner/quest/674/',
+  url: function() {
+    return '/api/ner/quest/'+ this.quest_pk +'/';
+  },
 
-  initialize: function() {
+  initialize: function(options) {
+    this.quest_pk = options.quest_pk;
+
 
     this.listenTo(this, 'add', function(model) {
       // (TODO) Cleanup any attributes?
     });
 
     this.listenTo(this, 'sync', function() {
-      if( this.pluck('parent_task_completed').every(function(v) { return v == 1; }) ) {
-        // (TODO) Jump to review page b/c the Quest is complete!
+      var quest_completed = this.pluck('quest_completed').every(function(v){ return v == 1; }),
+          all_documents_completed = this.pluck('document_view_completed').every(function(v){ return v == 1; });
+
+      if( quest_completed == false && all_documents_completed ) {
+        // Jump to review page b/c the Quest is complete!
+        this.trigger('quest:complete');
       }
     });
 
@@ -793,15 +813,75 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
 
 NERDocumentResultsView = Backbone.Marionette.View.extend({
   /* ...
-   * this.model = None
+   * this.model = NERDocumentResult
    * this.collection = None
    */
   template: '#ypet-document-results-template',
+
+  initialize: function() {
+    var document_pk = this.model.get('pk');
+    this.model = new NERDocumentResult({});
+
+    /* Replace the model. NERDocument >> NERDocumentResult */
+    var self = this;
+
+    $.ajax({
+      url:'/task/entity-recognition/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
+      dataType: 'json',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      success: function(data) {
+        self.model = new NERDocumentResult(data);
+      },
+      error: function(error_res) {
+        /* (TODO) Show Error */
+        window.scrollTo(0,0);
+      }
+    });
+
+    this.listenTo(this.model, 'all', function() {
+      this.render();
+    });
+
+  },
   onRender: function() {
+    window.scrollTo(0,0);
     console.log('NER Res', this);
   }
 });
 
+
+NERQuestCompletedView = Backbone.Marionette.View.extend({
+  /* ...
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-quest-completed-template',
+
+  onRender: function() {
+
+     /* Rather than have a view to fetch the ramining quests, use the
+    API and filter so we can on-click determine what quest the
+    player should do next */
+    // $('#nextavailquest').on('click', function(evt) {
+    //   evt.preventDefault();
+    //   evt.stopPropagation();
+    //   var ajax_settings = {
+    //     'type': 'GET',
+    //     'url': '/api/quest/{{task.group_id}}/',
+    //     'success': function(data) {
+    //       var set = _.filter(data, function(q) {
+    //         return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
+    //       });
+    //       if(set.length) {
+    //         window.location = '/task/entity-recognition/quest/' + set[0].id;
+    //       } else { window.location = '/dashboard/'; }
+    //     }
+    //   };
+    //   $.ajax(ajax_settings);
+    // });
+
+  }
+});
 
 NERLoadingView = Backbone.Marionette.View.extend({
   /* Initial HTML before a REExtractionList is available
@@ -811,6 +891,7 @@ NERLoadingView = Backbone.Marionette.View.extend({
   template: '<p>Text Loading...</p>'
 });
 
+
 NERProgressItem = Backbone.Marionette.View.extend({
   /* Drop down list of REChoices */
   template: _.template('&#8226;'),
@@ -818,7 +899,7 @@ NERProgressItem = Backbone.Marionette.View.extend({
   className: 'list-inline-item',
 
   onRender: function() {
-    if ( this.model.get('completed') ) {
+    if ( this.model.get('document_view_completed') ) {
       this.$el.addClass('completed');
     }
     if ( this.model.get('active') ) {
@@ -827,6 +908,7 @@ NERProgressItem = Backbone.Marionette.View.extend({
   }
 });
 
+
 NERProgressView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for REProgressItem */
   tagName: 'ul',
@@ -834,7 +916,6 @@ NERProgressView = Backbone.Marionette.CollectionView.extend({
   childView: NERProgressItem,
   childViewEventPrefix: 'progress',
 });
-
 
 
 NERNavigationView = Backbone.Marionette.View.extend({
@@ -943,9 +1024,8 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-
     if(!this.options.training && !this.collection) {
-      this.collection = new NERDocumentList({'quest_pk': 674})
+      this.collection = new NERDocumentList({'quest_pk': this.options.task_pk});
       this.collection.fetch();
     }
 
@@ -954,6 +1034,13 @@ YPet = Backbone.Marionette.View.extend({
       this.render();
     });
 
+  },
+
+  collectionEvents: {
+    'quest:complete': function() {
+      this.showChildView('results', new NERQuestCompletedView(this.options));
+      this.getRegion('text').empty();
+    }
   },
 
   childViewEvents: {
@@ -986,8 +1073,7 @@ YPet = Backbone.Marionette.View.extend({
           dataType: 'json',
           cache: false,
           async: false,
-          success: function(a,b,c) {
-            console.log(self, a,b,c);
+          success: function() {
             self.showChildView('results', new NERDocumentResultsView(self.options));
           }
         });
@@ -996,7 +1082,6 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-
     if(this.collection) {
       this.options['model'] = this.model;
       this.options['collection'] = this.collection;
@@ -1012,46 +1097,6 @@ YPet = Backbone.Marionette.View.extend({
     } else {
       this.showChildView('text', new NERLoadingView());
     };
-
-
-      // var passages;
-      // function show_results() {
-      //   #<{(| Show partner comparison |)}>#
-      //   $.ajax({
-      //     url:'/task/entity-recognition/{{task.pk}}/{{document.pk}}/results.json',
-      //     dataType: 'json',
-      //     cache: false,
-      //     async: false,
-      //     success: function(data) {
-      //
-      //       window.scrollTo(0,0);
-      //       var points = _.find(data.collection.infon, function(o){return o['@key']=='points';})['#text'];
-      //       var partner = _.find(data.collection.infon, function(o){return o['@key']=='partner';})['#text'];
-      //       var partner_level = _.find(data.collection.infon, function(o){return o['@key']=='partner_level';})['#text'];
-      //       var flatter = _.find(data.collection.infon, function(o){return o['@key']=='flatter';})['#text'];
-      //
-      //       $('#points').html(points);
-      //       $('#partner-username').html(partner);
-      //       $('#partner-level').html(partner_level);
-      //       $('#flatter').html(flatter);
-      //       $('#partner-results').slideDown(function() {
-      //         update_score();
-      //         #<{(| Show underlines |)}>#
-      //         _.each(data.collection.document.passage, function(passage, passage_idx) {
-      //           YPet[passage_idx].currentView.drawBioC(passage, true);
-      //         });
-      //       });
-      //     },
-      //     error: function(error_res) {
-      //       #<{(| No response so show them the annotation message |)}>#
-      //       _.each(passages, function(passage, passage_idx) {
-      //         YPet[passage_idx].currentView.drawBioC(null, true);
-      //       });
-      //       window.scrollTo(0,0);
-      //       $('#new-alert-congrats').slideDown()
-      //     }
-      //   });
-      // };
   }
 });
 

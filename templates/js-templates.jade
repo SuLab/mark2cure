@@ -299,29 +299,59 @@ script(id='dashboard-leaderboard-item-template', type='html/template')
 
 script(id='ypet-document-results-template', type='html/template')
   .col-12
-      // .row.alert.alert-info.alert-info-minimal.alert-sticky
-      //   #partner-info.col-xs-4
-      //     p(style='margin-bottom: 0px;')
-      //       small You were paired with:
-      //
-      //     h3#partner-username(style='margin-top: 0px;')
-      //     p Level: <span id="partner-level"></span>
-      //
-      //   .col-xs-8
-      //     h2#flatter.text-xs-center
-      //     h4.text-xs-center
-      //       | Earned
-      //       | <span id='points'></span>
-      //       | points!
+    <% if(opponent) { %>
+    .row.alert.alert-info.alert-info-minimal.alert-sticky
+      #partner-info.col-xs-4
+        p(style='margin-bottom: 0px;')
+          small You were paired with:
 
+        h3#partner-username(style='margin-top: 0px;')
+        p Level: <span id="partner-level"></span>
+
+      .col-xs-8
+        h2#flatter.text-xs-center
+        h4.text-xs-center
+          | Earned
+          | <span id='points'></span>
+          | points!
+
+    <% } else { %>
 
     .row.alert.alert-info.alert-info-minimal.alert-sticky
       .col-12
         h2.text-xs-center New Annotations!
-        h3.text-xs-center You earned 1,000 points for marking this new document
+        h3.text-xs-center You earned <%= award.amount %> points for marking this new document
         p.text-xs-center You were the first person to annotate this document, <strong>thank you</strong> for your contribution to science!
-        // h2.text-xs-center New Document!
-        // h3.text-xs-center Unfortunately you didn't earn any points because no annotations were provided ;(
+    <% } %>
+
+
+script(id='ypet-quest-completed-template', type='html/template')
+  .col-12
+    .row
+      .col-12
+        .row.alert.alert-info.alert-sticky.text-xs-center
+          h2 Congratulations you completed Quest { task.name }
+
+    .row
+      .col-xs-10.col-xs-offset-1
+        h2.text-xs-center Bonus Points: { task.points }
+
+    .row
+      .col-xs-6
+        p.lead.text-xs-center You've made a valuable and important contribution! Tell your friends about it now and help find cures faster.
+
+    .row
+      .col-10.text-xs-center
+        ul.list-inline
+          li.list-inline-item
+            a(href="https://twitter.com/intent/tweet?text=I just completed Quest {{task.name}} of the {{task.group.stub}} doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.").btn.btn-default
+              i.fa.fa-twitter-square.fa-2x.pull-left
+              | Tweet accomplishment!
+
+          li.list-inline-item
+            a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just completed Quest {{task.name}} of the {{task.group.stub}} doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank").btn.btn-default
+              i.fa.fa-facebook-square.fa-2x.pull-left
+              | Share accomplishment!
 
 
 

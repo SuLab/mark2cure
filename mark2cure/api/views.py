@@ -157,9 +157,9 @@ def ner_quest_read(request, quest_pk):
     c.execute(cmd_str)
 
     queryset = [{'pk': x[0],
-                 'task_completed': x[1],
+                 'quest_completed': x[1],
                  'view_count': x[2],
-                 'completed': x[3],
+                 'document_view_completed': x[3],
                  'had_opponent': x[4]} for x in c.fetchall()]
 
     # Close the connection

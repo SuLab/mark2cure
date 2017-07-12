@@ -74,6 +74,11 @@ def identify_annotations_results(request, task_pk, doc_pk):
         opponent = None
 
     if opponent:
+        opponent_dict = {
+            'username': opponent.username,
+            'partner_level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
+        }
+
         # Other results exist if other people have at least viewed
         # the quest and we know other users have at least submitted
         # results for this particular document
@@ -101,6 +106,7 @@ def identify_annotations_results(request, task_pk, doc_pk):
         points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
 
     else:
+        opponent_dict = None
         # No other work has ever been done on this apparently
         # so we reward the user and let them know they were
         # first via a different template / bonus points
@@ -115,13 +121,14 @@ def identify_annotations_results(request, task_pk, doc_pk):
         created=timezone.now())
 
     res = {
+        'task_pk': task.pk,
+        'document_pk': document.pk,
         'flatter': random.choice(settings.POSTIVE_FLATTER) if award.amount > 500 else random.choice(settings.SUPPORT_FLATTER),
         'award': {
             'pk': award.pk,
             'amount': int(round(award.amount))
         },
-        'opponent': opponent,
-        # 'partner_level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
+        'opponent': opponent_dict,
     }
 
     return Response(res)
@@ -302,33 +309,9 @@ def quest_feedback(request, quest_pk):
 @api_view(['GET'])
 def quest_read(request, quest_pk):
     task = get_object_or_404(Task, pk=quest_pk)
-    return TemplateResponse(request, 'entity_recognition/quest.jade', {'task_pk': task.pk})
 
     # Check if user has pre-existing relationship with Quest
-    user_quest_rel_queryset = UserQuestRelationship.objects.filter(task=task, user=request.user)
-
-    if user_quest_rel_queryset.exists():
-
-        # User has viewed this Quest before and Completed it
-        # so show them the feedback page
-
-        # (TODO) Do in Javascript
-        if user_quest_rel_queryset.filter(completed=True).exists():
-            return redirect('task-entity-recognition:quest-feedback', quest_pk=task.pk)
-
-        # Not using get_or_create b/c get occasionally returned multiple (unknown bug source)
-        user_quest_relationship = user_quest_rel_queryset.first()
-        task_doc_pks_completed = user_quest_relationship.completed_document_ids()
-
-        # If there are no more documents to do, mark the Quest
-        # as completed and go to dashboard
-        # (TODO) Do in Javascript
-        task_doc_uncompleted = task.remaining_documents(task_doc_pks_completed)
-        if len(task_doc_uncompleted) == 0:
-            quest_submit(request, task, True)
-            return redirect('task-entity-recognition:quest-feedback', quest_pk=task.pk)
-
-    else:
+    if not UserQuestRelationship.objects.filter(task=task, user=request.user).exists():
         # Create the User >> Quest relationship
         UserQuestRelationship.objects.create(task=task, user=request.user, completed=False)
 
@@ -336,6 +319,4 @@ def quest_read(request, quest_pk):
         for document in documents:
             task.create_views(document, request.user)
 
-        # Route the user to the right idx doc
-        return redirect('task-entity-recognition:quest-document', quest_pk=task.pk, doc_idx=1)
-
+    return TemplateResponse(request, 'entity_recognition/quest.jade', {'task_pk': task.pk})
