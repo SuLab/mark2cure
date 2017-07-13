@@ -334,7 +334,7 @@ script(id='ypet-quest-completed-template', type='html/template')
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-xs-center Bonus Points: { task.points }
+        h2.text-xs-center Bonus Points: <%- award.amount %>
 
     .row
       .col-xs-6
@@ -353,6 +353,11 @@ script(id='ypet-quest-completed-template', type='html/template')
               i.fa.fa-facebook-square.fa-2x.pull-left
               | Share accomplishment!
 
+    .row
+      .col-xs-3.col-xs-offset-2
+        a(href='{% url "common:dashboard" %}').btn.btn-default.btn-block Go to dashboard
+      .col-xs-3.col-xs-offset-2
+        a(href='#', id='nextavailquest').btn.btn-default.btn-block Start next quest
 
 
 script(id='ypet-navigation-template', type='x-template/underscore')

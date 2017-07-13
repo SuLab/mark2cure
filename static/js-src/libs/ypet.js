@@ -447,6 +447,18 @@ NERDocumentResult = Backbone.RelationalModel.extend({
   }
 })
 
+NERQuestResult = Backbone.RelationalModel.extend({
+  /* Provides the information for Quest results */
+  defaults: {
+    'award': {
+      'pk': null,
+      'amount': 0
+    },
+    'task_pk': null,
+    'uqr_pk': null
+  }
+});
+
 NERDocument = Backbone.RelationalModel.extend({
   /* A Document with all the children required
    * for NER tasks such as:
@@ -485,10 +497,7 @@ NERDocumentList = Backbone.Collection.extend({
     });
 
     this.listenTo(this, 'sync', function() {
-      var quest_completed = this.pluck('quest_completed').every(function(v){ return v == 1; }),
-          all_documents_completed = this.pluck('document_view_completed').every(function(v){ return v == 1; });
-
-      if( quest_completed == false && all_documents_completed ) {
+      if( this.is_quest_complete() ) {
         // Jump to review page b/c the Quest is complete!
         this.trigger('quest:complete');
       }
@@ -496,10 +505,17 @@ NERDocumentList = Backbone.Collection.extend({
 
   },
 
+  is_quest_complete: function() {
+    var quest_completed = this.pluck('quest_completed').every(function(v){ return v == 1; }),
+        all_documents_completed = this.pluck('document_view_completed').every(function(v){ return v == 1; });
+    return quest_completed == false && all_documents_completed;
+  },
+
   get_active: function() {
-    var available = this.where({'completed': 0});
-    if(available.length == 0) {
-      // (TODO) Jump to review page b/c the Quest is complete!
+    var available = this.where({'document_view_completed': 0});
+    if(available.length == 0 && this.is_quest_complete()) {
+      // this.trigger('quest:complete');
+      return null;
     }
 
     var m = available[_.random(0, available.length-1)]
@@ -723,6 +739,7 @@ NERWordView = Backbone.Marionette.View.extend({
   }
 });
 
+
 NERWordsView = Backbone.Marionette.CollectionView.extend({
   /* List of individual words
    * this.model = None
@@ -733,6 +750,7 @@ NERWordsView = Backbone.Marionette.CollectionView.extend({
   childView: NERWordView,
   childViewEventPrefix: 'word'
 });
+
 
 NERParagraphView = Backbone.Marionette.View.extend({
   /* Container item for the individual words
@@ -785,6 +803,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 });
 
+
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for NERParagraphs
    * this.model = NERDocument
@@ -831,6 +850,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
         self.model = new NERDocumentResult(data);
+        self.render();
       },
       error: function(error_res) {
         /* (TODO) Show Error */
@@ -838,9 +858,6 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
       }
     });
 
-    this.listenTo(this.model, 'all', function() {
-      this.render();
-    });
 
   },
   onRender: function() {
@@ -857,7 +874,24 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
    */
   template: '#ypet-quest-completed-template',
 
+  initialize: function() {
+    this.model = new NERQuestResult({});
+    var self = this;
+
+    $.ajax({
+      type: 'POST',
+      url: '/task/entity-recognition/quest/'+this.options.task_pk+'/submit/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      success: function(data) {
+        self.model = new NERQuestResult(data)
+        self.render();
+      }
+    });
+
+  },
+
   onRender: function() {
+    console.log('NERQuestCompletedView onRender', this);
 
      /* Rather than have a view to fetch the ramining quests, use the
     API and filter so we can on-click determine what quest the
@@ -882,6 +916,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
 
   }
 });
+
 
 NERLoadingView = Backbone.Marionette.View.extend({
   /* Initial HTML before a REExtractionList is available
@@ -1031,15 +1066,16 @@ YPet = Backbone.Marionette.View.extend({
 
     this.listenTo(this.collection, 'sync', function() {
       this.model = this.collection.get_active();
-      this.render();
+      if(this.model) { this.render(); }
     });
 
   },
 
   collectionEvents: {
     'quest:complete': function() {
-      this.showChildView('results', new NERQuestCompletedView(this.options));
       this.getRegion('text').empty();
+      this.getRegion('footer').empty();
+      this.showChildView('results', new NERQuestCompletedView(this.options));
     }
   },
 
