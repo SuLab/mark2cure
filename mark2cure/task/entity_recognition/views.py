@@ -12,6 +12,7 @@ from django.http import HttpResponseServerError
 from django.template.response import TemplateResponse
 
 from ...document.models import Document, Annotation
+from ...common.models import Group
 from ..models import Level, Task, UserQuestRelationship
 from .models import EntityRecognitionAnnotation
 from .utils import generate_results, select_best_opponent
@@ -163,9 +164,18 @@ def ner_quest_submit(request, quest_pk):
     # (TODO) Return a dict for a NERQuestComplete model
 
     task = get_object_or_404(Task, pk=quest_pk)
-    user_quest_relationship = task.user_relationship(request.user, False)
+    group = get_object_or_404(Group, pk=task.group_id)
+    user_quest_relationship = UserQuestRelationship.objects.filter(task=task, user=request.user).last()
 
-    if not user_quest_relationship.completed:
+    if user_quest_relationship.completed:
+        uqr_created = False
+        award = Point.objects.filter(
+            content_type=ContentType.objects.get_for_model(task),
+            object_id=task.id,
+            user=request.user).first()
+
+    else:
+        uqr_created = True
         award = Point.objects.create(
             user=request.user,
             amount=task.points,
@@ -173,12 +183,23 @@ def ner_quest_submit(request, quest_pk):
             object_id=task.id,
             created=timezone.now())
 
-    user_quest_relationship.completed = True
-    user_quest_relationship.save()
+        user_quest_relationship.completed = True
+        user_quest_relationship.save()
 
     return Response({
-        'task_pk': task.pk,
+        'task': {
+            'pk': task.pk,
+            'name': task.name
+        },
+        'group': {
+            'pk': group.pk,
+            'name': group.name,
+            'stub': group.stub,
+            'enabled': group.enabled,
+            'description': group.description
+        },
         'uqr_pk': user_quest_relationship.pk,
+        'uqr_created': uqr_created,
         'award': {
             'pk': award.pk,
             'amount': int(round(award.amount))

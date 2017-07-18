@@ -450,11 +450,22 @@ NERDocumentResult = Backbone.RelationalModel.extend({
 NERQuestResult = Backbone.RelationalModel.extend({
   /* Provides the information for Quest results */
   defaults: {
+    'task': {
+      'pk': null,
+      'name': ''
+    },
+    'group': {
+        'pk': null,
+        'name': '',
+        'stub': '',
+        'enabled': false,
+        'description': ''
+    },
     'award': {
       'pk': null,
       'amount': 0
     },
-    'task_pk': null,
+    'uqr_created': false,
     'uqr_pk': null
   }
 });
@@ -496,12 +507,12 @@ NERDocumentList = Backbone.Collection.extend({
       // (TODO) Cleanup any attributes?
     });
 
-    this.listenTo(this, 'sync', function() {
-      if( this.is_quest_complete() ) {
-        // Jump to review page b/c the Quest is complete!
-        this.trigger('quest:complete');
-      }
-    });
+    // this.listenTo(this, 'sync', function() {
+    //   if( this.is_quest_complete() ) {
+    //     // Jump to review page b/c the Quest is complete!
+    //     this.trigger('quest:complete');
+    //   }
+    // });
 
   },
 
@@ -513,8 +524,14 @@ NERDocumentList = Backbone.Collection.extend({
 
   get_active: function() {
     var available = this.where({'document_view_completed': 0});
-    if(available.length == 0 && this.is_quest_complete()) {
-      // this.trigger('quest:complete');
+    if(available.length == 0) {
+
+      if(this.is_quest_complete()) {
+        this.trigger('quest:complete');
+      } else {
+        this.trigger('quest:finished');
+      }
+
       return null;
     }
 
@@ -815,7 +832,9 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
 
   childViewOptions: function() {
     var enabled = true;
-    if(this.options.mode == 'er') { enabled = false; }
+    if(this.getOption('mode') == 'er') { enabled = false; }
+    if(this.getOption('mode') == 'ner' && this.getOption('review') == true) { enabled = false; }
+    console.log('ParaChild', enabled);
     return {
       'enabled': enabled
     }
@@ -857,12 +876,10 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
         window.scrollTo(0,0);
       }
     });
-
-
   },
+
   onRender: function() {
     window.scrollTo(0,0);
-    console.log('NER Res', this);
   }
 });
 
@@ -878,6 +895,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
     this.model = new NERQuestResult({});
     var self = this;
 
+    // This is either creating for the first time or just posting to fetch the UQR info
     $.ajax({
       type: 'POST',
       url: '/task/entity-recognition/quest/'+this.options.task_pk+'/submit/',
@@ -893,7 +911,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
   onRender: function() {
     console.log('NERQuestCompletedView onRender', this);
 
-     /* Rather than have a view to fetch the ramining quests, use the
+    /* Rather than have a view to fetch the ramining quests, use the
     API and filter so we can on-click determine what quest the
     player should do next */
     // $('#nextavailquest').on('click', function(evt) {
@@ -1001,6 +1019,24 @@ NERFooterConfirmView = Backbone.Marionette.View.extend({
   }
 });
 
+NERFooterNextView = Backbone.Marionette.View.extend({
+  /* The Actionable button that reviews the document discussion
+   * page or goes to the next avilable NER Document
+   * this.model = None
+   * this.collection = None
+   */
+  template: '#ypet-footer-next-template',
+  className: 'row',
+
+  ui: {
+    'next': 'p.button.next'
+  },
+
+  triggers: {
+    'mousedown @ui.next': 'next'
+  }
+});
+
 
 NERFooterSearchView = Backbone.Marionette.View.extend({
   /* The link that allows people to look up a term independently
@@ -1034,9 +1070,23 @@ NERFooterView = Backbone.Marionette.View.extend({
     'search': '#ypet-footer-search'
   },
 
+  initialize: function() {
+    /* Is this a submit or next state
+    * States:
+    * review - confirm (still viewing a doc)
+    * review - next (done reviewing a doc)
+    * */
+  },
+
   onRender: function() {
     this.showChildView('help', new NERFooterHelpView({'mode': this.options.mode}));
+
+
     this.showChildView('confirm', new NERFooterConfirmView({}));
+    if(this.getOption('review') == true){
+      this.showChildView('confirm', new NERFooterNextView({}));
+    }
+
     // (TODO) Pass NERAnnotation item into this
     this.showChildView('search', new NERFooterSearchView({'model': false}));
   }
@@ -1073,6 +1123,13 @@ YPet = Backbone.Marionette.View.extend({
 
   collectionEvents: {
     'quest:complete': function() {
+      // When the user just completed the last NER Task
+      this.getRegion('text').empty();
+      this.getRegion('footer').empty();
+      this.showChildView('results', new NERQuestCompletedView(this.options));
+    },
+    'quest:finished': function() {
+      // When the user revists a previously completed Quest
       this.getRegion('text').empty();
       this.getRegion('footer').empty();
       this.showChildView('results', new NERQuestCompletedView(this.options));
@@ -1080,6 +1137,12 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   childViewEvents: {
+    'ner:footer:next': function() {
+      /* Done reviewing the current document, go to the next */
+      this.model = this.collection.get_active();
+      this.options['review'] = false
+      this.render();
+    },
     'ner:footer:confirm:submit': function() {
       /* Submit the User's annotations for the current Document */
 
@@ -1110,7 +1173,8 @@ YPet = Backbone.Marionette.View.extend({
           cache: false,
           async: false,
           success: function() {
-            self.showChildView('results', new NERDocumentResultsView(self.options));
+            self.options['review'] = true
+            self.render();
           }
         });
 
@@ -1126,6 +1190,10 @@ YPet = Backbone.Marionette.View.extend({
       if(this.options.mode == 'ner') {
         this.showChildView('navigation', new NERNavigationView(this.options));
         this.showChildView('footer', new NERFooterView(this.options));
+
+        if(this.getOption('review') == true) {
+          this.showChildView('results', new NERDocumentResultsView(this.options));
+        }
 
       } else if (this.options.mode == 're') {
         // var concept_uids = [this.options.concepts['c1'].id, this.options.concepts['c2'].id];

@@ -326,15 +326,16 @@ script(id='ypet-document-results-template', type='html/template')
 
 
 script(id='ypet-quest-completed-template', type='html/template')
+  <% if(uqr_created) {%>
   .col-12
     .row
       .col-12
         .row.alert.alert-info.alert-sticky.text-xs-center
-          h2 Congratulations you completed Quest { task.name }
+          h2 Congratulations you completed Quest <%= task.name %>
 
     .row
       .col-xs-10.col-xs-offset-1
-        h2.text-xs-center Bonus Points: <%- award.amount %>
+        h2.text-xs-center Bonus Points: <%= award.amount %>
 
     .row
       .col-xs-6
@@ -358,6 +359,16 @@ script(id='ypet-quest-completed-template', type='html/template')
         a(href='{% url "common:dashboard" %}').btn.btn-default.btn-block Go to dashboard
       .col-xs-3.col-xs-offset-2
         a(href='#', id='nextavailquest').btn.btn-default.btn-block Start next quest
+
+  <% } else {%>
+  .col-12
+    .row
+      .col-12
+        .row.alert.alert-info.alert-sticky.text-xs-center
+          h2 Quest <%= task.name %> in the <%= group.name %> group was already completed.
+
+  <%}%>
+
 
 
 script(id='ypet-navigation-template', type='x-template/underscore')
@@ -420,6 +431,21 @@ script(id='ypet-footer-help-template', type='html/template')
 script(id='ypet-footer-confirm-template', type='html/template')
   .col-12
       p.button.btn.btn-primary.btn-block.done Submit
+
+
+script(id='ypet-footer-next-template', type='html/template')
+  .col-12
+    .row
+      a(href="")
+        p Annotations in this doc have been discussed 0 times.
+        strong Discuss Now?
+
+    .row
+      .col-6
+        p.button.btn.btn-default.btn-block.done Yes, Let's Talk
+
+      .col-6
+        p.button.btn.btn-primary.btn-block.done.next Next Doc
 
 
 script(id='ypet-footer-next-template', type='html/template')
