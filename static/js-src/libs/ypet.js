@@ -92,6 +92,7 @@ Date.now = Date.now || function() { return +new Date; };
         }
 })(jQuery);
 
+var channel = Backbone.Radio.channel('ypet');
 
 /*
  *  Models & Collections
@@ -102,9 +103,6 @@ NERAnnotationTypeList = Backbone.Collection.extend({
    * Annotations that the application allows
    * for paragraphs */
   model: Backbone.Model.extend({}),
-
-  url: function() { return false; },
-  sync: function () { return false; },
 });
 
 NERAnnotationTypes = new NERAnnotationTypeList([
@@ -122,25 +120,16 @@ NERWord = Backbone.RelationalModel.extend({
     latest: null,
     neighbor: false,
   },
-
-  url: function() { return false; },
-  sync: function () { return false; }
 });
 
 NERWordList = Backbone.Collection.extend({
   /* Common utils to perform on an array of Word
    * models for house keeping and search */
   model: NERWord,
-
-  url: function() { return false; },
-  sync: function () { return false; }
 });
 
 NERAnnotation = Backbone.RelationalModel.extend({
-  /* Each annotation in the paragraph. An Annotation
-   * is composed of an array of Words in order to determine
-   * the full text and position which are not
-   * explicity set */
+  /* A User or Opponent Annotation (contains NERWordList) */
   defaults: {
     /* An annotation doesn't exist when removed so
      * we can start them all off at 0 and not need to
@@ -148,9 +137,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
     type_id: 0,
     text: '',
     start: null,
-    self: true, // To determine if they're the author's or an opponent's
   },
-
   url: function() { return false; },
   sync: function () { return false; },
 
@@ -170,173 +157,100 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
   initialize: function() {
     var self = this;
-    /* Santize BioC passage or other sources of
-     * Annotation information into the Backbone model
-     */
-    this.set('id', +this.get('@id'));
-    this.unset('@id');
-    if(this.get('infon')) {
-      _.each(this.get('infon'), function(i) {
-        if(!isNaN(i['#text'])) {
-          self.set(i['@key'], +i['#text'])
-        } else {
-          self.set(i['@key'], i['#text'])
-        }
-      });
-      this.unset('infon');
-    }
-    if(this.get('location')) {
-      this.set('start', +this.get('location')['@offset']);
-      if(!this.get('text')){
-        return false;
-      }
-      if(this.get('text').length != +this.get('location')['@length']) {
-        Raven.captureMessage('Text length and reported @length failure', {extra: {'ann_db_pk': this.get('uid')}});
-      }
-      this.unset('location');
-    }
-
-    /* Find the word instances needed from the
-     * instances from the paragraph */
-    var selected_words = this.get('paragraph').get('words').filter(function(word) {
-      return word.get('start') >= self.get('start') && word.get('start') < self.get('start')+self.get('text').length;
-    });
-    /*
-      var ann_start = +annotation.location['@offset'] - passage_offset;
-      var ann_length = +annotation.location['@length'];
-      var ann_type_id = +_.find(annotation.infon, function(o){return o['@key']=='type_id';})['#text'];
-
-      var start_match = false;
-      var selected = words.filter(function(word) {
-        // The Annotation found a word which matches start position exactly
-        var starts = word.get('start') == ann_start;
-        if (starts) { start_match = true; }
-        return starts || ( word.get('start') > ann_start && word.get('start') < ann_start+ann_length );
-      });
-
-      try {
-        ...
-        var words_match = selected.length == _.str.words(annotation.text).length;
-        if(words_match==false && start_match==false) {
-          Raven.captureMessage('Imperfect Pubtator >> YPet Match', {extra: {
-            'selected': selected,
-            'annotation': annotation,
-            'passage': passage
-          }});
-        }
-
-      } catch(e) { Raven.captureException(e); }
-
-
-    */
-
-    this.get('words').each(function(word) { word.destroy(); });
-    this.get('words').set(selected_words);
-
     var words_len = this.get('words').length;
-    this.get('words').each(function(word, word_index) {
-      if(word_index == words_len-1) { word.set('neighbor', true); }
-      word.trigger('highlight');
-    });
+
+    if(words_len == 0 && this.get('text') != '') {
+      /* If the Annotation was made using text */
+      alert('implement text >> words fucntion');
+
+    } else if(words_len > 0 && this.get('text') == '') {
+      /* If the Annotation was made using NERWordList */
+
+      var ann = this.sanitizeAnnotation(this.get('words').pluck('text').join(' '), this.get('words').first().get('start'));
+      this.set('text', ann.text);
+      this.set('start', ann.start);
+
+    } else {
+      alert('major issue');
+    }
+
+    /* (TODO) Only if user created */
+    channel.trigger('ypet:footer:search:set', this.get('text'));
+
+  },
+
+  sanitizeAnnotation: function(full_str, start) {
+    /* Return the cleaned string and the (potentially) new start position */
+    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+    return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
   toggleType: function() {
     /* Removes (if only 1 Annotation type) or changes
      * the Annotation type when clicked after existing */
-    if( this.get('type_id') == NERAnnotationTypes.length-1 || this.get('text') == "") {
+    if( this.get('type_id') == NERAnnotationTypes.length-1 || this.get('text') == '') {
       this.destroy();
     } else {
       this.set('type_id', this.get('type_id')+1 );
     }
+  },
+
+  draw: function() {
+    var annotation_type = NERAnnotationTypes.at(this.get('type_id'));
+    var words_len = this.get('words').length;
+
+    this.get('words').each(function(word, word_index) {
+      if(word_index == words_len-1) { word.set('neighbor', true); }
+      word.trigger('highlight', annotation_type.get('color'));
+    });
+
+    /* Draw all the basic background or underlines */
+    // word.trigger('underline', {'color': annotation_type.get('color')});
+    // if(annotation.get('opponent')) {
+    //   var words = annotation.get('words')
+    //   var author_annotations = parent_document.get('annotations');
+    //
+    //   var anns = []
+    //   author_annotations.each(function(main_ann) {
+    //     if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
+    //       anns.push(main_ann.cid);
+    //     }
+    //   });
+    //
+    //   if(_.uniq(anns).length > 1) {
+    //     #<{(| 2 Different Parent Annotations |)}>#
+    //     words.each(function(word) {
+    //       if(word == words.last()) {
+    //         word.trigger('underline-space', {'color': '#fff', 'last_word': true});
+    //       } else {
+    //         word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
+    //       }
+    //     });
+    //   }
+    // }
   }
 });
-
 
 NERAnnotationList = Backbone.Collection.extend({
   /* Utils for the Paragraph Annotations lists
    * collectively */
   model: NERAnnotation,
 
-  url: function() { return false; },
-  sync: function () { return false; },
-
-  sanitizeAnnotation : function(full_str, start) {
-    /* Return the cleaned string and the (potentially) new start position */
-    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-    return {'text':str, 'start': start+full_str.indexOf(str)};
-  },
-
   initialize: function(options) {
-    this.listenTo(this, 'add', function(annotation) {
-      var ann = this.sanitizeAnnotation(annotation.get('words').pluck('text').join(' '), annotation.get('words').first().get('start'));
-      annotation.set('text', ann.text);
-      annotation.set('start', ann.start);
-      this.drawAnnotation(annotation);
-    });
-    this.listenTo(this, 'change:type_id', function(annotation) {
-      this.drawAnnotation(annotation);
-    });
+    /* When a new Annotation has been added */
+    this.listenTo(this, 'add', function(annotation) { annotation.draw(); });
+    this.listenTo(this, 'change:type_id', function(annotation) { annotation.draw(); });
     this.listenTo(this, 'remove', function(annotation, collection) {
-      /* Must iterate b/c annotation var "words" attribute is
-       * empty at this point */
-      collection.parentDocument.get('words').each(function(word) {
-        word.trigger('highlight', {'color': '#fff'});
-        word.set('neighbor', false);
-      });
-
-      collection.each(function(annotation) {
-        collection.drawAnnotation(annotation);
-      });
+      /* (TODO) Can probably be optimzed rather than a total refresh */
+      channel.trigger('ypet:paragraphs:redraw');
     });
   },
 
-  drawAnnotation: function(annotation) {
-    /* this = NERAnnotationList collection */
-    var annotation_type = NERAnnotationTypes.at(annotation.get('type_id'));
-    // var parent_document = this.parentDocument || this._parentDocument; // undefined
-
-    /* Draw all the basic background or underlines */
-    annotation.get('words').each(function(word, word_index) {
-      // if(annotation.get('opponent')) {
-        // word.trigger('underline', {'color': annotation_type.get('color')});
-      // } else {
-      word.trigger('highlight', {'color': annotation_type.get('color')});
-      // }
-    });
-
-    if(annotation.get('opponent')) {
-      var words = annotation.get('words')
-      var author_annotations = parent_document.get('annotations');
-
-      var anns = []
-      author_annotations.each(function(main_ann) {
-        if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
-          anns.push(main_ann.cid);
-        }
-      });
-
-      if(_.uniq(anns).length > 1) {
-        /* 2 Different Parent Annotations */
-        words.each(function(word) {
-          if(word == words.last()) {
-            word.trigger('underline-space', {'color': '#fff', 'last_word': true});
-          } else {
-            word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
-          }
-        });
-      }
-    }
+  draw: function() {
+    this.each(function(annotation) { annotation.draw(); });
   }
 
-  /*
-    var user_ids = this.model.get('annotations').pluck('user_id');
-    //-- Why would these annotations contain multiple user_ids?
-    if(user_ids.length >= 1) { console.log('throw error'); }
-    var user_id = +user_ids[0];
-  */
-
 });
-
 
 NERParagraph = Backbone.RelationalModel.extend({
   /* Foundational model for tracking everything going
@@ -346,48 +260,28 @@ NERParagraph = Backbone.RelationalModel.extend({
     offset: 0,
   },
 
-  url: function() { return false; },
-  sync: function () { return false; },
-
   relations: [{
-    /* Many Words */
     type: 'HasMany',
     key: 'words',
-
     relatedModel: NERWord,
     collectionType: NERWordList,
-
-    reverseRelation : {
-      key : 'paragraph',
-      includeInJSON: false,
-    }
   }, {
-    /* Many Annotations */
     type: 'HasMany',
     key: 'annotations',
-
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
-
-    reverseRelation : {
-      key : 'paragraph',
-      includeInJSON: false,
-    }
+    collectionOptions: {foo: 6969},
   }, {
-    /* Many Opponent Annotations */
     type: 'HasMany',
     key: 'opponent_annotations',
-
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
-
-    // reverseRelation : {
-    //   key : 'paragraph',
-    //   includeInJSON: false,
-    // }
+    collectionOptions: {foo: 123},
   }],
 
   initialize : function() {
+    // console.log('ner para init', this.get('opponent_annotations') );
+    //
     /* Extract (tokenize) the individual words */
     var self = this;
     var step = 0,
@@ -405,18 +299,7 @@ NERParagraph = Backbone.RelationalModel.extend({
         });
     this.set('words', new NERWordList(words));
 
-    // Normalize BioC values
     this.set('offset', +this.get('offset'));
-    if(this.get('infon')) {
-      _.each(this.get('infon'), function(i) {
-        if(!isNaN(i['#text'])) {
-          self.set(i['@key'], +i['#text'])
-        } else {
-          self.set(i['@key'], i['#text'])
-        }
-      });
-      this.unset('infon');
-    }
 
     /* Set the Annotations correctly for this paragraph */
     _.each(this.get('annotation'), function(obj) { obj.paragraph = self; });
@@ -430,9 +313,6 @@ NERParagraph = Backbone.RelationalModel.extend({
 
 NERParagraphList = Backbone.Collection.extend({
   model: NERParagraph,
-
-  url: function() { return false; },
-  sync: function () { return false; },
 });
 
 NERDocumentResult = Backbone.RelationalModel.extend({
@@ -539,9 +419,7 @@ NERDocumentList = Backbone.Collection.extend({
     m.set('active', true);
     return m;
   }
-
 })
-
 
 /*
  * Views
@@ -551,55 +429,71 @@ NERWordView = Backbone.Marionette.View.extend({
   /* View for all direct actions on a word
   * - Model = NERWord
   * - Collection = None
+  * - options.section_pk = PK of current section (passage / paragraph)
   */
   template: _.template('<% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %>'),
   tagName: 'span',
 
   modelEvents: {
     'change:neighbor': function() { this.render(); },
-    'change:disabled': 'actOnChangeDisabled',
-    'change:latest': 'actOnChangeLatest',
-    'change:masked': 'actOnChangeMasked',
+    'change:disabled': 'onChangeDisabled',
+    'change:latest': 'onChangeLatest',
 
-    'unclick': 'actOnUnClick',
-    'highlight': 'actOnHighlight',
-    'underline': 'actOnUnderline',
-    'underline-space': 'actOnUnderlineSpace'
+    'unclick': 'onUnClick',
+    'highlight': 'onHighlight',
+    'underline': 'onUnderline',
+    'underline-space': 'onUnderlineSpace'
   },
 
-  actOnChangeLatest: function(model, value, options) {
-    if(this.model.get('latest')) {
-      this.model.trigger('highlight', {'color': '#D1F3FF'});
-    }
-    if(options.force) {
-      this.model.trigger('highlight', {'color': '#fff'});
-    }
+  /* These events are only triggered when over
+   * a span in the paragraph */
+  events : {
+    'mousedown' : 'onMouseDown',
+    'mouseover' : 'onMouseOver',
+    'mouseup'   : 'onMouseUp',
   },
 
-  actOnChangeDisabled: function() {
+  /* Triggers the proper class assignment
+   * when the word <span> is redrawn */
+  onRender: function() {
+    this.$el.css(this.model.get('neighbor') ?
+      {'margin-right': '5px', 'padding-right': '0'} :
+      {'margin-right': '0px', 'padding-right': '.25rem'});
+  },
+
+  onChangeDisabled: function() {
+    /* Apply not-allowed CSS to the $el */
     if(this.model.get('disabled')) {
       this.$el.css('cursor', 'not-allowed');
     }
   },
 
-  actOnHighlight: function(options) {
-    this.$el.css({'backgroundColor': options.color});
+  onChangeLatest: function(model, value, options) {
+    /* When the latest attribute is set, means they're hover over so highlight temporarily */
+    if(this.model.get('latest')) {
+      this.model.trigger('highlight', '#D1F3FF');
+    }
+    if(options.force) {
+      this.model.trigger('highlight', '#fff');
+    }
   },
 
-  actOnUnClick: function() {
+  onUnClick: function() {
+    /* Set $el's background-color to white, then trigger mouseup
+     * Ex. for when we want to force remove a selection (during training) */
     var $el = this.$el;
     $el.animate({backgroundColor: '#fff'}, 750, function() {
       $el.trigger('mousedown').trigger('mouseup');
     });
   },
 
-  actOnChangeMasked: function() {
-    if(this.model.get('masked')) {
-      this.$el.css({'color': '#000', 'cursor': 'default', 'opacity': '.5'});
-    }
+  onHighlight: function(color) {
+    /* Apply background-color CSS to the $el */
+    this.$el.css({'backgroundColor': color});
   },
 
-  actOnUnderline: function() {
+  onUnderline: function() {
+    /* (UNCLEAR) create a new absolute positioned colored div */
     var $container = this.$el.parent(),
         pos = this.$el.position(),
         split_end = this.$el.height() >= 30; /* (TODO) Compare to reference single height unit */
@@ -643,7 +537,8 @@ NERWordView = Backbone.Marionette.View.extend({
     }
   },
 
-  actOnUnderlineSpace: function() {
+  onUnderlineSpace: function() {
+    /* (UNCLEAR) create a new absolute positioned white div */
     var $container = this.$el.parent(),
     pos = this.$el.position(),
     color = d3.rgb(options.color).darker(2);
@@ -664,98 +559,71 @@ NERWordView = Backbone.Marionette.View.extend({
       background-color: '+ color +';"></div>');
   },
 
-  /* Triggers the proper class assignment
-   * when the word <span> is redrawn */
-  onRender : function() {
-    this.$el.css(this.model.get('neighbor') ?
-      {'margin-right': '5px', 'padding-right': '0'} :
-      {'margin-right': '0px', 'padding-right': '.25rem'});
-  },
-
-  /* These events are only triggered when over
-   * a span in the paragraph */
-  events : {
-    'mousedown' : 'mousedown',
-    'mouseover' : 'mouseover',
-    'mouseup'   : 'mouseup',
-  },
-
-  mousedown : function(evt) {
-    /* Upon first clicking down, flag that entry
-     * word as the start of the annotation */
-    evt.stopPropagation();
+  onMouseDown: function(evt) {
+    /* Set the Word's latest attribute to 1 */
     if(this.model.get('disabled')) { return; };
     this.model.set({'latest': 1});
   },
 
-  mouseover : function(evt) {
-    /* When selecting the annotation is ongoing
-     * This is likely during dragging over words
-     * to make a span selection */
-    evt.stopPropagation();
+  onMouseOver: function(evt) {
+    /* Set array of Word's latest attribute to Date.now() to track drag */
+
     if(this.model.get('disabled')) { return; };
-    var word = this.model,
-        words = word.collection;
+    var word_model = this.model,
+        word_collection = this.model.collection;
 
     /* You're dragging if another word has a latest timestamp */
-    if(_.compact(words.pluck('latest')).length) {
-      if(_.isNull(word.get('latest'))) { word.set({'latest': Date.now()}); }
+    if(_.compact(word_collection.pluck('latest')).length) {
+      if(_.isNull(word_model.get('latest'))) { word_model.set({'latest': Date.now()}); }
 
       /* If the hover doesn't proceed in ordered fashion
        * we need to "fill in the blanks" between the words */
-      var current_word_idx = words.indexOf(word);
-      var first_word_idx = words.indexOf( words.find(function(word) { return word.get('latest') == 1; }) );
+
+      // Index position of the currently hovered word
+      var current_word_idx = word_collection.indexOf(word_model);
+      // Index position of the first word that was selected
+      var first_word_idx = word_collection.indexOf( word_collection.find(function(w) { return w.get('latest') == 1; }) );
 
       /* Select everything from the starting to the end without
        * updating the timestamp on the first_word */
       var starting_positions = first_word_idx <= current_word_idx ? [first_word_idx, current_word_idx+1] : [first_word_idx+1, current_word_idx];
       var selection_indexes = _.range(_.min(starting_positions), _.max(starting_positions));
-      _.each(_.without(selection_indexes, first_word_idx), function(idx) { words.at(idx).set('latest', Date.now()); });
+      _.each(_.without(selection_indexes, first_word_idx), function(idx) { word_collection.at(idx).set('latest', Date.now()); });
 
       /* If there are extra word selections up or downstream
        * from the current selection, remove those */
-      var last_selection_indexes = _.map(words.reject(function(word) { return _.isNull(word.get('latest')); }), function(word) { return words.indexOf(word); });
+      var last_selection_indexes = _.map(word_collection.reject(function(word) { return _.isNull(word.get('latest')); }), function(word) { return word_collection.indexOf(word); });
       var remove_indexes = _.difference(last_selection_indexes, selection_indexes);
 
-      var word, ann;
+      var remove_word, ann;
       _.each(remove_indexes, function(idx) {
-        word = words.at(idx);
-        word.set('latest', null, {'force': true});
+        remove_word = word_collection.at(idx);
+        remove_word.set('latest', null, {'force': true});
+
         // (TODO) What is going on here?
-        ann = word.get('parentAnnotation');
-        if(ann) { ann.collection.drawAnnotation(ann); }
+        // ann = word.get('parentAnnotation');
+        // if(ann) { ann.collection.drawAnnotation(ann); }
+
       });
     }
   },
 
-  mouseup : function(evt) {
-    /* When selecting the annotation has stopped
-     * This could be after a click, drag, or any other
-     * event suggesting the selection is over. */
-    evt.stopPropagation();
+  onMouseUp: function(evt) {
+    /* After click, drag, etc send words to AnnotationList as Annotation */
+
     if(this.model.get('disabled')) { return; };
-    var word = this.model,
-        words = word.collection;
 
-    var selected = words.filter(function(word) { return word.get('latest') });
-    if(selected.length == 1 && word.get('parentAnnotation') ) {
-      word.get('parentAnnotation').toggleType();
-    } else {
-      /* if selection includes an annotation, delete that one */
-      _.each(selected, function(w) {
-        if(w.get('parentAnnotation')) {
-          w.get('parentAnnotation').destroy();
-        }
-      });
-      /* Take the selected words as a whole and make a new Annotation with them */
-      console.log(word);
-      word.get('parentDocument').get('annotations').create({words: selected});
-    };
+    var selected = this.model.collection.filter(function(w) { return w.get('latest') });
+    channel.trigger('ypet:paragraph:set:annotations', {
+      'section_pk': this.getOption('section_pk'),
+      'words': selected,
+      'word': this.model
+    });
 
-    words.each(function(word) { word.set('latest', null); });
+    // Reset all latest attributes for future selections
+    this.model.collection.each(function(w) { w.set('latest', null); });
   }
 });
-
 
 NERWordsView = Backbone.Marionette.CollectionView.extend({
   /* List of individual words
@@ -765,9 +633,11 @@ NERWordsView = Backbone.Marionette.CollectionView.extend({
   tagName: 'p',
   className: 'paragraph m-0',
   childView: NERWordView,
-  childViewEventPrefix: 'word'
+  childViewEventPrefix: 'word',
+  childViewOptions: function() {
+    return {'section_pk': this.getOption('section_pk')}
+  }
 });
-
 
 NERParagraphView = Backbone.Marionette.View.extend({
   /* Container item for the individual words
@@ -784,6 +654,10 @@ NERParagraphView = Backbone.Marionette.View.extend({
     'words': '.paragraph-content'
   },
 
+  initialize: function() {
+    this.listenTo(channel, 'ypet:paragraphs:redraw', this.render);
+  },
+
   onRender : function() {
     if(!this.options.enabled) {
       /* If you're showing a partner's results, disallow highlighting */
@@ -792,15 +666,17 @@ NERParagraphView = Backbone.Marionette.View.extend({
         w.set('disabled', true);
       });
       this.$el.css('cursor', 'not-allowed');
-
-      console.log('onRender of NER Para View', this.$el);
     }
 
     this.showChildView('words', new NERWordsView(
       { 'collection': this.model.get('words'),
-        'enabled': this.options.enabled
+        'enabled': this.options.enabled,
+        'section_pk': this.model.get('pk')
       }
     ));
+
+    this.model.get('annotations').draw();
+    this.model.get('opponent_annotations').draw();
 
     // var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
     // if (has_opponent) {
@@ -808,18 +684,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
     //   this.triggerMethod('view:only');
     // }
   },
-
-  onViewOnly: function() {
-  },
-
-  events: {
-    // 'mousedown': 'startCapture',
-    // 'mousemove': 'startHoverCapture',
-    // 'mouseup': 'captureAnnotation',
-    // 'mouseleave': 'captureAnnotation',
-  },
 });
-
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for NERParagraphs
@@ -834,7 +699,6 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     var enabled = true;
     if(this.getOption('mode') == 'er') { enabled = false; }
     if(this.getOption('mode') == 'ner' && this.getOption('review') == true) { enabled = false; }
-    console.log('ParaChild', enabled);
     return {
       'enabled': enabled
     }
@@ -845,9 +709,57 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     } else {
       this.collection = new NERParagraphList({});
     }
-  }
-});
 
+    channel.reply('ypet:paragraph:user:annotations', this.getUserAnnotations, this);
+    channel.reply('ypet:paragraph:opponent:annotations', this.getOpponentAnnotations, this);
+
+    this.listenTo(channel, 'ypet:paragraph:set:annotations', function(obj) {
+      var passage = this.model.get('passages').findWhere({'pk': obj.section_pk});
+
+      if(obj.words.length == 1) {
+
+        passage.get('annotations').each(function(annotation) {
+          if(annotation.get('words').contains(obj.word)) {
+            annotation.toggleType();
+          };
+        });
+
+      } else {
+        passage.get('annotations').create({'words': obj.words});
+      }
+      // passage.get('annotations').each(function(annotation) {
+      //   console.log( annotation.get('words').contains(obj.word) );
+      // });
+
+      // if(selected.length == 1 && word_model.get('parentAnnotation') ) {
+      //   word_model.get('parentAnnotation').toggleType();
+      // } else {
+      //   #<{(| if selection includes an annotation, delete that one |)}>#
+      //   _.each(selected, function(w) {
+      //     if(w.get('parentAnnotation')) {
+      //       w.get('parentAnnotation').destroy();
+      //     }
+      //   });
+      //   #<{(| Take the selected words as a whole and make a new Annotation with them |)}>#
+      //   word_model.get('parentDocument').get('annotations').create({'words': selected});
+      // };
+
+    });
+
+  },
+
+  getUserAnnotations: function(section_pk) {
+    /* Return the Paragraph's Annotations */
+    var passage = this.model.get('passages').findWhere({'pk': section_pk});
+    return passage.get('annotations')
+  },
+
+  getOpponentAnnotations: function(section_pk) {
+    /* Return the Paragraph's Opponent Annotations */
+    var passage = this.model.get('passages').findWhere({'pk': section_pk});
+    return passage.get('opponent_annotations')
+  },
+});
 
 NERDocumentResultsView = Backbone.Marionette.View.extend({
   /* ...
@@ -855,6 +767,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
    * this.collection = None
    */
   template: '#ypet-document-results-template',
+  className: 'row',
 
   initialize: function() {
     var document_pk = this.model.get('pk');
@@ -869,6 +782,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
         self.model = new NERDocumentResult(data);
+        channel.trigger('ypet:navigation:score:update');
         self.render();
       },
       error: function(error_res) {
@@ -883,13 +797,21 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
   }
 });
 
-
 NERQuestCompletedView = Backbone.Marionette.View.extend({
   /* ...
-   * this.model = None
+   * this.model = NERQuestResult
    * this.collection = None
    */
   template: '#ypet-quest-completed-template',
+  className: 'row',
+
+  ui: {
+    'next': '#next-quest'
+  },
+
+  events: {
+    'mousedown @ui.next': 'nextQuest'
+  },
 
   initialize: function() {
     this.model = new NERQuestResult({});
@@ -902,39 +824,33 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
         self.model = new NERQuestResult(data)
+        channel.trigger('ypet:navigation:score:update');
         self.render();
       }
     });
-
   },
 
-  onRender: function() {
-    console.log('NERQuestCompletedView onRender', this);
+  nextQuest: function() {
+    /* Use API to determine next Quest for User */
 
-    /* Rather than have a view to fetch the ramining quests, use the
-    API and filter so we can on-click determine what quest the
-    player should do next */
-    // $('#nextavailquest').on('click', function(evt) {
-    //   evt.preventDefault();
-    //   evt.stopPropagation();
-    //   var ajax_settings = {
-    //     'type': 'GET',
-    //     'url': '/api/quest/{{task.group_id}}/',
-    //     'success': function(data) {
-    //       var set = _.filter(data, function(q) {
-    //         return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
-    //       });
-    //       if(set.length) {
-    //         window.location = '/task/entity-recognition/quest/' + set[0].id;
-    //       } else { window.location = '/dashboard/'; }
-    //     }
-    //   };
-    //   $.ajax(ajax_settings);
-    // });
+    $.ajax({
+      type: 'GET',
+      url: '/api/ner/list/'+ this.model.get('group').pk +'/quests/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      success: function(data) {
+        var set = _.filter(data, function(q) {
+          return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
+        });
+
+        if(set.length) {
+          window.location = '/task/entity-recognition/quest/' + set[0].id;
+        } else { window.location = '/dashboard/'; }
+
+      }
+    });
 
   }
 });
-
 
 NERLoadingView = Backbone.Marionette.View.extend({
   /* Initial HTML before a REExtractionList is available
@@ -943,7 +859,6 @@ NERLoadingView = Backbone.Marionette.View.extend({
   */
   template: '<p>Text Loading...</p>'
 });
-
 
 NERProgressItem = Backbone.Marionette.View.extend({
   /* Drop down list of REChoices */
@@ -961,7 +876,6 @@ NERProgressItem = Backbone.Marionette.View.extend({
   }
 });
 
-
 NERProgressView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for REProgressItem */
   tagName: 'ul',
@@ -970,24 +884,57 @@ NERProgressView = Backbone.Marionette.CollectionView.extend({
   childViewEventPrefix: 'progress',
 });
 
-
 NERNavigationView = Backbone.Marionette.View.extend({
   /* The Progress indicator view for all interactions on the Quest
    * this.model = None
    * this.collection = NERDocumentList (Quest Documents)
    */
   template: '#ypet-navigation-template',
-  className: 'row',
+  className: 'row justify-content-between',
 
   regions: {
-    'progress': '#progress-bar'
+    'progress': '#progress-bar',
+  },
+
+  ui: {
+    'score': '#score'
+  },
+
+  initialize: function() {
+    this.listenTo(channel, 'ypet:navigation:score:update', this.updateScore);
   },
 
   onRender: function() {
+    var self = this;
+
+    // this.od = new Odometer({
+    //   el: self.ui.score.first(),
+    //   value: 0,
+    //   format: '(,ddd)',
+    //   theme: 'minimal'
+    // });
+
     this.showChildView('progress', new NERProgressView({'collection': this.collection}));
+    this.updateScore();
+  },
+
+  updateScore: function() {
+    var self = this;
+
+    $.ajax({
+      type: 'GET',
+      url: '/u/points/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      cache: false,
+      async: false,
+      success: function(data) {
+        self.ui.score.html(data.points);
+        // self.od.update(data.points);
+      }
+    });
+
   }
 });
-
 
 NERFooterHelpView = Backbone.Marionette.View.extend({
   /* The list of links for getting task instructions
@@ -1001,21 +948,17 @@ NERFooterHelpView = Backbone.Marionette.View.extend({
   className: 'row'
 })
 
-
 NERFooterConfirmView = Backbone.Marionette.View.extend({
   /* The Actionable button that submits the document
    * this.model = None
    * this.collection = None
    */
-  template: '#ypet-footer-confirm-template',
-  className: 'row',
-
-  ui: {
-    'button': 'p.button'
-  },
+  template: _.template('Submit'),
+  className: 'btn btn-block confirm-button',
+  tagName: 'p',
 
   triggers: {
-    'mousedown @ui.button': 'confirm:submit'
+    'mousedown': 'confirm:submit'
   }
 });
 
@@ -1029,7 +972,7 @@ NERFooterNextView = Backbone.Marionette.View.extend({
   className: 'row',
 
   ui: {
-    'next': 'p.button.next'
+    'next': '.next-doc'
   },
 
   triggers: {
@@ -1037,31 +980,38 @@ NERFooterNextView = Backbone.Marionette.View.extend({
   }
 });
 
-
 NERFooterSearchView = Backbone.Marionette.View.extend({
   /* The link that allows people to look up a term independently
-   * this.model = NERAnnotation
+   * this.model = None
    * this.collection = None
    */
   template: '#ypet-footer-search-template',
   className: 'row',
 
+  ui: {
+    'link': 'a',
+    'small': 'small'
+  },
+
   initialize: function() {
-    // this.model = new NERAnnotation({'text': ''});
+    this.listenTo(channel, 'ypet:footer:search:set', this.showText);
   },
 
   onRender: function() {
-    // var url = 'https://www.google.com/search?q='+ann_text;
-    // $('#google_annotation a').attr('href', url);
-    // $('#google_annotation a small').text(_.str.truncate(ann_text, 36));
+    this.$el.hide();
+  },
+
+  showText: function(text) {
+    this.$el.show();
+    var url = 'https://www.google.com/search?q='+text;
+    this.ui.link.attr('href', url);
+    this.ui.small.text(_.str.truncate(text, 36));
   }
-
 });
-
 
 NERFooterView = Backbone.Marionette.View.extend({
   template: '#ypet-footer-template',
-  className: 'row my-3 justify-content-center',
+  className: 'row my-3 justify-content-between',
   childViewEventPrefix: 'ner:footer',
 
   regions: {
@@ -1090,7 +1040,6 @@ NERFooterView = Backbone.Marionette.View.extend({
     // (TODO) Pass NERAnnotation item into this
     this.showChildView('search', new NERFooterSearchView({'model': false}));
   }
-
 });
 
 YPet = Backbone.Marionette.View.extend({
@@ -1118,7 +1067,6 @@ YPet = Backbone.Marionette.View.extend({
       this.model = this.collection.get_active();
       if(this.model) { this.render(); }
     });
-
   },
 
   collectionEvents: {
@@ -1145,38 +1093,36 @@ YPet = Backbone.Marionette.View.extend({
     },
     'ner:footer:confirm:submit': function() {
       /* Submit the User's annotations for the current Document */
+      var self = this;
+          ann_dict = {};
 
-        var self = this;
-            ann_dict = {};
-        // #<{(| Iterate over each of the paragraphs or annotatable sections on the page |)}>#
-        // _.each(passages, function(passage, passage_idx) {
-        //   ann_dict[+_.find(passage.infon, function(o){return o['@key']=='id';})['#text']] = YPet[passage_idx].currentView.collection.parentDocument.get('annotations').toJSON();
-        // });
-        // #<{(| Add the section to the objects |)}>#
-        // _.each(_.keys(ann_dict), function(section_pk) {
-        //   ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': section_pk}) })
-        // })
-        // #<{(| Do not save data if the annotation is empty |)}>#
-        // annotations = _.flatten(_.values(ann_dict));
-        // annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
-        // annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
-        // annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+      /* Iterate over each of the paragraphs or annotatable sections on the page */
+      _.each(this.model.get('passages').pluck('pk'), function(section_pk) {
+        ann_dict[section_pk] = channel.request('ypet:paragraph:user:annotations', section_pk).toJSON();
+        ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': +section_pk}) })
+      });
 
-        /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
-        $.ajax({
-          type: 'POST',
-          url: '/task/entity-recognition/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
-          headers: {'X-CSRFTOKEN': this.options.csrf_token},
-          contentType: "application/json; charset=utf-8",
-          data:  JSON.stringify([]),
-          dataType: 'json',
-          cache: false,
-          async: false,
-          success: function() {
-            self.options['review'] = true
-            self.render();
-          }
-        });
+      /* Do not save data if the annotation is empty */
+      annotations = _.flatten(_.values(ann_dict));
+      annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
+      annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
+      annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+
+      /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
+      $.ajax({
+        type: 'POST',
+        url: '/task/entity-recognition/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
+        headers: {'X-CSRFTOKEN': this.options.csrf_token},
+        contentType: "application/json; charset=utf-8",
+        data:  JSON.stringify(annotations),
+        dataType: 'json',
+        cache: false,
+        async: false,
+        success: function() {
+          self.options['review'] = true
+          self.render();
+        }
+      });
 
     }
   },

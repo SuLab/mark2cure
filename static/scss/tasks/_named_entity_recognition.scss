@@ -22,10 +22,86 @@
     p { margin-bottom: 0px; }
   }
 
+  #ypet-results {
+
+    .header-message {
+      border: 1rem solid $color_gray_light;
+      border-top: none;
+    }
+
+    .ypet-info-message {
+      border: 1rem solid $color_gray_lightest;
+
+      .nav-action-area {
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: $color_purple;
+
+        p:hover {
+          cursor: pointer;
+          color: #5200ef;
+        }
+        a {
+          color: $color_black;
+          span.chevron {
+            font-size: 2rem;
+            line-height: 1rem;
+          }
+        }
+        a:hover { text-decoration: none; }
+      }
+
+      .social-action-area {
+        i {
+          padding: .2rem;
+        }
+        text-transform: uppercase;
+        font-size: 1rem;
+
+        a {
+          color: $color_black;
+        }
+        a:hover { text-decoration: none; }
+      }
+
+
+    }
+  }
+
+  #ypet-footer {
+    #ypet-footer-help {
+
+      .list-group {
+        .list-group-item i {
+          position: relative;
+          padding-left: .5rem;
+          top: .05rem;
+        }
+        .diseases { background-color: #d1f3ff; }
+        .genes { background-color: #b1ffa8; }
+        .treatments { background-color: #ffd1dc; }
+      }
+
+    }
+  }
+
+  #ypet-footer-confirm {
+    .confirm-button {
+      background-color: $color_purple;
+      color: $color_white;
+      text-transform: uppercase;
+      font-size: 1rem;
+      letter-spacing: .125rem;
+      cursor: pointer;
+    }
+
+    .next-doc {
+      cursor: pointer;
+    }
+  }
 
 }
-
-
 
 
 

@@ -1,26 +1,26 @@
-$(document).ready(function() {
-  var $el = document.querySelector('#score');
-  if($el) {
-    od = new Odometer({
-      el: $el,
-      value: $el.innerHTML,
-      format: '(,ddd)',
-      theme: 'minimal'
-    });
-  }
-});
-
-var update_score = function() {
-    var ajax_settings = {
-      url: '/u/points/',
-      type: 'GET',
-      dataType: 'json',
-      success: function(data) {
-        od.update(data.points);
-      }
-    };
-    $.ajax(ajax_settings);
-};
+// $(document).ready(function() {
+//   var $el = document.querySelector('#score');
+//   if($el) {
+//     od = new Odometer({
+//       el: $el,
+//       value: $el.innerHTML,
+//       format: '(,ddd)',
+//       theme: 'minimal'
+//     });
+//   }
+// });
+//
+// var update_score = function() {
+//     var ajax_settings = {
+//       url: '/u/points/',
+//       type: 'GET',
+//       dataType: 'json',
+//       success: function(data) {
+//         od.update(data.points);
+//       }
+//     };
+//     $.ajax(ajax_settings);
+// };
 
 var drawUserFScoreLine = function(div_sel_str, group_pk) {
     var margin = {top: 30, right: 40, bottom: 30, left: 50},
