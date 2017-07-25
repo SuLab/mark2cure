@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
 
-from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.contrib.contenttypes.models import ContentType
@@ -99,7 +98,7 @@ def relation_task_complete(request, document_pk):
 
 
 @login_required
-@require_http_methods(['POST'])
+@api_view(['POST'])
 def submit_annotation(request, document_pk, relation_pk):
     """ Submit the selected relation type as an Annotation that is associated
         to a View of the first Document Section (.first() if Task Type isn't Section Specific)
@@ -128,7 +127,8 @@ def submit_annotation(request, document_pk, relation_pk):
                              object_id=relation_ann.id,
                              created=timezone.now())
 
-        return HttpResponse(200)
+        return document_analysis(request, document_pk, relation_pk)
+        # return HttpResponse(200)
 
     return HttpResponse(500)
 
@@ -187,7 +187,7 @@ def fetch_document_relations(request, document_pk):
 
 
 @login_required
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def document_analysis(request, document_pk, relation_pk=None):
     """ API for returning analysis details for Document
         Relation task completions
@@ -239,7 +239,7 @@ def document_analysis(request, document_pk, relation_pk=None):
         groups[obj.get('id')].append(obj)
 
     queryset = []
-    for x in groups.iterkeys():
+    for x in groups.keys():
         item = groups[x][0]
         item['answers'] = groups[x]
         queryset.append(item)

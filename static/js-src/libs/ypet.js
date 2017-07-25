@@ -167,7 +167,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
     if(words_len == 0 && this.get('text') != '' && this.get('passage')) {
       /* If the Annotation was made using text */
-      // alert('implement text >> words fucntion');
 
       if(this.get('start') == null) {
         // When there is no start, select all the words available that match the annotation text
@@ -800,7 +799,6 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
       // };
     });
 
-    console.log(' -- -- -- -- ');
     var concepts = this.getOption('concepts');
     if(concepts) {
       _.each(_.keys(concepts), function(k) {

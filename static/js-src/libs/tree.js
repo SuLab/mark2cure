@@ -111,14 +111,14 @@ REExtractionAnswerList = Backbone.Collection.extend({
 
   initialize: function() {
     var self = this;
-    var color = d3.scale.category20c();
+    this.color = d3.scale.category20c();
 
     this.listenTo(this, 'add', function(answer) {
-      var max = d3.sum( self.pluck('value') );
+      this.max_value = d3.sum( self.pluck('value') );
 
       this.each(function(a) {
-        a.set('percentage', ((a.get('value')/max)*100).toFixed() );
-        a.set('color', color( self.indexOf(a)) )
+        a.set('percentage', (a.get('value')/self.max_value)*100 );
+        a.set('color', self.color( self.indexOf(a)) )
       });
 
     });
@@ -188,13 +188,13 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   * – Modal: REExtraction
   * - Collection: REExtractionAnswerList */
   template: '#reextraction-results-template',
-  className: 'row',
+  className: 'row my-3 justify-content-center',
   ui: {
+    'answers_chart': 't',
     'button': 'button'
   },
 
   regions: {
-    'answers-chart': '#reextraction-answers-chart',
     'answers-list': '#reextraction-answers-list'
   },
 
@@ -203,16 +203,17 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   },
 
   onAttach: function() {
+    var self = this;
     this.showChildView('answers-list', new REExtractionAnswerView({'collection': this.collection}));
 
-    // var chart = d3.select('#chart').style('width', '100%');
-    // var bar = chart.selectAll('div')
-    //   .data(data)
-    //   .enter()
-    //     .append('div')
-    //       .attr('class', 'bar-component')
-    //       .style('width', function(d) { return ((d['value']/max)*100) + '%'; } )
-    //       .style('background-color', function(d, i) { return color(i); });
+    var chart = d3.select('#reextraction-answers-chart').style('width', '100%');
+    var bar = chart.selectAll('div')
+      .data(this.collection.toJSON())
+      .enter()
+        .append('div')
+          .attr('class', 'bar-component')
+          .style('width', function(d) { return ((d['value']/self.collection.max_value)*100) + '%'; } )
+          .style('background-color', function(d, i) { return self.collection.color(i); });
 
   }
 });
@@ -391,7 +392,7 @@ REExtractionView = Backbone.Marionette.View.extend({
         url: '/task/relation/'+ self.model.get('document_id') +'/'+ self.model.get('id') +'/submit/',
         data: $.extend({'csrfmiddlewaretoken': self.options.csrf_token }, {'relation': childView.model.get('id')}),
         cache: false,
-        success: function() { self.triggerMethod('reconfirm:confirm:success', childView); },
+        success: function(api_data) { self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data}); },
         error: function() { self.triggerMethod('reconfirm:confirm:error'); },
       });
     },
@@ -433,7 +434,7 @@ Tree = Backbone.Marionette.View.extend({
   },
 
   childViewEvents: {
-    'reconfirm:confirm:success': function(confirmView) {
+    'reconfirm:confirm:success': function(obj) {
       /* Selected REChoice submitted to the server
       * X 1. Start to download the results
       * 2. Flag future REExtraction models of concept corrections
@@ -442,37 +443,31 @@ Tree = Backbone.Marionette.View.extend({
       var self = this;
       var answers_collection = new REExtractionAnswerList([]);
 
-      $.getJSON('/task/relation/'+ this.model.get('document_id') +'/analysis/' + this.model.get('id') + '/', function(api_data) {
-        // Extend any naming labels
-        var answer_text = {};
-        _.each(api_data[0]['answers'], function(a) {
-          var val = a.answer.text;
-          if( _.contains(incorrect_id_arr, a.answer.id) ) {
-            var flagged_concept = new REConcept( self.model.get('concepts')['c'+(_.indexOf(incorrect_id_arr, a.answer.id)+1)] );
-            val = flagged_concept.get('text')+' is not a '+ flagged_concept.get('type') +' concept';
-          }
-          answer_text[a.answer.id] = val;
-        });
-
-        // Add them all to the REExtractionAnswersList
-        var answer_counts = _.countBy( _.map(api_data[0]['answers'], function(x) { return x['answer']['id']; }) );
-        _.each(_.keys(answer_counts), function(answer_key) {
-           answers_collection.add(new REExtractionAnswer({
-             'id': answer_key,
-             'value': answer_counts[answer_key],
-             'label': answer_text[answer_key],
-             'self': answer_key == confirmView.model.get('id')
-          }) );
-        });
+      // Extend any naming labels
+      var answer_text = {};
+      _.each(obj.data[0]['answers'], function(a) {
+        var val = a.answer.text;
+        if( _.contains(incorrect_id_arr, a.answer.id) ) {
+          var flagged_concept = new REConcept( self.model.get('concepts')['c'+(_.indexOf(incorrect_id_arr, a.answer.id)+1)] );
+          val = flagged_concept.get('text')+' is not a '+ flagged_concept.get('type') +' concept';
+        }
+        answer_text[a.answer.id] = val;
       });
 
-
-      // if( _.contains(incorrect_id_arr, confirmView.model.get('id')) ) {
-      //   console.log('flag dat', this);
-      // }
+      // Add them all to the REExtractionAnswersList
+      var answer_counts = _.countBy( _.map(obj.data[0]['answers'], function(x) { return x['answer']['id']; }) );
+      _.each(_.keys(answer_counts), function(answer_key) {
+         answers_collection.add(new REExtractionAnswer({
+           'id': answer_key,
+           'value': answer_counts[answer_key],
+           'label': answer_text[answer_key],
+           'self': answer_key == obj.child_view.model.get('id')
+        }) );
+      });
+      answers_collection.sort();
 
       /* Submitting results for a REExtraction */
-      this.emptyRegions();
+      this.getRegion('extraction').empty();
       this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.showChildView('extraction-results', new REExtractionResultView({'model': this.model, 'collection': answers_collection}));
     },
@@ -498,7 +493,7 @@ Tree = Backbone.Marionette.View.extend({
           url: '/task/relation/'+ self.model.get('document_id') +'/',
           data: {'csrfmiddlewaretoken': self.options.csrf_token },
           cache: false,
-          success: function() { self.triggerMethod('reconfirm:confirm:success', childView); },
+          success: function(api_data) { self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data}); },
         });
 
       }

@@ -23,7 +23,6 @@
     p { margin-bottom: 0px; }
   }
 
-
   #tree-selection {
     .loader-container {
       height: 5em;
@@ -215,34 +214,21 @@
 
     }
 
-    #tree-confirm {}
   }
 
   #tree-selection-results {
     // border-bottom: 8px solid $color_gray_light;
-  border-bottom: 8px solid $color_gray_lightest;
+    border-bottom: 8px solid $color_gray_lightest;
 
-    #reextraction-answers-list {
-
-      li {
-        .box {
-          float: left;
-          height: 20px;
-          width: 20px;
-          margin: 2px 10px;
-        }
-      }
-
-    }
-
-    #feedback-next-action-area {
-
+    #reextraction-answers-chart {
       .bar-component {
         float: left;
         margin: 10px 0px;
         height: 25px;
       }
+    }
 
+    #reextraction-answers-list {
       li {
         .box {
           float: left;
@@ -251,15 +237,20 @@
           margin: 2px 10px;
         }
       }
-
-      button {
-        margin-bottom: 20px;
-      }
     }
 
-
+    button:hover {
+      cursor: pointer;
+    }
 
   }
+
+  #tree-confirm {
+    button:hover {
+      cursor: pointer;
+    }
+  }
+
 
 }
 

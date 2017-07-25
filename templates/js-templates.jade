@@ -492,12 +492,16 @@ script(id='reextraction-result-answer-item-template', type='x-template/underscor
 
 
 script(id='reextraction-results-template', type='x-template/underscore')
-  .col-12
+  .col-10
     .row
       #reextraction-answers-chart
 
-    #reextraction-answers-list.row
+    .row
       .col-12
+        #reextraction-answers-list
+
+    .row.justify-content-center
+      .col-3
         button.btn.btn-primary.btn-block Next
 
 

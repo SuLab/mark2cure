@@ -36,7 +36,7 @@ class RelationAnswerSerializer(serializers.Serializer):
     answer = serializers.SerializerMethodField()
 
     def get_answer(self, obj):
-        return filter(lambda d: d['id'] == obj.get('answer_hash'), relation_data_flat)[0]
+        return next(d for d in relation_data_flat if d['id'] == obj.get('answer_hash'))
 
 
 class RelationAnalysisSerializer(serializers.Serializer):
