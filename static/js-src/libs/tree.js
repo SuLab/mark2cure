@@ -1,28 +1,6 @@
 var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 
 /*
- * ETC
- */
-
-// if(concepts['c2']['text'] == 'Astrology') {
-//  this.ui.relation.removeClass('disabled').text( concepts['c2'].text + choice.get('text') + 'field of science');
-// };
-//   #<{(| Special for training |)}>#
-//   if( current_relationship.get('concepts')['c1']['text'] == 'Citizen Scientists' ) {
-//     $('#c1 .not_correct_stype').text('is not a group of people?');
-//   }
-//   if( current_relationship.get('concepts')['c2']['text'] == 'Astrology' ) {
-//     $('#c2 .not_correct_stype').text('is not a field of science?');
-//   }
-//   if( current_relationship.get('concepts')['c1']['text'] == 'citizen scientist' ) {
-//     $('#c1 .not_correct_stype').text('is not a helpful person?');
-//   }
-//   if( current_relationship.get('concepts')['c2']['text'] == 'Biomedical research' ) {
-//     $('#c2 .not_correct_stype').text('is not a field of study?');
-//   }
-
-
-/*
  *  Models & Collections
  */
 
@@ -56,6 +34,7 @@ REChoices = Backbone.Collection.extend({
 });
 
 REConcept = Backbone.Model.extend({
+  /* The Concept term that is being verified and compared to another */
   defaults: {
     id: null,
     text: null,
@@ -178,7 +157,7 @@ REProgressView = Backbone.Marionette.CollectionView.extend({
 });
 
 RENavigationView = Backbone.Marionette.View.extend({
-  /*
+  /* The gray progression bar and score indicator
   * - Modal: None
   * - Collection: REExtractionList
   */
@@ -209,6 +188,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   * – Modal: REExtraction
   * - Collection: REExtractionAnswerList */
   template: '#reextraction-results-template',
+  className: 'row',
   ui: {
     'button': 'button'
   },
@@ -223,8 +203,6 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   },
 
   onAttach: function() {
-      //
-    //
     this.showChildView('answers-list', new REExtractionAnswerView({'collection': this.collection}));
 
     // var chart = d3.select('#chart').style('width', '100%');
@@ -439,7 +417,6 @@ REExtractionView = Backbone.Marionette.View.extend({
   }
 });
 
-
 Tree = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
   * - Model = current / active REExtraction event
@@ -577,7 +554,7 @@ Tree = Backbone.Marionette.View.extend({
   onRender: function() {
     if(this.collection && this.model) {
       this.options['model'] = this.model;
-      this.options['mode'] = 'er';
+      this.options['mode'] = 're';
       this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new YPet(this.options));

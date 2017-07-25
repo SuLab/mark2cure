@@ -6,7 +6,7 @@ extends base
 
 block header
   - with headerMessage=task.name
-    include includes/header-task-relation
+    include includes/header
 
 
 block content
@@ -24,6 +24,8 @@ block post-footer
 
         main.show( new Tree({
           'csrf_token': "{{csrf_token}}",
+          'mode': 're',
+
           'document_pk': "{{ document.pk }}",
           'document_pmid': "{{ document.document_id }}"
           })

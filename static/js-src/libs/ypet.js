@@ -159,9 +159,59 @@ NERAnnotation = Backbone.RelationalModel.extend({
     var self = this;
     var words_len = this.get('words').length;
 
-    if(words_len == 0 && this.get('text') != '') {
+    if(this.get('type') && !this.get('type_id')) {
+      this.set('type_id', ['d', 'g', 't'].indexOf(this.get('type')));
+      this.unset('type');
+    }
+
+
+    if(words_len == 0 && this.get('text') != '' && this.get('passage')) {
       /* If the Annotation was made using text */
-      alert('implement text >> words fucntion');
+      // alert('implement text >> words fucntion');
+
+      if(this.get('start') == null) {
+        // When there is no start, select all the words available that match the annotation text
+
+        var ann_text = this.get('text').toLowerCase();
+
+        this.get('passage').get('words').each(function(w, w_idx) {
+
+
+          var w_text = w.get('text').toLowerCase();
+          if( ann_text.indexOf(w_text) == 0 ) {
+
+            var ann_word_array = ann_text.split(' ');
+
+            // Check forward words as well
+            var search_words = _.map(_.range(ann_word_array.length), function(idx) {
+              return self.get('passage').get('words').at(w_idx + idx);;
+            });
+            var search_words_text = _.map(search_words, function(w) {
+              return w.get('text').toLowerCase();
+            });
+
+            if(_.isEqual(ann_word_array, search_words_text)) {
+              // console.log(w_idx, search_words_text, self.get('words').length);
+
+              if(self.get('words').length == 0) {
+                self.set('words', new NERWordList(search_words));
+              } else {
+
+                // If the words were already 'found' for this annotation, create a new one on this passage
+                self.get('passage').get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
+
+              }
+            };
+
+          }
+
+        });
+
+        // console.log('Ann', this);
+
+      } else {
+        console.log('NERAnnotation select start index', this.attributes);
+      }
 
     } else if(words_len > 0 && this.get('text') == '') {
       /* If the Annotation was made using NERWordList */
@@ -249,12 +299,10 @@ NERAnnotationList = Backbone.Collection.extend({
   draw: function() {
     this.each(function(annotation) { annotation.draw(); });
   }
-
 });
 
 NERParagraph = Backbone.RelationalModel.extend({
-  /* Foundational model for tracking everything going
-   * on within a Paragraph like Words and Annotations */
+  /* Base of Paragraph that tokenizes Words and tracks AnnotationLists */
   defaults: {
     text: '',
     offset: 0,
@@ -312,6 +360,7 @@ NERParagraph = Backbone.RelationalModel.extend({
 });
 
 NERParagraphList = Backbone.Collection.extend({
+  /* The multiple passages (sections or paragraphs) for a NERDocument */
   model: NERParagraph,
 });
 
@@ -360,6 +409,10 @@ NERDocument = Backbone.RelationalModel.extend({
    */
   defaults: {
     active: false, // If is the currently addressed Document in the Quest
+  },
+
+  url: function() {
+    return '/document/'+ this.get('pk') +'/';
   },
 
   relations: [{
@@ -426,7 +479,7 @@ NERDocumentList = Backbone.Collection.extend({
  */
 
 NERWordView = Backbone.Marionette.View.extend({
-  /* View for all direct actions on a word
+  /* View for all direct actions on a word <span>
   * - Model = NERWord
   * - Collection = None
   * - options.section_pk = PK of current section (passage / paragraph)
@@ -471,7 +524,7 @@ NERWordView = Backbone.Marionette.View.extend({
   onChangeLatest: function(model, value, options) {
     /* When the latest attribute is set, means they're hover over so highlight temporarily */
     if(this.model.get('latest')) {
-      this.model.trigger('highlight', '#D1F3FF');
+      // this.model.trigger('highlight', '#D1F3FF');
     }
     if(options.force) {
       this.model.trigger('highlight', '#fff');
@@ -687,7 +740,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
 });
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
-  /* Parent list for NERParagraphs
+  /* Parent list for NERParagraphs (listeners are here to allow specifying passage)
    * this.model = NERDocument
    * this.collection = NERParagraphList
    */
@@ -697,13 +750,15 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
 
   childViewOptions: function() {
     var enabled = true;
-    if(this.getOption('mode') == 'er') { enabled = false; }
+    if(this.getOption('mode') == 're') { enabled = false; }
     if(this.getOption('mode') == 'ner' && this.getOption('review') == true) { enabled = false; }
     return {
       'enabled': enabled
     }
   },
   initialize: function() {
+    var self = this;
+
     if(this.model) {
       this.collection = this.model.get('passages');
     } else {
@@ -725,7 +780,7 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
         });
 
       } else {
-        passage.get('annotations').create({'words': obj.words});
+        passage.get('annotations').create({'text': obj.words});
       }
       // passage.get('annotations').each(function(annotation) {
       //   console.log( annotation.get('words').contains(obj.word) );
@@ -743,8 +798,19 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
       //   #<{(| Take the selected words as a whole and make a new Annotation with them |)}>#
       //   word_model.get('parentDocument').get('annotations').create({'words': selected});
       // };
-
     });
+
+    console.log(' -- -- -- -- ');
+    var concepts = this.getOption('concepts');
+    if(concepts) {
+      _.each(_.keys(concepts), function(k) {
+        self.collection.each(function(passage) {
+          passage.get('annotations').create({ 'text': concepts[k].text,
+                                              'type': concepts[k].type,
+                                              'passage': passage });
+        });
+      });
+    }
 
   },
 
@@ -762,7 +828,7 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
 });
 
 NERDocumentResultsView = Backbone.Marionette.View.extend({
-  /* ...
+  /* Display the score and opponent information for a submission
    * this.model = NERDocumentResult
    * this.collection = None
    */
@@ -798,7 +864,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
 });
 
 NERQuestCompletedView = Backbone.Marionette.View.extend({
-  /* ...
+  /* Landing page for when Quest is complete (do next, tweet, fb share, etc)
    * this.model = NERQuestResult
    * this.collection = None
    */
@@ -1010,6 +1076,7 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
 });
 
 NERFooterView = Backbone.Marionette.View.extend({
+  /* Help links, submission, search footer for controlling NER Progression */
   template: '#ypet-footer-template',
   className: 'row my-3 justify-content-between',
   childViewEventPrefix: 'ner:footer',
@@ -1058,15 +1125,24 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    if(!this.options.training && !this.collection) {
+    if(this.getOption('mode') == 'ner' && !this.getOption('training') && !this.collection) {
       this.collection = new NERDocumentList({'quest_pk': this.options.task_pk});
       this.collection.fetch();
+    }
+
+    if(this.getOption('mode') == 're') {
+      this.options.re_model = this.model;
+      this.model = new NERDocument({pk: this.model.get('document_id')});
+      this.model.fetch();
+      this.collection = null;
     }
 
     this.listenTo(this.collection, 'sync', function() {
       this.model = this.collection.get_active();
       if(this.model) { this.render(); }
     });
+
+    this.listenTo(this.model, 'sync', this.render);
   },
 
   collectionEvents: {
@@ -1128,25 +1204,26 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    if(this.collection) {
-      this.options['model'] = this.model;
-      this.options['collection'] = this.collection;
-      this.showChildView('text', new NERParagraphsView(this.options));
+    if(this.getOption('mode') == 'ner') {
+      if(this.collection) {
+        this.options['model'] = this.model;
+        this.options['collection'] = this.collection;
+        this.showChildView('text', new NERParagraphsView(this.options));
 
-      if(this.options.mode == 'ner') {
         this.showChildView('navigation', new NERNavigationView(this.options));
         this.showChildView('footer', new NERFooterView(this.options));
 
         if(this.getOption('review') == true) {
           this.showChildView('results', new NERDocumentResultsView(this.options));
         }
-
-      } else if (this.options.mode == 're') {
-        // var concept_uids = [this.options.concepts['c1'].id, this.options.concepts['c2'].id];
-      }
-    } else {
-      this.showChildView('text', new NERLoadingView());
-    };
+      } else {
+        this.showChildView('text', new NERLoadingView());
+      };
+    } else if(this.getOption('mode') == 're') {
+      var concepts = this.getOption('re_model').get('concepts');
+      this.options['concepts'] = concepts;
+      this.options['model'] = this.model;
+      this.showChildView('text', new NERParagraphsView(this.options));
+    }
   }
 });
-

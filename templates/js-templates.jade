@@ -388,7 +388,6 @@ script(id='ypet-quest-completed-template', type='html/template')
 
 
 
-
 script(id='ypet-navigation-template', type='x-template/underscore')
   // Document header Information
   // 1) List of document Icons
@@ -493,14 +492,13 @@ script(id='reextraction-result-answer-item-template', type='x-template/underscor
 
 
 script(id='reextraction-results-template', type='x-template/underscore')
-  .row
-    .col-xs-12.col-md-10.col-md-offset-1
-      #chart
+  .col-12
+    .row
+      #reextraction-answers-chart
 
-    #reextraction-answers-list.col-xs-12.col-md-10.col-md-offset-1
-    .col-xs-10.col-xs-offset-1.col-sm-10.col-sm-offset-1 col-md-4 col-md-offset-4">
-      <button class="btn btn-primary btn-block">Next</button>
-    </div>
+    #reextraction-answers-list.row
+      .col-12
+        button.btn.btn-primary.btn-block Next
 
 
 script(id='reextraction-concept-template', type='x-template/underscore')
