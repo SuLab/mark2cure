@@ -157,64 +157,53 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
   initialize: function() {
     var self = this;
-    var words_len = this.get('words').length;
 
+    /* Sanitize input types into using type_id */
     if(this.get('type') && !this.get('type_id')) {
       this.set('type_id', ['d', 'g', 't'].indexOf(this.get('type')));
       this.unset('type');
     }
 
+    /* If Annotation was created with a string but without selected words */
+    if(this.get('words').length == 0 && this.get('text') != '') {
+      var passage = this.collection['annsPassage'];
 
-    if(words_len == 0 && this.get('text') != '' && this.get('passage')) {
-      /* If the Annotation was made using text */
-
+      /* When there is no start, select all the words available that match the annotation text */
       if(this.get('start') == null) {
-        // When there is no start, select all the words available that match the annotation text
 
         var ann_text = this.get('text').toLowerCase();
+        passage.get('words').each(function(w, w_idx) {
 
-        this.get('passage').get('words').each(function(w, w_idx) {
-
-
-          var w_text = w.get('text').toLowerCase();
-          if( ann_text.indexOf(w_text) == 0 ) {
-
+          if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
             var ann_word_array = ann_text.split(' ');
 
             // Check forward words as well
             var search_words = _.map(_.range(ann_word_array.length), function(idx) {
-              return self.get('passage').get('words').at(w_idx + idx);;
+              return passage.get('words').at(w_idx + idx);;
             });
             var search_words_text = _.map(search_words, function(w) {
               return w.get('text').toLowerCase();
             });
 
             if(_.isEqual(ann_word_array, search_words_text)) {
-              // console.log(w_idx, search_words_text, self.get('words').length);
-
               if(self.get('words').length == 0) {
                 self.set('words', new NERWordList(search_words));
               } else {
-
                 // If the words were already 'found' for this annotation, create a new one on this passage
-                self.get('passage').get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
-
+                passage.get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
               }
             };
 
           }
-
         });
-
-        // console.log('Ann', this);
 
       } else {
         console.log('NERAnnotation select start index', this.attributes);
       }
 
-    } else if(words_len > 0 && this.get('text') == '') {
-      /* If the Annotation was made using NERWordList */
+    } else if(this.get('words').length > 0 && this.get('text') == '') {
 
+      /* Simple Sanitization if the Annotation was made using NERWordList */
       var ann = this.sanitizeAnnotation(this.get('words').pluck('text').join(' '), this.get('words').first().get('start'));
       this.set('text', ann.text);
       this.set('start', ann.start);
@@ -245,38 +234,16 @@ NERAnnotation = Backbone.RelationalModel.extend({
   },
 
   draw: function() {
+    /* Trigger View methods on the Annotation's Words */
     var annotation_type = NERAnnotationTypes.at(this.get('type_id'));
     var words_len = this.get('words').length;
 
+    this.get('words').invoke('set', {'neighbor': false});
     this.get('words').each(function(word, word_index) {
       if(word_index == words_len-1) { word.set('neighbor', true); }
       word.trigger('highlight', annotation_type.get('color'));
     });
 
-    /* Draw all the basic background or underlines */
-    // word.trigger('underline', {'color': annotation_type.get('color')});
-    // if(annotation.get('opponent')) {
-    //   var words = annotation.get('words')
-    //   var author_annotations = parent_document.get('annotations');
-    //
-    //   var anns = []
-    //   author_annotations.each(function(main_ann) {
-    //     if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
-    //       anns.push(main_ann.cid);
-    //     }
-    //   });
-    //
-    //   if(_.uniq(anns).length > 1) {
-    //     #<{(| 2 Different Parent Annotations |)}>#
-    //     words.each(function(word) {
-    //       if(word == words.last()) {
-    //         word.trigger('underline-space', {'color': '#fff', 'last_word': true});
-    //       } else {
-    //         word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
-    //       }
-    //     });
-    //   }
-    // }
   }
 });
 
@@ -318,12 +285,15 @@ NERParagraph = Backbone.RelationalModel.extend({
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
     collectionOptions: {foo: 6969},
+    reverseRelation: { key: 'annsPassage' }
+
   }, {
     type: 'HasMany',
     key: 'opponent_annotations',
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
     collectionOptions: {foo: 123},
+    reverseRelation: { key: 'oannsPassage' }
   }],
 
   initialize : function() {
@@ -483,7 +453,7 @@ NERWordView = Backbone.Marionette.View.extend({
   * - Collection = None
   * - options.section_pk = PK of current section (passage / paragraph)
   */
-  template: _.template('<% if(neighbor) { %><%= text %><% } else { %><%= text %> <% } %>'),
+  template: _.template('<%= text %>'),
   tagName: 'span',
 
   modelEvents: {
@@ -509,8 +479,8 @@ NERWordView = Backbone.Marionette.View.extend({
    * when the word <span> is redrawn */
   onRender: function() {
     this.$el.css(this.model.get('neighbor') ?
-      {'margin-right': '5px', 'padding-right': '0'} :
-      {'margin-right': '0px', 'padding-right': '.25rem'});
+      {'margin-right': '.25rem', 'padding-right': '0rem'} :
+      {'margin-right': '0rem', 'padding-right': '.25rem'});
   },
 
   onChangeDisabled: function() {
@@ -523,7 +493,7 @@ NERWordView = Backbone.Marionette.View.extend({
   onChangeLatest: function(model, value, options) {
     /* When the latest attribute is set, means they're hover over so highlight temporarily */
     if(this.model.get('latest')) {
-      // this.model.trigger('highlight', '#D1F3FF');
+      this.model.trigger('highlight', '#D1F3FF');
     }
     if(options.force) {
       this.model.trigger('highlight', '#fff');
@@ -651,11 +621,6 @@ NERWordView = Backbone.Marionette.View.extend({
       _.each(remove_indexes, function(idx) {
         remove_word = word_collection.at(idx);
         remove_word.set('latest', null, {'force': true});
-
-        // (TODO) What is going on here?
-        // ann = word.get('parentAnnotation');
-        // if(ann) { ann.collection.drawAnnotation(ann); }
-
       });
     }
   },
@@ -668,8 +633,7 @@ NERWordView = Backbone.Marionette.View.extend({
     var selected = this.model.collection.filter(function(w) { return w.get('latest') });
     channel.trigger('ypet:paragraph:set:annotations', {
       'section_pk': this.getOption('section_pk'),
-      'words': selected,
-      'word': this.model
+      'words': selected
     });
 
     // Reset all latest attributes for future selections
@@ -768,44 +732,33 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     channel.reply('ypet:paragraph:opponent:annotations', this.getOpponentAnnotations, this);
 
     this.listenTo(channel, 'ypet:paragraph:set:annotations', function(obj) {
-      var passage = this.model.get('passages').findWhere({'pk': obj.section_pk});
+      var passage_annotations = this.getUserAnnotations(obj.section_pk),
+          selected_words = obj.words;
 
-      if(obj.words.length == 1) {
+      var existing_anns = passage_annotations.filter(function(ann) {
+        return _.some(_.map(selected_words, function(w) { return ann.get('words').contains(w); }));
+      });
 
-        passage.get('annotations').each(function(annotation) {
-          if(annotation.get('words').contains(obj.word)) {
-            annotation.toggleType();
-          };
-        });
-
+      if(selected_words.length==1) {
+        if(existing_anns.length) {
+          _.each(existing_anns, function(ann) { ann.toggleType(); });
+        } else {
+          passage_annotations.create({'words': selected_words});
+        }
       } else {
-        passage.get('annotations').create({'text': obj.words});
+        // Delete conflicting Annotations before creating new Annotation
+        _.each(existing_anns, function(ann) { ann.destroy(); });
+        passage_annotations.create({'words': selected_words});
       }
-      // passage.get('annotations').each(function(annotation) {
-      //   console.log( annotation.get('words').contains(obj.word) );
-      // });
 
-      // if(selected.length == 1 && word_model.get('parentAnnotation') ) {
-      //   word_model.get('parentAnnotation').toggleType();
-      // } else {
-      //   #<{(| if selection includes an annotation, delete that one |)}>#
-      //   _.each(selected, function(w) {
-      //     if(w.get('parentAnnotation')) {
-      //       w.get('parentAnnotation').destroy();
-      //     }
-      //   });
-      //   #<{(| Take the selected words as a whole and make a new Annotation with them |)}>#
-      //   word_model.get('parentDocument').get('annotations').create({'words': selected});
-      // };
     });
 
+    // If a concept object (RE) was included loose highlight them
     var concepts = this.getOption('concepts');
     if(concepts) {
       _.each(_.keys(concepts), function(k) {
         self.collection.each(function(passage) {
-          passage.get('annotations').create({ 'text': concepts[k].text,
-                                              'type': concepts[k].type,
-                                              'passage': passage });
+          passage.get('annotations').create({'text': concepts[k].text, 'type': concepts[k].type});
         });
       });
     }
