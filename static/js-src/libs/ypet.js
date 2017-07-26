@@ -297,8 +297,6 @@ NERParagraph = Backbone.RelationalModel.extend({
   }],
 
   initialize : function() {
-    // console.log('ner para init', this.get('opponent_annotations') );
-    //
     /* Extract (tokenize) the individual words */
     var self = this;
     var step = 0,
@@ -403,19 +401,6 @@ NERDocumentList = Backbone.Collection.extend({
 
   initialize: function(options) {
     this.quest_pk = options.quest_pk;
-
-
-    this.listenTo(this, 'add', function(model) {
-      // (TODO) Cleanup any attributes?
-    });
-
-    // this.listenTo(this, 'sync', function() {
-    //   if( this.is_quest_complete() ) {
-    //     // Jump to review page b/c the Quest is complete!
-    //     this.trigger('quest:complete');
-    //   }
-    // });
-
   },
 
   is_quest_complete: function() {
@@ -627,7 +612,6 @@ NERWordView = Backbone.Marionette.View.extend({
 
   onMouseUp: function(evt) {
     /* After click, drag, etc send words to AnnotationList as Annotation */
-
     if(this.model.get('disabled')) { return; };
 
     var selected = this.model.collection.filter(function(w) { return w.get('latest') });
@@ -693,13 +677,91 @@ NERParagraphView = Backbone.Marionette.View.extend({
 
     this.model.get('annotations').draw();
     this.model.get('opponent_annotations').draw();
-
-    // var has_opponent =  _.contains(this.model.get('annotations').pluck('self'), false);
-    // if (has_opponent) {
-    //   #<{(| Warning: this allows paragraph specific disabiling |)}>#
-    //   this.triggerMethod('view:only');
-    // }
   },
+
+
+  events : {
+    'mousedown': 'onMouseDown',
+    'mousemove': 'startHoverCapture',
+    'mouseup': 'onMouseLeave',
+    'mouseleave': 'onMouseLeave',
+  },
+
+
+  outsideBox: function(evt) {
+    var x = evt.pageX,
+        y = evt.pageY;
+
+    var $el_offset = this.$el.offset();
+    var spaces = {
+      'top': $el_offset.top,
+      'left': $el_offset.left,
+      'bottom': $el_offset.top + this.$el.height(),
+      'right': $el_offset.left + this.$el.width()
+    };
+    return (spaces.left > x || x > spaces.right) || (spaces.top > y || y > spaces.bottom);
+  },
+
+  leftBox: function(evt) {
+    /* Is the event to the left of any of the words */
+    return evt.pageX <= this.getRegion('words').currentView.children.first().$el.offset().left;
+  },
+
+  onMouseDown: function(evt) {
+    var closest_view = this.getClosestWord(evt);
+    if(closest_view) { closest_view.onMouseDown(evt); }
+  },
+
+  timedHover: _.throttle(function(evt) {
+      var closest_view = this.getClosestWord(evt);
+      if(closest_view) { closest_view.onMouseOver(evt); }
+  }, 100),
+
+  startHoverCapture: function(evt) { this.timedHover(evt); },
+
+  onMouseLeave: function(evt) {
+    var selection = this.model.get('words').reject(function(word) { return _.isNull(word.get('latest')); });
+    if(selection.length) {
+      /* Doesn't actually matter which one */
+      var model = selection[0];
+      this.getRegion('words').currentView.children.find(function(view, idx) { return model.get('start') == view.model.get('start'); }).onMouseUp(evt)
+    }
+  },
+
+  getClosestWord: function(evt) {
+    var x = evt.pageX,
+        y = evt.pageY,
+        closest_view = null,
+        word_offset,
+        dx, dy,
+        distance, minDistance,
+        left, top, right, bottom,
+        leftBox = this.leftBox(evt);
+
+    this.getRegion('words').currentView.children.each(function(view, idx) {
+      word_offset = view.$el.offset();
+      left = word_offset.left;
+      top = word_offset.top;
+      right = left + view.$el.width();
+      bottom = top + view.$el.height();
+
+        if(leftBox) {
+          dx = Math.abs(left - x);
+        } else {
+          dx = Math.abs((left+right)/2 - x);
+        }
+        dy = Math.abs((top+bottom)/2 - y);
+        distance = Math.sqrt((dx*dx) + (dy*dy));
+
+        if (minDistance === undefined || distance < minDistance) {
+          minDistance = distance;
+          closest_view = view;
+        }
+    });
+    return closest_view;
+  },
+
+
 });
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
@@ -762,7 +824,6 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
         });
       });
     }
-
   },
 
   getUserAnnotations: function(section_pk) {
