@@ -412,13 +412,9 @@ NERDocumentList = Backbone.Collection.extend({
   get_active: function() {
     var available = this.where({'document_view_completed': 0});
     if(available.length == 0) {
-
       if(this.is_quest_complete()) {
         this.trigger('quest:complete');
-      } else {
-        this.trigger('quest:finished');
       }
-
       return null;
     }
 
@@ -679,14 +675,12 @@ NERParagraphView = Backbone.Marionette.View.extend({
     this.model.get('opponent_annotations').draw();
   },
 
-
   events : {
     'mousedown': 'onMouseDown',
     'mousemove': 'startHoverCapture',
     'mouseup': 'onMouseLeave',
     'mouseleave': 'onMouseLeave',
   },
-
 
   outsideBox: function(evt) {
     var x = evt.pageX,
@@ -760,8 +754,6 @@ NERParagraphView = Backbone.Marionette.View.extend({
     });
     return closest_view;
   },
-
-
 });
 
 NERParagraphsView = Backbone.Marionette.CollectionView.extend({
@@ -1160,12 +1152,6 @@ YPet = Backbone.Marionette.View.extend({
   collectionEvents: {
     'quest:complete': function() {
       // When the user just completed the last NER Task
-      this.getRegion('text').empty();
-      this.getRegion('footer').empty();
-      this.showChildView('results', new NERQuestCompletedView(this.options));
-    },
-    'quest:finished': function() {
-      // When the user revists a previously completed Quest
       this.getRegion('text').empty();
       this.getRegion('footer').empty();
       this.showChildView('results', new NERQuestCompletedView(this.options));

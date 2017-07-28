@@ -1,5 +1,7 @@
 var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 
+var channel = Backbone.Radio.channel('tree');
+
 /*
  *  Models & Collections
  */
@@ -59,38 +61,6 @@ REConcept = Backbone.Model.extend({
   }
 });
 
-REExtraction = Backbone.Model.extend({
-  /*
-  * The A => B proposition
-  */
-  defaults: {
-    id: null,
-    relation_type: null,
-    concepts: {},
-    user_completed: false,
-    available: true,
-    current: false,
-    results: null,
-  }
-});
-
-REExtractionList = Backbone.Collection.extend({
-  /* The list of REExtraction events for a single
-   * PMID */
-  model: REExtraction,
-  next: function() {
-    var next_relationship = this.findWhere({user_completed: false, available: true});
-    if (next_relationship) {
-      /* Assign an uncompleted relationship as the current focused task */
-      this.each(function(r) { r.set('current', false); })
-      next_relationship.set('current', true);
-      return next_relationship;
-    } else {
-      return false;
-    }
-  }
-});
-
 REExtractionAnswer = Backbone.Model.extend({
   /*
   * The A => B submission answer
@@ -117,12 +87,63 @@ REExtractionAnswerList = Backbone.Collection.extend({
       this.max_value = d3.sum( self.pluck('value') );
 
       this.each(function(a) {
-        a.set('percentage', (a.get('value')/self.max_value)*100 );
+        a.set('percentage', Math.round(((a.get('value')/self.max_value)*100)*10)/10);
         a.set('color', self.color( self.indexOf(a)) )
       });
 
     });
   },
+});
+
+REDocumentResult = Backbone.RelationalModel.extend({
+  /* Provides the information for RE Document results */
+  defaults: {
+    'task': {
+      'pk': null,
+      'name': ''
+    },
+    'award': {
+      'pk': null,
+      'amount': 0
+    },
+    'uqr_created': false,
+    'uqr_pk': null
+  }
+});
+
+REExtraction = Backbone.Model.extend({
+  /*
+  * The A => B proposition
+  */
+  defaults: {
+    id: null,
+    relation_type: null,
+    concepts: {},
+    user_completed: false,
+    available: true,
+    current: false,
+    results: null,
+  }
+});
+
+REExtractionList = Backbone.Collection.extend({
+  /* The list of REExtraction events for a single Document */
+  model: REExtraction,
+
+  get_active: function() {
+    /* Return the next RE Task for a Document */
+    var next_relationship = this.findWhere({user_completed: false, available: true});
+    if (next_relationship) {
+      /* Assign an uncompleted relationship as the current focused task */
+      this.each(function(r) { r.set('current', false); })
+      next_relationship.set('current', true);
+      return next_relationship;
+    } else {
+      console.log('trigger that!', this);
+      this.trigger('re:document:complete');
+      return false;
+    }
+  }
 });
 
 /*
@@ -167,8 +188,33 @@ RENavigationView = Backbone.Marionette.View.extend({
   regions: {
     'progress': '#progress-bar'
   },
+
+  ui: {
+    'score': '#score'
+  },
+
+  initialize: function() {
+    this.listenTo(channel, 'tree:navigation:score:update', this.updateScore);
+  },
+
   onRender: function() {
     this.showChildView('progress', new REProgressView({'collection': this.collection}));
+    this.updateScore();
+  },
+
+  updateScore: function() {
+    var self = this;
+
+    $.ajax({
+      type: 'GET',
+      url: '/u/points/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      cache: false,
+      async: false,
+      success: function(data) {
+        self.ui.score.html(data.points);
+      }
+    });
   }
 });
 
@@ -182,6 +228,69 @@ REExtractionAnswerView = Backbone.Marionette.CollectionView.extend({
   className: 'list-unstyled',
   childView: REExtractionAnswerItem,
 });
+
+
+RECompletedView = Backbone.Marionette.View.extend({
+  /* Landing page for when RE Document is complete (do next, tweet, fb share, etc)
+   * this.model = REQuestResult
+   * this.collection = None
+   */
+  template: '#tree-completed-template',
+  className: 'row',
+
+  ui: {
+    'next': '#next'
+  },
+
+  events: {
+    'mousedown @ui.next': 'nextQuest'
+  },
+
+  initialize: function() {
+    this.model = new REDocumentResult({});
+    var self = this;
+
+
+    var self = this;
+    $.ajax({
+      type: 'POST',
+      url: '/task/relation/'+ self.model.get('document_id') +'/',
+      data: {'csrfmiddlewaretoken': self.options.csrf_token },
+      cache: false,
+      success: function(api_data) {
+        // self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data});
+
+        //     self.model = new NERQuestResult(data)
+        //     channel.trigger('ypet:navigation:score:update');
+        //     self.render();
+
+      },
+    });
+
+
+
+  },
+
+  nextQuest: function() {
+    /* Use API to determine next Quest for User */
+    // $.ajax({
+    //   type: 'GET',
+    //   url: '/api/ner/list/'+ this.model.get('group').pk +'/quests/',
+    //   headers: {'X-CSRFTOKEN': this.options.csrf_token},
+    //   success: function(data) {
+    //     var set = _.filter(data, function(q) {
+    //       return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
+    //     });
+    //     if(set.length) {
+    //       window.location = '/task/entity-recognition/quest/' + set[0].id;
+    //     } else { window.location = '/dashboard/'; }
+    //   }
+    // });
+
+  }
+});
+
+
 
 REExtractionResultView = Backbone.Marionette.View.extend({
   /* The results interface for a single REExtraction
@@ -199,7 +308,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   },
 
   triggers: {
-    'mousedown @ui.button': 'reextractionresult:next'
+    'mousedown @ui.button': 're:extractionresult:next'
   },
 
   onAttach: function() {
@@ -392,7 +501,10 @@ REExtractionView = Backbone.Marionette.View.extend({
         url: '/task/relation/'+ self.model.get('document_id') +'/'+ self.model.get('id') +'/submit/',
         data: $.extend({'csrfmiddlewaretoken': self.options.csrf_token }, {'relation': childView.model.get('id')}),
         cache: false,
-        success: function(api_data) { self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data}); },
+        success: function(api_data) {
+          self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data});
+          channel.trigger('tree:navigation:score:update');
+        },
         error: function() { self.triggerMethod('reconfirm:confirm:error'); },
       });
     },
@@ -430,7 +542,8 @@ Tree = Backbone.Marionette.View.extend({
     'navigation': '#tree-navigation',
     'extraction': '#tree-selection',
     'extraction-results': '#tree-selection-results',
-    'text': '#tree-text'
+    'text': '#tree-text',
+    // 'footer': '#footer'
   },
 
   childViewEvents: {
@@ -474,41 +587,17 @@ Tree = Backbone.Marionette.View.extend({
     'reconfirm:confirm:error': function(childView) {
       alert('error error');
     },
-    'reextractionresult:next': function(childView) {
+    're:extractionresult:next': function(childView) {
       /* Go next after reviewing the results */
       this.emptyRegions();
 
-      this.model = this.collection.next();
+      this.model = this.collection.get_active();
       if(this.model) {
         this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
         this.options['model'] = this.model;
         this.showChildView('extraction', new REExtractionView(this.options));
         this.showChildView('text', new YPet(this.options));
-      } else {
-
-        alert('all out!');
-        var self = this;
-        $.ajax({
-          type: 'POST',
-          url: '/task/relation/'+ self.model.get('document_id') +'/',
-          data: {'csrfmiddlewaretoken': self.options.csrf_token },
-          cache: false,
-          success: function(api_data) { self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data}); },
-        });
-
       }
-
-      /* If no other relations to complete, submit document
-      * This condition should be accounted for earlier, but
-      * keeping here just incase */
-      // $('#tree-action-area').hide();
-      // $('#task_relation_submit_document_set').submit();
-
-      // From the relation-training.js file
-      /* If no other relations to complete, submit document */
-      // $('#feedback_modal').on('hidden.bs.modal', function (e) {
-      //   $('#task_relation_results').submit();
-      // });
     },
   },
 
@@ -518,6 +607,7 @@ Tree = Backbone.Marionette.View.extend({
     */
     this.options.training = false;
     this.options.mode = 're';
+    this.collection = new REExtractionList();
 
     if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
       this.options.training = true
@@ -536,14 +626,24 @@ Tree = Backbone.Marionette.View.extend({
           return c.attributes.concepts.c1.text;
         });
         self.collection.models = new_collection;
-        self.model = self.collection.next();
+        self.model = self.collection.get_active();
 
         self.render();
       });
 
     } else {
-      this.model = this.collection.next();
+      this.model = this.collection.get_active();
+      this.render();
     }
+  },
+
+  collectionEvents: {
+    're:document:complete': function() {
+      console.log('re : document : complete');
+      // When the user just completed the last NER Task
+      this.getRegion('extraction').empty();
+      this.showChildView('results', new NERQuestCompletedView(this.options));
+    },
   },
 
   onRender: function() {
