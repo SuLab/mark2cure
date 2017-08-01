@@ -12,6 +12,10 @@ class DocumentRelationSerializer(serializers.Serializer):
     document_id = serializers.IntegerField()
     relation_type = serializers.CharField()
 
+    community_progress = serializers.DecimalField(max_digits=3, decimal_places=2, coerce_to_string=False)
+    community_completed = serializers.BooleanField()
+    user_completed = serializers.BooleanField()
+
     concepts = serializers.SerializerMethodField()
 
     def get_concepts(self, relation):

@@ -174,7 +174,6 @@
     "from": "^0.1.7",
     "fs-exists-sync": "^0.1.0",
     "fs.realpath": "^1.0.0",
-    "fsevents": "^1.1.2",
     "fstream": "^1.0.11",
     "fstream-ignore": "^1.0.5",
     "gauge": "^2.7.4",
@@ -539,7 +538,9 @@
     "yargs": "^6.6.0",
     "yargs-parser": "^4.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "fsevents": "^1.1.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

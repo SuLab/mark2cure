@@ -151,23 +151,16 @@ def fetch_document_relations(request, document_pk):
     # Start the DB Connection
     c = connection.cursor()
 
-    # SET @user_work_max = 20;
-    # SET @k_max = 15;
-    # SET @user_id = 2;
-    # SET @document_id = 1499;
-    # SET @rel_ann_content_type_id = 56;
-
-    c.execute('SET @user_work_max = {rel_work_size};'.format(rel_work_size=20))
     c.execute('SET @k_max = {completions};'.format(completions=settings.ENTITY_RECOGNITION_K))
     c.execute('SET @user_id = {user_id};'.format(user_id=request.user.pk))
     c.execute('SET @document_id = {document_id};'.format(document_id=document.pk))
-    c.execute('SET @rel_ann_content_type_id = 56;')
     c.execute(cmd_str)
 
     queryset = [{'id': x[0],
                  'document_id': x[1],
                  'relation_type': x[2],
-                 'progress': x[3],
+
+                 'community_progress': x[3],
                  'community_completed': x[4],
                  'user_completed': x[5],
 
@@ -182,7 +175,7 @@ def fetch_document_relations(request, document_pk):
     # Close the connection
     c.close()
 
-    serializer = DocumentRelationSerializer(queryset, many=True, context={'user': request.user})
+    serializer = DocumentRelationSerializer(queryset, many=True)
     return Response(serializer.data)
 
 

@@ -2,7 +2,7 @@ SELECT  `relationship`.`relation_id`,
         `relationship`.`document_id`,
         `relationship`.`relation_type`,
 
-        `relationship`.`progress`,
+        `relationship`.`community_progress`,
         `relationship`.`community_completed`,
         `relationship`.`user_completed`,
 
@@ -86,7 +86,7 @@ FROM (
               WHEN COUNT(DISTINCT `document_view`.`user_id`)/@k_max > 1 THEN 1
               ELSE COUNT(DISTINCT `document_view`.`user_id`)/@k_max
             END
-          , 2) as `progress`
+          , 2) as `community_progress`
 
   FROM `relation_relation`
 
@@ -107,9 +107,7 @@ FROM (
 
   GROUP BY `relation_relation`.`id`
 
-  ORDER BY `progress` DESC
+  ORDER BY `community_progress` DESC
 ) as `relationship`
-
-HAVING `relationship`.`community_completed` = FALSE AND NOT `relationship`.`user_completed` = TRUE
 
 LIMIT 20
