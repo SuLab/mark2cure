@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "git+https://x0xMaximus@github.com/SuLab/mark2cure.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://x0xMaximus@github.com/SuLab/mark2cure.git"
+  },
   "keywords": [],
   "author": "Max Nanis <max@maxnanis.com>",
   "license": "MIT",
@@ -54,7 +57,7 @@
     "gulp-uglify": "^2.1.2",
     "intro.js": "0.9.0",
     "jquery": "1.11.2",
-    "jquery-ui": "1.8.5",
+    "jquery-ui": "1.12.1",
     "main-bower-files": "^2.13.1",
     "md5": "^2.2.1",
     "moment": "2.1.0",
