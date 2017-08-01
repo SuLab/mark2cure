@@ -262,33 +262,6 @@ RECompletedView = Backbone.Marionette.View.extend({
     var self = this;
 
       // var self = this;
-      // var answers_collection = new REExtractionAnswerList([]);
-      //
-      // // Extend any naming labels
-      // var answer_text = {};
-      // _.each(obj.data[0]['answers'], function(a) {
-      //   var val = a.answer.text;
-      //   if( _.contains(incorrect_id_arr, a.answer.id) ) {
-      //     var flagged_concept = new REConcept( self.model.get('concepts')['c'+(_.indexOf(incorrect_id_arr, a.answer.id)+1)] );
-      //     val = flagged_concept.get('text')+' is not a '+ flagged_concept.get('type') +' concept';
-      //   }
-      //   answer_text[a.answer.id] = val;
-      // });
-      //
-      // // Add them all to the REExtractionAnswersList
-      // var answer_counts = _.countBy( _.map(obj.data[0]['answers'], function(x) { return x['answer']['id']; }) );
-      // _.each(_.keys(answer_counts), function(answer_key) {
-      //    answers_collection.add(new REExtractionAnswer({
-      //      'id': answer_key,
-      //      'value': answer_counts[answer_key],
-      //      'label': answer_text[answer_key],
-      //      'self': answer_key == obj.child_view.model.get('id')
-      //   }) );
-      // });
-      // answers_collection.sort();
-      //
-      //
-      // var self = this;
       // $.ajax({
       //   type: 'POST',
       //   url: '/task/relation/'+ self.model.get('document_id') +'/',
@@ -340,8 +313,42 @@ REExtractionResultView = Backbone.Marionette.View.extend({
     'answers-list': '#reextraction-answers-list'
   },
 
-  triggers: {
-    'mousedown @ui.button': 're:extractionresult:next'
+  events: {
+    'mousedown @ui.button': function() {
+      channel.trigger('tree:relationship:next')
+    }
+  },
+
+  initialize: function() {
+    var self = this;
+    var data = this.getOption('data');
+    var rechoice_model = this.getOption('rechoice_model');
+
+    this.collection = new REExtractionAnswerList([]);
+
+    // Extend any naming labels
+    var answer_text = {};
+    _.each(data[0]['answers'], function(a) {
+      var val = a.answer.text;
+      if( _.contains(incorrect_id_arr, a.answer.id) ) {
+        var flagged_concept = new REConcept( self.model.get('concepts')['c'+(_.indexOf(incorrect_id_arr, a.answer.id)+1)] );
+        val = flagged_concept.get('text')+' is not a '+ flagged_concept.get('type') +' concept';
+      }
+      answer_text[a.answer.id] = val;
+    });
+
+    // Add them all to the REExtractionAnswersList
+    var answer_counts = _.countBy( _.map(data[0]['answers'], function(x) { return x['answer']['id']; }) );
+    _.each(_.keys(answer_counts), function(answer_key) {
+       self.collection.add(new REExtractionAnswer({
+         'id': answer_key,
+         'value': answer_counts[answer_key],
+         'label': answer_text[answer_key],
+         'self': answer_key == rechoice_model.get('id')
+      }) );
+    });
+    this.collection.sort();
+
   },
 
   onAttach: function() {
@@ -607,18 +614,16 @@ Tree = Backbone.Marionette.View.extend({
     this.listenTo(channel, 'tree:relationship:next', this.relationshipNext );
     this.listenTo(channel, 'tree:error', this.treeError );
 
+
+    // self.showChildView('navigation', new RENavigationView({'collection': this.collection}));
+    // this.showChildView('results', new NERQuestCompletedView(this.options));
+    // self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data});
+    // channel.trigger('tree:navigation:score:update');
   },
 
   relationshipSubmit: function(rechoice_model) {
-    /* Selected REChoice submitted to the server
-    * X 1. Start to download the results
-    * 2. Flag future REExtraction models of concept corrections
-    * 3. Show REExtraction results
-    */
     /* Submitting results for a REExtraction */
-    /* Submit the selected REChoice to the server */
-
-    console.log('tree:relationship:submit', this, rechoice_model);
+    var self = this;
 
     $.ajax({
       type: 'POST',
@@ -626,41 +631,27 @@ Tree = Backbone.Marionette.View.extend({
       data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {'relation': rechoice_model.get('id')}),
       cache: false,
       success: function(data) {
-        console.log('Submitted Relationship', data);
-
-        // self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data});
-        // channel.trigger('tree:navigation:score:update');
+        self.getRegion('extraction').empty();
+        self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
       },
-
       error: function() {
         channel.triggerMethod('tree:error');
       },
-
     });
-
-
-    // When the user just completed the last NER Task
-    // this.getRegion('extraction').empty();
-    // this.showChildView('results', new NERQuestCompletedView(this.options));
-    // this.getRegion('extraction').empty();
-    // this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
-    // this.showChildView('extraction-results', new REExtractionResultView({'model': this.model, 'collection': answers_collection}));
 
   },
 
   relationshipNext: function() {
+    /* Go next REExtraction after reviewing the previous results */
+    this.getRegion('extraction-results').empty()
 
-     /* Go next after reviewing the results */
-      this.emptyRegions();
-
-      this.model = this.collection.get_active();
-      if(this.model) {
-        this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
-        this.options['model'] = this.model;
-        this.showChildView('extraction', new REExtractionView(this.options));
-        this.showChildView('text', new YPet(this.options));
-      }
-
+    this.model = this.collection.get_active();
+    if(this.model) {
+      this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
+      this.options['model'] = this.model;
+      this.showChildView('extraction', new REExtractionView(this.options));
+      this.showChildView('text', new YPet(this.options));
+    }
 
   },
 
