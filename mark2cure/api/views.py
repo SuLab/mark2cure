@@ -145,7 +145,6 @@ def ner_stats(request):
 @login_required
 @api_view(['GET'])
 def ner_quest_read(request, quest_pk):
-
     cmd_str = ""
     with open('mark2cure/task/entity_recognition/commands/get-quest-progression.sql', 'r') as f:
         cmd_str = f.read()
@@ -160,15 +159,25 @@ def ner_quest_read(request, quest_pk):
                  'quest_completed': x[1],
                  'view_count': x[2],
                  'document_view_completed': x[3],
-                 'had_opponent': x[4]} for x in c.fetchall()]
+                 'had_opponent': x[4],
+                 'disease_pub': x[5],
+                 'gene_pub': x[6],
+                 'drug_pub': x[7],
+                 } for x in c.fetchall()]
 
     # Close the connection
     c.close()
 
-    documents = Document.objects.as_json(documents=[x['pk'] for x in queryset])
+    documents = Document.objects.as_json(documents=[x['pk'] for x in queryset],
+                                         pubtators=[(x['disease_pub'], x['gene_pub'], x['drug_pub']) for x in queryset])
 
     # Each query does ASC document_pk so we know they're in the same order!
     res = [{**queryset[i], **documents[i]} for i in range(len(queryset))]
+
+    for r in res:
+        del r['disease_pub']
+        del r['gene_pub']
+        del r['drug_pub']
 
     return Response(res)
 

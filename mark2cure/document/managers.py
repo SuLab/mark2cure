@@ -6,6 +6,7 @@ from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
 from mark2cure.task.relation import relation_data_flat
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
+import xml.etree.ElementTree as ET
 from itertools import groupby
 import pandas as pd
 
@@ -18,7 +19,7 @@ APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
 
 class DocumentManager(models.Manager):
 
-    def as_json(self, documents=[]):
+    def as_json(self, documents=[], pubtators=[]):
         if len(documents):
             from .models import Document
             doc_arr = []
@@ -32,6 +33,9 @@ class DocumentManager(models.Manager):
             str_doc_arr = list(set(doc_arr))
         else:
             raise ValueError('No documents supplied to generator writer')
+
+        if len(pubtators) > 0 and len(documents) != len(pubtators):
+            raise ValueError('Incorrect pairing of Documents and pubtators.')
 
         cmd_str = ""
         with open('mark2cure/document/commands/get-documents.sql', 'r') as f:
@@ -47,13 +51,30 @@ class DocumentManager(models.Manager):
 
         # [(8, 9360520, 't', 15, 'Autosomal ...')
         data = []
-        for document_pk, document_sections in groupby(db_res, lambda x: x[0]):
+        for i, document in enumerate(groupby(db_res, lambda x: x[0])):
+            document_pk, document_sections = document
+
             passages = []
-            for row in document_sections:
+            for section_idx, row in enumerate(document_sections):
+
+                passage_annotations = []
+                if len(pubtators):
+                    for x in range(3):
+                        root = ET.fromstring(pubtators[i][x])
+                        passage = root.find('document').findall('passage')[section_idx]
+                        print(document_pk, i, section_idx)
+                        for ann in passage.findall('annotation'):
+                            passage_annotations.append({
+                                'type_id': x,
+                                'start': int(ann.find('location').attrib['offset']),
+                                'text': ann.find('text').text
+                            })
+
                 passages.append({
                     'section': row[2],
                     'pk': row[3],
-                    'text': row[4]
+                    'text': row[4],
+                    'annotations': passage_annotations
                 })
 
             data.append({

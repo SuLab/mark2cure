@@ -157,6 +157,8 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
   initialize: function() {
     var self = this;
+    var passage = this.collection['annsPassage'];
+    var ann_text = this.get('text').toLowerCase();
 
     /* Sanitize input types into using type_id */
     if(this.get('type') && !this.get('type_id')) {
@@ -165,41 +167,63 @@ NERAnnotation = Backbone.RelationalModel.extend({
     }
 
     /* If Annotation was created with a string but without selected words */
-    if(this.get('words').length == 0 && this.get('text') != '') {
-      var passage = this.collection['annsPassage'];
+    /* When there is no start, select all the words available that match the annotation text */
+    if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') == null) {
 
-      /* When there is no start, select all the words available that match the annotation text */
-      if(this.get('start') == null) {
+      passage.get('words').each(function(w, w_idx) {
+        if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
+          var ann_word_array = ann_text.split(' ');
 
-        var ann_text = this.get('text').toLowerCase();
-        passage.get('words').each(function(w, w_idx) {
+          // Check forward words as well
+          var search_words = _.map(_.range(ann_word_array.length), function(idx) {
+            return passage.get('words').at(w_idx + idx);;
+          });
+          var search_words_text = _.map(search_words, function(w) {
+            return w.get('text').toLowerCase();
+          });
 
-          if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
-            var ann_word_array = ann_text.split(' ');
+          if(_.isEqual(ann_word_array, search_words_text)) {
+            if(self.get('words').length == 0) {
+              self.set('words', new NERWordList(search_words));
+            } else {
+              // If the words were already 'found' for this annotation, create a new one on this passage
+              passage.get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
+            }
+          };
+        }
+      });
 
-            // Check forward words as well
-            var search_words = _.map(_.range(ann_word_array.length), function(idx) {
-              return passage.get('words').at(w_idx + idx);;
-            });
-            var search_words_text = _.map(search_words, function(w) {
-              return w.get('text').toLowerCase();
-            });
+    } else if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') != null) {
 
-            if(_.isEqual(ann_word_array, search_words_text)) {
-              if(self.get('words').length == 0) {
-                self.set('words', new NERWordList(search_words));
-              } else {
-                // If the words were already 'found' for this annotation, create a new one on this passage
-                passage.get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
-              }
-            };
+      // console.log(passage.get('words'), this.toJSON());
 
-          }
-        });
+      passage.get('words').each(function(w, w_idx) {
+        console.log(w, w_idx)
+        // if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
+        if( this.get('start') == w.get('start') ) {
 
-      } else {
-        console.log('NERAnnotation select start index', this.attributes);
-      }
+          console.log('ya');
+
+          var ann_word_array = ann_text.split(' ');
+
+          // Check forward words as well
+          var search_words = _.map(_.range(ann_word_array.length), function(idx) {
+            return passage.get('words').at(w_idx + idx);;
+          });
+          var search_words_text = _.map(search_words, function(w) {
+            return w.get('text').toLowerCase();
+          });
+
+          if(_.isEqual(ann_word_array, search_words_text)) {
+            if(self.get('words').length == 0) {
+              self.set('words', new NERWordList(search_words));
+            } else {
+              // If the words were already 'found' for this annotation, create a new one on this passage
+              passage.get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
+            }
+          };
+        }
+      });
 
     } else if(this.get('words').length > 0 && this.get('text') == '') {
 
@@ -214,7 +238,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
     /* (TODO) Only if user created */
     channel.trigger('ypet:footer:search:set', this.get('text'));
-
   },
 
   sanitizeAnnotation: function(full_str, start) {
@@ -284,15 +307,12 @@ NERParagraph = Backbone.RelationalModel.extend({
     key: 'annotations',
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
-    collectionOptions: {foo: 6969},
     reverseRelation: { key: 'annsPassage' }
-
   }, {
     type: 'HasMany',
     key: 'opponent_annotations',
     relatedModel: NERAnnotation,
     collectionType: NERAnnotationList,
-    collectionOptions: {foo: 123},
     reverseRelation: { key: 'oannsPassage' }
   }],
 
@@ -313,16 +333,9 @@ NERParagraph = Backbone.RelationalModel.extend({
           return word_obj;
         });
     this.set('words', new NERWordList(words));
-
     this.set('offset', +this.get('offset'));
-
-    /* Set the Annotations correctly for this paragraph */
-    _.each(this.get('annotation'), function(obj) { obj.paragraph = self; });
-    _.each(this.get('annotations'), function(obj) { obj.paragraph = self; });
-    if(this.get('annotation') && Array.isArray(this.get('annotation'))) {
-      this.set('annotations', new NERAnnotationList(this.get('annotation')));
-      this.unset('annotation');
-    }
+    console.log( this.get('annotations').initialize() );
+    // this.set('annotations', this.get('annotations'));
   },
 });
 
@@ -413,11 +426,12 @@ NERDocumentList = Backbone.Collection.extend({
     var available = this.where({'document_view_completed': 0});
     if(available.length == 0) {
       if(this.is_quest_complete()) {
-        this.trigger('quest:complete');
+        channel.trigger('ypet:quest:completed');
       }
       return null;
     }
 
+    this.invoke('set', {'active': false});
     var m = available[_.random(0, available.length-1)]
     m.set('active', true);
     return m;
@@ -893,8 +907,8 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
       url: '/task/ner/quest/'+this.options.task_pk+'/submit/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
-        self.model = new NERQuestResult(data)
         channel.trigger('ypet:navigation:score:update');
+        self.model = new NERQuestResult(data)
         self.render();
       }
     });
@@ -1027,8 +1041,10 @@ NERFooterConfirmView = Backbone.Marionette.View.extend({
   className: 'btn btn-block confirm-button',
   tagName: 'p',
 
-  triggers: {
-    'mousedown': 'confirm:submit'
+  events: {
+    'mousedown': function() {
+      channel.trigger('ypet:quest:submit');
+    }
   }
 });
 
@@ -1045,8 +1061,10 @@ NERFooterNextView = Backbone.Marionette.View.extend({
     'next': '.next-doc'
   },
 
-  triggers: {
-    'mousedown @ui.next': 'next'
+  events: {
+    'mousedown @ui.next': function() {
+      channel.trigger('ypet:quest:next');
+    }
   }
 });
 
@@ -1147,62 +1165,74 @@ YPet = Backbone.Marionette.View.extend({
     });
 
     this.listenTo(this.model, 'sync', this.render);
+
+    this.listenTo(channel, 'ypet:quest:submit', this.submitDocument);
+    this.listenTo(channel, 'ypet:quest:next', this.nextDocument);
+    this.listenTo(channel, 'ypet:quest:completed', this.completed);
+    this.listenTo(channel, 'ypet:error', this.ypetError );
   },
 
-  collectionEvents: {
-    'quest:complete': function() {
-      // When the user just completed the last NER Task
-      this.getRegion('text').empty();
-      this.getRegion('footer').empty();
-      this.showChildView('results', new NERQuestCompletedView(this.options));
-    }
+  submitDocument: function() {
+    /* Submit the User's annotations for the current Document */
+    var self = this;
+        ann_dict = {};
+    /* Iterate over each of the paragraphs or annotatable sections on the page */
+    _.each(this.model.get('passages').pluck('pk'), function(section_pk) {
+      ann_dict[section_pk] = channel.request('ypet:paragraph:user:annotations', section_pk).toJSON();
+      ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': +section_pk}) })
+    });
+    /* Do not save data if the annotation is empty */
+    annotations = _.flatten(_.values(ann_dict));
+    annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
+    annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
+    annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+
+    /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
+    $.ajax({
+      type: 'POST',
+      url: '/task/ner/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      contentType: "application/json; charset=utf-8",
+      data:  JSON.stringify(annotations),
+      dataType: 'json',
+      cache: false,
+      async: false,
+      success: function() {
+        self.model.set('document_view_completed', true);
+        self.options['review'] = true
+        self.render();
+      },
+      error: function() {
+        channel.trigger('ypet:error')
+      }
+    });
   },
 
-  childViewEvents: {
-    'ner:footer:next': function() {
-      /* Done reviewing the current document, go to the next */
-      this.model = this.collection.get_active();
+  nextDocument: function() {
+    /* Done reviewing the current document, go to the next */
+
+    this.getRegion('results').empty();
+    this.model = this.collection.get_active();
+    if(this.model) {
       this.options['review'] = false
       this.render();
-    },
-    'ner:footer:confirm:submit': function() {
-      /* Submit the User's annotations for the current Document */
-      var self = this;
-          ann_dict = {};
-
-      /* Iterate over each of the paragraphs or annotatable sections on the page */
-      _.each(this.model.get('passages').pluck('pk'), function(section_pk) {
-        ann_dict[section_pk] = channel.request('ypet:paragraph:user:annotations', section_pk).toJSON();
-        ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': +section_pk}) })
-      });
-
-      /* Do not save data if the annotation is empty */
-      annotations = _.flatten(_.values(ann_dict));
-      annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
-      annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
-      annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
-
-      /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
-      $.ajax({
-        type: 'POST',
-        url: '/task/ner/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
-        headers: {'X-CSRFTOKEN': this.options.csrf_token},
-        contentType: "application/json; charset=utf-8",
-        data:  JSON.stringify(annotations),
-        dataType: 'json',
-        cache: false,
-        async: false,
-        success: function() {
-          self.options['review'] = true
-          self.render();
-        }
-      });
-
     }
+  },
+
+  completed: function() {
+    // When the user just completed the last NER Task
+    this.getRegion('text').empty();
+    this.getRegion('footer').empty();
+    this.showChildView('results', new NERQuestCompletedView(this.options));
+  },
+
+  ypetError: function() {
+    alert('error error');
   },
 
   onRender: function() {
     if(this.getOption('mode') == 'ner') {
+
       if(this.collection) {
         this.options['model'] = this.model;
         this.options['collection'] = this.collection;
@@ -1217,6 +1247,7 @@ YPet = Backbone.Marionette.View.extend({
       } else {
         this.showChildView('text', new NERLoadingView());
       };
+
     } else if(this.getOption('mode') == 're') {
       var concepts = this.getOption('re_model').get('concepts');
       this.options['concepts'] = concepts;

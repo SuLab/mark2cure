@@ -3,7 +3,25 @@ SELECT `quest_documents`.`document_id`,
 
         COUNT(`document_view`.`id`) as `view_count`,
         IF(SUM(`document_view`.`completed`) = 2, true, false) as `document_view_completed`,
-        IF(SUM(`document_view`.`opponent_id`) IS NULL, false, true) as `had_opponent`
+        IF(SUM(`document_view`.`opponent_id`) IS NULL, false, true) as `had_opponent`,
+        (
+          SELECT `document_pubtator`.`content`
+          FROM `document_pubtator`
+          WHERE `document_pubtator`.`document_id` = `quest_documents`.`document_id` AND `document_pubtator`.`kind` = 'DNorm'
+          LIMIT 1
+        ) as `disease`,
+        (
+          SELECT `document_pubtator`.`content`
+          FROM `document_pubtator`
+          WHERE `document_pubtator`.`document_id` = `quest_documents`.`document_id` AND `document_pubtator`.`kind` = 'GNormPlus'
+          LIMIT 1
+        ) as `gene`,
+        (
+          SELECT `document_pubtator`.`content`
+          FROM `document_pubtator`
+          WHERE `document_pubtator`.`document_id` = `quest_documents`.`document_id` AND `document_pubtator`.`kind` = 'tmChem'
+          LIMIT 1
+        ) as `drug`
 
 FROM (
   SELECT DISTINCT `task_documentquestrelationship`.`document_id`,

@@ -365,7 +365,6 @@ REExtractionResultView = Backbone.Marionette.View.extend({
       }) );
     });
     this.collection.sort();
-
   },
 
   onAttach: function() {
@@ -651,15 +650,14 @@ Tree = Backbone.Marionette.View.extend({
         self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
       },
       error: function() {
-        channel.triggerMethod('tree:error');
+        channel.trigger('tree:error');
       },
     });
-
   },
 
   relationshipNext: function() {
     /* Go next REExtraction after reviewing the previous results */
-    this.getRegion('extraction-results').empty()
+    this.getRegion('extraction-results').empty();
 
     this.model = this.collection.get_active();
     if(this.model) {

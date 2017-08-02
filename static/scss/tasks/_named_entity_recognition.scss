@@ -13,10 +13,10 @@
           font-size: 2.5em;
           line-height: .65em;
           cursor: pointer;
-          color: $color_white;
         }
         li.completed { color: $color_gray_light; }
         li.active { color: $color_purple; }
+        li.skip { color: $color_white; }
       }
     }
     p { margin-bottom: 0px; }
