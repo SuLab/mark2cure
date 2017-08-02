@@ -98,16 +98,21 @@ REExtractionAnswerList = Backbone.Collection.extend({
 REDocumentResult = Backbone.RelationalModel.extend({
   /* Provides the information for RE Document results */
   defaults: {
-    'task': {
+    'document': {
       'pk': null,
-      'name': ''
+      'pmid': null,
+      'title': ''
     },
+
+    're_task': {
+      'pk': null,
+      'created': false
+    },
+
     'award': {
       'pk': null,
       'amount': 0
-    },
-    'uqr_created': false,
-    'uqr_pk': null
+    }
   }
 });
 
@@ -147,8 +152,7 @@ REExtractionList = Backbone.Collection.extend({
       next_relationship.set('current', true);
       return next_relationship;
     } else {
-      console.log('trigger that!', this);
-      this.trigger('re:document:complete');
+      channel.trigger('tree:completed');
       return false;
     }
 
@@ -234,7 +238,7 @@ RENavigationView = Backbone.Marionette.View.extend({
 });
 
 REExtractionAnswerItem = Backbone.Marionette.View.extend({
-  template: '#reextraction-result-answer-item-template',
+  template: '#tree-reextraction-result-answer-item-template',
   tagName: 'li',
 });
 
@@ -253,36 +257,34 @@ RECompletedView = Backbone.Marionette.View.extend({
   template: '#tree-completed-template',
   className: 'row',
 
-  ui: {
-    'next': '#next'
-  },
-
-  events: {
-    'mousedown @ui.next': 'nextQuest'
-  },
+  // ui: {
+  //   'next': '#next'
+  // },
+  //
+  // events: {
+  //   'mousedown @ui.next': 'nextREDoc'
+  // },
 
   initialize: function() {
     this.model = new REDocumentResult({});
     var self = this;
 
-      // var self = this;
-      // $.ajax({
-      //   type: 'POST',
-      //   url: '/task/relation/'+ self.model.get('document_id') +'/',
-      //   data: {'csrfmiddlewaretoken': self.options.csrf_token },
-      //   cache: false,
-      //   success: function(api_data) {
-      //
-      //     //     self.model = new NERQuestResult(data)
-      //     //     channel.trigger('ypet:navigation:score:update');
-      //     //     self.render();
-      //
-      //   },
-      // });
+    $.ajax({
+      type: 'POST',
+      url: '/task/relation/'+ this.getOption('document_pk') +'/submit/',
+      data: {'csrfmiddlewaretoken': self.options.csrf_token },
+      cache: false,
+      success: function(data) {
+        console.log(data);
+        // channel.trigger('tree:navigation:score:update');
+        self.model = new REDocumentResult(data)
+        self.render();
+      },
+    });
 
   },
 
-  nextQuest: function() {
+  nextREDoc: function() {
     /* Use API to determine next Quest for User */
     // $.ajax({
     //   type: 'GET',
@@ -297,8 +299,8 @@ RECompletedView = Backbone.Marionette.View.extend({
     //     } else { window.location = '/dashboard/'; }
     //   }
     // });
-
   }
+
 });
 
 
@@ -306,7 +308,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   /* The results interface for a single REExtraction
   * – Modal: REExtraction
   * - Collection: REExtractionAnswerList */
-  template: '#reextraction-results-template',
+  template: '#tree-reextraction-results-template',
   className: 'row my-3 justify-content-center',
   ui: {
     'answers_chart': 't',
@@ -454,7 +456,7 @@ REConceptView = Backbone.Marionette.View.extend({
   * - Modal: REConcept
   * - Collection: None
   */
-  template: '#reextraction-concept-template',
+  template: '#tree-reextraction-concept-template',
   className: 'concept row',
 
   ui: {
@@ -501,7 +503,7 @@ REExtractionView = Backbone.Marionette.View.extend({
   * this.model = a REExtraction instance
   * this.collection = REChoices
   */
-  template: '#reextraction-template',
+  template: '#tree-reextraction-template',
   className: 'row justify-content-center',
 
   regions: {
@@ -605,24 +607,22 @@ Tree = Backbone.Marionette.View.extend({
         });
         self.collection.models = new_collection;
         self.model = self.collection.get_active();
-
-        self.render();
+        if(self.model) {
+          self.render();
+        }
       });
 
     } else {
       this.model = this.collection.get_active();
-      this.render();
+      if(this.model) {
+        this.render();
+      }
     }
 
-    this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit );
-    this.listenTo(channel, 'tree:relationship:next', this.relationshipNext );
+    this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit);
+    this.listenTo(channel, 'tree:relationship:next', this.relationshipNext);
+    this.listenTo(channel, 'tree:completed', this.completed);
     this.listenTo(channel, 'tree:error', this.treeError );
-
-
-    // self.showChildView('navigation', new RENavigationView({'collection': this.collection}));
-    // this.showChildView('results', new NERQuestCompletedView(this.options));
-    // self.triggerMethod('reconfirm:confirm:success', {'child_view': childView, 'data': api_data});
-    // channel.trigger('tree:navigation:score:update');
   },
 
   relationshipSubmit: function(rechoice_model) {
@@ -635,6 +635,7 @@ Tree = Backbone.Marionette.View.extend({
       data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {'relation': rechoice_model.get('id')}),
       cache: false,
       success: function(data) {
+        self.model.set('user_completed', true);
         self.getRegion('extraction').empty();
         self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
       },
@@ -649,17 +650,19 @@ Tree = Backbone.Marionette.View.extend({
     /* Go next REExtraction after reviewing the previous results */
     this.getRegion('extraction-results').empty()
 
-    console.log('relationshipNext 1',this.model);
     this.model = this.collection.get_active();
-    console.log('relationshipNext 2',this.model);
-
     if(this.model) {
       this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.options['model'] = this.model;
       this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new YPet(this.options));
     }
+  },
 
+  completed: function() {
+    this.getRegion('extraction').empty()
+    this.getRegion('text').empty()
+    this.showChildView('extraction-results', new RECompletedView(this.options))
   },
 
   treeError: function() {
