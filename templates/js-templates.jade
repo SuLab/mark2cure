@@ -165,7 +165,7 @@ script(id='dashboard-ner-quest-task-template', type='text/template')
       <% } else if (!user.enabled) { %>
       span(title='This quest is not enabled.').fa.fa-circle.muted
       <% } else { %>
-      a(href='/task/entity-recognition/quest/<%- id %>/', title='Click to start this quest!')
+      a(href='/task/ner/quest/<%- id %>/', title='Click to start this quest!')
         p(style='font-size: 1.75em; line-height: 1.8em;') <%- name %>
       <% } %>
 
@@ -530,21 +530,16 @@ script(id='tree-completed-template', type='html/template')
   <% if(re_task.created) {%>
   .col-12
     .header-message
-      h2.py-3.text-center Congratulations you completed Quest { task.name }
-          | Thank you, {{request.user}}, completing the relationships for document
-          a(href='http://www.ncbi.nlm.nih.gov/pubmed/{{document.document_id}}', target='_blank')
-            |  {{ document.document_id }}
-        p.lead.text-xs-center You earned { points } points!
+      h2.py-3.text-center Congratulations! You completed the <%- document.relationship_count%> relationships!
 
-  .col-12
-    #relation-synopsis-insert
-    hr
+  #re-synopsis.col-12
+  hr
 
   .col-12.my-3.py-3
-    .ypet-info-message
+    .tree-info-message
       .row.justify-content-center.py-3
         .col-8
-          h2.text-center Bonus Points: { award.amount }
+          h2.text-center Bonus Points: <%= award.amount %>
           p.lead.text-center You've made a valuable and important contribution! Tell your friends about it now and help find cures faster.
 
       .row.justify-content-center.text-center
@@ -555,12 +550,6 @@ script(id='tree-completed-template', type='html/template')
               a(href='{% url "common:dashboard" %}') <span class='chevron'>&laquo;</span> to dashboard
             .col-6.text-left
               p(id='next-re-doc') Start next
-
-          .row.mt-3.justify-content-center
-            .col-6.text-right
-              p.text-xs-center You've now unlocked the talk page for the document. See what other people are saying about it!
-              a(href='{% url "talk:home" document.document_id %}').btn.btn-default
-                | Let's Talk
 
           .row.my-3.justify-content-center.social-action-area
             .col-3.text-right
@@ -574,14 +563,13 @@ script(id='tree-completed-template', type='html/template')
   <% } else {%>
   .col-12
     .header-message
-      h2.py-3.text-center All { number } relationships for Document { doc.name } has already been completed.
+      h2.py-3.text-center All <%= document.relationship_count %> relationships have already been completed.
 
-  .col-12
-    #relation-synopsis-insert
-    hr
+  #re-synopsis.col-12
+  hr
 
   .col-12.my-3.py-3
-    .ypet-info-message
+    .tree-info-message
       .row.justify-content-center.py-3
         .col-8
           p.lead.text-center Completions are valuable contributions! Tell your friends about it now and help find cures faster.
@@ -595,11 +583,6 @@ script(id='tree-completed-template', type='html/template')
             .col-6.text-left
               p(id='next-re-doc') Start next
 
-          .row.mt-3.justify-content-center
-            .col-6.text-right
-              p.text-xs-center You've now unlocked the talk page for the document. See what other people are saying about it!
-              a(href='{% url "talk:home" document.document_id %}').btn.btn-default
-                | Let's Talk
 
           .row.my-3.justify-content-center.social-action-area
             .col-3.text-right
@@ -653,17 +636,26 @@ script(id='ner-group-homepage-stats-template', type='html/template')
 // Other
 //
 
+script(id='re-synopsis-detail-template', type='html/template')
+    #chart-context.row
+      .col-xs-4.col-xs-offset-1.text-right
+        p#concept-a.lead <%= concept_a.text %>
 
-script(id='relation-synopsis-template', type='html/template')
-  p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
-  ul#relation-synopsis-bar.list-unstyled.list-inline
-  #feedback-next-action-area
-  #chart-context(style='display:none;').row
-    .col-xs-4.col-xs-offset-1.text-right
-      p#concept-a.lead
-    .col-xs-2.text-xs-center
-      | <i class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>
-    .col-xs-4.text-left
-      p#concept-b.lead
-  ul#chart-list.list-unstyled
+      .col-xs-2.text-xs-center
+        | <i class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>
+
+      .col-xs-4.text-left
+        p#concept-b.lead <%= concept_b.text %>
+
+    ul#chart-list.list-unstyled
+
+
+script(id='re-synopsis-template', type='html/template')
+  .col-12
+    p.lead.text-xs-center Click on the circles to see how your answers compared to the community's.
+
+    ul#re-synopsis-extractions.list-unstyled.list-inline
+
+    #re-synopsis-detail-view
+
 

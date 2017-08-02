@@ -847,7 +847,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
     var self = this;
 
     $.ajax({
-      url:'/task/entity-recognition/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
+      url:'/task/ner/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
       dataType: 'json',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
@@ -890,7 +890,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
     // This is either creating for the first time or just posting to fetch the UQR info
     $.ajax({
       type: 'POST',
-      url: '/task/entity-recognition/quest/'+this.options.task_pk+'/submit/',
+      url: '/task/ner/quest/'+this.options.task_pk+'/submit/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
         self.model = new NERQuestResult(data)
@@ -913,7 +913,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
         });
 
         if(set.length) {
-          window.location = '/task/entity-recognition/quest/' + set[0].id;
+          window.location = '/task/ner/quest/' + set[0].id;
         } else { window.location = '/dashboard/'; }
 
       }
@@ -1185,7 +1185,7 @@ YPet = Backbone.Marionette.View.extend({
       /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
       $.ajax({
         type: 'POST',
-        url: '/task/entity-recognition/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
+        url: '/task/ner/quest/'+this.options.task_pk+'/'+this.model.get('pk')+'/submit/',
         headers: {'X-CSRFTOKEN': this.options.csrf_token},
         contentType: "application/json; charset=utf-8",
         data:  JSON.stringify(annotations),

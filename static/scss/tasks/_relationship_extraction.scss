@@ -213,7 +213,6 @@
       }
 
     }
-
   }
 
   #tree-selection-results {
@@ -243,6 +242,57 @@
       cursor: pointer;
     }
 
+    .tree-completed-view {
+
+      hr {
+        border: 0;
+        margin: 6px 0px;
+        height: 1px;
+        background: $color_gray_lighter;
+        background-image: linear-gradient(to right, $color_white, $color_gray_lighter, $color_gray_lightest);
+      }
+
+      .tree-info-message {
+        border: 1rem solid $color_gray_lightest;
+
+
+        .nav-action-area {
+          text-transform: uppercase;
+          font-weight: 600;
+          font-size: 1.25rem;
+          color: $color_purple;
+
+          p:hover {
+            cursor: pointer;
+            color: #5200ef;
+          }
+          a {
+            color: $color_black;
+            span.chevron {
+              font-size: 2rem;
+              line-height: 1rem;
+            }
+          }
+          a:hover { text-decoration: none; }
+        }
+
+        .social-action-area {
+          i {
+            padding: .2rem;
+          }
+          text-transform: uppercase;
+          font-size: 1rem;
+
+          a {
+            color: $color_black;
+          }
+          a:hover { text-decoration: none; }
+        }
+      }
+
+
+    }
+
   }
 
   #tree-confirm {
@@ -251,70 +301,18 @@
     }
   }
 
-
 }
 
 
-//   @include media-breakpoint-down(sm) {
-//     #relation, #relation.disabled {
-//       font-size: 1rem;
-//     }
-//     .not_correct_stype {
-//       font-size: .6rem;
-//     }
-//   }
-//
-//   @include media-breakpoint-only(md) {
-//     #relation, #relation.disabled {
-//       font-size: 1.25rem;
-//     }
-//     .not_correct_stype {
-//       font-size: .8rem;
-//     }
-//   }
-//
-//   @include media-breakpoint-only(lg) {
-//     #relation, #relation.disabled {
-//       font-size: 1.5rem;
-//     }
-//   }
-//
-//
-// /* ETC OTHER */
-// p.doc {
-//   font-family: 'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif';
-//   line-height: 1.8em;
-//   font-weight: normal;
-//   font-style: normal;
-//   font-size: 20px;
-// }
-//
-// .btn.btn-default {
-//   border: 2px solid black;
-// }
-//
-//
-//
-//
-// #relation-synopsis-insert {
-//   ul#relation-synopsis-bar {
-//     text-align: center;
-//     li {
-//       font-size: 4em;
-//       line-height: .5em;
-//       cursor: pointer;
-//       margin: 0px 2px;
-//     }
-//   }
-// }
-//
-// #task-complete {
-//   hr {
-//     border: 0;
-//     margin: 6px 0px;
-//     height: 1px;
-//     background: $color_gray_lighter;
-//     background-image: linear-gradient(to right, $color_white, $color_gray_lighter, $color_gray_lightest);
-//   }
-// }
-//
+#re-synopsis {
+  ul#re-synopsis-extractions {
+    text-align: center;
+    li {
+      font-size: 4em;
+      line-height: .5em;
+      cursor: pointer;
+      margin: 0px 2px;
+    }
+  }
+}
+

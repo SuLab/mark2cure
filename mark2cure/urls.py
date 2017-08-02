@@ -59,16 +59,19 @@ urlpatterns = [
     # Task Section
     url(r'^document/', include('mark2cure.document.urls',
         namespace='document')),
-    url(r'^task/entity-recognition/', include('mark2cure.task.entity_recognition.urls',
-        namespace='task-entity-recognition')),
-    url(r'^task/relation/', include('mark2cure.task.relation.urls',
-        namespace='task-relation')),
+
+    url(r'^task/ner/', include('mark2cure.task.entity_recognition.urls',
+        namespace='task-ner')),
+
+    url(r'^task/re/', include('mark2cure.task.relation.urls',
+        namespace='task-re')),
 
     url(r'^talk/', include('mark2cure.talk.urls',
         namespace='talk')),
-    url(r'team/', include('mark2cure.team.urls',
+
+    url(r'^team/', include('mark2cure.team.urls',
         namespace='team', app_name='team')),
-    url(r'u/', include('mark2cure.userprofile.urls',
+    url(r'^u/', include('mark2cure.userprofile.urls',
         namespace='profile', app_name='userprofile')),
 
 

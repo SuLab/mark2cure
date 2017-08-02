@@ -199,7 +199,7 @@ REDocumentView = Backbone.Marionette.View.extend({
   className: 'list-group-item list-group-item-action flex-column align-items-start',
 
   onRender : function() {
-    this.$el.attr('href', '/task/relation/'+ this.model.get('id') +'/')
+    this.$el.attr('href', '/task/re/'+ this.model.get('id') +'/')
   }
 });
 

@@ -32,7 +32,7 @@ REChoices = Backbone.Collection.extend({
   /* The relationship tree of options from a
    * pre-defined selection pool */
   model: REChoice,
-  url: '/api/v1/words',
+  url: '',
 });
 
 REConcept = Backbone.Model.extend({
@@ -101,7 +101,8 @@ REDocumentResult = Backbone.RelationalModel.extend({
     'document': {
       'pk': null,
       'pmid': null,
-      'title': ''
+      'title': '',
+      'relationship_count': 0
     },
 
     're_task': {
@@ -255,15 +256,19 @@ RECompletedView = Backbone.Marionette.View.extend({
    * this.collection = None
    */
   template: '#tree-completed-template',
-  className: 'row',
+  className: 'row tree-completed-view',
 
-  // ui: {
-  //   'next': '#next'
-  // },
-  //
-  // events: {
-  //   'mousedown @ui.next': 'nextREDoc'
-  // },
+  ui: {
+    'next': '#next-re-doc'
+  },
+
+  regions: {
+    'synopsis': '#re-synopsis'
+  },
+
+  events: {
+    'mousedown @ui.next': 'nextREDoc'
+  },
 
   initialize: function() {
     this.model = new REDocumentResult({});
@@ -271,34 +276,36 @@ RECompletedView = Backbone.Marionette.View.extend({
 
     $.ajax({
       type: 'POST',
-      url: '/task/relation/'+ this.getOption('document_pk') +'/submit/',
+      url: '/task/re/'+ this.getOption('document_pk') +'/submit/',
       data: {'csrfmiddlewaretoken': self.options.csrf_token },
       cache: false,
       success: function(data) {
-        console.log(data);
-        // channel.trigger('tree:navigation:score:update');
+        channel.trigger('tree:navigation:score:update');
         self.model = new REDocumentResult(data)
         self.render();
       },
     });
+  },
 
+  onRender: function() {
+    this.showChildView('synopsis', new RESynopsis({}));
   },
 
   nextREDoc: function() {
     /* Use API to determine next Quest for User */
-    // $.ajax({
-    //   type: 'GET',
-    //   url: '/api/ner/list/'+ this.model.get('group').pk +'/quests/',
-    //   headers: {'X-CSRFTOKEN': this.options.csrf_token},
-    //   success: function(data) {
-    //     var set = _.filter(data, function(q) {
-    //       return q.progress.completed == false && q.user.completed == false && q.user.enabled == true;
-    //     });
-    //     if(set.length) {
-    //       window.location = '/task/entity-recognition/quest/' + set[0].id;
-    //     } else { window.location = '/dashboard/'; }
-    //   }
-    // });
+    $.ajax({
+      type: 'GET',
+      url: '/api/re/list/',
+      headers: {'X-CSRFTOKEN': this.options.csrf_token},
+      success: function(data) {
+        var set = _.filter(data, function(doc) {
+          return doc.community_completed == false && doc.user_completed == false;
+        });
+        if(set.length) {
+          window.location = '/task/re/' + set[0].id;
+        } else { window.location = '/dashboard/'; }
+      }
+    });
   }
 
 });
@@ -326,6 +333,8 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
+    channel.trigger('tree:navigation:score:update');
+
     var self = this;
     var data = this.getOption('data');
     var rechoice_model = this.getOption('rechoice_model');
@@ -597,7 +606,7 @@ Tree = Backbone.Marionette.View.extend({
       var self = this;
       /* Initalize the page by loading all relation tasks
        * and fetching all required data */
-      $.getJSON('/task/relation/'+ this.options.document_pk +'/api/', function(data) {
+      $.getJSON('/task/re/'+ this.options.document_pk +'/api/', function(data) {
         /* Onload request all relation tasks to complete */
         self.collection = new REExtractionList(data);
 
@@ -631,7 +640,7 @@ Tree = Backbone.Marionette.View.extend({
 
     $.ajax({
       type: 'POST',
-      url: '/task/relation/'+ this.model.get('document_id') +'/'+ this.model.get('id') +'/submit/',
+      url: '/task/re/'+ this.model.get('document_id') +'/'+ this.model.get('id') +'/submit/',
       data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {'relation': rechoice_model.get('id')}),
       cache: false,
       success: function(data) {

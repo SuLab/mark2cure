@@ -212,25 +212,12 @@ def re_task_submit(request, document_pk):
         view.completed = True
         view.save()
 
-    anns_user_doc_list = Annotation.objects.filter(kind='r', view_id__user_id=request.user.id, view_id__section__document_id=document_pk)
-    reln_id_list = []
-    relation_list = []
-    reln_ann_list = []
-    for ann in anns_user_doc_list:
-        reln_ann = RelationAnnotation.objects.get(id=ann.object_id)
-        reln = Relation.objects.get(id=reln_ann.relation_id)
-        if reln.id not in reln_id_list:
-            relation_list.append(reln)
-            reln_ann_list.append(reln_ann)
-        reln_id_list.append(reln.id)
-
-    print(reln_ann_list)
-
     return Response({
         'document': {
             'pk': document.pk,
             'pmid': document.document_id,
-            'title': document.title
+            'title': document.title,
+            'relationship_count': Relation.objects.filter(document=document).count()
         },
 
         're_task': {  # The View
@@ -243,7 +230,6 @@ def re_task_submit(request, document_pk):
             'amount': int(round(award.amount))
         },
 
-        'reln_ann_list': []
     })
 
 
