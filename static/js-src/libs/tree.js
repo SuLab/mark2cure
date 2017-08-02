@@ -288,7 +288,9 @@ RECompletedView = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    this.showChildView('synopsis', new RESynopsis({}));
+    if(this.model.get('document').pk) {
+      this.showChildView('synopsis', new RESynopsis({'document_pk': this.getOption('document_pk')}));
+    }
   },
 
   nextREDoc: function() {

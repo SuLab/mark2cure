@@ -29,8 +29,13 @@ RESynopsisExtraction = Backbone.Model.extend({
 RESynopsisExtractionCollection = Backbone.Collection.extend({
   model: RESynopsisExtraction,
   url: function() {
-    return '/task/re/916/analysis/';
-  }
+    return '/task/re/'+ this.document_pk +'/analysis/';
+  },
+
+  initialize: function(options) {
+    this.document_pk = options.document_pk;
+  },
+
 });
 
 
@@ -46,7 +51,7 @@ RESynopsisExtractionDetail = Backbone.Marionette.View.extend({
     'context': '#chart-context',
   },
 
-  onRender: function() {
+  onAttach: function() {
     var self = this;
 
     var answers = this.model.get('answers');
@@ -64,11 +69,10 @@ RESynopsisExtractionDetail = Backbone.Marionette.View.extend({
 
     var data = [];
     _.each(_.keys(answer_counts), function(answer_key) {
-
       var label = answer_text[answer_key];
 
       if(answer_key == c_1_broken) {
-        label = self.model.get('concept_a')['text'] + label + resyn_lookup_kinds[self.model.get('kind'[0])] + ' concept';
+        label = self.model.get('concept_a')['text'] + label + resyn_lookup_kinds[self.model.get('kind')[0]] + ' concept';
       } else if(answer_key == c_2_broken) {
         label = self.model.get('concept_b')['text'] + label + resyn_lookup_kinds[self.model.get('kind')[2]] + ' concept';
       }
@@ -85,8 +89,6 @@ RESynopsisExtractionDetail = Backbone.Marionette.View.extend({
 
     var max = d3.sum(data.map(function(i){ return i['value']; }));
     var color = d3.scale.category20c();
-
-    console.log(data);
 
     var chart = d3.select('#feedback-next-action-area').style('width', '100%');
     var bar = chart.selectAll('div')
@@ -113,7 +115,6 @@ RESynopsisExtractionDetail = Backbone.Marionette.View.extend({
         .enter()
           .append('li')
             .html(function(d, i) { return '<div class="box" style="background-color:'+color(i)+';"></div> <p>' + bold(d, 1) + ((d['value']/max)*100).toFixed() + '% – ' + d['label'] + bold(d, 2) + '</p>'; });
-
   }
 });
 
@@ -170,7 +171,6 @@ RESynopsisExtractionItem = Backbone.Marionette.View.extend({
     } else {
       this.$el.css({'borderBottom': 'none'});
     }
-
   },
 
   triggerDisplay: function() {
@@ -190,7 +190,7 @@ RESynopsisExtractionView = Backbone.Marionette.CollectionView.extend({
 
 RESynopsis = Backbone.Marionette.View.extend({
   template: '#re-synopsis-template',
-  className: 'row',
+  className: 'row justify-content-center',
 
   regions: {
     're-extractions': '#re-synopsis-extractions',
@@ -198,7 +198,7 @@ RESynopsis = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.collection = new RESynopsisExtractionCollection({});
+    this.collection = new RESynopsisExtractionCollection({'document_pk': this.getOption('document_pk')});
     this.collection.fetch();
 
     this.listenTo(channel, 're:synopsis:detail:show', this.showExtractionDetail)
