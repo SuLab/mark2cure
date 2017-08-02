@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from ...score.models import Point
 from ...document.models import Document, View, Annotation
@@ -111,6 +112,25 @@ def submit_annotation(request, document_pk, relation_pk):
 
     current_selection = request.POST.get('relation', None)
     if current_selection:
+
+        cmd_str = ""
+        with open('mark2cure/task/relation/commands/get-relation-ann-exists.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(
+            document_id=document.pk,
+            user_id=request.user.pk,
+            relation_id=relation.pk
+        )
+
+        # Start the DB Connection
+        c = connection.cursor()
+        c.execute(cmd_str)
+        already_submitted = c.fetchone()[0]
+
+        if already_submitted:
+            content = {'message': 'A Relationship Extraction Annotation can only be submitted once.'}
+            return Response(content, status=status.HTTP_409_CONFLICT)
+
         relation_ann = RelationAnnotation.objects.create(relation=relation, answer=current_selection)
         relation_ann_content_type = ContentType.objects.get_for_model(relation_ann)
 
@@ -128,7 +148,6 @@ def submit_annotation(request, document_pk, relation_pk):
                              created=timezone.now())
 
         return document_analysis(request, document_pk, relation_pk)
-        # return HttpResponse(200)
 
     return HttpResponse(500)
 

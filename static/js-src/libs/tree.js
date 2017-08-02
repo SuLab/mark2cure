@@ -140,7 +140,6 @@ REExtractionList = Backbone.Collection.extend({
   get_active: function() {
     /* Return the next RE Task for a Document */
 
-    // HAVING `relationship`.`community_completed` = FALSE AND NOT `relationship`.`user_completed` = TRUE
     var next_relationship = this.findWhere({community_completed: false, user_completed: false});
     if (next_relationship) {
       /* Assign an uncompleted relationship as the current focused task */
@@ -152,6 +151,7 @@ REExtractionList = Backbone.Collection.extend({
       this.trigger('re:document:complete');
       return false;
     }
+
   }
 });
 
@@ -165,6 +165,12 @@ REProgressItem = Backbone.Marionette.View.extend({
   tagName: 'li',
   className: 'list-inline-item',
 
+  initialize: function() {
+    this.listenTo(this.collection, 'change:community_completed', this.render);
+    this.listenTo(this.collection, 'change:user_completed', this.render);
+    this.listenTo(this.collection, 'change:current', this.render);
+  },
+
   onRender: function() {
     if ( this.model.get('community_completed') ) {
       this.$el.addClass('skip');
@@ -176,17 +182,15 @@ REProgressItem = Backbone.Marionette.View.extend({
   }
 });
 
+
 REProgressView = Backbone.Marionette.CollectionView.extend({
   /* Parent list for REProgressItem */
   tagName: 'ul',
   className: 'list-unstyled list-inline',
   childView: REProgressItem,
   childViewEventPrefix: 'progress',
-
-  initialize: function() {
-    this.listenTo(this.collection, 'all', this.render());
-  }
 });
+
 
 RENavigationView = Backbone.Marionette.View.extend({
   /* The gray progression bar and score indicator
@@ -645,7 +649,10 @@ Tree = Backbone.Marionette.View.extend({
     /* Go next REExtraction after reviewing the previous results */
     this.getRegion('extraction-results').empty()
 
+    console.log('relationshipNext 1',this.model);
     this.model = this.collection.get_active();
+    console.log('relationshipNext 2',this.model);
+
     if(this.model) {
       this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.options['model'] = this.model;
