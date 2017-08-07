@@ -57,12 +57,16 @@ class DocumentManager(models.Manager):
             passages = []
             for section_idx, row in enumerate(document_sections):
 
+                offset = 0
+
                 passage_annotations = []
                 if len(pubtators):
                     for x in range(3):
                         root = ET.fromstring(pubtators[i][x])
                         passage = root.find('document').findall('passage')[section_idx]
-                        print(document_pk, i, section_idx)
+
+                        offset = int(passage.find('offset').text)
+
                         for ann in passage.findall('annotation'):
                             passage_annotations.append({
                                 'type_id': x,
@@ -74,6 +78,7 @@ class DocumentManager(models.Manager):
                     'section': row[2],
                     'pk': row[3],
                     'text': row[4],
+                    'offset': offset,
                     'annotations': passage_annotations
                 })
 
@@ -289,9 +294,6 @@ class DocumentManager(models.Manager):
             cmd_str = f.read()
         cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
 
-        print('-'*20)
-        print(cmd_str)
-        print('-'*20)
 
         c = connection.cursor()
         try:

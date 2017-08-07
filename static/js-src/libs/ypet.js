@@ -156,16 +156,19 @@ NERAnnotation = Backbone.RelationalModel.extend({
   },
 
   initialize: function() {
-    var self = this;
-    var passage = this.collection['annsPassage'];
-    var ann_text = this.get('text').toLowerCase();
-
     /* Sanitize input types into using type_id */
     if(this.get('type') && !this.get('type_id')) {
       this.set('type_id', ['d', 'g', 't'].indexOf(this.get('type')));
       this.unset('type');
     }
+    this.parseAnnotation();
+  },
 
+  parseAnnotation: function() {
+
+    var self = this;
+    var passage = this.collection['annsPassage'];
+    var ann_text = this.get('text').toLowerCase();
     /* If Annotation was created with a string but without selected words */
     /* When there is no start, select all the words available that match the annotation text */
     if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') == null) {
@@ -176,7 +179,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
           // Check forward words as well
           var search_words = _.map(_.range(ann_word_array.length), function(idx) {
-            return passage.get('words').at(w_idx + idx);;
+            return passage.get('words').at(w_idx + idx);
           });
           var search_words_text = _.map(search_words, function(w) {
             return w.get('text').toLowerCase();
@@ -195,20 +198,13 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
     } else if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') != null) {
 
-      // console.log(passage.get('words'), this.toJSON());
-
       passage.get('words').each(function(w, w_idx) {
-        console.log(w, w_idx)
-        // if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
-        if( this.get('start') == w.get('start') ) {
-
-          console.log('ya');
-
+        if( self.get('start')-passage.get('offset') == w.get('start') && ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
 
           // Check forward words as well
           var search_words = _.map(_.range(ann_word_array.length), function(idx) {
-            return passage.get('words').at(w_idx + idx);;
+            return passage.get('words').at(w_idx + idx);
           });
           var search_words_text = _.map(search_words, function(w) {
             return w.get('text').toLowerCase();
@@ -238,6 +234,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
     /* (TODO) Only if user created */
     channel.trigger('ypet:footer:search:set', this.get('text'));
+
   },
 
   sanitizeAnnotation: function(full_str, start) {
@@ -274,6 +271,7 @@ NERAnnotationList = Backbone.Collection.extend({
   /* Utils for the Paragraph Annotations lists
    * collectively */
   model: NERAnnotation,
+  comparator: 'start',
 
   initialize: function(options) {
     /* When a new Annotation has been added */
@@ -283,11 +281,31 @@ NERAnnotationList = Backbone.Collection.extend({
       /* (TODO) Can probably be optimzed rather than a total refresh */
       channel.trigger('ypet:paragraphs:redraw');
     });
+
+    this.listenTo(this, 'update', this.overlap_protection);
   },
 
   draw: function() {
     this.each(function(annotation) { annotation.draw(); });
-  }
+  },
+
+  are_overlapping: function(r, s) {
+    // return not(r[1] < s[0] or s[1] < r[0]);
+    return true;
+  },
+
+  overlap_protection: function(collection, options) {
+    /* Delete annotations that may be overlapping */
+    collection.each(function(ann) {
+      if(ann) {
+        var next = collection.at(collection.indexOf(ann)+1);
+        if(next && next.get('start') <= ann.get('start')+ann.get('text').length) {
+          next.destroy();
+        }
+      }
+    });
+  },
+
 });
 
 NERParagraph = Backbone.RelationalModel.extend({
@@ -334,8 +352,7 @@ NERParagraph = Backbone.RelationalModel.extend({
         });
     this.set('words', new NERWordList(words));
     this.set('offset', +this.get('offset'));
-    console.log( this.get('annotations').initialize() );
-    // this.set('annotations', this.get('annotations'));
+    this.get('annotations').each(function(ann) { ann.parseAnnotation(); });
   },
 });
 
@@ -577,12 +594,14 @@ NERWordView = Backbone.Marionette.View.extend({
   },
 
   onMouseDown: function(evt) {
+    evt.preventDefault();
     /* Set the Word's latest attribute to 1 */
     if(this.model.get('disabled')) { return; };
     this.model.set({'latest': 1});
   },
 
   onMouseOver: function(evt) {
+    evt.preventDefault();
     /* Set array of Word's latest attribute to Date.now() to track drag */
 
     if(this.model.get('disabled')) { return; };
@@ -621,6 +640,7 @@ NERWordView = Backbone.Marionette.View.extend({
   },
 
   onMouseUp: function(evt) {
+    evt.preventDefault();
     /* After click, drag, etc send words to AnnotationList as Annotation */
     if(this.model.get('disabled')) { return; };
 
@@ -687,6 +707,8 @@ NERParagraphView = Backbone.Marionette.View.extend({
 
     this.model.get('annotations').draw();
     this.model.get('opponent_annotations').draw();
+
+    console.log('para onRender', this.model.get('annotations'));
   },
 
   events : {
