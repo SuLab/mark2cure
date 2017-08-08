@@ -887,7 +887,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
     var self = this;
 
     $.ajax({
-      url:'/ask/ner/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
+      url:'/task/ner/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
       dataType: 'json',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
@@ -896,7 +896,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
         self.render();
       },
       error: function(error_res) {
-        channel.trigger('ypet:error', error_res);
+        channel.trigger('ypet:error', 'Fetching Document Results Failed');
         window.scrollTo(0,0);
       }
     });
