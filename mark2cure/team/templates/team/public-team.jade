@@ -12,27 +12,27 @@ block header
 
 block content
   .container
-    .row
-      .col-xs-6.col-xs-offset-3
-        h1.text-xs-center Team #{team.name}
+    .row.justify-content-center
+      .col-6
+        h1.text-center Team #{team.name}
 
-    .row
-      .col-xs-10.col-xs-offset-1
+    .row.justify-content-center
+      .col-8.text-center
         .card
           .card-header
             | Description
           .card-block
             #{team.description}
 
-    .row
-      .col-xs-6.col-xs-offset-1
+    .row.justify-content-center.my-3
+      .col-6
         .card
           .card-header
             | Quick Stats
           .card-block
             .row
               if members
-                .col-xs-6
+                .col-6
                   ol.list-unstyled
                     li Total Contributions: #{team.total_annotations.count|intcomma}
                     li Total Docs: #{team.total_documents.count|intcomma}
@@ -41,7 +41,7 @@ block content
               else
                 p There are no members in this group, so there are no contributions
 
-              .col-xs-6
+              .col-6
                 ol.list-unstyled
                   if members
                     - with user=team.last_active_user
@@ -49,7 +49,7 @@ block content
                         p Last Active User:
                           a(href='{% url "userprofile:public-profile" username=user.username %}')
                             if user.username
-                              #{user.username} lalalal
+                              #{user.username}
 
 
                     li
@@ -57,9 +57,9 @@ block content
                         p Last Member Activity: #{user.userprofile.last_seen|naturaltime}
 
 
-      .col-xs-4
+      .col-4
         .row
-          .col-xs-12
+          .col-12
             .card
               .card-header
                 | About
@@ -84,14 +84,16 @@ block content
 
 
     if members
-      .row
-        .col-xs-10.col-xs-offset-1
+      .row.justify-content-center.my-3
+
+        .col-10
           .card
             .card-header
               | Members
             .card-block
               .row
                   - for member_profile in members
-                    .col-xs-4
+                    .col-4
                       a(href='{% url "userprofile:public-profile" username=member_profile.user.username %}')
                         p.lead.text-xs-center #{member_profile.user.username}
+
