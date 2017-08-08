@@ -62,17 +62,19 @@ class DocumentManager(models.Manager):
                 passage_annotations = []
                 if len(pubtators):
                     for x in range(3):
-                        root = ET.fromstring(pubtators[i][x])
-                        passage = root.find('document').findall('passage')[section_idx]
 
-                        offset = int(passage.find('offset').text)
-
-                        for ann in passage.findall('annotation'):
-                            passage_annotations.append({
-                                'type_id': x,
-                                'start': int(ann.find('location').attrib['offset']),
-                                'text': ann.find('text').text
-                            })
+                        try:
+                            root = ET.fromstring(pubtators[i][x])
+                            passage = root.find('document').findall('passage')[section_idx]
+                            offset = int(passage.find('offset').text)
+                            for ann in passage.findall('annotation'):
+                                passage_annotations.append({
+                                    'type_id': x,
+                                    'start': int(ann.find('location').attrib['offset']),
+                                    'text': ann.find('text').text
+                                })
+                        except SyntaxError:
+                            pass
 
                 passages.append({
                     'section': row[2],

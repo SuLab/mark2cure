@@ -403,6 +403,7 @@ script(id='ypet-navigation-template', type='html/template')
 
 script(id='ypet-template', type='html/template')
   #ypet-navigation.col-12
+  #ypet-message-center.col-12
   #ypet-results.col-10
   #ypet-text.col-10
   #ypet-footer.col-10
@@ -447,16 +448,16 @@ script(id='ypet-footer-help-template', type='html/template')
 
 script(id='ypet-footer-next-template', type='html/template')
   .col-12.next
-    .row
+    div(style="display:none;").row
       .col-12.text-center
         p.mb-0 Annotations in this doc have been discussed 0 times.
         strong Discuss Now?
 
     .row.my-3
-      .col-6.text-right
+      div(style="display:none;").col-6.text-right
         p.button.btn.btn-default.btn-block Yes, Let's Talk
 
-      .col-6.text-left
+      .col-12
         p.button.btn.btn-primary.btn-block.next-doc Next Doc
 
 

@@ -98,6 +98,10 @@ var channel = Backbone.Radio.channel('ypet');
  *  Models & Collections
  */
 
+NERMessage = Backbone.Model.extend({
+  defaults: {'text': ''}
+});
+
 NERAnnotationTypeList = Backbone.Collection.extend({
   /* Very simple collection to store the type of
    * Annotations that the application allows
@@ -165,14 +169,12 @@ NERAnnotation = Backbone.RelationalModel.extend({
   },
 
   parseAnnotation: function() {
-
     var self = this;
     var passage = this.collection['annsPassage'];
     var ann_text = this.get('text').toLowerCase();
     /* If Annotation was created with a string but without selected words */
     /* When there is no start, select all the words available that match the annotation text */
     if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') == null) {
-
       passage.get('words').each(function(w, w_idx) {
         if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
@@ -197,7 +199,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
       });
 
     } else if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') != null) {
-
       passage.get('words').each(function(w, w_idx) {
         if( self.get('start')-passage.get('offset') == w.get('start') && ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
@@ -222,14 +223,13 @@ NERAnnotation = Backbone.RelationalModel.extend({
       });
 
     } else if(this.get('words').length > 0 && this.get('text') == '') {
-
       /* Simple Sanitization if the Annotation was made using NERWordList */
       var ann = this.sanitizeAnnotation(this.get('words').pluck('text').join(' '), this.get('words').first().get('start'));
       this.set('text', ann.text);
       this.set('start', ann.start);
 
     } else {
-      alert('major issue');
+      channel.trigger('ypet:error', 'Annotation Parsing Failure.')
     }
 
     /* (TODO) Only if user created */
@@ -707,14 +707,13 @@ NERParagraphView = Backbone.Marionette.View.extend({
 
     this.model.get('annotations').draw();
     this.model.get('opponent_annotations').draw();
-
-    console.log('para onRender', this.model.get('annotations'));
   },
 
   events : {
-    'mousedown': 'onMouseDown',
-    'mousemove': 'startHoverCapture',
-    'mouseup': 'onMouseLeave',
+    // (TODO) They're having all sorts of event bleeding
+    // 'mousedown': 'onMouseDown',
+    // 'mousemove': 'startHoverCapture',
+    // 'mouseup': 'onMouseLeave',
     'mouseleave': 'onMouseLeave',
   },
 
@@ -738,6 +737,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 
   onMouseDown: function(evt) {
+    evt.preventDefault();
     var closest_view = this.getClosestWord(evt);
     if(closest_view) { closest_view.onMouseDown(evt); }
   },
@@ -747,9 +747,13 @@ NERParagraphView = Backbone.Marionette.View.extend({
       if(closest_view) { closest_view.onMouseOver(evt); }
   }, 100),
 
-  startHoverCapture: function(evt) { this.timedHover(evt); },
+  startHoverCapture: function(evt) {
+    evt.preventDefault();
+    this.timedHover(evt);
+  },
 
   onMouseLeave: function(evt) {
+    evt.preventDefault();
     var selection = this.model.get('words').reject(function(word) { return _.isNull(word.get('latest')); });
     if(selection.length) {
       /* Doesn't actually matter which one */
@@ -883,7 +887,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
     var self = this;
 
     $.ajax({
-      url:'/task/ner/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
+      url:'/ask/ner/'+ this.options.task_pk +'/'+ document_pk +'/results.json',
       dataType: 'json',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
@@ -892,7 +896,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
         self.render();
       },
       error: function(error_res) {
-        /* (TODO) Show Error */
+        channel.trigger('ypet:error', error_res);
         window.scrollTo(0,0);
       }
     });
@@ -1042,6 +1046,21 @@ NERNavigationView = Backbone.Marionette.View.extend({
   }
 });
 
+NERMessageView = Backbone.Marionette.View.extend({
+  /* The Message alert
+   * this.model = NERMessage
+   */
+  template: _.template('<div class="col-12 text-center"><p class="my-1"><%= text %></p></div>'),
+  className: 'row',
+
+  events: {
+    'mouseenter': function(evt) {
+      this.$el.fadeOut();
+    },
+  },
+
+})
+
 NERFooterHelpView = Backbone.Marionette.View.extend({
   /* The list of links for getting task instructions
    * this.model = None
@@ -1163,6 +1182,7 @@ YPet = Backbone.Marionette.View.extend({
 
   regions: {
     'navigation': '#ypet-navigation',
+    'message-center': '#ypet-message-center',
     'results': '#ypet-results',
     'text': '#ypet-text',
     'footer': '#ypet-footer'
@@ -1225,7 +1245,7 @@ YPet = Backbone.Marionette.View.extend({
         self.render();
       },
       error: function() {
-        channel.trigger('ypet:error')
+        channel.trigger('ypet:error', 'Task Submission Error')
       }
     });
   },
@@ -1248,8 +1268,9 @@ YPet = Backbone.Marionette.View.extend({
     this.showChildView('results', new NERQuestCompletedView(this.options));
   },
 
-  ypetError: function() {
-    alert('error error');
+  ypetError: function(msg) {
+    var model = new NERMessage({'text': msg});
+    this.showChildView('message-center', new NERMessageView({'model': model}));
   },
 
   onRender: function() {

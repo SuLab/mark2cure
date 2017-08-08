@@ -22,6 +22,17 @@
     p { margin-bottom: 0px; }
   }
 
+  #ypet-message-center {
+    > .row {
+      background-color: $color_error_red;
+      color: $color_white;
+      p {
+        text-transform: capitalize;
+        letter-spacing: .05rem;
+      }
+    }
+  }
+
   #ypet-results {
 
     .header-message {
