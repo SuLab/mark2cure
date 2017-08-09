@@ -1,11 +1,9 @@
-from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.messages import get_messages
+from django.http import HttpResponse
+
 
 from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
@@ -15,39 +13,6 @@ from .forms import SupportMessageForm
 from .models import Group
 
 import random
-
-
-def login_with_zooniverse(request):
-    # The view that allows the user to login with their Zooniverse account
-
-    # The public Zooniverse app ID (used for Zoonivser login/authentication) - use the SocialApp DB record to retrieve the app ID
-    zooniverseSocialApp = SocialApp.objects.get(provider='zooniverse')
-    appId = zooniverseSocialApp.client_id
-
-    ctx = {
-        'zooniverse_app_id': appId,
-        'zooniverse_callback_url': 'https://mark2cure.org/zooniverse-callback/'
-    }
-    return TemplateResponse(request, 'common/login_with_zooniverse.jade', ctx)
-
-
-def zooniverse_callback(request):
-    # The view that is called after the user logged-in using Zooniverse (this view receives
-    # the access token and sends it forward to the allauth module's callback view)
-    ctx = {
-        'zooniverse_allauth_callback_url': 'https://mark2cure.org/accounts/zooniverse/login/callback/'
-    }
-    return TemplateResponse(request, 'common/zooniverse_callback.jade', ctx)
-
-
-def home(request):
-    if request.user.is_authenticated():
-        return redirect('common:dashboard')
-
-    form = AuthenticationForm()
-
-    ctx = {'form': form}
-    return TemplateResponse(request, 'common/landing2.jade', ctx)
 
 
 def get_started(request):
@@ -62,12 +27,9 @@ def get_started(request):
             return redirect('training:introduction', step_num=1)
 
 
-def why_mark2cure(request):
-    query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
-    return TemplateResponse(request, 'common/why-i-mark2cure.jade', {'profiles': query})
-
-
 def dashboard(request):
+    '''View for serving the Dashboard.js App and issuing authenication redirects
+    '''
     if not request.user.is_authenticated():
         return redirect('common:home')
 
@@ -91,25 +53,56 @@ def dashboard(request):
     return TemplateResponse(request, 'common/dashboard.jade', ctx)
 
 
-# removed login required here to allow public to see doc set contributions
-def group_view(request, group_stub):
+def why_mark2cure(request):
+    query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
+    return TemplateResponse(request, 'common/why-i-mark2cure.jade', {'profiles': query})
+
+
+def login_with_zooniverse(request):
+    '''The view that allows the user to login with their Zooniverse account'''
+
+    # The public Zooniverse app ID (used for Zoonivser login/authentication) - use the SocialApp DB record to retrieve the app ID
+    zooniverseSocialApp = SocialApp.objects.get(provider='zooniverse')
+    appId = zooniverseSocialApp.client_id
+
+    ctx = {
+        'zooniverse_app_id': appId,
+        'zooniverse_callback_url': 'https://mark2cure.org/zooniverse-callback/'
+    }
+    return TemplateResponse(request, 'common/login_with_zooniverse.jade', ctx)
+
+
+def zooniverse_callback(request):
+    '''The view that is called after the user logged-in using Zooniverse (this view receives
+       the access token and sends it forward to the allauth module's callback view)'''
+    ctx = {
+        'zooniverse_allauth_callback_url': 'https://mark2cure.org/accounts/zooniverse/login/callback/'
+    }
+    return TemplateResponse(request, 'common/zooniverse_callback.jade', ctx)
+
+
+def ner_group_home(request, group_stub):
+    '''Landing page for NER Group
+    '''
     group = get_object_or_404(Group, stub=group_stub)
     return TemplateResponse(request, 'common/group_home.jade', {'group': group})
 
 
-# (TODO) group_network.jade does not exist. Remove this view?
-@login_required
-def group_network(request, group_stub):
-    group = get_object_or_404(Group, stub=group_stub)
-    ctx = {'group': group}
-    return TemplateResponse(request, 'common/group_network.jade', ctx)
-
-
 @require_http_methods(['POST'])
 def support(request):
+    '''API for submitting SupportMessages
+    '''
     form = SupportMessageForm(data=request.POST)
     if form.is_valid():
         form.save()
         return HttpResponse(200)
     return HttpResponse(500)
+
+
+def home(request):
+    '''Landing page for public https://mark2cure.org
+    '''
+    if request.user.is_authenticated():
+        return redirect('common:dashboard')
+    return TemplateResponse(request, 'common/landing.jade')
 

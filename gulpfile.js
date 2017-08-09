@@ -75,10 +75,8 @@ gulp.task('js', function() {
     './static/js-src/tasks/relation.js',
 
     './static/js-src/training/entity-recognition/basic.js',
-    './static/js-src/training/relation/relation-training.js',
-    './static/js-src/training/relation/relation-1.js',
+    './static/js-src/training/relation.js',
 
-    './static/js-src/demo.js',
     './static/js-src/app.js'
   ];
 

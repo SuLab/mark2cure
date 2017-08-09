@@ -2,7 +2,7 @@ extends base
 
 
 block header
-  - with headerMessage='Doc Set Details'
+  - with headerMessage='Group Details'
     include includes/header
 
 
@@ -14,48 +14,6 @@ block content
         h2.text-center {{ group.name }}
         p.lead #{group.description}
 
-        // - if user.is_authenticated
-        //   span
-        // - else
-        // - if group.enabled and group.percentage_complete < 100
-        //   h4 This doc set needs your help. <a href='{% url "account_login" %}'>Please sign in here</a>.
-        //
-        //     .col-md-10.col-md-offset-1.m-t-1
-        //       // - with progress=group.percentage_complete
-        //       //   - if progress
-        //       //     h4.progress-label Community progress on this set:
-        //       //
-        //       //     progress(value="{{ progress }}", max="100").progress
-        //       //       .progress
-        //       //         span(style="width: 25%;").progress-bar #{progress|floatformat:"2"}%
-
-
-    // #group-network.row
-    //   .col-xs-4.col-xs-offset-4
-    //     a
-    //       h4.text-xs-center Toggle Network <i class="fa fa-caret-down"></i>
-    //
-    // #network-row(style="height:800px;display:none;").row
-    //   .col-xs-1
-    //     .row
-    //       .col-xs-12
-    //         i.fa.fa-plus-circle
-    //       .col-xs-12
-    //         i.fa.fa-minus-circle
-    //       .col-xs-12
-    //         i.fa.fa-rotate-right
-    //   .col-xs-11
-    //     #network(style="height:800px;")
-
-    // .row
-    //   .col-md-10.col-md-offset-1.m-t-1
-    //
-    //     - if user.is_authenticated
-    //       .container(style="padding-bottom: 20px")
-    //         .row
-    //           .col-md-10.col-md-offset-1
-    //             #group-selection
-    //
     .row.justify-content-center
       .col-md-5
         .card
@@ -68,35 +26,6 @@ block content
           .card-header
             | Group Statistics
           #group-statistics.card-block
-
-
-    // .row
-    //   .col-md-10.col-md-offset-1.m-t-1
-    //     p.lead Top contributor word cloud:
-    //
-    //     #word-cloud
-    //
-    //     form#form(style='display:none;')
-    //       #custom-area
-    //         textarea#text {{ username_list }}
-    //         button#go(type="submit").btn.btn-default Go
-    //
-    //       div.form-group
-    //         input#max(type="number", value="250", min="1").form-control
-    //         input#per-line(type="checkbox").form-control
-    //
-    //       div.form-group
-    //         input#archimedean(type="radio", name="spiral", value="archimedean", checked="checked")
-    //         input#rectangular(type="radio", name="spiral", value="rectangular")
-    //         input#scale-log(type="radio", name="scale", value="log", checked="checked")
-    //         input#font(type="text", value="impact")
-    //
-    //       #angles.form-group
-    //         input(type="number", id="angle-count", value="30", min="1")
-    //         label(for="angle-count") orientations
-    //         input(type="number", id="angle-from", value="-0", min="-0", max="0") °
-    //         input(type="number", id="angle-to", value="0", min="-0", max="0") °
-
 
 
 block post-footer

@@ -119,9 +119,6 @@ NERQuestTaskView = Backbone.Marionette.View.extend({
     }
   },
 
-  // onRender: function() {
-  //   console.log('Quest Task:', this.model.attributes);
-  // }
 });
 
 NERQuestTaskListView = Backbone.Marionette.CollectionView.extend({
