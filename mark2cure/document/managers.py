@@ -68,6 +68,10 @@ class DocumentManager(models.Manager):
                             passage = root.find('document').findall('passage')[section_idx]
                             offset = int(passage.find('offset').text)
                             for ann in passage.findall('annotation'):
+
+                                # print(ann.findall('infon[@type="Species"]'))
+                                print(ann.findall("infon[@type='Species']"))
+
                                 passage_annotations.append({
                                     'type_id': x,
                                     'start': int(ann.find('location').attrib['offset']),

@@ -242,7 +242,7 @@ script(id='dashboard-re-unlock-template', type='html/template')
       #relation-training-progress.col-12
         .list-group.dashboard.text-center
           <% if(re == 0) { %>
-          a(href='{% url "training:relation-training" %}').list-group-item.current
+          a(href='{% url "training:re" %}').list-group-item.current
             | <i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface
           .list-group-item.locked.disabled
             | <i class='fa fa-lock' aria-hidden='true'></i>  Rules for Relationship Extraction
@@ -253,7 +253,7 @@ script(id='dashboard-re-unlock-template', type='html/template')
           <% if(re == 1) { %>
           .list-group-item.completed
             | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
-          a(href='{% url "training:relation-training-two" %}').list-group-item.current
+          a(href='{% url "training:re" %}').list-group-item.current
             | <i class='fa fa-angle-right' aria-hidden='true'></i>  Rules for Relationship Extraction
           .list-group-item.locked.disabled
             | <i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad
@@ -264,7 +264,7 @@ script(id='dashboard-re-unlock-template', type='html/template')
             | <i class='fa fa-check' aria-hidden='true'></i>  Using the interface
           .list-group-item.completed
             | <i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction
-          a(href='{% url "training:relation-training-three" %}').list-group-item.current
+          a(href='{% url "training:re" %}').list-group-item.current
             | <i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad
           <% } %>
 

@@ -62,8 +62,10 @@ def select_best_opponent(task, document, player):
 
         report = task.group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').first()
         if report:
+
+            # (TODO) if str load up manually
             df = report.dataframe
-            print(df)
+            print(type(df))
             df = df[df['user_id'].isin(previous_users_pks)]
 
             if df.shape[0] == 0:

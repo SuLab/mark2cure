@@ -11,6 +11,7 @@ nav#header(role='navigation').navbar.navbar-default
         h1.text-center #{headerMessage}
 
       .col-2
-          a(href='{% url "profile:public-profile" username=user.username %}').box-outline.text-right
-            p.m-0 {{user}}
+        - if user.is_authenticated
+            a(href='{% url "profile:public-profile" username=user.username %}').box-outline.text-right
+              p.m-0 {{user}}
 

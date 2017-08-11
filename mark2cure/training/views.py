@@ -40,6 +40,18 @@ def route(request):
         return redirect('common:dashboard')
 
 
+def re_home(request):
+    # res = {
+    #     'type': 're',
+    #     'tutorials': [
+    #         {
+    #             'name'
+    #         }
+    #     ]
+    # }
+    return TemplateResponse(request, 'training/relation/base.jade')
+
+
 def introduction(request, step_num):
     if step_num == '1' or step_num is None:
         return TemplateResponse(request, 'training/entity-recognition/exp-2-intro-0/basics.jade')
@@ -155,5 +167,7 @@ def relation_training(request, part_num=1, step_num=1):
         'relation_data': json_data
     }
     return TemplateResponse(request, 'training/relation/part-{part_num}/page-{step_num}.jade'.format(part_num=part_num, step_num=step_num), ctx)
+
+
 
 
