@@ -65,18 +65,18 @@ class DocumentManager(models.Manager):
 
                         try:
                             root = ET.fromstring(pubtators[i][x])
-                            passage = root.find('document').findall('passage')[section_idx]
-                            offset = int(passage.find('offset').text)
-                            for ann in passage.findall('annotation'):
 
-                                # print(ann.findall('infon[@type="Species"]'))
-                                print(ann.findall("infon[@type='Species']"))
+                            passage = root.findall(".//passage")[section_idx]
+                            offset = int(passage.find("./offset").text)
+                            for ann in passage.findall("./annotation"):
 
-                                passage_annotations.append({
-                                    'type_id': x,
-                                    'start': int(ann.find('location').attrib['offset']),
-                                    'text': ann.find('text').text
-                                })
+                                if 'Species' not in [infon.text for infon in ann.findall("./infon[@key='type']")]:
+                                    passage_annotations.append({
+                                        'type_id': x,
+                                        'start': int(ann.find('location').attrib['offset']),
+                                        'text': ann.find('text').text
+                                    })
+
                         except SyntaxError:
                             pass
 
@@ -299,7 +299,6 @@ class DocumentManager(models.Manager):
         with open('mark2cure/document/commands/get-ner-results.sql', 'r') as f:
             cmd_str = f.read()
         cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
-
 
         c = connection.cursor()
         try:
