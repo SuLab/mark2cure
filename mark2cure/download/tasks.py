@@ -32,7 +32,7 @@ def group_export(self, document_pks, export_type=0):
 #             er_df = clean_df(Document.objects.entity_recognition_df(documents=document_pks, writer=writer))
 #
 #         if export_type == 0 or export_type == 2:
-#             rel_df = Document.objects.relation_df(documents=document_pks)
+#             rel_df = Document.objects.re_df(documents=document_pks, user_pks=[])
 #
 #         export_writer = apply_annotations(writer, er_df=er_df, rel_df=rel_df)
 #

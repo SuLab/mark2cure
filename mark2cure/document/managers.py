@@ -2,18 +2,27 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models, connection
 from typing import List, Dict
 
-from mark2cure.task.relation import relation_data_flat
+# from mark2cure.task.relation import relation_data_flat
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
 import xml.etree.ElementTree as ET
 from itertools import groupby
 import pandas as pd
 
-DF_COLUMNS = ('uid', 'source', 'user_id',
-              'ann_type_idx', 'text',
-              'document_pk', 'section_id', 'section_offset', 'offset_relative',
-              'start_position', 'length')
+NER_DF_COLUMNS = ('uid', 'source', 'user_id',
+                  'ann_type_idx', 'text',
+                  'document_pk', 'section_id', 'section_offset', 'offset_relative',
+                  'start_position', 'length')
+
+RE_DF_COLUMNS = ('relation_id',
+  'document_pk', 'document_pmid',
+  'user_id',
+  'relation_type', 'concept_1_id', 'concept_2_id',
+  'answer', 'answer_text', 'created')
+
 APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
+
+PUBTATOR_TYPES = ['Disease', 'Gene', 'Chemical']
 
 
 class DocumentManager(models.Manager):
@@ -59,7 +68,7 @@ class DocumentManager(models.Manager):
                         passage = root.findall(".//passage")[section_idx]
                         offset = int(passage.find("./offset").text)
                         for ann in passage.findall("./annotation"):
-                            if 'Species' not in [infon.text for infon in ann.findall("./infon[@key='type']")]:
+                            if [infon.text for infon in ann.findall("./infon[@key='type']")][0] in PUBTATOR_TYPES:
                                 passage_annotations.append({
                                     'type_id': pubtator_type_idx,
                                     'start': int(ann.find('location').attrib['offset']),
@@ -83,71 +92,52 @@ class DocumentManager(models.Manager):
 
         return response
 
-    def relation_df(self, documents=[], users=[]):
-        ct = ContentType.objects.get(model='relationannotation')
+    def re_df(self, document_pks: List[int], user_pks: List[int]=[]):
+        """Relationship Extraction Results DataFrame
 
-        if len(documents):
-            from .models import Document
-            doc_arr = []
-            for d in documents:
-                if type(d) == Document:
-                    doc_arr.append(str(d.pk))
-                elif type(d) is str and d.isdigit():
-                    doc_arr.append(d)
-                elif type(d) is int:
-                    doc_arr.append(str(d))
-            filter_doc_level = 'WHERE `relation`.`document_id` IN ({0})'.format(','.join(doc_arr))
-        else:
-            filter_doc_level = ''
+        (TODO) Not finished
 
-        if len(users):
-            from django.contrib.auth.models import User
-            user_arr = []
-            for u in users:
-                if type(u) == User:
-                    user_arr.append(str(u.pk))
-                elif type(u) is str and d.isdigit():
-                    user_arr.append(u)
-                elif type(u) is int:
-                    user_arr.append(str(u))
+        Args:
+            documents_pks (list): The selection of JSON Documents to return
+            user_pks (list): The selection of Users to include in the results
 
+        Returns:
+            pd.DataFrame: The list of (dict)Documents
+        """
+        assert len(document_pks) >= 1, "No documents supplied to Relationship Extraction Dataframe"
+        filter_doc_level = 'WHERE `relation`.`document_id` IN ({0})'.format(','.join([str(x) for x in document_pks]))
+
+        if user_pks and len(user_pks):
             filter_user_level = '{0} `doc_view`.`user_id` IN ({1})'.format(
                 'WHERE' if filter_doc_level == '' else 'AND',
-                ','.join(user_arr))
+                ','.join([str(x) for x in user_pks]))
         else:
-            filter_user_level = ''
+            filter_user_level = ""
 
         cmd_str = ""
         with open('mark2cure/document/commands/get-relations-results.sql', 'r') as f:
             cmd_str = f.read()
         cmd_str = cmd_str.format(
-            content_type_pk=ct.pk,
+            content_type_pk=ContentType.objects.get(model='relationannotation').pk,
             filter_doc_level=filter_doc_level,
             filter_user_level=filter_user_level)
 
         c = connection.cursor()
         try:
             c.execute(cmd_str)
+            re_queryset = [dict(zip(['relation_id', 'document_pk', 'document_pmid',
+                              'user_id', 'relation_type', 'concept_1_id',
+                              'concept_2_id', 'answer', 'created'], x)) for x in c.fetchall()]
 
-            REL_DF_COLUMNS = ('relation_id',
-              'document_pk', 'document_pmid',
-              'user_id',
-              'relation_type', 'concept_1_id', 'concept_2_id',
-              'answer', 'answer_text', 'created')
+            print(re_queryset[0])
 
-            df_arr = []
-            for x in c.fetchall():
-                df_arr.append({
-                    'relation_id': x[0],
-                    'document_pk': x[1], 'document_pmid': x[2],
-                    'user_id': x[3],
-                    'relation_type': x[4], 'concept_1_id': x[5], 'concept_2_id': x[6],
-                    'answer': x[7], 'answer_text': filter(lambda d: d['id'] == x[7], relation_data_flat)[0]['text'], 'created': x[8]})
-
-            return pd.DataFrame(df_arr, columns=REL_DF_COLUMNS)
+        # 'answer_text': filter(lambda d: d['id'] == x[7], relation_data_flat)[0]['text'],
 
         finally:
             c.close()
+
+        df_arr = []
+        return pd.DataFrame(df_arr, columns=RE_DF_COLUMNS)
 
     def _create_er_df_row(self,
                       uid, source='db', user_id=None,
@@ -169,77 +159,60 @@ class DocumentManager(models.Manager):
             'start_position': int(start_position), 'length': int(length)
         }
 
-    def ner_df(self, documents=[], users=[], include_pubtator=True):
-        if len(documents):
-            from .models import Document
-            doc_arr = []
-            for d in documents:
-                if type(d) == Document:
-                    doc_arr.append(str(d.pk))
-                elif type(d) is str and d.isdigit():
-                    doc_arr.append(d)
-                elif type(d) is int:
-                    doc_arr.append(str(d))
-            filter_doc_level = 'WHERE `document_section`.`document_id` IN ({0})'.format(','.join(doc_arr))
-        else:
-            filter_doc_level = ''
+    def ner_df(self, document_pks: List[int], user_pks: List[int]=[], include_pubtator=True):
+        """
+        Returns:
+            pd.DataFrame: Named Entity Recognition Results Dataframe
+        """
 
-        if len(users):
-            from django.contrib.auth.models import User
-            user_arr = []
-            for u in users:
-                if type(u) == User:
-                    user_arr.append(str(u.pk))
-                elif type(u) is str and d.isdigit():
-                    user_arr.append(u)
-                elif type(u) is int:
-                    user_arr.append(str(u))
+        assert len(document_pks) >= 1, "No documents supplied to Relationship Extraction Dataframe"
+        filter_doc_level = 'WHERE `document_section`.`document_id` IN ({0})'.format(','.join([str(x) for x in document_pks]))
 
+        if len(user_pks):
             filter_user_level = '{0} `document_view`.`user_id` IN ({1})'.format(
                 'WHERE' if filter_doc_level == '' else 'AND',
-                ','.join(user_arr))
+                ','.join([str(x) for x in user_pks]))
         else:
             filter_user_level = ''
-
-        content_type_id = str(ContentType.objects.get_for_model(
-            EntityRecognitionAnnotation.objects.first()).id)
-
-        df_arr = []
 
         cmd_str = ""
         with open('mark2cure/document/commands/get-ner-results.sql', 'r') as f:
             cmd_str = f.read()
-        cmd_str = cmd_str.format(content_type_pk=content_type_id, filter_doc_level=filter_doc_level, filter_user_level=filter_user_level)
+        cmd_str = cmd_str.format(
+            content_type_pk=ContentType.objects.get_for_model(EntityRecognitionAnnotation).id,
+            filter_doc_level=filter_doc_level,
+            filter_user_level=filter_user_level)
 
+        df_arr = []
         c = connection.cursor()
         try:
             c.execute(cmd_str)
 
             # Get the full writer in advnaced!!
-            document_json = Document.objects.as_json(documents=documents)
+            document_json = self.as_json(document_pks=document_pks)
 
-            res = [x for x in c.fetchall()]
+            ner_queryset = [dict(zip(['pk', 'type_idx', 'text',
+                              'start', 'created', 'document_pk',
+                              'pmid', 'section_pk', 'user_id'], x)) for x in c.fetchall()]
 
-            # We group the response to reduce BioCDocument offset dict lookups
-            for idx, doc_info in enumerate(groupby(res, lambda x: x[5])):
-                document_pk, doc_group = doc_info
+            # We group the response to reduce offset dict lookups
+            for document_idx, document_group in enumerate(groupby(ner_queryset, lambda x: x['document_pk'])):
+                document_pk, document_annotations = document_group
 
                 # If a pubtator doesn't exist for the document, we can't include any annotations as the passage offsets need to come from Pubtator
-                if document_pk == document_json[idx]['pk']:
+                if document_pk == document_json[document_idx]['pk']:
 
-                    # Use the BioC pubtator file for the offset values
+                    # Use the (dict)Document JSON file for the offset values
                     offset_dict = {}
-                    for passage in document_json[idx]['passages']:
+                    for passage in document_json[document_idx]['passages']:
                         offset_dict[int(passage['pk'])] = passage['offset']
 
-                    # [(p['pk'], p['offset']) for p in res[0]['passages']]
-
-                    for x in doc_group:
+                    for annotation in document_annotations:
                         df_arr.append(self._create_er_df_row(
-                            uid=x[0], source='db', user_id=x[8],
-                            text=x[2], ann_type_idx=x[1],
-                            document_pk=x[5], section_id=x[7], section_offset=offset_dict[x[7]], offset_relative=True,
-                            start_position=x[3], length=len(x[2])))
+                            uid=annotation['pk'], source='db', user_id=annotation['user_id'],
+                            text=annotation['text'], ann_type_idx=annotation['type_idx'],
+                            document_pk=annotation['document_pk'], section_id=annotation['section_pk'], section_offset=offset_dict[annotation['section_pk']], offset_relative=True,
+                            start_position=annotation['start'], length=len(annotation['text'])))
 
         finally:
             c.close()
@@ -253,47 +226,41 @@ class DocumentManager(models.Manager):
             cmd_str = ""
             with open('mark2cure/document/commands/get-ner-pubtator-results.sql', 'r') as f:
                 cmd_str = f.read()
-            cmd_str = cmd_str.format(','.join(doc_arr))
+            cmd_str = cmd_str.format(','.join([str(x) for x in document_pks]))
 
             c = connection.cursor()
             try:
                 c.execute(cmd_str)
-                res = [x for x in c.fetchall()]
+                pubtator_queryset = [dict(zip(['pk', 'document_pk', 'content',
+                                  'section_pks'], x)) for x in c.fetchall()]
             finally:
                 c.close()
 
-            # Counter({'Disease': 3676, 'Chemical': 2928, 'Species': 1553, 'Gene': 1544, 'FamilyName': 536, 'DomainMotif': 20}) (Sampleing from DB 11/30/2016)
-            pubtator_types = ['Disease', 'Gene', 'Chemical']
-            for pubtator_content in res:
-                r = BioCReader(source=pubtator_content[2])
-                r.read()
-                bioc_document = r.collection.documents[0]
+            for pubtator in pubtator_queryset:
+                section_ids = pubtator['section_pks'].split(',')
+                root = ET.fromstring(pubtator['content'])
 
-                section_ids = pubtator_content[3].split(',')
+                # bioc_document = r.collection.documents[0]
 
                 # Iterate over all the annotations in both passages
-                for p_idx, passage in enumerate(bioc_document.passages):
-                    for annotation in passage.annotations:
+                for passage_idx, passage in enumerate(root.findall(".//passage")):
+                    offset = int(passage.find("./offset").text)
 
-                        # Determine some meta-data (UID info) about the BioCAnnotation
-                        annotation_type = None
-                        uid_type = None
-                        uid = None
-                        for key in annotation.infons.keys():
-                            if key == 'type':
-                                annotation_type = annotation.infons.get(key, None)
-                            else:
-                                uid_type = key
-                                uid = annotation.infons.get(uid_type, None)
+                    for annotation in passage.findall("./annotation"):
+                        annotation_type = [infon.text for infon in annotation.findall("./infon[@key='type']")][0]
+                        uids_list = [infon.text for infon in annotation.findall("./infon[@key='identifier']")]
+                        uid = uids_list[0] if uids_list else None
 
                         # We're only interested in Pubtator Annotations that are the same concepts users highlight
-                        if annotation_type in pubtator_types:
-                            start, length = str(annotation.locations[0]).split(':')
-                            df_arr.append(self._create_er_df_row(
-                                uid=uid, source=uid_type if uid_type else None, user_id=None,
-                                text=annotation.text, ann_type_idx=pubtator_types.index(annotation_type),
-                                document_pk=pubtator_content[1], section_id=section_ids[p_idx], section_offset=passage.offset, offset_relative=False,
-                                start_position=start, length=length))
+                        if annotation_type in PUBTATOR_TYPES:
+                            start = int(annotation.find('location').attrib['offset'])
+                            text = annotation.find('text').text
 
-        return pd.DataFrame(df_arr, columns=DF_COLUMNS)
+                            df_arr.append(self._create_er_df_row(
+                                uid=uid, source='identifier' if uid else None, user_id=None,
+                                text=text, ann_type_idx=PUBTATOR_TYPES.index(annotation_type),
+                                document_pk=pubtator['document_pk'], section_id=section_ids[passage_idx], section_offset=offset, offset_relative=False,
+                                start_position=start, length=len(text)))
+
+        return pd.DataFrame(df_arr, columns=NER_DF_COLUMNS)
 
