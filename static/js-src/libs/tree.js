@@ -252,7 +252,7 @@ REExtractionAnswerView = Backbone.Marionette.CollectionView.extend({
 
 RECompletedView = Backbone.Marionette.View.extend({
   /* Landing page for when RE Document is complete (do next, tweet, fb share, etc)
-   * this.model = REQuestResult
+   * this.model = REDocumentResult
    * this.collection = None
    */
   template: '#tree-completed-template',

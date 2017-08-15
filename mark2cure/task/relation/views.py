@@ -186,6 +186,7 @@ def re_task_submit(request, document_pk):
     '''Method to POST to in order to confirm all Document RE work
         was completed for a Task and the RE Task should now be considered complete.
 
+        returns REDocumentResult (tree.js)
         -- -- -- --
         API to trigger completion of the Document for the user to the extent we allow
         We award them Points for completing the available Relationships

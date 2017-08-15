@@ -554,11 +554,11 @@ script(id='tree-completed-template', type='html/template')
 
           .row.my-3.justify-content-center.social-action-area
             .col-3.text-right
-              a(href="https://twitter.com/intent/tweet?text=I just completed Quest { task.name } of the { group.name } doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.")
+              a(href="https://twitter.com/intent/tweet?text=I just extracted <%= document.relationship_count %> relationships for https://www.ncbi.nlm.nih.gov/pubmed/<%= document.pmid %> at https://mark2cure.org. If you can read, you can help!")
                 i.fa.fa-twitter-square
                 | Tweet!
             .col-3.text-left
-              a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just completed Quest { task.name } of the { task.group.stub } doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank")
+              a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just extracted <%= document.relationship_count %> relationships for https://www.ncbi.nlm.nih.gov/pubmed/<%= document.pmid %> at https://mark2cure.org. If you can read, you can help!&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank")
                 i.fa.fa-facebook-square
                 | Share!
   <% } else {%>
@@ -587,11 +587,11 @@ script(id='tree-completed-template', type='html/template')
 
           .row.my-3.justify-content-center.social-action-area
             .col-3.text-right
-              a(href="https://twitter.com/intent/tweet?text=I just completed Quest { task.name } of the { group.name } doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.")
+              a(href="https://twitter.com/intent/tweet?text=I just extracted <%= document.relationship_count %> relationships for https://www.ncbi.nlm.nih.gov/pubmed/<%= document.pmid %> at https://mark2cure.org. If you can read, you can help!")
                 i.fa.fa-twitter-square
                 | Tweet!
             .col-3.text-left
-              a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just completed Quest { task.name } of the { task.group.stub } doc set at https://mark2cure.org. If you can read, you can help researchers find cures FASTER.&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank")
+              a(title="Share on Facebook", href="http://www.facebook.com/sharer.php?s=100&p[title]=Mark2Cure&p[summary]=I just extracted <%= document.relationship_count %> relationships for https://www.ncbi.nlm.nih.gov/pubmed/<%= document.pmid %> at https://mark2cure.org. If you can read, you can help!&p[url]=http://mark2cure.org&p[images][0]=YOUR_IMAGE_TO_SHARE_OBJECT", target="_blank")
                 i.fa.fa-facebook-square
                 | Share!
   <%}%>
