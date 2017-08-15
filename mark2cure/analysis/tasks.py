@@ -30,7 +30,7 @@ def hashed_er_annotations_df(group_pk, compare_type=True):
     """Generate a Entity Recognition DataFrame with additional hash column
     """
     group = Group.objects.get(pk=group_pk)
-    org_er_df = Document.objects.ner_df(documents=group.get_documents(), include_pubtator=False)
+    org_er_df = Document.objects.ner_df(document_pks=group.get_document_pks(), include_pubtator=False)
     er_df = clean_df(org_er_df)
 
     if compare_type:
@@ -188,18 +188,20 @@ def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGN
     return df[df['hash_count'] >= min_thresh]
 
 
-def generate_network(group_pk, parallel=False, spring_force=10, include_degree=False): # noqa
-    '''
+def generate_network(group_pk: int, parallel=False, spring_force=10, include_degree=False): # noqa
+    """
         1) Generate the DF needed to compute the Graph
         2) Compute the graph (aggregate, compare text / pmid)
         3) Compute graph metadata and attributes
-    '''
+    Args:
+        group_pk (int): Use the group for selecting the ner documents to include
+
+    Returns:
+
+    """
 
     # Generate the required base DataFrame from raw Annotations
     df = hashed_annotations_graph_process(group_pk)
-
-    # df = df.apply(pd.to_numeric, errors='ignore', downcast='integer')
-    # print( df.select_dtypes(include=['int64']) )
 
     # Numpy Arr of Unique Annotations via sanitized text
     nd_arr = df.clean_text.unique()
@@ -216,7 +218,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     for (doc, text, user), g_df in df.groupby(['document_pk', 'clean_text', 'username']):
         anns.append({
             'node': nodes[text],
-            'doc': doc,
+            'doc': int(doc),
             'text': text,
             'user': user
         })
@@ -254,11 +256,12 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     # Calcuate position and size
     x_pos, y_pos = {}, {}
     for idx, val in pos.items():
-        x_pos[idx], y_pos[idx] = val
+        x_pos[idx], y_pos[idx] = [float(x) for x in val]
     nx.set_node_attributes(G, 'x', x_pos)
     nx.set_node_attributes(G, 'y', y_pos)
 
-    nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
+    # (TODO) uses number float value
+    # nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
     nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
 
     if include_degree:

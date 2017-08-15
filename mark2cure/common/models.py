@@ -42,9 +42,9 @@ class Group(models.Model):
     class Meta:
         app_label = 'common'
 
-    def get_documents(self):
+    def get_document_pks(self):
         # (TODO?) Return for __in of task_ids
-        return Document.objects.filter(task__group=self)
+        return Document.objects.filter(task__group=self).values_list('pk', flat=True)
 
     def total_documents(self):
         # (TODO) rename of return time is reflected
