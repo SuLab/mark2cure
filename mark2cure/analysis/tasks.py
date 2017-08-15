@@ -30,7 +30,7 @@ def hashed_er_annotations_df(group_pk, compare_type=True):
     """Generate a Entity Recognition DataFrame with additional hash column
     """
     group = Group.objects.get(pk=group_pk)
-    org_er_df = Document.objects.entity_recognition_df(documents=group.get_documents())
+    org_er_df = Document.objects.ner_df(documents=group.get_documents(), include_pubtator=False)
     er_df = clean_df(org_er_df)
 
     if compare_type:
@@ -213,7 +213,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     for (doc, text, user), g_df in df.groupby(['document_pk', 'clean_text', 'username']):
         anns.append({
             'node': nodes[text],
-            'doc': doc,
+            'doc': int(doc),
             'text': text,
             'user': user
         })
@@ -250,7 +250,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
 
     # Calcuate position and size
     x_pos, y_pos = {}, {}
-    for idx, val in pos.iteritems():
+    for idx, val in pos.items():
         x_pos[idx], y_pos[idx] = val
     nx.set_node_attributes(G, 'x', x_pos)
     nx.set_node_attributes(G, 'y', y_pos)

@@ -95,83 +95,6 @@ class DocumentManager(models.Manager):
 
         return data
 
-    def as_writer(self, documents=[]):
-        '''
-            Return a blank BioC Writer that is based off the pubtator content.
-
-            Problems: This requires every document to have at least 1 pubtator model
-            Pros: This prevents us from generating our own BioC file which may
-            have inconsistencies
-        '''
-        if len(documents):
-            from .models import Document
-            doc_arr = []
-            for d in documents:
-                if type(d) == Document:
-                    doc_arr.append(str(d.pk))
-                elif type(d) is str and d.isdigit():
-                    doc_arr.append(d)
-                elif type(d) is int:
-                    doc_arr.append(str(d))
-            str_doc_arr = list(set(doc_arr))
-        else:
-            raise ValueError('No documents supplied to generator writer')
-
-        cmd_str = ""
-        with open('mark2cure/document/commands/get-pubtators.sql', 'r') as f:
-            cmd_str = f.read()
-        cmd_str = cmd_str.format(','.join(str_doc_arr))
-
-        c = connection.cursor()
-        try:
-            c.execute(cmd_str)
-            res = [(x[0], x[1], x[2]) for x in c.fetchall()]
-        finally:
-            c.close()
-
-        writer = bioc_writer(None)
-        for pubtator_content in res:
-            section_ids = pubtator_content[2].split(',')
-            r = BioCReader(source=pubtator_content[1])
-            r.read()
-
-            doc = r.collection.documents[0]
-            doc.put_infon('document_pk', str(pubtator_content[0]))
-            for idx, passage in enumerate(doc.passages):
-                passage.clear_annotations()
-
-                passage.put_infon('section', ['title', 'paragraph'][idx])
-                passage.put_infon('id', str(section_ids[idx]))
-
-            writer.collection.add_document(doc)
-
-            str_doc_arr.remove(str(pubtator_content[0]))
-
-        # Capture all the documents not available via pubtators
-        for document_pk_str in str_doc_arr:
-            # Can optimize this model retrieval but should rarely occur
-            document_model = Document.objects.get(pk=document_pk_str)
-
-            bioc_document = BioCDocument()
-            bioc_document.id = str(document_model.document_id)
-            bioc_document.put_infon('document_pk', document_pk_str)
-
-            passage_offset = 0
-            for idx, section in enumerate(document_model.available_sections()):
-                passage = BioCPassage()
-                passage.put_infon('section', ['title', 'paragraph'][idx])
-                passage.put_infon('id', str(section.pk))
-                # (TODO) Missing a "type" infon?
-                passage.text = section.text
-
-                passage.offset = str(passage_offset)
-                passage_offset += len(passage.text) + 1
-
-                bioc_document.add_passage(passage)
-
-            writer.collection.add_document(bioc_document)
-        return writer
-
     def relation_df(self, documents=[], users=[]):
         ct = ContentType.objects.get(model='relationannotation')
 
@@ -258,7 +181,7 @@ class DocumentManager(models.Manager):
             'start_position': int(start_position), 'length': int(length)
         }
 
-    def ner_df(self, documents=[], users=[], include_pubtator=True, writer=None):
+    def ner_df(self, documents=[], users=[], include_pubtator=True):
         if len(documents):
             from .models import Document
             doc_arr = []
@@ -305,22 +228,23 @@ class DocumentManager(models.Manager):
             c.execute(cmd_str)
 
             # Get the full writer in advnaced!!
-            if not writer:
-                writer = Document.objects.as_writer(documents=documents)
+            document_json = Document.objects.as_json(documents=documents)
 
             res = [x for x in c.fetchall()]
 
             # We group the response to reduce BioCDocument offset dict lookups
-            for key, doc_group in groupby(res, lambda x: x[5]):
+            for idx, doc_info in enumerate(groupby(res, lambda x: x[5])):
+                document_pk, doc_group = doc_info
 
-                bioc_documents = filter(lambda d: d.infons.get('document_pk') == str(key), writer.collection.documents)
                 # If a pubtator doesn't exist for the document, we can't include any annotations as the passage offsets need to come from Pubtator
-                if len(bioc_documents) == 1:
+                if document_pk == document_json[idx]['pk']:
 
                     # Use the BioC pubtator file for the offset values
                     offset_dict = {}
-                    for passage in bioc_documents[0].passages:
-                        offset_dict[int(passage.infons.get('id'))] = passage.offset
+                    for passage in document_json[idx]['passages']:
+                        offset_dict[int(passage['pk'])] = passage['offset']
+
+                    # [(p['pk'], p['offset']) for p in res[0]['passages']]
 
                     for x in doc_group:
                         df_arr.append(self._create_er_df_row(

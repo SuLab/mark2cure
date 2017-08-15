@@ -122,7 +122,7 @@ def clean_df(df, overlap_protection=False, allow_duplicates=True):
     df.ix[df['offset_relative'], 'offset_relative'] = False
 
     # Not required, but easier to view this way
-    df.sort('start_position', inplace=True)
+    df.sort_values('start_position', inplace=True)
 
     # Absolutely require UID and Source
     df.dropna(subset=('uid', 'source'), how='any', inplace=True)

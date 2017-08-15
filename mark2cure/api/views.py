@@ -57,6 +57,7 @@ def group_network(request, group_pk):
     from ..analysis.tasks import generate_network
     G = generate_network(group.pk, spring_force=8)
     d = node_link_data(G)
+    print(d)
 
     return HttpResponse(json.dumps(d), content_type='application/json')
 
