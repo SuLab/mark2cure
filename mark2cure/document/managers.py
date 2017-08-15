@@ -1,7 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, connection
-from mark2cure.common.formatter import bioc_writer
-from mark2cure.common.bioc import BioCReader, BioCDocument, BioCPassage
+from typing import List, Dict
 
 from mark2cure.task.relation import relation_data_flat
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
@@ -19,81 +18,70 @@ APPROVED_TYPES = ['disease', 'gene_protein', 'drug']
 
 class DocumentManager(models.Manager):
 
-    def as_json(self, documents=[], pubtators=[]):
-        if len(documents):
-            from .models import Document
-            doc_arr = []
-            for d in documents:
-                if type(d) == Document:
-                    doc_arr.append(str(d.pk))
-                elif type(d) is str and d.isdigit():
-                    doc_arr.append(d)
-                elif type(d) is int:
-                    doc_arr.append(str(d))
-            str_doc_arr = list(set(doc_arr))
-        else:
-            raise ValueError('No documents supplied to generator writer')
+    def as_json(self, document_pks: List[int], pubtators=[]) -> List[Dict]:
+        """Represent the selection of documents as a Array of (dict)Documents
 
-        if len(pubtators) > 0 and len(documents) != len(pubtators):
-            raise ValueError('Incorrect pairing of Documents and pubtators.')
+        Args:
+            documents_pks (list): The selection of JSON Documents to return
+            pubtators (list): The paired pubtator content bodies
+
+        Returns:
+            list: The list of (dict)Documents
+        """
+        assert len(document_pks) >= 1, "No documents supplied to generator JSON"
+        # assert len(pubtators) >= 1 and len(document_pks) != len(pubtators), "Incorrect pairing of Documents and pubtators."
 
         cmd_str = ""
         with open('mark2cure/document/commands/get-documents.sql', 'r') as f:
             cmd_str = f.read()
-        cmd_str = cmd_str.format(','.join(str_doc_arr))
+        cmd_str = cmd_str.format(','.join([str(x) for x in document_pks]))
 
         c = connection.cursor()
         try:
             c.execute(cmd_str)
-            db_res = [x for x in c.fetchall()]
+            doc_queryset = [dict(zip(['pk', 'pmid', 'section',
+                              'section_pk', 'text'], x)) for x in c.fetchall()]
         finally:
             c.close()
 
-        # [(8, 9360520, 't', 15, 'Autosomal ...')
-        data = []
-        for i, document in enumerate(groupby(db_res, lambda x: x[0])):
-            document_pk, document_sections = document
+        response = []
+        for document_idx, document_group in enumerate(groupby(doc_queryset, lambda x: x['pk'])):
+            document_pk, document_sections = document_group
 
             passages = []
-            for section_idx, row in enumerate(document_sections):
-
+            for section_idx, section_dict in enumerate(document_sections):
                 offset = 0
 
                 passage_annotations = []
-                if len(pubtators):
-                    for x in range(3):
-
-                        try:
-                            root = ET.fromstring(pubtators[i][x])
-
-                            passage = root.findall(".//passage")[section_idx]
-                            offset = int(passage.find("./offset").text)
-                            for ann in passage.findall("./annotation"):
-
-                                if 'Species' not in [infon.text for infon in ann.findall("./infon[@key='type']")]:
-                                    passage_annotations.append({
-                                        'type_id': x,
-                                        'start': int(ann.find('location').attrib['offset']),
-                                        'text': ann.find('text').text
-                                    })
-
-                        except SyntaxError:
-                            pass
+                for pubtator_type_idx in range(len(pubtators[document_idx]) if document_idx < len(pubtators) else 0):
+                    try:
+                        root = ET.fromstring(pubtators[document_idx][pubtator_type_idx])
+                        passage = root.findall(".//passage")[section_idx]
+                        offset = int(passage.find("./offset").text)
+                        for ann in passage.findall("./annotation"):
+                            if 'Species' not in [infon.text for infon in ann.findall("./infon[@key='type']")]:
+                                passage_annotations.append({
+                                    'type_id': pubtator_type_idx,
+                                    'start': int(ann.find('location').attrib['offset']),
+                                    'text': ann.find('text').text
+                                })
+                    except SyntaxError:
+                        pass
 
                 passages.append({
-                    'section': row[2],
-                    'pk': row[3],
-                    'text': row[4],
+                    'section': section_dict['section'],
+                    'pk': section_dict['section_pk'],
+                    'text': section_dict['text'],
                     'offset': offset,
                     'annotations': passage_annotations
                 })
 
-            data.append({
+            response.append({
                 'pk': document_pk,
                 'passages': passages
             })
 
-        return data
+        return response
 
     def relation_df(self, documents=[], users=[]):
         ct = ContentType.objects.get(model='relationannotation')

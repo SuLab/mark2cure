@@ -15,7 +15,6 @@ from ..document.tasks import get_pubmed_document
 
 from ..common.models import Group
 from ..task.models import Task, UserQuestRelationship
-from ..common.bioc import *
 
 import pandas as pd
 import itertools

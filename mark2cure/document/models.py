@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from nltk.tokenize import WhitespaceTokenizer
-from mark2cure.common.bioc import BioCReader
 from mark2cure.common.formatter import validate_pubtator
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -12,6 +11,7 @@ from .managers import DocumentManager
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 # from librabbitmq import ConnectionError
 
+import xml.etree.ElementTree as ET
 import pandas as pd
 pd.set_option('display.width', 1000)
 
@@ -92,6 +92,7 @@ class Document(models.Model):
     def valid_pubtator(self):
         """ Returns a boolean if the Document instance has a complet Pubtator
             coverage for all kinds (tmChem, DNorm, GNormPlus)
+
         """
         # All responses that are not waiting to fetch conent b/c they already have it
         pubtators = self.pubtators.all()
@@ -100,9 +101,10 @@ class Document(models.Model):
         if pubtators.count() != 3:
             return False
 
-        for pubtator in pubtators:
-            if not validate_pubtator(pubtator.content, pubtator.document):
-                return False
+        # (TODO) Implement without BioC Reader
+        # for pubtator in pubtators:
+        #     if not validate_pubtator(pubtator.content, pubtator.document):
+        #         return False
 
         return True
 
@@ -138,15 +140,12 @@ class Pubtator(models.Model):
         return validate_pubtator(self.content, self.document)
 
     def count_annotations(self):
-        """ Returns an int count of all types of ER annotations in the Pubtator instance
-            If none are found or the document is invalid, return 0
         """
-        try:
-            r = BioCReader(source=self.content)
-            r.read()
-            return sum([len(passage.annotations) for passage in r.collection.documents[0].passages])
-        except Exception:
-            return 0
+        Returns:
+            int: Number of annotations in all sections of the Pubtator response
+        """
+        root = ET.fromstring(self.content)
+        return len(root.findall(".//annotation"))
 
     def submit(self):
         from .tasks import submit_pubtator
@@ -264,6 +263,7 @@ class Section(models.Model):
             return u'[Overview] {0}'.format(self.document.title)
         else:
             return self.text
+
 
 TASK_TYPE_CHOICE = (
     ('cr', 'Concept Recognition'),

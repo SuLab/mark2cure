@@ -26,11 +26,16 @@ urlpatterns = [
         views.user_task_stats, name='task-stats-api'),
     url(r'ner/stats/',
         views.ner_stats, name='ner-stats-api'),
+    url(r're/stats/',
+        views.re_stats, name='re-stats-api'),
+
+    # - [NER] (TODO) Move into Task
+    url(r'ner/(?P<document_pk>\d+)/$',
+        views.ner_document, name='ner_document'),
     url(r'ner/quest/(?P<quest_pk>\d+)/$',
         views.ner_quest_read, name='ner-quest-read-api'),
 
-    url(r're/stats/',
-        views.re_stats, name='re-stats-api'),
+    # - [RE]
 
     # - [Dashboard] Named Entity Recognition (NER)
     url(r'^ner/list/(?P<group_pk>\d+)/contributors/$',

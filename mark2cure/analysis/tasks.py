@@ -198,6 +198,9 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     # Generate the required base DataFrame from raw Annotations
     df = hashed_annotations_graph_process(group_pk)
 
+    # df = df.apply(pd.to_numeric, errors='ignore', downcast='integer')
+    # print( df.select_dtypes(include=['int64']) )
+
     # Numpy Arr of Unique Annotations via sanitized text
     nd_arr = df.clean_text.unique()
     # Unique Node labels (not using text as Identifier)
@@ -213,7 +216,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
     for (doc, text, user), g_df in df.groupby(['document_pk', 'clean_text', 'username']):
         anns.append({
             'node': nodes[text],
-            'doc': int(doc),
+            'doc': doc,
             'text': text,
             'user': user
         })
@@ -223,7 +226,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
         edge_idx = 1
         for (doc, user), g_df in new_df.groupby(['doc', 'user']):
             for node1, node2 in itertools.combinations(list(g_df.node), 2):
-                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc, 'user': user})
+                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': int(doc), 'user': user})
                 edge_idx += 1
 
     else:
@@ -232,7 +235,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
             node_weight = group_df['node'].value_counts().T.to_dict()
 
             for node1, node2 in itertools.combinations(node_weight.keys(), 2):
-                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': doc_id})
+                G.add_edge(node1, node2, key=edge_idx, attributes={'doc': int(doc_id)})
                 edge_idx += 1
 
     # Compute Node Values
@@ -264,7 +267,7 @@ def generate_network(group_pk, parallel=False, spring_force=10, include_degree=F
         attributes = {}
         for key, value in degree.iteritems():
             attributes[key] = {}
-            attributes[key]['degree'] = value
+            attributes[key]['degree'] = int(value)
         nx.set_node_attributes(G, 'attributes', attributes)
 
     return G

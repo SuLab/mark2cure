@@ -120,11 +120,9 @@ class ViewAdmin(admin.ModelAdmin):
 class AnnotationAdmin(admin.ModelAdmin):
     search_fields = ('view__user__username', 'view__section__document__document_id')
 
-    list_display = (
-            'kind',
-            'section', 'username', 'pmid',
-            'quest', 'group', 'time_ago',
-            'created')
+    list_display = ('kind', 'section', 'username',
+                    'pmid', 'quest', 'group',
+                    'time_ago', 'created')
 
     readonly_fields = ('kind', 'created', 'view')
 
@@ -157,6 +155,7 @@ class AnnotationAdmin(admin.ModelAdmin):
         return naturaltime(obj.created)
 
     mymodel = models.ForeignKey(Annotation)
+
 
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Pubtator, PubtatorAdmin)

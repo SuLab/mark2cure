@@ -57,9 +57,6 @@ urlpatterns = [
 
 
     # Task Section
-    url(r'^document/', include('mark2cure.document.urls',
-        namespace='document')),
-
     url(r'^task/ner/', include('mark2cure.task.entity_recognition.urls',
         namespace='task-ner')),
 

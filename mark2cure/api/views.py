@@ -57,7 +57,6 @@ def group_network(request, group_pk):
     from ..analysis.tasks import generate_network
     G = generate_network(group.pk, spring_force=8)
     d = node_link_data(G)
-    print(d)
 
     return HttpResponse(json.dumps(d), content_type='application/json')
 
@@ -143,6 +142,17 @@ def ner_stats(request):
     })
 
 
+@api_view(['GET'])
+def ner_document(request, document_pk):
+    """
+        Return a JSON response with the generic document structure
+        No annotations of any kind are included
+    """
+    get_object_or_404(Document, pk=document_pk)
+    response = Document.objects.as_json(document_pks=[document_pk])
+    return Response(response[0])
+
+
 @login_required
 @api_view(['GET'])
 def ner_quest_read(request, quest_pk):
@@ -152,25 +162,17 @@ def ner_quest_read(request, quest_pk):
 
     cmd_str = cmd_str.format(task_id=quest_pk, user_id=request.user.pk)
 
-    # Start the DB Connection
     c = connection.cursor()
-    c.execute(cmd_str)
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['pk', 'quest_completed', 'view_count',
+                              'document_view_completed', 'had_opponent',
+                              'disease_pub', 'gene_pub', 'drug_pub'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
 
-    queryset = [{'pk': x[0],
-                 'quest_completed': x[1],
-                 'view_count': x[2],
-                 'document_view_completed': x[3],
-                 'had_opponent': x[4],
-                 'disease_pub': x[5],
-                 'gene_pub': x[6],
-                 'drug_pub': x[7],
-                 } for x in c.fetchall()]
-
-    # Close the connection
-    c.close()
-
-    documents = Document.objects.as_json(documents=[x['pk'] for x in queryset],
-                                         pubtators=[(x['disease_pub'], x['gene_pub'], x['drug_pub']) for x in queryset])
+    documents = Document.objects.as_json(document_pks=[x['pk'] for x in queryset],
+                                         pubtators=[[x['disease_pub'], x['gene_pub'], x['drug_pub']] for x in queryset])
 
     # Each query does ASC document_pk so we know they're in the same order!
     res = [{**queryset[i], **documents[i]} for i in range(len(queryset))]

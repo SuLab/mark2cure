@@ -409,7 +409,7 @@ NERDocument = Backbone.RelationalModel.extend({
   },
 
   url: function() {
-    return '/document/'+ this.get('pk') +'/';
+    return '/api/ner/'+ this.get('pk') +'/';
   },
 
   relations: [{
