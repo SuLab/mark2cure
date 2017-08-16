@@ -62,6 +62,7 @@ class DocumentManager(models.Manager):
                 offset = 0
 
                 passage_annotations = []
+                # If pubtators are available, iterate over them
                 for pubtator_type_idx in range(len(pubtators[document_idx]) if document_idx < len(pubtators) else 0):
                     try:
                         root = ET.fromstring(pubtators[document_idx][pubtator_type_idx])
@@ -89,6 +90,15 @@ class DocumentManager(models.Manager):
                 'pk': document_pk,
                 'passages': passages
             })
+
+        # If no pubtators, gotta fill in the offset ourselves
+        for document_idx, document in enumerate(response):
+            if len(pubtators) == 0:
+                for passage_idx, passage in enumerate(document['passages']):
+                    if passage_idx == 0:
+                        continue
+                    l_passage = document['passages'][passage_idx - 1]
+                    passage['offset'] = l_passage['offset'] + len(l_passage['text'])
 
         return response
 
