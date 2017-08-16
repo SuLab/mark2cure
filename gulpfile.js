@@ -39,7 +39,7 @@ gulp.task('js', function() {
     './node_modules/jquery/dist/jquery.js',
     './static/js-src/libs/jquery-ui.js',
     './node_modules/underscore/underscore.js',
-    './node_modules/underscore.string/dist/underscore.string.min.js',
+    './node_modules/underscore.string/lib/underscore.string.js',
 
     './node_modules/backbone/backbone.js',
     './node_modules/backbone.radio/build/backbone.radio.js',
