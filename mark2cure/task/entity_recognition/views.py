@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -31,44 +32,47 @@ def ner_quest_document_results(request, task_pk, doc_pk):
     """
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
-
     if not document:
         return HttpResponseServerError()
 
     opponent_pk = select_best_opponent(task_pk, doc_pk, request.user.pk)
+    opponent_anns = {}
 
     if opponent_pk:
+        opponent_user = User.objects.get(pk=opponent_pk)
         opponent_dict = {
-            'name': opponent.username,
-            'level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
+            'pk': opponent_pk,
+            'name': opponent_user.username,
+            'level': Level.objects.filter(user_id=opponent_pk, task_type='e').first().get_name(),
         }
 
-        # Other results exist if other people have at least viewed
-        # the quest and we know other users have at least submitted
-        # results for this particular document
-        player_views = []
-        opponent_views = []
+        player_view_pks = []
+        opponent_view_pks = []
         for section in document.available_sections():
-            # If paired against a player who has completed the task multiple times
-            # compare the to the first instance of the person completing that Document <==> Quest
-            # while taking the latest version of the player's
-
             uqr = task.userquestrelationship_set.filter(user=request.user).first()
             player_view = uqr.views.filter(user=request.user, section=section, completed=True).first()
+            player_view_pks.append(player_view.pk)
 
-            quest_rel = task.userquestrelationship_set.filter(user=opponent).first()
+            quest_rel = task.userquestrelationship_set.filter(user=opponent_user).first()
             opponent_view = quest_rel.views.filter(section=section, completed=True).first()
-
-            player_views.append(player_view)
-            opponent_views.append(opponent_view)
+            opponent_view_pks.append(opponent_view.pk)
 
             # Save who the player was paired against
             player_view.opponent = opponent_view
             player_view.save()
 
-        results = generate_results(player_views, opponent_views)
-        points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
-        print('points!', results, points)
+        results = generate_results(player_view_pks, opponent_view_pks)
+        points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS  # F Score * Point Multiplier (1000)
+
+        opponent_ner_ann_df = Document.objects.ner_df(document_pks=[doc_pk], user_pks=[opponent_pk], include_pubtator=False)
+        for section_id, group in opponent_ner_ann_df.groupby('section_id'):
+            opponent_anns[int(section_id)] = []
+            for ann_group_idx, ann in group.iterrows():
+                opponent_anns[int(section_id)].append({
+                    'type_id': int(ann['ann_type_idx']),
+                    'start': int(ann['start_position']),
+                    'text': str(ann['text'])
+                })
 
     else:
         opponent_dict = None
@@ -78,10 +82,7 @@ def ner_quest_document_results(request, task_pk, doc_pk):
         uqr = task.userquestrelationship_set.filter(user=request.user).first()
         points = settings.ENTITY_RECOGNITION_DOC_POINTS
 
-
-
-
-
+    # print('Completed?', uqr.views.filter(section__document_id=doc_pk).values_list('completed', flat=True) )
     # if user_quest_relationship.completed:
     #     uqr_created = False
     #     award = Point.objects.filter(
@@ -96,8 +97,6 @@ def ner_quest_document_results(request, task_pk, doc_pk):
     #         content_type=ContentType.objects.get_for_model(task),
     #         object_id=task.id,
     #         created=timezone.now())
-
-
 
     award = Point.objects.create(
         user=request.user,
@@ -115,6 +114,7 @@ def ner_quest_document_results(request, task_pk, doc_pk):
             'amount': int(round(award.amount))
         },
         'opponent': opponent_dict,
+        'opponent_anns': opponent_anns
     }
 
     return Response(res)

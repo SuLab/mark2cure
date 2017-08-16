@@ -24,8 +24,3 @@ class EntityRecognitionAnnotation(models.Model):
 
     objects = EntityRecognitionAnnotationManager()
 
-    def is_exact_match(self, comparing_annotation):
-        required_matching_keys = ['start', 'text', 'type_idx']
-        self_d = model_to_dict(self)
-        compare_d = model_to_dict(comparing_annotation)
-        return all([True if self_d[k] == compare_d[k] else False for k in required_matching_keys])

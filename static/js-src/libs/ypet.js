@@ -382,7 +382,7 @@ NERDocumentResult = Backbone.RelationalModel.extend({
       'amount': 0
     },
     'opponent': null,
-    // 'opponent_annotations': null
+    'opponent_annotations': null
   }
 })
 

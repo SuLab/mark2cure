@@ -3,14 +3,14 @@ from django.db import connection
 
 from ...analysis.tasks import generate_reports
 from ...analysis.models import Report
-from ...document.models import View
 from .models import EntityRecognitionAnnotation
 
+from typing import List, Dict
 import random
 
 
 def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
-    '''Try to find an optimal user to pair the player against.
+    """Try to find an optimal user to pair the player against.
         1) If Golden Master user is available
         2) Random user from best 50% of users with best F Score for this Group
         3) Else return None
@@ -21,7 +21,7 @@ def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
 
     Returns:
         int: user_pk or None
-    '''
+    """
     cmd_str = ""
     with open('mark2cure/task/entity_recognition/commands/get-quest-user-contributions.sql', 'r') as f:
         cmd_str = f.read()
@@ -77,7 +77,6 @@ def determine_f(true_positive, false_positive, false_negative):
     precision = true_positive / float(true_positive + false_positive)
     recall = true_positive / float(true_positive + false_negative)
 
-    print('p n r', precision, recall)
 
     if float(precision + recall) > 0.0:
         f = (2 * precision * recall) / (precision + recall)
@@ -86,14 +85,17 @@ def determine_f(true_positive, false_positive, false_negative):
         return (0.0, 0.0, 0.0)
 
 
-def match_exact(gm_ann, user_anns):
+NER_ANN_MATCHING_KEYS = ['start', 'text', 'type_idx']
+
+
+def match_exact(gm_ann: Dict, user_anns: List[Dict]) -> bool:
     for user_ann in user_anns:
-        if user_ann.is_exact_match(gm_ann):
+        if all([True if user_ann[k] == gm_ann[k] else False for k in NER_ANN_MATCHING_KEYS]):
             return True
     return False
 
 
-def generate_results(user_views, gm_views):
+def generate_results(user_view_pks: List[int], gm_view_pks: List[int]):
     """
       This calculates the comparsion overlap between two arrays of dictionary terms
 
@@ -105,25 +107,42 @@ def generate_results(user_views, gm_views):
      tp  fp
      fn  *tn
     """
-    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-    gm_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in gm_views if type(v) is View], content_type_id)
-    user_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in user_views if type(v) is View], content_type_id)
+    cmd_str = ""
+    with open('mark2cure/task/entity_recognition/commands/get-ner-annotations-for-scoring-compare.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(ct_id=ContentType.objects.get_for_model(EntityRecognitionAnnotation).id,
+                             user_view_ids=','.join([str(x) for x in user_view_pks]),
+                             gm_view_ids=','.join([str(x) for x in gm_view_pks]))
 
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['user', 'view_id', 'section_id',
+                              'completed', 'start', 'type_idx',
+                              'text'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    user_annotations = list(filter(lambda x: x['user'] == 0, queryset))
+    gm_annotations = list(filter(lambda x: x['user'] == 1, queryset))
+
+    # 1)
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 
-    # Annotations the user submitted that were wrong (the User set without their True Positives)
-    # false_positives = user_annotations - true_positives
+    # 2)
     false_positives = user_annotations
     for tp in true_positives:
-        false_positives = list(filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_positives))
+        false_positives = list(filter(lambda ner_ann: ner_ann['start'] != tp['start'] and ner_ann['text'] != tp['text'], false_positives))
 
-    # # Annotations the user missed (the GM set without their True Positives)
-    # false_negatives = gm_annotations - true_positives
-    # (TODO) FN appears to be 1/2 what it should in most cases --Max 3/23/16
+    # 3)
     false_negatives = gm_annotations
     for tp in true_positives:
-        false_negatives = list(filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_negatives))
-    # print 'False Negatives', len(false_negatives)
+        false_negatives = list(filter(lambda ner_ann: ner_ann['start'] != tp['start'] and ner_ann['text'] != tp['text'], false_negatives))
+
+    # print('-'*6)
+    # print(len(true_positives), len(false_positives))
+    # print(len(false_negatives), '*')
+    # print('-'*6)
 
     score = determine_f(len(true_positives), len(false_positives), len(false_negatives))
     return (score, true_positives, false_positives, false_negatives)

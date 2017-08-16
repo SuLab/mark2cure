@@ -304,22 +304,9 @@ script(id='ypet-document-results-template', type='html/template')
   .col-12
     <% if(opponent) { %>
     .header-message
-      #partner-info.col-xs-4
-        p(style='margin-bottom: 0px;')
-          small You were paired with:
-
-        h3#partner-username(style='margin-top: 0px;')
-        p Level: <span id="partner-level"></span>
-
-      .col-xs-8
-        h2#flatter.text-xs-center
-        h4.text-xs-center
-          | Earned
-          | <span id='points'></span>
-          | points!
+      h2.text-center.py-3.mb-0 You were paired with the <%= opponent.level %> <%= opponent.name %> and earned <%= award.amount %> points!
 
     <% } else { %>
-
     .header-message
       h2.text-center New Annotations!
       h3.text-center You earned <%= award.amount %> points for marking this new document

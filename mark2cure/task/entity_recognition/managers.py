@@ -93,19 +93,3 @@ class EntityRecognitionAnnotationManager(models.Manager):
         """.format(document_pk, content_type_id))
         return res
 
-    def annotations_for_view_pks(self, view_pks, content_type_id):
-        '''(TODO) Remove from Talk Page'''
-        res = self.raw("""
-            SELECT  entity_recognition_entityrecognitionannotation.id,
-                    entity_recognition_entityrecognitionannotation.text,
-                    entity_recognition_entityrecognitionannotation.type_idx,
-                    entity_recognition_entityrecognitionannotation.start
-            FROM entity_recognition_entityrecognitionannotation
-            LEFT OUTER JOIN document_annotation
-                ON document_annotation.object_id = entity_recognition_entityrecognitionannotation.id AND document_annotation.content_type_id = {1}
-                LEFT OUTER JOIN document_view
-                    ON document_view.id = document_annotation.view_id
-            WHERE document_view.id IN ({0})
-        """.format(', '.join('\'' + str(item) + '\'' for item in view_pks), content_type_id))
-        return [x for x in res]
-
