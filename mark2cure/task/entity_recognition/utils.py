@@ -1,52 +1,27 @@
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 
 from ...analysis.tasks import generate_reports
 from ...analysis.models import Report
-from ...document.models import Document, View, Annotation
-from ...common.models import Task
+from ...document.models import View
 from .models import EntityRecognitionAnnotation
 
 import random
 
 
 def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
-    '''
-        Select the best opponate for a certain task meaning a
-        certain document scoped to a quest for a certain task type.
-
-        Try to find an optimal opponete to pair the player
-        against. If one isn't available or none meet the minimum
-        requirements then just tell the player they've
-        annotated a new document
-
-        1) First weight by GM, if one is available always prefer it over
-            other users
-
-        2) Select users with non-empty response for this View (Document scoped to Quest)
-            Explanation: This ensures we only look at users who have submitted the document
-                         so that a comparison can be shown
-
-            2.1) Select which available comparsion has the best F Score for this Group
-                  Explanation: A user performance varies within Groups as they require
-                               different types of skills
-
-            Sort by internal F score average, select top 3 (over threshold), pick 1 at random
-                * Sort by top weighted F-Scores
-
-        3) If no GM or no non-empty responses return None
-
+    '''Try to find an optimal user to pair the player against.
+        1) If Golden Master user is available
+        2) Random user from best 50% of users with best F Score for this Group
+        3) Else return None
     Args:
+        task_pk (int): The Task (Quest)
+        document_pk (int): The specific Document we're comparing
+        player_pk (in): User ID of the person that is being paired
 
     Returns:
-        int: user_pk
+        int: user_pk or None
     '''
-
-    task = Task.objects.get(pk=task_pk)
-    document = Document.objects.get(pk=document_pk)
-    player = User.objects.get(pk=player_pk)
-
     cmd_str = ""
     with open('mark2cure/task/entity_recognition/commands/get-quest-user-contributions.sql', 'r') as f:
         cmd_str = f.read()
@@ -55,76 +30,41 @@ def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
     c = connection.cursor()
     try:
         c.execute(cmd_str)
-        queryset = [dict(zip(['task_pk', 'user_pk', 'quest_completed',
-                              'view_progress'], x)) for x in c.fetchall()]
+        queryset = [dict(zip(['group_pk', 'task_pk', 'user_pk',
+                              'quest_completed', 'view_progress', 'total_annotations'], x)) for x in c.fetchall()]
     finally:
         c.close()
 
-    print(queryset)
     gm_user_pk = 340
     exclude_user_pks = [107, ]
-    return queryset
 
-    # If the known GM User is in the DB, use them for partner comparison
-    # gm_user_query = User.objects.filter(username='GATTACA')
-    # gm_user = None
-    # if gm_user_query.exists():
-    #     gm_user = gm_user_query.first()
-    #     if others_quest_relationships.exists() and \
-    #             others_quest_relationships.filter(user=gm_user).exists() and \
-    #             others_quest_relationships.filter(user=gm_user).first().views.filter(section__document=document, completed=True).exists():
-    #         # There is an "expert's" annotations (GM) so
-    #         # show those as the partner's
-    #         return gm_user.pk
+    # Select Golden Master if available
+    if len(list(filter(lambda x: x['user_pk'] == gm_user_pk and x['quest_completed'] == 1 and x['user_pk'] not in exclude_user_pks, queryset))) == 1:
+        return gm_user_pk
 
-    # Select all (**including uncompleted**) other user started quests
-    # that have been completed
-    others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
-    # Gather users from completed documents
-    # that may come from uncompleted quests
-    previous_users = []
-    for quest_relationship in others_quest_relationships.exclude(user=gm_user).exclude(user__pk__in=[107, ]):
-        if quest_relationship.views.filter(section__document=document, completed=True).exists():
-            # (TODO) Don't add option of them unless they've submitted 1+ Annotations
-            view_ids = quest_relationship.views.filter(section__document=document, completed=True).values_list('pk', flat=True)
-            if Annotation.objects.filter(kind='e', view__pk__in=view_ids).exists():
-                previous_users.append(quest_relationship.user)
+    # Select all other users (not player, gm_user, or excluded_user_pks) that completed the quest
+    previous_user_pks = [x['user_pk'] for x in filter(lambda x: x['quest_completed'] == 1 and x['user_pk'] not in [gm_user_pk, player_pk] and x['user_pk'] not in exclude_user_pks, queryset)]
 
-    if others_quest_relationships.exists() and len(previous_users):
-        # No expert around so select a previous user at random
-        previous_users_pks = [str(u.pk) for u in previous_users]
+    if len(previous_user_pks) == 0:
+        return None
 
-        report = task.group.report_set.filter(report_type=Report.AVERAGE).order_by('-created').first()
-        if report:
+    report = Report.objects.filter(group_id=queryset[0]['group_pk'], report_type=Report.AVERAGE).order_by('-created').first()
+    if report:
+        df = report.dataframe
+        df = df[df['user_id'].isin(previous_user_pks)]
+        row_length = df.shape[0]
 
-            # (TODO) if str load up manually
-            df = report.dataframe
-            df = df[df['user_id'].isin(previous_users_pks)]
-
-            if df.shape[0] == 0:
-                previous_users_pks = [int(u.pk) for u in previous_users]
-                df = report.dataframe
-                df = df[df['user_id'].isin(previous_users_pks)]
-
-            row_length = df.shape[0]
-            if row_length:
-                # Top 1/2 of the users (sorted by F)
-                df = df.iloc[:int(row_length / 2)]
-
-                # Select 1 at random
-                top_half_user_pks = list(df.user_id)
-                random.shuffle(top_half_user_pks)
-                selected_user_pk = top_half_user_pks[0]
-
-                for u in previous_users:
-                    if str(u.pk) == str(selected_user_pk):
-                        return u.pk
+        if row_length:
+            # Top 1/2 of the users (sorted by F)
+            df = df.iloc[:int(row_length / 2)]
+            # Select 1 at random
+            return random.choice(list(df.user_id))
         else:
-            generate_reports.apply_async(
-                args=[task.group.pk],
-                queue='mark2cure_tasks')
-
-    return None
+            return None
+    else:
+        generate_reports.apply_async(
+            args=[queryset[0]['group_pk']],
+            queue='mark2cure_tasks')
 
 
 def determine_f(true_positive, false_positive, false_negative):
