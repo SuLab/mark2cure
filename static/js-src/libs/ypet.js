@@ -160,25 +160,32 @@ NERAnnotation = Backbone.RelationalModel.extend({
   },
 
   initialize: function() {
+
+    // this.listenTo(this, 'set:words', function(b) {
+    //   this.draw();
+    // });
+    //
     /* Sanitize input types into using type_id */
     if(this.get('type') && !this.get('type_id')) {
-      this.set('type_id', ['d', 'g', 't'].indexOf(this.get('type')));
+      this.set('type_id', ['d', 'g', 'c'].indexOf(this.get('type')));
       this.unset('type');
     }
     this.parseAnnotation();
+
   },
 
   parseAnnotation: function() {
     var self = this;
     var passage = this.collection['annsPassage'];
     var ann_text = this.get('text').toLowerCase();
+
     /* If Annotation was created with a string but without selected words */
     /* When there is no start, select all the words available that match the annotation text */
     if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') == null) {
+      /* Select all instance of this text */
       passage.get('words').each(function(w, w_idx) {
         if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
-
           // Check forward words as well
           var search_words = _.map(_.range(ann_word_array.length), function(idx) {
             return passage.get('words').at(w_idx + idx);
@@ -195,10 +202,12 @@ NERAnnotation = Backbone.RelationalModel.extend({
               passage.get('annotations').create({'type_id': self.get('type_id'), 'words': search_words });
             }
           };
+
         }
       });
 
     } else if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') != null) {
+      /* Select location specific instance of this text */
       passage.get('words').each(function(w, w_idx) {
         if( self.get('start')-passage.get('offset') == w.get('start') && ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
