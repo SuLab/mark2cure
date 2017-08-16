@@ -627,10 +627,38 @@ script(id='ner-group-homepage-stats-template', type='html/template')
       p Total number of contributors: <%- total_contributors %>
     li
       p Total documents: <%- document_count %>
+
+    li
+      p Complete Percent: <%- complete_percent %>
     li
       p Current average f-score: <%- current_avg_f_score %>
+
     li
       p Start date: <%- start_date %>
+    li
+      p End date: <%- end_date %>
+
+script(id='ner-group-network', type='html/template')
+  .row.justify-content-center
+    .col-4
+      a
+        h4.text-center Toggle Network <i class="fa fa-caret-up"></i>
+
+  div#network-row(style="height:800px; display: none;").row
+    .col-1
+      .row
+        .col-12
+          i.fa.fa-plus-circle
+        .col-12
+          i.fa.fa-minus-circle
+        .col-12
+          i.fa.fa-rotate-right
+
+    .col-11
+      div#network(style="height:800px;")
+        canvas(width="1928", height="1600px", style="position: absolute; width: 964px; height: 800px;").sigma-scene
+        canvas(width="964", height="800px", style="position: absolute; width: 964px; height: 800px;").sigma-labels
+        canvas(width="964", height="800px", style="position: absolute; width: 964px; height: 800px;").sigma-mouse
 
 
 //

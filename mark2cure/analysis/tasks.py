@@ -256,12 +256,15 @@ def generate_network(group_pk: int, parallel=False, spring_force=10, include_deg
     # Calcuate position and size
     x_pos, y_pos = {}, {}
     for idx, val in pos.items():
-        x_pos[idx], y_pos[idx] = [float(x) for x in val]
+        x_pos[idx], y_pos[idx] = val
     nx.set_node_attributes(G, 'x', x_pos)
     nx.set_node_attributes(G, 'y', y_pos)
 
-    # (TODO) uses number float value
-    # nx.set_node_attributes(G, 'size', new_df['node'].value_counts().to_dict())
+    size_dict = new_df['node'].value_counts().to_dict()
+    for key, value in size_dict.items():
+        size_dict[key] = int(value)
+
+    nx.set_node_attributes(G, 'size', size_dict)
     nx.set_node_attributes(G, 'label', dict(zip(nodes.values(), nodes.keys())))
 
     if include_degree:

@@ -20,7 +20,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from itertools import chain
-# from itertools import count
 import networkx as nx
 import datetime
 import json
@@ -52,10 +51,10 @@ def node_link_data(G, attrs=_attrs):
 
 
 def group_network(request, group_pk):
-    group = get_object_or_404(Group, pk=group_pk)
+    get_object_or_404(Group, pk=group_pk)
 
     from ..analysis.tasks import generate_network
-    G = generate_network(group.pk, spring_force=8)
+    G = generate_network(group_pk, spring_force=8)
     d = node_link_data(G)
 
     return HttpResponse(json.dumps(d), content_type='application/json')
