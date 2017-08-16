@@ -29,6 +29,10 @@ def select_best_opponent(task, document, player):
                 * Sort by top weighted F-Scores
 
         3) If no GM or no non-empty responses return None
+
+    Args:
+
+    Returns:
     '''
     # Select all (**including uncompleted**) other user started quests
     # that have been completed
@@ -65,7 +69,6 @@ def select_best_opponent(task, document, player):
 
             # (TODO) if str load up manually
             df = report.dataframe
-            print(type(df))
             df = df[df['user_id'].isin(previous_users_pks)]
 
             if df.shape[0] == 0:
@@ -76,7 +79,7 @@ def select_best_opponent(task, document, player):
             row_length = df.shape[0]
             if row_length:
                 # Top 1/2 of the users (sorted by F)
-                df = df.iloc[:row_length / 2]
+                df = df.iloc[:int(row_length / 2)]
 
                 # Select 1 at random
                 top_half_user_pks = list(df.user_id)
@@ -144,7 +147,7 @@ def generate_results(user_views, gm_views):
     # false_positives = user_annotations - true_positives
     false_positives = user_annotations
     for tp in true_positives:
-        false_positives = filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_positives)
+        false_positives = list(filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_positives))
     # print 'False Positives', len(false_positives)
 
     # # Annotations the user missed (the GM set without their True Positives)
@@ -152,7 +155,7 @@ def generate_results(user_views, gm_views):
     # (TODO) FN appears to be 1/2 what it should in most cases --Max 3/23/16
     false_negatives = gm_annotations
     for tp in true_positives:
-        false_negatives = filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_negatives)
+        false_negatives = list(filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_negatives))
     # print 'False Negatives', len(false_negatives)
 
     score = determine_f(len(true_positives), len(false_positives), len(false_negatives))

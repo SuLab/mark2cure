@@ -82,9 +82,15 @@ def merge_pairwise_comparisons(inter_annotator_df):
     """
         Merging User1 and User2 columns for the pairings since combi ensures that
         that users are paired with each other only once (no reverse pairing)
+
+    Args:
+        inter_annotator_df (pd.DataFrame)
+
+    Returns:
+        pd.DataFrame
     """
     # Sort rows by best F-Score at the top
-    inter_annotator_df.sort('f-score', ascending=False, inplace=True)
+    inter_annotator_df.sort_values('f-score', ascending=False, inplace=True)
 
     all_users_arr = []
     for group_idx, group in inter_annotator_df.groupby('user_a'):
@@ -114,7 +120,7 @@ def merge_pairwise_comparisons(inter_annotator_df):
         ))
 
     avg_user_f = pd.DataFrame(avg_f_arr, columns=('user_id', 'pairings', 'f-score'))
-    avg_user_f.sort('f-score', ascending=False, inplace=True)
+    avg_user_f.sort_values('f-score', ascending=False, inplace=True)
     return avg_user_f
 
 
@@ -122,7 +128,14 @@ def merge_pairwise_comparisons(inter_annotator_df):
 #           max_retries=0, soft_time_limit=600,
 #           acks_late=True, track_started=True,
 #           expires=3600)
-def generate_reports(self, group_pk):
+def generate_reports(group_pk: int) -> None:
+    """
+    Args:
+        group_pk (int): The selection of documents to run the analysis on
+
+    Returns:
+        None
+    """
     args = locals()
 
     group = Group.objects.get(pk=group_pk)
@@ -153,7 +166,15 @@ def group_analysis(self):
         return True
 
 
-def hashed_annotations_graph_process(group_pk, min_thresh=settings.ENTITY_RECOGNITION_K):
+def hashed_annotations_graph_process(group_pk: int, min_thresh: int=settings.ENTITY_RECOGNITION_K):
+    """
+    Args:
+        group_pk (int): The selection of documents to run the analysis on
+        min_thresh (int): The minimum number of submissions per NER Task to be considered complete
+
+    Returns:
+        pd.DataFrame
+    """
     df = hashed_er_annotations_df(group_pk)
 
     # (TODO) This can be wayyy faster and better
