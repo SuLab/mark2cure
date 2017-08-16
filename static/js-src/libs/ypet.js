@@ -374,11 +374,15 @@ NERDocumentResult = Backbone.RelationalModel.extend({
   /* Provides the information for comparison between
    * the User and a selected opponent */
   defaults: {
-    'flatter': "",
+    'task_pk': null,
+    'document_pk': null,
+    'flatter': '',
     'award': {
+      'pk': null,
       'amount': 0
     },
-    'opponent': null
+    'opponent': null,
+    // 'opponent_annotations': null
   }
 })
 

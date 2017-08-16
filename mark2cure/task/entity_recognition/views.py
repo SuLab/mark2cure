@@ -27,31 +27,20 @@ import random
 @login_required
 @api_view(['GET'])
 def ner_quest_document_results(request, task_pk, doc_pk):
-    '''Returns back submission results that allow a comparison to an opponent
-    '''
+    """Returns back submission results that allow a comparison to an opponent
+    """
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
 
     if not document:
         return HttpResponseServerError()
 
-    '''
-        Try to find an optimal opponete to pair the player
-        against. If one isn't available or none meet the minimum
-        requirements then just tell the player they've
-        annotated a new document
-    '''
-    try:
-        opponent = select_best_opponent(task, document, request.user)
+    opponent_pk = select_best_opponent(task_pk, doc_pk, request.user.pk)
 
-    except TypeError:
-        # TypeError:
-        opponent = None
-
-    if opponent:
+    if opponent_pk:
         opponent_dict = {
-            'username': opponent.username,
-            'partner_level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
+            'name': opponent.username,
+            'level': Level.objects.filter(user=opponent, task_type='e').first().get_name(),
         }
 
         # Other results exist if other people have at least viewed
@@ -79,6 +68,7 @@ def ner_quest_document_results(request, task_pk, doc_pk):
 
         results = generate_results(player_views, opponent_views)
         points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS
+        print('points!', results, points)
 
     else:
         opponent_dict = None
@@ -87,6 +77,27 @@ def ner_quest_document_results(request, task_pk, doc_pk):
         # first via a different template / bonus points
         uqr = task.userquestrelationship_set.filter(user=request.user).first()
         points = settings.ENTITY_RECOGNITION_DOC_POINTS
+
+
+
+
+
+    # if user_quest_relationship.completed:
+    #     uqr_created = False
+    #     award = Point.objects.filter(
+    #         content_type=ContentType.objects.get_for_model(task),
+    #         object_id=task.id,
+    #         user=request.user).first()
+    # else:
+    #     uqr_created = True
+    #     award = Point.objects.create(
+    #         user=request.user,
+    #         amount=task.points,
+    #         content_type=ContentType.objects.get_for_model(task),
+    #         object_id=task.id,
+    #         created=timezone.now())
+
+
 
     award = Point.objects.create(
         user=request.user,

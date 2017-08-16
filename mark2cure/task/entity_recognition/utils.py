@@ -1,18 +1,25 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db import connection
 
 from ...analysis.tasks import generate_reports
 from ...analysis.models import Report
-from ...document.models import View, Annotation
+from ...document.models import Document, View, Annotation
+from ...common.models import Task
 from .models import EntityRecognitionAnnotation
 
 import random
 
 
-def select_best_opponent(task, document, player):
+def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
     '''
         Select the best opponate for a certain task meaning a
         certain document scoped to a quest for a certain task type.
+
+        Try to find an optimal opponete to pair the player
+        against. If one isn't available or none meet the minimum
+        requirements then just tell the player they've
+        annotated a new document
 
         1) First weight by GM, if one is available always prefer it over
             other users
@@ -33,23 +40,46 @@ def select_best_opponent(task, document, player):
     Args:
 
     Returns:
+        int: user_pk
     '''
+
+    task = Task.objects.get(pk=task_pk)
+    document = Document.objects.get(pk=document_pk)
+    player = User.objects.get(pk=player_pk)
+
+    cmd_str = ""
+    with open('mark2cure/task/entity_recognition/commands/get-quest-user-contributions.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(task_id=task_pk, document_id=document_pk)
+
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['task_pk', 'user_pk', 'quest_completed',
+                              'view_progress'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    print(queryset)
+    gm_user_pk = 340
+    exclude_user_pks = [107, ]
+    return queryset
+
+    # If the known GM User is in the DB, use them for partner comparison
+    # gm_user_query = User.objects.filter(username='GATTACA')
+    # gm_user = None
+    # if gm_user_query.exists():
+    #     gm_user = gm_user_query.first()
+    #     if others_quest_relationships.exists() and \
+    #             others_quest_relationships.filter(user=gm_user).exists() and \
+    #             others_quest_relationships.filter(user=gm_user).first().views.filter(section__document=document, completed=True).exists():
+    #         # There is an "expert's" annotations (GM) so
+    #         # show those as the partner's
+    #         return gm_user.pk
+
     # Select all (**including uncompleted**) other user started quests
     # that have been completed
     others_quest_relationships = task.userquestrelationship_set.exclude(user=player)
-
-    # If the known GM User is in the DB, use them for partner comparison
-    gm_user_query = User.objects.filter(username='GATTACA')
-    gm_user = None
-    if gm_user_query.exists():
-        gm_user = gm_user_query.first()
-        if others_quest_relationships.exists() and \
-                others_quest_relationships.filter(user=gm_user).exists() and \
-                others_quest_relationships.filter(user=gm_user).first().views.filter(section__document=document, completed=True).exists():
-            # There is an "expert's" annotations (GM) so
-            # show those as the partner's
-            return gm_user
-
     # Gather users from completed documents
     # that may come from uncompleted quests
     previous_users = []
@@ -88,7 +118,7 @@ def select_best_opponent(task, document, player):
 
                 for u in previous_users:
                     if str(u.pk) == str(selected_user_pk):
-                        return u
+                        return u.pk
         else:
             generate_reports.apply_async(
                 args=[task.group.pk],
@@ -107,6 +137,8 @@ def determine_f(true_positive, false_positive, false_negative):
     precision = true_positive / float(true_positive + false_positive)
     recall = true_positive / float(true_positive + false_negative)
 
+    print('p n r', precision, recall)
+
     if float(precision + recall) > 0.0:
         f = (2 * precision * recall) / (precision + recall)
         return (precision, recall, f)
@@ -122,7 +154,7 @@ def match_exact(gm_ann, user_anns):
 
 
 def generate_results(user_views, gm_views):
-    '''
+    """
       This calculates the comparsion overlap between two arrays of dictionary terms
 
       It considers both the precision p and the recall r of the test to compute the score:
@@ -132,23 +164,18 @@ def generate_results(user_views, gm_views):
 
      tp  fp
      fn  *tn
-
-    '''
+    """
     content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
     gm_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in gm_views if type(v) is View], content_type_id)
     user_annotations = EntityRecognitionAnnotation.objects.annotations_for_view_pks([v.pk for v in user_views if type(v) is View], content_type_id)
 
     true_positives = [gm_ann for gm_ann in gm_annotations if match_exact(gm_ann, user_annotations)]
 
-    # print 'True Pos', len(true_positives)
-    # print 'User Anns', len(user_annotations)
-
     # Annotations the user submitted that were wrong (the User set without their True Positives)
     # false_positives = user_annotations - true_positives
     false_positives = user_annotations
     for tp in true_positives:
         false_positives = list(filter(lambda er_ann: er_ann.start != tp.start and er_ann.text != tp.text, false_positives))
-    # print 'False Positives', len(false_positives)
 
     # # Annotations the user missed (the GM set without their True Positives)
     # false_negatives = gm_annotations - true_positives
