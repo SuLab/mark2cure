@@ -383,6 +383,12 @@ NERDocumentResult = Backbone.RelationalModel.extend({
     },
     'opponent': null,
     'opponent_annotations': null
+  },
+
+  initialize: function() {
+    // if(this.get('opponent_annotations')) {
+    //   channel.trigger('ypet:paragraph:set:opponent_annotations', this.get('opponent_annotations'))
+    // }
   }
 })
 
@@ -857,7 +863,18 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
         _.each(existing_anns, function(ann) { ann.destroy(); });
         passage_annotations.create({'words': selected_words});
       }
+    });
 
+    this.listenTo(channel, 'ypet:paragraph:set:opponent_annotations', function(obj) {
+      var self = this;
+      console.log('self', self, obj);
+
+      _.each(_.keys(obj), function(section_pk) {
+        console.log('compare scope', this, self);
+        var passage_annotations = self.getOpponentAnnotations(section_pk);
+        console.log('opponent passage anns', passage_annotations);
+      });
+      // passage_annotations.create({'words': selected_words});
     });
 
     // If a concept object (RE) was included loose highlight them
@@ -878,6 +895,11 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
   },
 
   getOpponentAnnotations: function(section_pk) {
+    console.log('getOpponentAnnotations',
+                section_pk,
+                this.model.get('passages').findWhere({'pk': section_pk}),
+                this.model.get('passages')
+               );
     /* Return the Paragraph's Opponent Annotations */
     var passage = this.model.get('passages').findWhere({'pk': section_pk});
     return passage.get('opponent_annotations')

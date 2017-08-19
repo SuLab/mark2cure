@@ -275,10 +275,10 @@ TASK_TYPE_CHOICE = (
 
 
 class View(models.Model):
-    '''
+    """
         When completing tasks not on a Section level. Work is associated
         with the FIRST section available, regardless of the Section type
-    '''
+    """
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
     completed = models.BooleanField(default=False, blank=True)
     opponent = models.ForeignKey('self', blank=True, null=True)
