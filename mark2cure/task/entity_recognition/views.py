@@ -32,20 +32,27 @@ def ner_quest_document_results(request, task_pk, doc_pk):
     """
     task = get_object_or_404(Task, pk=task_pk)
     document = task.documents.filter(pk=doc_pk).first()
+
     if not document:
         return HttpResponseServerError()
 
     opponent_anns = {}
+    user_quest_rel = task.user_relationship(request.user, False)
+    opponent_pks = [v.opponent.user_id for v in user_quest_rel.views.filter(section__document=document)]
 
-    if opponent_pk:
-        opponent_user = User.objects.get(pk=opponent_pk)
+    if len(opponent_pks):
+
+        if not all(x == opponent_pks[0] for x in opponent_pks):
+            raise ValueError
+
+        opponent_user = User.objects.get(pk=opponent_pks[0])
         opponent_dict = {
-            'pk': opponent_pk,
+            'pk': opponent_pks[0],
             'name': opponent_user.username,
-            'level': Level.objects.filter(user_id=opponent_pk, task_type='e').first().get_name(),
+            'level': Level.objects.filter(user_id=opponent_pks[0], task_type='e').first().get_name(),
         }
 
-        opponent_ner_ann_df = Document.objects.ner_df(document_pks=[doc_pk], user_pks=[opponent_pk], include_pubtator=False)
+        opponent_ner_ann_df = Document.objects.ner_df(document_pks=[doc_pk], user_pks=[opponent_pks[0]], include_pubtator=False)
         for section_id, group in opponent_ner_ann_df.groupby('section_id'):
             opponent_anns[int(section_id)] = []
             for ann_group_idx, ann in group.iterrows():
@@ -57,34 +64,11 @@ def ner_quest_document_results(request, task_pk, doc_pk):
 
     else:
         opponent_dict = None
-        # No other work has ever been done on this apparently
-        # so we reward the user and let them know they were
-        # first via a different template / bonus points
-        uqr = task.userquestrelationship_set.filter(user=request.user).first()
-        points = settings.ENTITY_RECOGNITION_DOC_POINTS
 
-    # print('Completed?', uqr.views.filter(section__document_id=doc_pk).values_list('completed', flat=True) )
-    # if user_quest_relationship.completed:
-    #     uqr_created = False
-    #     award = Point.objects.filter(
-    #         content_type=ContentType.objects.get_for_model(task),
-    #         object_id=task.id,
-    #         user=request.user).first()
-    # else:
-    #     uqr_created = True
-    #     award = Point.objects.create(
-    #         user=request.user,
-    #         amount=task.points,
-    #         content_type=ContentType.objects.get_for_model(task),
-    #         object_id=task.id,
-    #         created=timezone.now())
-
-    award = Point.objects.create(
-        user=request.user,
-        amount=points,
+    award = Point.objects.filter(
         content_type=ContentType.objects.get_for_model(task),
         object_id=task.id,
-        created=timezone.now())
+        user=request.user).first()
 
     res = {
         'task_pk': task.pk,
@@ -121,7 +105,8 @@ class NERDocumentSubmissionView(ListCreateAPIView):
                 return HttpResponseServerError('User Quest Relationship not found')
 
             # Submit the Annotations
-            # (TODO) Convert to build import
+            # (TODO) Convert to custom sql bulk
+            er_ann_content_type = ContentType.objects.get_for_model(EntityRecognitionAnnotation)
             for d in data:
                 view = user_quest_rel.views.filter(section_id=d.get('section_pk'), completed=False).first()
 
@@ -133,7 +118,6 @@ class NERDocumentSubmissionView(ListCreateAPIView):
                     text=d.get('text'),
                     start=d.get('start')
                 )
-                er_ann_content_type = ContentType.objects.get_for_model(er_ann)
                 Annotation.objects.create(
                     kind='e',
                     view=view,
@@ -144,36 +128,35 @@ class NERDocumentSubmissionView(ListCreateAPIView):
             player_view_pks = []
             opponent_view_pks = []
             opponent_pk = select_best_opponent(task.pk, document.pk, request.user.pk)
-            for section in document.available_sections():
-            # for view in user_quest_rel.views.filter(section__document=document):
-                uqr = task.userquestrelationship_set.filter(user=request.user).first()
-                player_view = uqr.views.filter(user=request.user, section=section, completed=True).first()
-                player_view_pks.append(player_view.pk)
 
-                quest_rel = task.userquestrelationship_set.filter(user=opponent_user).first()
-                opponent_view = quest_rel.views.filter(section=section, completed=True).first()
-                opponent_view_pks.append(opponent_view.pk)
+            for section in document.available_sections():
+                uqr = task.userquestrelationship_set.filter(user=request.user).first()
+                player_view = uqr.views.filter(user=request.user, section=section).first()
+                player_view.completed = True
 
                 # Save who the player was paired against
-                # player_view.opponent = opponent_view
-                player_view.opponent = opponent_view
-                view.completed = True
+                if opponent_pk:
+                    quest_rel = task.userquestrelationship_set.filter(user_id=opponent_pk).first()
+                    opponent_view = quest_rel.views.filter(section=section, completed=True).first()
+                    player_view.opponent = opponent_view
+                    opponent_view_pks.append(opponent_view.pk)
+
                 player_view.save()
+                player_view_pks.append(player_view.pk)
 
             # Save Earned Points
             if opponent_pk:
-                opponent_user = User.objects.get(pk=opponent_pk)
+                results = generate_results(player_view_pks, opponent_view_pks)
+                points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS  # F Score * Point Multiplier (1000)
             else:
-                opponent_dict = None
-                # No other work has ever been done on this apparently
-                # so we reward the user and let them know they were
-                # first via a different template / bonus points
-                uqr = task.userquestrelationship_set.filter(user=request.user).first()
                 points = settings.ENTITY_RECOGNITION_DOC_POINTS
 
-
-            results = generate_results(player_view_pks, opponent_view_pks)
-            points = results[0][2] * settings.ENTITY_RECOGNITION_DOC_POINTS  # F Score * Point Multiplier (1000)
+            Point.objects.create(
+                user=request.user,
+                amount=points,
+                content_type=ContentType.objects.get_for_model(task),
+                object_id=task.id,
+                created=timezone.now())
 
             # Wrap up
             headers = self.get_success_headers(serializer.data)
