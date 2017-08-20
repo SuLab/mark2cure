@@ -37,7 +37,7 @@ def ner_quest_document_results(request, task_pk, doc_pk):
         return HttpResponseServerError()
 
     opponent_anns = {}
-    user_quest_rel = task.user_relationship(request.user, False)
+    user_quest_rel = UserQuestRelationship.objects.filter(task=task, user=request.user).first()
     opponent_pks = [v.opponent.user_id for v in user_quest_rel.views.filter(section__document=document)]
 
     if len(opponent_pks):
@@ -99,7 +99,7 @@ class NERDocumentSubmissionView(ListCreateAPIView):
 
         serializer = AnnotationSerializer(data=data, many=True)
         if serializer.is_valid():
-            user_quest_rel = task.user_relationship(request.user, False)
+            user_quest_rel = UserQuestRelationship.objects.filter(task=task, user=request.user, completed=False).first()
 
             if not user_quest_rel:
                 return HttpResponseServerError('User Quest Relationship not found')

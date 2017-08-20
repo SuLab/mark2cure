@@ -425,6 +425,9 @@ NERDocument = Backbone.RelationalModel.extend({
    */
   defaults: {
     active: false, // If is the currently addressed Document in the Quest
+
+    'pk': null,
+    'completed': false,
   },
 
   url: function() {
@@ -448,20 +451,23 @@ NERDocumentList = Backbone.Collection.extend({
     return '/api/ner/quest/'+ this.quest_pk +'/';
   },
 
+  parse: function(response){
+    this.completed = response['completed']
+    return response['documents'];
+  },
+
   initialize: function(options) {
     this.quest_pk = options.quest_pk;
   },
 
-  is_quest_complete: function() {
-    var quest_completed = this.pluck('quest_completed').every(function(v){ return v == 1; }),
-        all_documents_completed = this.pluck('document_view_completed').every(function(v){ return v == 1; });
-    return quest_completed == false && all_documents_completed;
+  is_complete: function() {
+    return this.pluck('completed').every(function(v){ return v == true; });
   },
 
   get_active: function() {
-    var available = this.where({'document_view_completed': 0});
+    var available = this.where({'completed': false});
     if(available.length == 0) {
-      if(this.is_quest_complete()) {
+      if(this.is_complete()) {
         channel.trigger('ypet:quest:completed');
       }
       return null;
@@ -1012,7 +1018,7 @@ NERProgressItem = Backbone.Marionette.View.extend({
   className: 'list-inline-item',
 
   onRender: function() {
-    if ( this.model.get('document_view_completed') ) {
+    if ( this.model.get('completed') ) {
       this.$el.addClass('completed');
     }
     if ( this.model.get('active') ) {
@@ -1275,7 +1281,7 @@ YPet = Backbone.Marionette.View.extend({
       cache: false,
       async: false,
       success: function() {
-        self.model.set('document_view_completed', true);
+        self.model.set('completed', true);
         self.options['review'] = true
         self.render();
       },

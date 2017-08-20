@@ -165,7 +165,7 @@ def ner_quest_read(request, quest_pk):
     try:
         c.execute(cmd_str)
         queryset = [dict(zip(['pk', 'quest_completed', 'view_count',
-                              'document_view_completed', 'had_opponent',
+                              'completed', 'had_opponent',
                               'disease_pub', 'gene_pub', 'drug_pub'], x)) for x in c.fetchall()]
     finally:
         c.close()
@@ -174,13 +174,24 @@ def ner_quest_read(request, quest_pk):
                                          pubtators=[[x['disease_pub'], x['gene_pub'], x['drug_pub']] for x in queryset])
 
     # Each query does ASC document_pk so we know they're in the same order!
-    res = [{**queryset[i], **documents[i]} for i in range(len(queryset))]
+    documents = [{**queryset[i], **documents[i]} for i in range(len(queryset))]
 
-    for r in res:
-        del r['disease_pub']
-        del r['gene_pub']
-        del r['drug_pub']
+    doc_quest_completed_bools = [d['quest_completed'] for d in documents]
 
+    if not all(x == doc_quest_completed_bools[0] for x in doc_quest_completed_bools):
+        raise ValueError
+
+    for doc in documents:
+        del doc['disease_pub']
+        del doc['gene_pub']
+        del doc['drug_pub']
+        del doc['quest_completed']
+        doc['completed'] = True if doc['completed'] else False
+
+    res = {
+        'completed': True if doc_quest_completed_bools[0] else False,
+        'documents': documents,
+    }
     return Response(res)
 
 
