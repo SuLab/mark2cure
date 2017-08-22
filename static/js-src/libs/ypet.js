@@ -176,7 +176,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
   parseAnnotation: function() {
     var self = this;
-    var passage = this.collection['annsPassage'];
+    var passage = this.collection['oannsPassage'] || this.collection['annsPassage'];
     var ann_text = this.get('text').toLowerCase();
 
     /* If Annotation was created with a string but without selected words */
@@ -266,12 +266,41 @@ NERAnnotation = Backbone.RelationalModel.extend({
     /* Trigger View methods on the Annotation's Words */
     var annotation_type = NERAnnotationTypes.at(this.get('type_id'));
     var words_len = this.get('words').length;
+    var opponent_bool = _.has(this.collection, 'oannsPassage')
 
     this.get('words').invoke('set', {'neighbor': false});
     this.get('words').each(function(word, word_index) {
-      if(word_index == words_len-1) { word.set('neighbor', true); }
-      word.trigger('highlight', annotation_type.get('color'));
+      if(opponent_bool) {
+        word.trigger('underline', {'color': annotation_type.get('color')});
+      } else {
+        if(word_index == words_len-1) { word.set('neighbor', true); }
+        word.trigger('highlight', annotation_type.get('color'));
+      }
     });
+
+
+    // if(annotation.get('opponent')) {
+    //   var words = annotation.get('words')
+    //   var author_annotations = parent_document.get('annotations');
+    //   var anns = []
+    //   author_annotations.each(function(main_ann) {
+    //     if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
+    //       anns.push(main_ann.cid);
+    //     }
+    //   });
+    //   if(_.uniq(anns).length > 1) {
+    //     #<{(| 2 Different Parent Annotations |)}>#
+    //     words.each(function(word) {
+    //       if(word == words.last()) {
+    //         word.trigger('underline-space', {'color': '#fff', 'last_word': true});
+    //       } else {
+    //         word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
+    //       }
+    //     });
+    //   }
+    // }
+
+
 
   }
 });
@@ -295,6 +324,7 @@ NERAnnotationList = Backbone.Collection.extend({
   },
 
   draw: function() {
+    // console.log('NERAnnotationList draw', this);
     this.each(function(annotation) { annotation.draw(); });
   },
 
@@ -386,9 +416,13 @@ NERDocumentResult = Backbone.RelationalModel.extend({
   },
 
   initialize: function() {
-    // if(this.get('opponent_annotations')) {
-    //   channel.trigger('ypet:paragraph:set:opponent_annotations', this.get('opponent_annotations'))
-    // }
+
+    this.listenTo(this, 'change:opponent_annotations', function () {
+      if(this.get('opponent_annotations')) {
+        channel.trigger('ypet:paragraph:set:opponent_annotations', this.get('opponent_annotations'))
+      }
+    });
+
   }
 })
 
@@ -872,15 +906,12 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     });
 
     this.listenTo(channel, 'ypet:paragraph:set:opponent_annotations', function(obj) {
-      var self = this;
-      console.log('self', self, obj);
-
       _.each(_.keys(obj), function(section_pk) {
-        console.log('compare scope', this, self);
         var passage_annotations = self.getOpponentAnnotations(section_pk);
-        console.log('opponent passage anns', passage_annotations);
+        _.each(obj[+section_pk], function(ann) {
+          passage_annotations.create(ann);
+        });
       });
-      // passage_annotations.create({'words': selected_words});
     });
 
     // If a concept object (RE) was included loose highlight them
@@ -896,18 +927,13 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
 
   getUserAnnotations: function(section_pk) {
     /* Return the Paragraph's Annotations */
-    var passage = this.model.get('passages').findWhere({'pk': section_pk});
+    var passage = this.model.get('passages').findWhere({'pk': +section_pk});
     return passage.get('annotations')
   },
 
   getOpponentAnnotations: function(section_pk) {
-    console.log('getOpponentAnnotations',
-                section_pk,
-                this.model.get('passages').findWhere({'pk': section_pk}),
-                this.model.get('passages')
-               );
     /* Return the Paragraph's Opponent Annotations */
-    var passage = this.model.get('passages').findWhere({'pk': section_pk});
+    var passage = this.model.get('passages').findWhere({'pk': +section_pk});
     return passage.get('opponent_annotations')
   },
 });
