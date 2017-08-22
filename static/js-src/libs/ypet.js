@@ -271,7 +271,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
     this.get('words').invoke('set', {'neighbor': false});
     this.get('words').each(function(word, word_index) {
       if(opponent_bool) {
-        word.trigger('underline', {'color': annotation_type.get('color')});
+        word.trigger('underline', annotation_type.get('color'));
       } else {
         if(word_index == words_len-1) { word.set('neighbor', true); }
         word.trigger('highlight', annotation_type.get('color'));
@@ -279,8 +279,9 @@ NERAnnotation = Backbone.RelationalModel.extend({
     });
 
 
-    // if(annotation.get('opponent')) {
-    //   var words = annotation.get('words')
+    if(opponent_bool) {
+      var words = this.get('words');
+      console.log('oppoent_bool draw', this);
     //   var author_annotations = parent_document.get('annotations');
     //   var anns = []
     //   author_annotations.each(function(main_ann) {
@@ -298,7 +299,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
     //       }
     //     });
     //   }
-    // }
+    }
 
 
 
@@ -324,7 +325,6 @@ NERAnnotationList = Backbone.Collection.extend({
   },
 
   draw: function() {
-    // console.log('NERAnnotationList draw', this);
     this.each(function(annotation) { annotation.draw(); });
   },
 
@@ -585,7 +585,7 @@ NERWordView = Backbone.Marionette.View.extend({
     this.$el.css({'backgroundColor': color});
   },
 
-  onUnderline: function() {
+  onUnderline: function(color) {
     /* (UNCLEAR) create a new absolute positioned colored div */
     var $container = this.$el.parent(),
         pos = this.$el.position(),
@@ -607,7 +607,7 @@ NERWordView = Backbone.Marionette.View.extend({
         width: '+ (Math.abs( pos.left+width - split_left)) +'px; \
         top: '+ (pos.top+(this.$el.height()/2)-5)  +'px; \
         left: '+ split_left +'px; \
-        background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+        background-color: '+ d3.rgb(color).darker(.5) +';"></div>');
 
       /* The reminder on the line below */
       /* (TODO) sometimes it'll split and there will be no next word */
@@ -617,7 +617,7 @@ NERWordView = Backbone.Marionette.View.extend({
         width: '+ ($next.position().left - absolute_left) +'px; \
         top: '+ yaxis +'px; \
         left: '+ absolute_left +'px; \
-        background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+        background-color: '+ d3.rgb(color).darker(.5) +';"></div>');
 
     } else {
       $container.append('<div class="underline" style=" \
@@ -626,7 +626,7 @@ NERWordView = Backbone.Marionette.View.extend({
         width: '+ width +'px; \
         top: '+ yaxis +'px; \
         left: '+ pos.left +'px; \
-        background-color: '+ d3.rgb(options.color).darker(.5) +';"></div>');
+        background-color: '+ d3.rgb(color).darker(.5) +';"></div>');
     }
   },
 
