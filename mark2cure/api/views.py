@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from django.db import connection
 from django.conf import settings
 
@@ -22,7 +21,6 @@ from rest_framework.response import Response
 from itertools import chain
 import networkx as nx
 import datetime
-import json
 
 
 _attrs = dict(id='id', source='source', target='target', key='key')
@@ -50,6 +48,7 @@ def node_link_data(G, attrs=_attrs):
     return data
 
 
+@api_view(['GET'])
 def group_network(request, group_pk):
     get_object_or_404(Group, pk=group_pk)
 
@@ -57,7 +56,7 @@ def group_network(request, group_pk):
     G = generate_network(group_pk, spring_force=8)
     d = node_link_data(G)
 
-    return HttpResponse(json.dumps(d), content_type='application/json')
+    return Response(d)
 
 
 @login_required
@@ -205,14 +204,12 @@ def re_stats(request):
     })
 
 
-@login_required
 @api_view(['GET'])
 def ner_list_item_contributors(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
     return Response([{'username': i[0], 'count': i[1]} for i in group.contributors()])
 
 
-# @login_required
 @api_view(['GET'])
 def ner_list_item_quests(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
@@ -246,7 +243,6 @@ def ner_list_item_quests(request, group_pk):
     return Response(serializer.data)
 
 
-# @login_required
 @api_view(['GET'])
 def ner_list(request):
     queryset = Group.objects.exclude(stub='training').order_by('-order')
@@ -254,7 +250,6 @@ def ner_list(request):
     return Response(serializer.data)
 
 
-# @login_required
 @api_view(['GET'])
 def ner_list_item(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
@@ -383,7 +378,6 @@ def get_annotated_teams(days=30):
     return teams
 
 
-@login_required
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
     queryset = users_with_score(days=int(day_window))[:25]
@@ -391,7 +385,6 @@ def leaderboard_users(request, day_window):
     return Response(serializer.data)
 
 
-@login_required
 @api_view(['GET'])
 def leaderboard_teams(request, day_window):
     queryset = list(get_annotated_teams(days=int(day_window)))[:25]
