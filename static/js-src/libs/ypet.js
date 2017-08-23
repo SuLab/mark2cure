@@ -266,7 +266,8 @@ NERAnnotation = Backbone.RelationalModel.extend({
     /* Trigger View methods on the Annotation's Words */
     var annotation_type = NERAnnotationTypes.at(this.get('type_id'));
     var words_len = this.get('words').length;
-    var opponent_bool = _.has(this.collection, 'oannsPassage')
+    var opponent_bool = _.has(this.collection, 'oannsPassage');
+    var self = this;
 
     this.get('words').invoke('set', {'neighbor': false});
     this.get('words').each(function(word, word_index) {
@@ -278,30 +279,34 @@ NERAnnotation = Backbone.RelationalModel.extend({
       }
     });
 
-
-    if(opponent_bool) {
-      var words = this.get('words');
-      console.log('oppoent_bool draw', this);
-    //   var author_annotations = parent_document.get('annotations');
-    //   var anns = []
-    //   author_annotations.each(function(main_ann) {
+    // if(opponent_bool) {
+    //   var anns = [];
+    //   var words = this.get('words');
+    //
+    //   this.collection.each(function(main_ann) {
+    //     console.log()
     //     if(main_ann.get('words').contains(words.first()) || main_ann.get('words').contains(words.last())) {
+    //       console.log('>', self.get('text'), main_ann.get('text'));
     //       anns.push(main_ann.cid);
     //     }
     //   });
+    //
+    //   console.log(anns)
     //   if(_.uniq(anns).length > 1) {
+    //     console.log('underline prep')
+    //
     //     #<{(| 2 Different Parent Annotations |)}>#
     //     words.each(function(word) {
     //       if(word == words.last()) {
     //         word.trigger('underline-space', {'color': '#fff', 'last_word': true});
+    //         console.log(' - - underline-space: last');
     //       } else {
     //         word.trigger('underline-space', {'color': annotation_type.get('color'), 'last_word': false});
+    //         console.log(' - - underline-space: false');
     //       }
     //     });
     //   }
-    }
-
-
+    // }
 
   }
 });
@@ -630,15 +635,16 @@ NERWordView = Backbone.Marionette.View.extend({
     }
   },
 
-  onUnderlineSpace: function() {
+  onUnderlineSpace: function(opts) {
+    console.log('onUnderlineSpace')
     /* (UNCLEAR) create a new absolute positioned white div */
     var $container = this.$el.parent(),
     pos = this.$el.position(),
-    color = d3.rgb(options.color).darker(2);
+    color = d3.rgb(opts.color).darker(2);
 
     var yaxis = pos.top + this.$el.height() + 2;
     var width = this.$el.width();
-    if(options.last_word) {
+    if(opts.last_word) {
       width = width - 5;
       color = '#fff';
     }
@@ -1151,6 +1157,7 @@ NERFooterConfirmView = Backbone.Marionette.View.extend({
 
   events: {
     'mousedown': function() {
+      this.$el.addClass('disabled');
       channel.trigger('ypet:quest:submit');
     }
   }

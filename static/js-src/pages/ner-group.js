@@ -212,24 +212,31 @@ NERGroupStatsView = Backbone.Marionette.View.extend({
 });
 
 NERGroupPageView = Backbone.Marionette.View.extend({
+  /* this.model NERGroupStats (information about the group)
+  *  this.collection NERQuestTaskList (quests within the group) */
   el: '#ner-group-home',
   template: false,
 
   regions: {
     'stats': '#group-statistics',
     'contributors': '#group-contributors',
-    'network': '#group-network-action-area'
+    'network': '#group-network-action-area',
+    'quest-list': '#group-quest-list'
   },
 
   initialize: function() {
     this.model = new NERGroupStats(this.options);
     this.model.fetch();
+
+    this.collection = new NERQuestTaskList({'pk': this.getOption('group_pk')});
+    this.collection.fetch();
   },
 
   onRender: function() {
     this.showChildView('stats', new NERGroupStatsView({'model': this.model}));
     this.showChildView('contributors', new NERGroupPageContributorListView());
     this.showChildView('network', new NERGroupPageNetworkView(this.options));
+    this.showChildView('quest-list', new NERQuestTaskListView({'collection': this.collection}));
   }
 });
 
