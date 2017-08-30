@@ -1,0 +1,31 @@
+extends base
+
+block header
+  - with headerMessage='NER Module'
+    include includes/header
+
+
+block content
+
+  #ner-training-area
+
+  include training/js-templates.html
+
+
+block post-footer
+
+  script.
+    var NERTrainingApp = Backbone.Marionette.Application.extend({
+      region: '#ner-training-area',
+      onStart: function() {
+        var main = this.getRegion();
+        main.show( new TrainingView({
+          'csrf_token': "{{csrf_token}}",
+          'mode': 'ner',
+          })
+        );
+      }
+    });
+    var ner_training = new NERTrainingApp();
+    ner_training.start();
+

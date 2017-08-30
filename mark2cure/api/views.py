@@ -18,7 +18,7 @@ from ..score.models import Point
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from itertools import chain
+from itertools import chain, groupby
 import networkx as nx
 import datetime
 
@@ -392,3 +392,85 @@ def leaderboard_teams(request, day_window):
     serializer = TeamLeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def training(request):
+    if request.user.is_anonymous():
+        return Response([{"task": "r"}])
+
+    cmd_str = ""
+    with open('mark2cure/training/commands/get-user-training.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(user_id=request.user.pk)
+
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['task_type', 'level', 'last_created',
+                              'completions'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    res = []
+    for key, group in groupby(queryset, lambda x: x['task_type']):
+        progress = [x for x in group]
+        for d in progress:
+            del d['task_type']
+
+        res.append({
+            'task': key,
+            'progress': progress
+        })
+
+    return Response(res)
+
+
+@api_view(['GET'])
+def training_details(request, task_type):
+    if task_type == "re":
+        res = []
+
+        res.append({
+            'level': 1,
+            'name': 'Using the Interface',
+            'steps': [{
+                'name': 'Introduction',
+                'description': "<p>A concept is a term that has been classified. Eg- Biomedical Research is a type of Science</p><p>Play with the interface to learn how it works.</p>",
+                'instructions': [
+                    {"text": "The paragraph will contain the concept terms. Your task is to read the paragraph and identify how the concepts are related."},
+                    {"text": "The concept terms are color-coded by their classification or type"},
+                    {"text": "Clicking on the red \"x\" dismisses a term as being incorrectly classified."},
+                    {"text": "Select the kind of relationship that exists between the two concepts using the menu."},
+                    {"text": "The submit button lets you submit the relationship you’ve selected for the two concepts. If you are done playing with the interface and understand how to use it, click on the \"submit\" button one more time to continue"},
+                ]
+            }]
+        })
+
+        res.append({
+            'level': 2,
+            'name': 'Rules for Relationship Extraction',
+            'steps': []
+        })
+
+        res.append({
+            'level': 3,
+            'name': 'Learn new relatoinships: Broad',
+            'steps': [{
+                'order': 1,
+                'description': 'Genes',
+                'steps': []},
+                {'order': 2,
+                'description': 'Diseases',
+                'steps': []},
+                {'order': 3,
+                'description': 'Treatments',
+                'steps': []},
+                {'order': 4,
+                'description': 'Multi-Marking',
+                'steps': []}]
+        })
+
+    elif task_type == "ner":
+        res = []
+
+    return Response(res)

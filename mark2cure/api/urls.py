@@ -56,5 +56,12 @@ urlpatterns = [
         views.leaderboard_users, name='leaderboard-users'),
 
     url(r'^leaderboard/teams/(?P<day_window>\d+)/$',
-        views.leaderboard_teams, name='leaderboard-teams')
+        views.leaderboard_teams, name='leaderboard-teams'),
+
+    # - [Training]
+    url(r'^training/$',
+        views.training, name='training'),
+
+    url(r'^training/(?P<task_type>\w+)/$',
+        views.training_details, name='training-details'),
 ]

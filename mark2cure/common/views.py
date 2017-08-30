@@ -18,15 +18,16 @@ import random
 def get_started(request):
     '''View for directing the request into Training
     '''
-    uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
-    if uai.detectMobileLong():
-        return redirect('training:relation-training', part_num=1, step_num=1)
 
-    else:
-        if random.random() <= .1:
-            return redirect('training:relation-training', part_num=1, step_num=1)
-        else:
-            return redirect('training:introduction', step_num=1)
+    return redirect('training:re')
+    # uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
+    # if uai.detectMobileLong():
+    #     return redirect('training:relation-training', part_num=1, step_num=1)
+    # else:
+    #     if random.random() <= .1:
+    #         return redirect('training:relation-training', part_num=1, step_num=1)
+    #     else:
+    #         return redirect('training:introduction', step_num=1)
 
 
 def dashboard(request):

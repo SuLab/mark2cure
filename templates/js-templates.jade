@@ -76,70 +76,9 @@ script(id='dashboard-ner-unlock-template', type='html/template')
       #relation-training-progress.col-12
         .list-group.dashboard.text-xcenter
 
-          <% if(ner <= 2) { %>
-          a(href='{% url "training:introduction" step_num=1 %}').list-group-item.current
-            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-          a(href='{% url "training:one" step_num=1 %}').list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Diseases
-          a(href='{% url "training:two" step_num=1 %}').list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
-          a(href='{% url "training:three" step_num=1 %}').list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-          a(href='{% url "training:four" step_num=1 %}').list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-          <% } %>
+          // (TODO) fill this in from the api
 
-          <% if(ner == 3) { %>
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-          a(href='{% url "training:one" step_num=1 %}').list-group-item.current
-            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Diseases
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Genes
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-          <% } %>
 
-          <% if(ner == 4) { %>
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-          a(href='{% url "training:two" step_num=1 %}').list-group-item.current
-            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Genes
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Treatments
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-          <% } %>
-
-          <% if(ner == 5) { %>
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-          .list-group-item.completed
-            | <i class='fa fa-check aria-hidden='true'></i>  Genes
-          a(href='{% url "training:three" step_num=1 %}').list-group-item.current
-            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Treatments
-          .list-group-item.locked.disabled
-            | <i class='fa fa-lock' aria-hidden='true'></i>  Multi-Marking
-          <% } %>
-
-          <% if(ner == 6) { %>
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Introduction
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Diseases
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Genes
-          .list-group-item.completed
-            | <i class='fa fa-check' aria-hidden='true'></i>  Treatments
-          a(href='{% url "training:four" step_num=1 %}').list-group-item.current
-            | <i class='fa fa-angle-right' aria-hidden='true'></i>  Multi-Marking
-          <% } %>
 
 
 script(id='dashboard-ner-quest-template', type='html/template')

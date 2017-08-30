@@ -161,10 +161,10 @@ NERAnnotation = Backbone.RelationalModel.extend({
 
   initialize: function() {
 
-    // this.listenTo(this, 'set:words', function(b) {
-    //   this.draw();
-    // });
-    //
+    this.listenTo(this, 'change:words', function(b) {
+      this.draw();
+    });
+
     /* Sanitize input types into using type_id */
     if(this.get('type') && !this.get('type_id')) {
       this.set('type_id', ['d', 'g', 'c'].indexOf(this.get('type')));
@@ -178,6 +178,8 @@ NERAnnotation = Backbone.RelationalModel.extend({
     var self = this;
     var passage = this.collection['oannsPassage'] || this.collection['annsPassage'];
     var ann_text = this.get('text').toLowerCase();
+
+    console.log('Add the opponent anns', ann_text, passage);
 
     /* If Annotation was created with a string but without selected words */
     /* When there is no start, select all the words available that match the annotation text */
@@ -278,6 +280,10 @@ NERAnnotation = Backbone.RelationalModel.extend({
         word.trigger('highlight', annotation_type.get('color'));
       }
     });
+
+    if(opponent_bool) {
+      console.log(this.get('text'), this.get('words').length);
+    }
 
     // if(opponent_bool) {
     //   var anns = [];

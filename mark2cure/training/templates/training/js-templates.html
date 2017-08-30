@@ -1,0 +1,69 @@
+<script id="training-template" type="html/template">
+  <div id="selector" class="container-fluid" style="display:none;">
+    <ul>
+    <li>Named Entity Recognition</li>
+    <li>Relationship Extraction</li>
+    </ul>
+  </div>
+  <div id="training" class="container-fluid"></div>
+</script>
+
+<script id="training-task-template" type="html/template">
+  <div id="training-navigation" class="col-12"></div>
+
+  <div id="training-message-center" class="col-12"></div>
+
+  <div id="training-module" class="col-12"></div>
+
+</script>
+
+
+<script id="training-navigation-template" type="html/template">
+  <div id="progress-steps"></div>
+</script>
+
+
+
+<script id="training-step-progress-item-template" type="html/template">
+  <% if(completed) { %>
+    &#9632;
+  <% } else { %>
+    &#9633;
+  <% } %>
+</script>
+
+
+<script id="training-module-template" type="html/template">
+  <div id="module-progress" class="col-12"></div>
+  <div id="step-action" class="col-12"></div>
+</script>
+
+<script id="training-module-step-template" type="html/template">
+  <div id="training-text" class="col-12"></div>
+  <div id="training-action" class="col-12"></div>
+  <div id="training-footer" class="col-12"></div>
+</script>
+
+<script id="training-footer-template" type="html/template">
+  <div class="col-4">
+    <div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: <%= progress %>%" aria-valuenow="<%= progress %>" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+
+  <div class="col-4">
+    <a class="btn">Next</a>
+  </div>
+</script>
+
+<script id="training-text-template" type="html/template">
+  <div class="col-6"><%= description %></div>
+  <div id="instructions" class="col-6"></div>
+</script>
+
+
+<script id="training-action-template" type="html/template">
+</script>
+
+
+
