@@ -1,5 +1,61 @@
-@import 'sections/group_selection';
-@import 'sections/leaderboard';
+#leaderboard {
+  margin-top: 20px;
+
+  a p {
+    color: $color_gray_dark
+  }
+
+  p {
+    letter-spacing: 2px;
+    margin: 0px;
+  }
+
+  h2, h4 {
+    cursor: pointer;
+    color: $color_gray_light;
+    white-space: nowrap;
+
+    span {
+      position: relative;
+      top: -3px;
+      color: $color_purple;
+    }
+
+  }
+}
+
+#group-network {
+  @include user-select(none);
+
+  > .row {
+    margin-top: 20px;
+  }
+
+  h4:hover {
+    cursor: pointer;
+  }
+
+  #network-row {
+    @include user-select(none);
+    i {
+      font-size: 4em;
+      color: $color_gray_lighter;
+      margin-top: 20px;
+    }
+
+    i:hover {
+      cursor: pointer;
+      color: $color_purple;
+    }
+
+    #network {
+      @include user-select(none);
+      cursor: move;
+    }
+  }
+}
+
+
 
 #dashboard {
   margin-top: 1rem;

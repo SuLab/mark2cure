@@ -9,7 +9,7 @@
 </script>
 
 <script id="training-task-template" type="html/template">
-  <div id="training-navigation" class="col-12"></div>
+  <div id="training-module-navigation" class="col-12"></div>
 
   <div id="training-message-center" class="col-12"></div>
 
@@ -34,8 +34,14 @@
 
 
 <script id="training-module-template" type="html/template">
-  <div id="module-progress" class="col-12"></div>
-  <div id="step-action" class="col-12"></div>
+  <div class="col-12">
+    <div class="row justify-content-center">
+      <div id="module-progress" class="col-10 col-sm-8 col-md-4 mb-2 mb-md-3"></div>
+    </div>
+    <div class="row">
+      <div id="step-action" class="col-12"></div>
+    </div>
+  </div>
 </script>
 
 <script id="training-module-step-template" type="html/template">
@@ -45,25 +51,28 @@
 </script>
 
 <script id="training-footer-template" type="html/template">
-  <div class="col-4">
+  <div class="col-9 col-md-4 my-auto">
     <div class="progress">
     <div class="progress-bar" role="progressbar" style="width: <%= progress %>%" aria-valuenow="<%= progress %>" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
   </div>
 
-  <div class="col-4">
+  <div class="col-3 col-lg-2">
     <a class="btn">Next</a>
   </div>
 </script>
 
 <script id="training-text-template" type="html/template">
-  <div class="col-6"><%= description %></div>
-  <div id="instructions" class="col-6"></div>
+  <div id="training-description" class="col-6 col-md-4"><%= description %></div>
+  <div id="training-instructions" class="col-6 col-md-4"></div>
 </script>
 
+<script id="training-instruction-text-template" type="html/template">
+  <div id="training-instruction-counter" class="text-center"><%= idx %></div>
+  <p><%= text %></p>
+</script>
 
 <script id="training-action-template" type="html/template">
+  <div id="tree-action-area"></div>
 </script>
-
-
 

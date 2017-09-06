@@ -135,7 +135,7 @@
       .paragraph-content {
 
         p.paragraph {
-          font-family: $font_paragraph;
+          @include font-serif;
           line-height: 1.75rem;
           font-size: 1.25rem;
           color: $color_black;
@@ -269,6 +269,58 @@ span.user_annotated_pink {
   margin-top: 0px;
   margin-bottom: 0px;
 }
+
+
+#quest-guide {
+  background-color: $color_gray_lightest;
+
+  ol { margin: 0px; }
+  li {
+    font-size: 3em;
+    line-height: .75em;
+  }
+  @include media-breakpoint-down(md) {
+    ol { text-align: center; }
+  }
+  li.uncompleted { color: $color_gray; }
+  li.completed { color: $color_gray_light; }
+  li.active { color: $color_purple; }
+  li.skip { color: $color_white; }
+
+  h3 {
+    cursor: default;
+  }
+
+  p {
+    color: $color_gray;
+    text-transform: uppercase;
+    font-size: 1em;
+    margin-bottom: 0px;
+    padding: 5px 0px;
+  }
+
+}
+#progress-bar {
+  margin: 0px;
+}
+
+#partner-results {
+  h4 {
+    color: $color_gray_dark;
+    text-transform: uppercase;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  #google_annotation {
+    margin-top: 20px;
+  }
+}
+
+.btn-group-vertical a {
+  color: $color_gray_dark;
+}
+
 
 .quest-guide .doc-item-col {
   height: 40px;

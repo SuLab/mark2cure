@@ -1,0 +1,100 @@
+#re-training-area {
+  flex: 1;
+
+  #training-module-navigation {
+    background-color: $color_gray_lightest;
+    border-bottom: 8px solid $color_gray_lightest;
+    .breadcrumb {
+      background-color: $color_gray_lightest;
+      @include user-select(none);
+      li {
+        cursor: pointer;
+      }
+      li.active {
+        color: $color_purple;
+      }
+    }
+  }
+
+  #training-message-center {}
+
+  #training-module {
+    #module-progress {
+      border-bottom: 2px solid $color_black;
+    }
+
+    #training-action {
+      min-height: 400px;
+    }
+
+    #training-text {
+      @include font-serif;
+      #training-description {
+        p {
+          font-size: 1.5em;
+
+          &.sub {
+            font-size: 1.25em;
+          }
+        }
+      }
+      #training-instructions {
+        border-left: 2px solid $color_black;
+
+        #training-instruction-counter {
+          border-bottom: 2px solid $color_black;
+          border-right: 2px solid $color_black;
+
+          background-color: $color_white;
+          margin: -2px;
+          position: absolute;
+          height: 40px;
+          width: 40px;
+          top: 0px;
+          left: 0px;
+          font-size: 1.5em;
+        }
+        p {
+          margin-top: 42px;
+          font-size: 1.25em;
+        }
+      }
+    }
+
+    #training-footer {
+
+      .progress {
+        background-color: $color_white;
+        border: 1px solid $color_black;
+        height: 2em;
+        .progress-bar {
+          height: 2em;
+        }
+      }
+
+      a.btn {
+        border: 3px solid $color_purple;
+
+        &:hover {
+          cursor: pointer;
+          background-color: $color_purple;
+          color: $color_white;
+        }
+      }
+
+    }
+  }
+
+}
+
+.popover {
+  color: $color_white;
+  z-index: 9999;
+
+  .popover-title { display: none; }
+  .popover-content {
+    padding: 4px 8px;
+    p { margin: 0px; padding: 0px; }
+  }
+}
+
