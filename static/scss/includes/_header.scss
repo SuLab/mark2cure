@@ -1,5 +1,5 @@
 nav#header-generic.navbar {
-  font-family: $font_helvetica;
+  @include font-sans;
   font-size: 1.2rem;
   z-index: 1000;
 

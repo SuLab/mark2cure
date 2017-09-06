@@ -1,7 +1,7 @@
 $enable-rounded:            false !default;
 $link-hover-decoration:     underline !default;
-$font-family-sans-serif:    $font_helvetica !default;
-$font-family-serif:         $font_paragraph !default;
+$font-family-sans-serif:    'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif !default;
+$font-family-serif:         'Palatino Linotype', 'Book Antiqua', 'Palatino', 'serif' !default;
 $headings-font-family:      inherit !default;
 $headings-color:            inherit !default;
 $popover-bg:                $color_purple !default;
