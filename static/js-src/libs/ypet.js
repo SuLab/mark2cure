@@ -92,7 +92,7 @@ Date.now = Date.now || function() { return +new Date; };
         }
 })(jQuery);
 
-var channel = Backbone.Radio.channel('ypet');
+var channel = Backbone.Radio.channel('mark2cure');
 
 /*
  *  Models & Collections

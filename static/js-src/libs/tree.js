@@ -1,6 +1,6 @@
 var incorrect_id_arr = ['zl4RlTGwZM9Ud3CCXpU2VZa7eQVnJj0MdbsRBMGy', 'RdKIrcaEOnM4DRk25g5jAfeNC6HSpsFZaiIPqZer'];
 
-var channel = Backbone.Radio.channel('tree');
+var channel = Backbone.Radio.channel('mark2cure');
 
 /*
  *  Models & Collections
@@ -443,7 +443,12 @@ REChoiceView = Backbone.Marionette.View.extend({
 
   triggers : {
     'mousedown': 'click'
-  }
+  },
+  events: {
+    'mouseenter': function() {
+      channel.trigger('training:re:choice:hover', this.model);
+    }
+  },
 });
 
 REChoicesView = Backbone.Marionette.CollectionView.extend({
@@ -476,6 +481,7 @@ REConceptView = Backbone.Marionette.View.extend({
   },
   events: {
     'mouseover @ui.flag': function(evt) {
+      channel.trigger('training:re:concept:incorrect:hover', this.model);
       this.$el.addClass('incorrect');
     },
     'mouseout @ui.flag': function(evt) {
@@ -536,6 +542,7 @@ REExtractionView = Backbone.Marionette.View.extend({
       this.showChildView('selected_choice', new RESelectedChoiceView({'model': childView.model}));
       this.showChildView('list', new REChoicesView({'collection': childView.model.get('children')}));
       this.showChildView('confirm', new REConfirmView({'model': childView.model}));
+      channel.trigger('training:re:choice:click', childView.model);
     },
     'reselectedchoice:clear': function(childView, evt) {
       /* Clicking back always completely resets (top of the stack) the RESelection */
@@ -543,6 +550,7 @@ REExtractionView = Backbone.Marionette.View.extend({
       var choices_collection = new REChoices(relation_data[this.model.get('relation_type')]);
       this.showChildView('list', new REChoicesView({'collection': choices_collection}));
       this.showChildView('confirm', new REConfirmView({'model': null}));
+      channel.trigger('training:re:selectedconcept:clear');
     },
     'reconcept:incorrect': function(childView, evt) {
       /* Flag a concept as being incorrect
@@ -550,9 +558,6 @@ REExtractionView = Backbone.Marionette.View.extend({
       * 2. Clear any potential REChoice listings
       * 3. Set the incorrect concept REChoice to the confirmation
       */
-      var m = new REChoice(relation_data['c_'+childView.model.get('index')+1+'_broken'])
-      m.set('text', childView.model.get('text') + ' is not a ' + childView.model.get('type') + ' concept');
-      this.showChildView('selected_choice', new RESelectedChoiceView({'model': m}));
       var concept = childView.model;
       if(!concept.get('choice')) {
         var data = relation_data['c_'+(concept.get('index')+1)+'_broken'];
@@ -563,6 +568,8 @@ REExtractionView = Backbone.Marionette.View.extend({
       this.showChildView('selected_choice', new RESelectedChoiceView({'model': concept.get('choice')}));
       this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
       this.showChildView('confirm', new REConfirmView({'model': concept.get('choice')}));
+
+      channel.trigger('training:re:concept:incorrect:click', childView.model);
     },
   },
 
@@ -573,6 +580,7 @@ REExtractionView = Backbone.Marionette.View.extend({
     * 3. Initalize the REChoices for this comparison type
     * 4. Initalize the Confirmation with an empty value (how we store the selected answer)
     */
+
     var c_a = new REConcept(_.extend(this.model.get('concepts')['c1'], {index: 0}));
     this.showChildView('c1', new REConceptView({'model': c_a}));
 
@@ -646,23 +654,27 @@ Tree = Backbone.Marionette.View.extend({
   },
 
   relationshipSubmit: function(rechoice_model) {
-    /* Submitting results for a REExtraction */
-    var self = this;
+    if(!this.getOption('training')) {
+      /* Submitting results for a REExtraction */
+      var self = this;
 
-    $.ajax({
-      type: 'POST',
-      url: '/task/re/'+ this.model.get('document_id') +'/'+ this.model.get('id') +'/submit/',
-      data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {'relation': rechoice_model.get('id')}),
-      cache: false,
-      success: function(data) {
-        self.model.set('user_completed', true);
-        self.getRegion('extraction').empty();
-        self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
-      },
-      error: function() {
-        channel.trigger('tree:error');
-      },
-    });
+      $.ajax({
+        type: 'POST',
+        url: '/task/re/'+ this.model.get('document_id') +'/'+ this.model.get('id') +'/submit/',
+        data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {'relation': rechoice_model.get('id')}),
+        cache: false,
+        success: function(data) {
+          self.model.set('user_completed', true);
+          self.getRegion('extraction').empty();
+          self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
+        },
+        error: function() {
+          channel.trigger('tree:error');
+        },
+      });
+    } else {
+      channel.trigger('training:re:submit', rechoice_model);
+    }
   },
 
   relationshipNext: function() {

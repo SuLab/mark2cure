@@ -1,4 +1,4 @@
-var channel = Backbone.Radio.channel('tree');
+var channel = Backbone.Radio.channel('mark2cure');
 
 //
 // Views
