@@ -41,7 +41,9 @@ REConcept = Backbone.Model.extend({
     id: null,
     text: null,
     index: null,
-    type: null
+    type: null,
+
+    choice: null  // Rechoice for saving Concepts as incorrect
   },
   initialize: function(obj) {
     if(obj.type.length<=1) {
@@ -551,8 +553,16 @@ REExtractionView = Backbone.Marionette.View.extend({
       var m = new REChoice(relation_data['c_'+childView.model.get('index')+1+'_broken'])
       m.set('text', childView.model.get('text') + ' is not a ' + childView.model.get('type') + ' concept');
       this.showChildView('selected_choice', new RESelectedChoiceView({'model': m}));
+      var concept = childView.model;
+      if(!concept.get('choice')) {
+        var data = relation_data['c_'+(concept.get('index')+1)+'_broken'];
+        data['text'] = concept.get('text') + data['text'] + concept.get('type') + ' concept';
+        concept.set('choice', new REChoice(data));
+      }
+
+      this.showChildView('selected_choice', new RESelectedChoiceView({'model': concept.get('choice')}));
       this.showChildView('list', new REChoicesView({'collection': new REChoices([])}));
-      this.showChildView('confirm', new REConfirmView({'model': new REChoice(relation_data['c_'+(childView.model.get('index')+1)+'_broken'])}));
+      this.showChildView('confirm', new REConfirmView({'model': concept.get('choice')}));
     },
   },
 
