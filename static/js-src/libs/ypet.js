@@ -179,8 +179,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
     var passage = this.collection['oannsPassage'] || this.collection['annsPassage'];
     var ann_text = this.get('text').toLowerCase();
 
-    console.log('Add the opponent anns', ann_text, passage);
-
     /* If Annotation was created with a string but without selected words */
     /* When there is no start, select all the words available that match the annotation text */
     if(this.get('words').length == 0 && this.get('text') != '' && this.get('start') == null) {
@@ -927,7 +925,7 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     });
 
     // If a concept object (RE) was included loose highlight them
-    var concepts = this.getOption('concepts');
+    var concepts = this.getOption('concepts') || this.getOption('training_data')['concepts'];
     if(concepts) {
       _.each(_.keys(concepts), function(k) {
         self.collection.each(function(passage) {
@@ -1274,24 +1272,28 @@ YPet = Backbone.Marionette.View.extend({
       this.collection.fetch();
     }
 
-    if(this.getOption('mode') == 're') {
+    if(this.getOption('mode') == 're' && !this.getOption('training')) {
       this.options.re_model = this.model;
       this.model = new NERDocument({pk: this.model.get('document_id')});
       this.model.fetch();
       this.collection = null;
     }
 
+    // if(this.getOption('mode') == 're' && this.getOption('training')) {
+    // }
+
     this.listenTo(this.collection, 'sync', function() {
       this.model = this.collection.get_active();
       if(this.model) { this.render(); }
     });
 
-    this.listenTo(this.model, 'sync', this.render);
-
-    this.listenTo(channel, 'ypet:quest:submit', this.submitDocument);
-    this.listenTo(channel, 'ypet:quest:next', this.nextDocument);
-    this.listenTo(channel, 'ypet:quest:completed', this.completed);
-    this.listenTo(channel, 'ypet:error', this.ypetError );
+    if(!this.getOption('training')) {
+      this.listenTo(this.model, 'sync', this.render);
+      this.listenTo(channel, 'ypet:quest:submit', this.submitDocument);
+      this.listenTo(channel, 'ypet:quest:next', this.nextDocument);
+      this.listenTo(channel, 'ypet:quest:completed', this.completed);
+      this.listenTo(channel, 'ypet:error', this.ypetError );
+    }
   },
 
   submitDocument: function() {
@@ -1372,10 +1374,19 @@ YPet = Backbone.Marionette.View.extend({
       };
 
     } else if(this.getOption('mode') == 're') {
-      var concepts = this.getOption('re_model').get('concepts');
-      this.options['concepts'] = concepts;
-      this.options['model'] = this.model;
-      this.showChildView('text', new NERParagraphsView(this.options));
+      if(this.getOption('training')) {
+        // console.log('ypet training onRender',  );
+        // this.options['concepts'] = concepts;
+        this.options['model'] = new NERDocument(this.model.get('document'));
+        this.showChildView('text', new NERParagraphsView(this.options));
+
+      } else{
+        var concepts = this.getOption('re_model').get('concepts');
+        this.options['concepts'] = concepts;
+        this.options['model'] = this.model;
+        this.showChildView('text', new NERParagraphsView(this.options));
+      }
+
     }
   }
 });

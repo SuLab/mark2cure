@@ -9,10 +9,19 @@ IterableCollection = Backbone.Collection.extend({
     "completed": false,
     "selected": false,
   },
+  set_active: function(model) {
+    this.invoke('set', {"selected": false})
+    model.set("selected", true);
+    return this.get_active();
+  },
   get_active: function() {
     if(!this.findWhere({"selected": true})) {
-      var m = this.at(0);
-      m.set('selected', true);
+      if(this.length >= 1) {
+        var m = this.at(0);
+        m.set('selected', true);
+      } else {
+        return false;
+      }
     }
     return this.findWhere({"selected": true});
   },
@@ -152,7 +161,7 @@ TrainingStepProgressItem = Backbone.Marionette.View.extend({
 TrainingStepProgress = Backbone.Marionette.CollectionView.extend({
   childView: TrainingStepProgressItem,
   tagName: 'ul',
-  className: 'list-inline text-center'
+  className: 'list-inline text-center mb-0'
 });
 
 TrainingModuleProgressItem = Backbone.Marionette.View.extend({
@@ -160,13 +169,18 @@ TrainingModuleProgressItem = Backbone.Marionette.View.extend({
   tagName: 'li',
   className: function() {
     return 'breadcrumb-item'+ (this.model.get('selected') ? ' active' : '');
+  },
+  events: {
+    'mousedown': function() {
+      channel.trigger('training:goto:module', this.model);
+    }
   }
 });
 
 TrainingModuleProgress = Backbone.Marionette.CollectionView.extend({
   childView: TrainingModuleProgressItem,
   tagName: 'ol',
-  className: 'breadcrumb'
+  className: 'breadcrumb mb-0'
 });
 
 TrainingModuleNavigation = Backbone.Marionette.View.extend({
@@ -186,8 +200,78 @@ TrainingModuleNavigation = Backbone.Marionette.View.extend({
 });
 
 //--
+//-- Inheritable parents views
+TrainingStepInstructionView = Backbone.Marionette.View.extend({
+  /* Display for a TrainingInstruction instance
+  * TrainingInstruction
+  */
+  template: '#training-instruction-text-template',
+  templateContext: function() {
+    return {'idx':  this.model.collection.indexOf(this.model)+1}
+  },
+  initialize: function() {
+    if(this.model.get('training_data')) {
+      channel.trigger('training:hide:action');
+      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
+    } else {
+      channel.trigger('training:hide:action');
+    }
+  }
+})
+
+TrainingStepTextView = Backbone.Marionette.View.extend({
+  /* Text at the top half of the Insturction page, usually used to describe what to do,
+   * and list the various instruction steps that need to be progressed through
+   * this.model = TrainingStep
+   * this.collection = None
+   */
+  template: '#training-text-template',
+  className: 'row justify-content-center',
+
+  ui: {
+    'instructions': '#training-instructions'
+  },
+
+  regions: {
+    'instructions': '#training-instructions'
+  },
+
+  initialize: function() {
+    var self = this;
+    this.listenTo(channel, 'training:next:instruction', function() {
+      var m = self.model.get('instructions').get_next();
+      if(m) {
+        //-- If there are more Instructions to go through
+        self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
+      } else {
+        //-- Bubble up to go to next Step
+        channel.trigger('training:next:step');
+      }
+    });
+
+    if(this.model.get('training_data')) {
+      channel.trigger('training:hide:action');
+      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
+    } else {
+      channel.trigger('training:hide:action');
+    }
+
+  },
+
+  onRender: function() {
+    var instruction = this.model.get('instructions').get_active();
+    if(instruction) {
+      this.showChildView('instructions', new TrainingStepInstructionView({'model': instruction}));
+    } else {
+      this.ui.instructions.hide();
+    }
+  }
+
+});
+
 TrainingFooterView = Backbone.Marionette.View.extend({
-  /* this.model = TrainingModule
+  /* Displays the progression thorughout
+  * this.model = TrainingModule
   * this.collection = None
   */
   template: '#training-footer-template',
@@ -204,45 +288,8 @@ TrainingFooterView = Backbone.Marionette.View.extend({
   events: {
     'mousedown a': function() { channel.trigger('training:next:instruction'); }
   },
-})
+});
 
-//-- Inheritable parents views
-TrainingStepInstructionView = Backbone.Marionette.View.extend({
-  /* Display for a TrainingInstruction instance */
-  template: _.template('<%= text %>')
-})
-
-TrainingStepTextView = Backbone.Marionette.View.extend({
-  /* this.model = TrainingStep
-   * this.collection = None
-   */
-  template: '#training-text-template',
-  className: 'row',
-
-  regions: {
-    'instructions': '#instructions'
-  },
-
-  initialize: function() {
-    var self = this;
-    this.listenTo(channel, 'training:next:instruction', function() {
-      var m = self.model.get('instructions').get_next();
-      if(m) {
-        //-- If there are more Instructions to go through
-        self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
-      } else {
-        //-- Bubble up to go to next Step
-        channel.trigger('training:next:step');
-      }
-    });
-  },
-
-  onRender: function() {
-    var instruction = this.model.get('instructions').get_active();
-    this.showChildView('instructions', new TrainingStepInstructionView({'model': instruction}));
-  }
-
-})
 
 TrainingStepView = Backbone.Marionette.View.extend({
   /* this.model = TrainingStep
@@ -269,6 +316,15 @@ TrainingStepView = Backbone.Marionette.View.extend({
         channel.trigger('training:next:module');
       }
     });
+
+    this.listenTo(channel, 'training:show:action', function(training_data, training_rules) {
+      this.showChildView('action', new RETrainingAction({'training_data': training_data, 'training_rules': training_rules}));
+    });
+
+    this.listenTo(channel, 'training:hide:action', function() {
+      this.getRegion('action').empty();
+    });
+
   },
 
 });
@@ -296,12 +352,18 @@ TrainingModuleView = Backbone.Marionette.View.extend({
         self.render();
       }
     });
+
+    this.listenTo(channel, 'training:goto:module', function(module) {
+      self.model = module.collection.set_active(module);
+      self.render();
+    });
+
   },
 });
 
 
 TrainingTaskView = Backbone.Marionette.View.extend({
-  /*
+  /* Base template for organizing everythin needed for going through a Task
    * this.model = None
    * this.collection = TrainingModuleList
    */
@@ -310,7 +372,7 @@ TrainingTaskView = Backbone.Marionette.View.extend({
   className: 'row',
 
   regions: {
-    'navigation': '#training-navigation',
+    'module-navigation': '#training-module-navigation',
     'message': '#training-message-center',
     'module': '#training-module',
   },
@@ -325,6 +387,9 @@ TrainingView = Backbone.Marionette.View.extend({
   /* Dedicated page for viewing training info and selecting additional training
    * this.model = None
    * this.collection = TrainingTaskCollection
+   *
+   * Training: Task (RE or NER) >> Module >> Step >> Instruction
+   *
    */
   template: '#training-template',
 
@@ -349,7 +414,6 @@ TrainingView = Backbone.Marionette.View.extend({
       if(task.get("task") == "r") {
         this.showChildView('content', new RETrainingTaskView());
       }
-
       // if(task.get("task") == "e") {
       //   this.showChildView('content', new NERTrainingTaskView());
       // }

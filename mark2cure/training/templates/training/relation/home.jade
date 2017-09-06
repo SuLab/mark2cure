@@ -6,14 +6,15 @@ block header
 
 
 block content
-
   #re-training-area
 
+
+block js-templates
+  include js-templates
   include training/js-templates.html
 
 
 block post-footer
-
   script.
     var RETrainingApp = Backbone.Marionette.Application.extend({
       region: '#re-training-area',

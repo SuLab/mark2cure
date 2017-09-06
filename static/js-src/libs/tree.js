@@ -424,6 +424,7 @@ RESelectedChoiceView = Backbone.Marionette.View.extend({
   triggers : {
     'mousedown': 'reselectedchoice:clear'
   },
+
   onRender: function() {
     if(this.model) {
       this.$el.html(this.model.get('text'));
@@ -617,9 +618,11 @@ Tree = Backbone.Marionette.View.extend({
     this.options.mode = 're';
     this.collection = new REExtractionList();
 
+    //- If one of these is missing, we're being called from the training app
     if( _.keys(_.pick(this.options, 'csrf_token', 'document_pk', 'document_pmid')).length != 3) {
       this.options.training = true
     };
+
 
     if(!this.options.training && this.collection.length == 0) {
       var self = this;
@@ -641,10 +644,18 @@ Tree = Backbone.Marionette.View.extend({
       });
 
     } else {
-      this.model = this.collection.get_active();
-      if(this.model) {
-        this.render();
+
+      if(this.options.training) {
+        this.model = new REExtraction(this.getOption('training_data'))
+        this.render()
+
+      } else {
+        this.model = this.collection.get_active();
+        if(this.model) {
+          this.render();
+        }
       }
+
     }
 
     this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit);
@@ -704,7 +715,9 @@ Tree = Backbone.Marionette.View.extend({
     if(this.collection && this.model) {
       this.options['model'] = this.model;
       this.options['mode'] = 're';
-      this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
+      if(!this.getOption('training')) {
+        this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
+      }
       this.showChildView('extraction', new REExtractionView(this.options));
       this.showChildView('text', new YPet(this.options));
     } else {
