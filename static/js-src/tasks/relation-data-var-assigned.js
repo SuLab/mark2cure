@@ -108,5 +108,19 @@ var relation_data = {
       "id": "ytbg2u85xp0hayhv1sh6kjlonaag1n4kfgidp1o1",
       "text": "cannot be determined"
     }
-  ]
+  ],
+
+  "re_training": [{
+    "id": "8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn",
+    "text": "relates to",
+    }, {
+    "id": "4mzrh5ub3nla6b1ostx7qdparjl3lrd9o567ubif",
+    "text": "has no relation to",
+  }, {
+    "id": "ac1m2h0vxye2vuzv6cljr7be12o0d9oclir0kmr8",
+    "text": "cannot be determined"
+  }],
+
+
+
 }
