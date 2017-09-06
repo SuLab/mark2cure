@@ -430,31 +430,154 @@ def training_details(request, task_type):
     if task_type == "re":
         res = []
 
+        # Training_Data can be included on any Step or Instruction
+
         res.append({
             'level': 1,
-            'name': 'Using the Interface',
+            'name': 'Introduction',
             'steps': [{
-                'name': 'Introduction',
-                'description': "<p>A concept is a term that has been classified. Eg- Biomedical Research is a type of Science</p><p>Play with the interface to learn how it works.</p>",
-                'instructions': [
-                    {"text": "The paragraph will contain the concept terms. Your task is to read the paragraph and identify how the concepts are related."},
-                    {"text": "The concept terms are color-coded by their classification or type"},
-                    {"text": "Clicking on the red \"x\" dismisses a term as being incorrectly classified."},
-                    {"text": "Select the kind of relationship that exists between the two concepts using the menu."},
-                    {"text": "The submit button lets you submit the relationship you’ve selected for the two concepts. If you are done playing with the interface and understand how to use it, click on the \"submit\" button one more time to continue"},
-                ]
+                'description': "<p>Ready for a new challenge? The interface for identifying concepts (Entity Recognition), and identifying relationships is different.</p>",
+                'instructions': [{
+                    "text": "Learn how to use it now!"
+                }]
             }]
         })
 
         res.append({
             'level': 2,
-            'name': 'Rules for Relationship Extraction',
-            'steps': []
+            'name': 'Using the Interface',
+            'steps': [{
+                'description': "<p>A concept is a term that has been classified. Eg- Biomedical Research is a type of Science</p>\
+                                <p class='sub'>Play with the interface to learn how it works.</p>",
+                'instructions': [
+                    {
+                        "text": "The paragraph will contain the concept terms. Your task is to read the paragraph and identify how the concepts are related.",
+                        'training_data': {
+                            'document': {
+                                'active': True,
+                                'passages': [{
+                                    'offset': 0,
+                                    'text': 'Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help'
+                                }]
+                            },
+                            'relation_type': 're_training',
+                            'concepts': {
+                                'c1': {'text': "citizen scientist", 'type': "g"},
+                                'c2': {'text': "biomedical research", 'type': "d"}
+                            },
+                            'current': True,
+                        }
+                    },
+                    {
+                        "text": "The concept terms are color-coded by their classification or type",
+                        'training_data': {
+                            'document': {
+                                'active': True,
+                                'passages': [{
+                                    'offset': 0,
+                                    'text': 'Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help'
+                                }]
+                            },
+                            'relation_type': 're_training',
+                            'concepts': {
+                                'c1': {'text': "citizen scientist", 'type': "g"},
+                                'c2': {'text': "biomedical research", 'type': "d"}
+                            },
+                            'current': True,
+                        }
+                    },
+                    {
+                        "text": "Clicking on the red \"×\" dismisses a term as being incorrectly classified.",
+                        'training_data': {
+                            'document': {
+                                'active': True,
+                                'passages': [{
+                                    'offset': 0,
+                                    'text': 'Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help'
+                                }]
+                            },
+                            'relation_type': 're_training',
+                            'concepts': {
+                                'c1': {'text': "citizen scientist", 'type': "g"},
+                                'c2': {'text': "biomedical research", 'type': "d"}
+                            },
+                            'current': True,
+                        }
+                    },
+                    {
+                        "text": "Select the kind of relationship that exists between the two concepts using the menu.",
+                        'training_data': {
+                            'document': {
+                                'active': True,
+                                'passages': [{
+                                    'offset': 0,
+                                    'text': 'Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help'
+                                }]
+                            },
+                            'relation_type': 're_training',
+                            'concepts': {
+                                'c1': {'text': "citizen scientist", 'type': "g"},
+                                'c2': {'text': "biomedical research", 'type': "d"}
+                            },
+                            'current': True,
+                        }
+                    },
+                    {
+                        "text": "The submit button lets you submit the relationship you’ve selected for the two concepts. If you are done playing with the interface and understand how to use it, click on the \"submit\" button one more time to continue",
+                        'training_data': {
+                            'document': {
+                                'active': True,
+                                'passages': [{
+                                    'offset': 0,
+                                    'text': 'Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help'
+                                }]
+                            },
+                            'relation_type': 're_training',
+                            'concepts': {
+                                'c1': {'text': "citizen scientist", 'type': "g"},
+                                'c2': {'text': "biomedical research", 'type': "d"}
+                            },
+                            'current': True,
+                        }
+                    },
+                ]
+            }]
         })
 
         res.append({
             'level': 3,
-            'name': 'Learn new relatoinships: Broad',
+            'name': 'Rules for Relationship Extraction',
+            'steps': [{
+                'description': "<p class='sub'>There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related – but are they really? If they are, how are they related?</p> <p class='sub'>Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill.</p>",
+                'instructions': [{
+                    "text": "Determine the relationship based ONLY on the text included. Do NOT use outside information for the relationship. This ONLY applies to the relationship. Feel free to look up the terms."
+                }, {
+                    "text": "Select the single, most detailed relationship you can without guessing.",
+                    "training_data": {
+                        "document": {
+                            "active": True,
+                            "passages": [{
+                                "offset": 0,
+                                "text": "Hashimoto's encephalopathy : report of three cases."
+                            }, {
+                                "offset": 1000,  # (TODO) I don't think this matters
+                                "text": "Both severe thyrotoxicosis and hypothyroidism may affect brain function and cause a change in consciousness, as seen with a thyroid storm or myxedema coma. However, encephalopathy may also develop in patients with autoimmune thyroid diseases independent of actual thyroid function level, and this is known as Hashimoto's encephalopathy . Although most patients are found to have Hashimoto's thyroiditis, less frequently they have Graves' disease. Clinical manifestations include epilepsy, disturbance of consciousness, cognitive impairment, memory loss, myoclonus, hallucinations, stroke-like episodes, tremor, involuntary movements, language impairment, and gait impairment. Hashimoto's encephalopathy is a relatively rare disease. As a good response can be obtained with corticosteroid therapy, early diagnosis and treatment is very beneficial for patients. Here we report three patients with Hashimoto's encephalopathy with typical manifestations of hallucinations that were associated with hypothyroidism, hyperthyroidism, and euthyroid status, respectively. They all showed a dramatic response to methyl-prednisolone pulse therapy."
+                            }]
+                        },
+                        "relation_type": "c_d",
+                        "concepts": {
+                            "c1": {"text": "methyl-prednisolon", "type": "c"},
+                            "c2": {"text": "Hashimoto's encephalopath", "type": "d"}
+                        },
+                        "current": True,
+                    }
+                }],
+            }]
+        })
+
+        res.append({
+            'level': 4,
+            'name': 'Learn new relationships: Broad',
             'steps': [{
                 'order': 1,
                 'description': 'Genes',
