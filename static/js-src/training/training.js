@@ -89,6 +89,9 @@ TrainingModule = Backbone.RelationalModel.extend({
     key: 'steps',
     relatedModel: TrainingStep,
     collectionType: TrainingStepCollection,
+    reverseRelation: {
+      'key': 'module'
+    }
   }],
 });
 
@@ -212,7 +215,7 @@ TrainingStepInstructionView = Backbone.Marionette.View.extend({
   initialize: function() {
     if(this.model.get('training_data')) {
       channel.trigger('training:hide:action');
-      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
+      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'), this.model.collection.indexOf(this.model));
     } else {
       channel.trigger('training:hide:action');
     }
@@ -317,8 +320,11 @@ TrainingStepView = Backbone.Marionette.View.extend({
       }
     });
 
-    this.listenTo(channel, 'training:show:action', function(training_data, training_rules) {
-      this.showChildView('action', new RETrainingAction({'training_data': training_data, 'training_rules': training_rules}));
+    this.listenTo(channel, 'training:show:action', function(training_data, training_rules, instruction_idx) {
+      var step_idx = self.model.get('order');
+      var module_idx = self.model.get('module').get('level');
+      var instruction_idx = instruction_idx || null;
+      this.showChildView('action', new RETrainingAction({'position': [module_idx, step_idx, instruction_idx], 'training_data': training_data, 'training_rules': training_rules}));
     });
 
     this.listenTo(channel, 'training:hide:action', function() {
