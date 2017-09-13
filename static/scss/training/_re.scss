@@ -20,11 +20,12 @@
 
   #training-module {
     #module-progress {
-      border-bottom: 2px solid $color_black;
+      // border-bottom: 2px solid $color_black;
     }
 
     #training-action {
-      min-height: 400px;
+      .walkthrough {
+      }
     }
 
     #training-text {
@@ -39,6 +40,7 @@
         }
       }
       #training-instructions {
+        min-height: 178px;
         border-left: 2px solid $color_black;
 
         #training-instruction-counter {
@@ -66,9 +68,9 @@
       .progress {
         background-color: $color_white;
         border: 1px solid $color_black;
-        height: 2em;
+        height: 1em;
         .progress-bar {
-          height: 2em;
+          height: 1em;
         }
       }
 
@@ -87,6 +89,60 @@
 
 }
 
+.holder {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  cursor: pointer;
+
+  p {
+    margin: 0px;
+    padding: 0px;
+    font-size: .75em;
+    position: absolute;
+    top: 1.25px;
+    left: 6.25px;
+    z-index: 99991;
+    color: $color_white;
+    // text-shadow: 0px 0px 1px $color_black;
+  }
+
+  .pulse {
+    width: 20px;
+    height: 20px;
+    border: 5px solid $color_red;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    background-color: $color_red;
+    z-index: 9999;
+    position: absolute;
+  }
+
+  .dot {
+    border: 10px solid $color_red;
+    background: transparent;
+    -webkit-border-radius: 60px;
+    -moz-border-radius: 60px;
+    border-radius: 60px;
+    height: 50px;
+    width: 50px;
+    -webkit-animation: pulse 3s ease-out;
+    -moz-animation: pulse 3s ease-out;
+    animation: pulse 3s ease-out;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    z-index: 1;
+    opacity: 0;
+  }
+
+}
+
+
 .popover {
   color: $color_white;
   z-index: 9999;
@@ -98,3 +154,48 @@
   }
 }
 
+
+@-moz-keyframes pulse {
+ 0% {
+  -moz-transform: scale(0);
+  opacity: 0.0;
+ }
+ 25% {
+  -moz-transform: scale(0);
+  oopacity: 0.1;
+ }
+ 50% {
+  -moz-transform: scale(0.1);
+  opacity: 0.3;
+ }
+ 75% {
+  -moz-transform: scale(0.5);
+  opacity: 0.5;
+ }
+ 100% {
+  -moz-transform: scale(1);
+  opacity: 0.0;
+ }
+}
+@-webkit-keyframes "pulse" {
+ 0% {
+  -webkit-transform: scale(0);
+  opacity: 0.0;
+ }
+ 25% {
+  -webkit-transform: scale(0);
+  opacity: 0.1;
+ }
+ 50% {
+  -webkit-transform: scale(0.1);
+  opacity: 0.3;
+ }
+ 75% {
+  -webkit-transform: scale(0.5);
+  opacity: 0.5;
+ }
+ 100% {
+  -webkit-transform: scale(1);
+  opacity: 0.0;
+ }
+}

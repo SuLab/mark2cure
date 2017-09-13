@@ -57,7 +57,6 @@ TrainingInstructionCollection = IterableCollection.extend({
 TrainingStep = Backbone.RelationalModel.extend({
   /* A specific Instruction or UI challenge within a Module */
   defaults: {
-    "order": 0,
     "name": "",
     "description": "",
     "completed": false,
@@ -82,7 +81,6 @@ TrainingModule = Backbone.RelationalModel.extend({
     "name": "",
     "selected": false,
     "completed": false,
-    "level": null  // Used to associated with saving progress and general order
   },
   relations: [{
     type: 'HasMany',
@@ -217,7 +215,8 @@ TrainingStepInstructionView = Backbone.Marionette.View.extend({
       channel.trigger('training:hide:action');
       channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'), this.model.collection.indexOf(this.model));
     } else {
-      channel.trigger('training:hide:action');
+      // (TODO) Check for parent step as a conditional
+      // channel.trigger('training:hide:action');
     }
   }
 })
@@ -241,7 +240,14 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
 
   initialize: function() {
     var self = this;
-    this.listenTo(channel, 'training:next:instruction', function() {
+
+    this.listenTo(channel, 'training:set:instruction', function(idx) {
+        var m = self.model.get('instructions').at(idx);
+        m.set('completed', true);
+        self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
+    });
+
+    this.listenTo(channel, 'training:next:instruction', function(idx) {
       var m = self.model.get('instructions').get_next();
       if(m) {
         //-- If there are more Instructions to go through
@@ -252,6 +258,7 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
       }
     });
 
+    console.log('step text view');
     if(this.model.get('training_data')) {
       channel.trigger('training:hide:action');
       channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
@@ -273,7 +280,7 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
 });
 
 TrainingFooterView = Backbone.Marionette.View.extend({
-  /* Displays the progression thorughout
+  /* Displays the progression throughout
   * this.model = TrainingModule
   * this.collection = None
   */
@@ -311,9 +318,11 @@ TrainingStepView = Backbone.Marionette.View.extend({
     var self = this;
     this.listenTo(channel, 'training:next:step', function() {
       var m = self.model.collection.get_next();
+      self.model = m;
+      console.log('Next Step', m);
       if(m) {
         //-- If there are more Steps to go through
-        //self.render()
+        self.render()
       } else {
         //-- Bubble up to go to next Module
         channel.trigger('training:next:module');
@@ -321,10 +330,13 @@ TrainingStepView = Backbone.Marionette.View.extend({
     });
 
     this.listenTo(channel, 'training:show:action', function(training_data, training_rules, instruction_idx) {
-      var step_idx = self.model.get('order');
-      var module_idx = self.model.get('module').get('level');
+      var module_idx = self.model.get('module').collection.indexOf(self.model.get('module'));
+      var step_idx = self.model.collection.indexOf(self.model);
       var instruction_idx = instruction_idx || null;
-      this.showChildView('action', new RETrainingAction({'position': [module_idx, step_idx, instruction_idx], 'training_data': training_data, 'training_rules': training_rules}));
+
+      this.showChildView('action', new RETrainingAction({'position': [module_idx, step_idx, instruction_idx],
+                                                         'training_data': training_data,
+                                                         'training_rules': training_rules}));
     });
 
     this.listenTo(channel, 'training:hide:action', function() {
@@ -350,12 +362,13 @@ TrainingModuleView = Backbone.Marionette.View.extend({
   initialize: function() {
     var self = this;
     this.listenTo(channel, 'training:next:module', function() {
-      console.log('Next Module', self);
       var m = self.model.collection.get_next();
       if(m) {
         //-- Move onto the next Module
         self.model = m;
         self.render();
+      } else {
+        alert('Next Module / Complete logic');
       }
     });
 

@@ -1,16 +1,10 @@
 {
   "data": {
     "re": [{
-      "name": "Introduction",
-      "steps": [{
-        "description": "<p>Ready for a new challenge? The interface for identifying concepts (Entity Recognition), and identifying relationships is different.</p>",
-        "instructions": [{ "text": "<p>Learn how to use it now!</p>" }]
-      }]
-    },
-
-    {
       "name": "Using the Interface",
       "steps": [{
+        "description": "<p>Ready for a new challenge? The interface for identifying concepts (Entity Recognition), and identifying relationships is different.</p>"
+      }, {
         "description": "<p>A concept is a term that has been classified. Eg- Biomedical Research is a type of Science</p><p class=\"sub\">Play with the interface to learn how it works.</p>",
         "training_data": {
           "document": {

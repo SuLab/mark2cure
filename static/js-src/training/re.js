@@ -9,8 +9,31 @@ var channel = Backbone.Radio.channel('mark2cure');
 RETrainingActionLogic = Object({
 
   //-- Modules
-  1: {},
-  2: {},
+  0: {
+    1:{
+      //-- Steps
+      onStartUpLogic: function() {
+        $('.holder').remove();
+        var pos_1 = [$(".paragraph-content").offset(), $(".paragraph-content").height()/2, $(".paragraph-content").width()/2];
+        var pos_2 = [$("#c2 .text").offset(), -12, -6];
+        var pos_3 = [$("#c1 .concept").offset(), 10, 10];
+        var pos_4 = [$("ul a.list-group-item:nth(1)").offset(), -4, -4];
+        var pos_5 = [$("#submit_button").offset(), 10, 30];
+
+        _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, idx) {
+          $("body").append("<div class='holder' data-idx='"+idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
+        });
+        $('.holder').on('click mouseenter mousehover', function() {
+          channel.trigger('training:set:instruction', +$(this).data('idx'));
+        });
+
+      },
+
+      onDestroy: function() {
+        $('.holder').remove();
+      }
+    }
+  },
   3: {
     //-- Steps
     0: {
@@ -90,6 +113,10 @@ RETrainingActionLogic = Object({
           this.event_counter++;
         },
 
+        onDestroy: function() {
+          $('.popover').popover('dispose');
+        },
+
         onStartUpLogic: function() {
           $relates_el = $('ul a.list-group-item:nth(0)');
           $relates_el.popover({
@@ -123,20 +150,48 @@ RETrainingAction = Backbone.Marionette.View.extend({
   template: '#training-action-template',
 
   initialize: function() {
-
     this.event_counter = 0;
 
-    var pos = this.getOption('position');
-
-    var action_version = RETrainingActionLogic[pos[0]][pos[1]][pos[2]];
-    _.extend(this, action_version);
+    try {
+      var pos = _.reject(this.getOption('position'), _.isNull);
+      console.log(pos);
+      if(pos.length == 2) {
+        var action_version = RETrainingActionLogic[pos[0]||0][pos[1]||0] || {};
+      } else if (pos.length == 3) {
+        var action_version = RETrainingActionLogic[pos[0]||0][pos[1]||0][pos[2]] || {};
+      }
+      _.extend(this, action_version);
+    }
+    catch(err) {};
 
     this.listenTo(channel, 'training:re:selectedconcept:clear', function() { this.clearClick(); });
     this.listenTo(channel, 'training:re:concept:incorrect:click', function(reconcept) { this.incorrectClick(reconcept); });
     this.listenTo(channel, 'training:re:choice:click', function(rechoice_model) { this.choiceClick(rechoice_model); });
 
+    this.listenTo(channel, 'training:next:instruction', function() { this.onStartUpLogic(); })
+    this.listenTo(channel, 'training:set:instruction', function() { this.onStartUpLogic(); })
   },
 
+  onAttach: function() {
+    var self = this;
+    if(this.getOption('training_data')) {
+      var RETreeApp = Backbone.Marionette.Application.extend({
+        region: '#tree-action-area',
+
+        onStart: function() {
+          var main = this.getRegion();
+          main.show( new Tree({
+            'mode': 're',
+            'training_data': self.getOption('training_data')
+          }));
+        }
+      });
+      var tree_app = new RETreeApp();
+      tree_app.start();
+      self.onStartUpLogic();
+    }
+
+  },
 
   //----------------
   onStartUpLogic: function() {},
@@ -158,31 +213,7 @@ RETrainingAction = Backbone.Marionette.View.extend({
       placement: 'top'
     });
     $relation_el.popover('show');
-  },
-
-  onAttach: function() {
-    var self = this;
-
-    if(this.getOption('training_data')) {
-      var RETreeApp = Backbone.Marionette.Application.extend({
-        region: '#tree-action-area',
-
-        onStart: function() {
-          var main = this.getRegion();
-
-          main.show( new Tree({
-            'mode': 're',
-            'training_data': self.getOption('training_data')
-          }));
-        }
-      });
-      var tree_app = new RETreeApp();
-      tree_app.start();
-
-      self.onStartUpLogic();
-    }
-
-  },
+  }
 
 });
 
@@ -191,7 +222,6 @@ RETrainingAction = Backbone.Marionette.View.extend({
 RETrainingStepView = TrainingStepView.extend({
 
   onRender: function() {
-    console.log('RETrainingStepView', this);
     this.showChildView('text', new TrainingStepTextView({'model': this.model}));
     this.showChildView('footer', new TrainingFooterView({'model': this.model}));
   }
@@ -202,7 +232,10 @@ RETrainingStepView = TrainingStepView.extend({
 RETrainingModuleView = TrainingModuleView.extend({
 
   onRender: function() {
-    this.showChildView('progress', new TrainingStepProgress({'collection': this.model.get('steps')}));
+    if(this.model.get('steps') > 1) {
+      this.showChildView('progress', new TrainingStepProgress({'collection': this.model.get('steps')}));
+    }
+
     var step = this.model.get('steps').get_active();
     this.showChildView('step', new RETrainingStepView({'model': step}));
   }
