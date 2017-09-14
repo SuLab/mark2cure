@@ -22,7 +22,6 @@ urlpatterns = [
     # url(r'^robots\.txt', include('robots.urls')),
 
     # Password / Account based changes
-    # url(r'^accounts/signup/$', signup, name='account_signup'),
     url(r'^accounts/', include('mark2cure.userprofile.providers.zooniverse.urls')),
     url(r'^accounts/', include('allauth.urls')),
 

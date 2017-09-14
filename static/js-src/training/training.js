@@ -1,4 +1,4 @@
-var channel = Backbone.Radio.channel('training');
+var channel = Backbone.Radio.channel('mark2cure');
 
 //
 // Generic Models
@@ -150,7 +150,9 @@ TrainingStepProgressItem = Backbone.Marionette.View.extend({
   className: 'list-inline-item',
   onRender: function() {
     if(this.model.get('selected')){
-      this.$el.css({'color': 'blue'});
+      this.$el.css({'color': '#7F3CFF'});
+    } else {
+      this.$el.css({'color': '#000'});
     }
   },
   modelEvents: {
@@ -221,8 +223,9 @@ TrainingStepInstructionView = Backbone.Marionette.View.extend({
   }
 })
 
+
 TrainingStepTextView = Backbone.Marionette.View.extend({
-  /* Text at the top half of the Insturction page, usually used to describe what to do,
+  /* Text at the top half of the Instruction page, usually used to describe what to do,
    * and list the various instruction steps that need to be progressed through
    * this.model = TrainingStep
    * this.collection = None
@@ -258,14 +261,6 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
       }
     });
 
-    console.log('step text view');
-    if(this.model.get('training_data')) {
-      channel.trigger('training:hide:action');
-      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
-    } else {
-      channel.trigger('training:hide:action');
-    }
-
   },
 
   onRender: function() {
@@ -275,29 +270,58 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
     } else {
       this.ui.instructions.hide();
     }
+  },
+
+  onAttach: function() {
+    if(this.model.get('training_data')) {
+      channel.trigger('training:hide:action');
+      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
+    } else {
+      channel.trigger('training:hide:action');
+    }
   }
 
 });
 
 TrainingFooterView = Backbone.Marionette.View.extend({
   /* Displays the progression throughout
-  * this.model = TrainingModule
+  * this.model = TrainingStep
   * this.collection = None
   */
   template: '#training-footer-template',
   templateContext: function() {
     var counts = this.model.get("instructions").pluck("completed");
-    return {'progress': (_.compact(counts).length / counts.length)*100}
+    return {
+      'instructions_count': this.model.get('instructions').length,
+      'progress': (_.compact(counts).length / counts.length)*100,
+      'hide_next': this.getOption('hide_next')
+    }
   },
   className: 'row justify-content-center my-3',
 
   initialize: function() {
     this.listenTo(this.model.get('instructions'), 'change:completed', this.render);
+    this.listenTo(this.model.get('instructions'), 'change:selected', this.newInstruction);
+
+    /* TrainingStep or 1st Instruction */
+    if(this.model.get('training_data')) {
+      this.options['hide_next'] = this.model.get('training_data') ? true : false;
+    }
   },
 
   events: {
     'mousedown a': function() { channel.trigger('training:next:instruction'); }
   },
+
+  newInstruction: function(model) {
+    /* Model is Instruction */
+    if(model.get('selected')) {
+      this.options['hide_next'] = model.get('training_data') ? true : false;
+      this.render();
+    }
+  },
+
+
 });
 
 
@@ -316,10 +340,17 @@ TrainingStepView = Backbone.Marionette.View.extend({
 
   initialize: function() {
     var self = this;
+
+    this.listenTo(channel, 'training:re:submit', function(rechoice_model) {
+      /* Pass this through, rather than calling next step on the Tree library
+       * so we can override if desired */
+      console.log('[Channel] Tree Submit msg');
+      channel.trigger('training:next:instruction');
+    });
+
     this.listenTo(channel, 'training:next:step', function() {
       var m = self.model.collection.get_next();
       self.model = m;
-      console.log('Next Step', m);
       if(m) {
         //-- If there are more Steps to go through
         self.render()

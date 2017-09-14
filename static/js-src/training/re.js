@@ -5,7 +5,6 @@ var channel = Backbone.Radio.channel('mark2cure');
 //
 
 
-
 RETrainingActionLogic = Object({
 
   //-- Modules
@@ -23,10 +22,9 @@ RETrainingActionLogic = Object({
         _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, idx) {
           $("body").append("<div class='holder' data-idx='"+idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
         });
-        $('.holder').on('click mouseenter mousehover', function() {
+        $('.holder').on('click mouseenter', function() {
           channel.trigger('training:set:instruction', +$(this).data('idx'));
         });
-
       },
 
       onDestroy: function() {
@@ -34,7 +32,7 @@ RETrainingActionLogic = Object({
       }
     }
   },
-  3: {
+  1: {
     //-- Steps
     0: {
       //-- Training
@@ -118,6 +116,8 @@ RETrainingActionLogic = Object({
         },
 
         onStartUpLogic: function() {
+          console.log('onStartUpLogic: 1 0 1');
+
           $relates_el = $('ul a.list-group-item:nth(0)');
           $relates_el.popover({
             container: 'body',
@@ -133,9 +133,171 @@ RETrainingActionLogic = Object({
 
       }
     },
-    1: {}
   },
-  4: {}
+  3: {
+    1: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == '04110gzdcxz8niuv83ev08ut7lv0xep4iym5sxm5') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    2: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'u0q779rcrevnu6aki694dqka4fnfwvwqgpl06ybl') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    3: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'rhkmksv5jh0vn7p47uk3fwdior6mlgaubwh1l6ow') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'qq84lkjfh46gmx4a9n1jpwxwrmbajsy1qctb9u8j') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    }
+  },
+
+  4: {
+    1: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'yrrb92b8vtjmcagjj4nx43sbj8wey2moqagk9ea5') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    2: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'lt18qfxd1ehj7ymxb29wrv6qa41mocwe6eor9dna') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    3: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'jyiczzhhupcp7cmebl422ax5dxe1jkwuq647oaw2') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == '8qota4u8hwtcyp65kz9zm0vjyuxwjt12sko084sn') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    }
+  },
+
+  5: {
+    1: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'xdnolju6wacvakqnmz6237zwbh0ta3ftw8mdcp50') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    2: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'am1wc2yvdcvwcb3yi298xesplbdktzku6wis49iw') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    3: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == '5ex6vuro19zeneiwlc8yze6dsq1coxvlpojolwgy') {
+          this.correct_answer();
+        } else if(rechoice_model.get('id') == 'txh8mu2mrnrffik893gr5h0ir7b1y7plgw94n4j7') {
+          $('.popover').popover('dispose');
+          this.hide_submit()
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+    4: {
+      incorrectClick: function() {
+        this.better_answer();
+      },
+      choiceClick: function(rechoice_model) {
+        if(rechoice_model.get('id') == 'xdnolju6wacvakqnmz6237zwbh0ta3ftw8mdcp50') {
+          this.correct_answer();
+        } else {
+          this.better_answer();
+        }
+      }
+    },
+
+  }
+
 });
 
 
@@ -154,7 +316,6 @@ RETrainingAction = Backbone.Marionette.View.extend({
 
     try {
       var pos = _.reject(this.getOption('position'), _.isNull);
-      console.log(pos);
       if(pos.length == 2) {
         var action_version = RETrainingActionLogic[pos[0]||0][pos[1]||0] || {};
       } else if (pos.length == 3) {
@@ -174,6 +335,7 @@ RETrainingAction = Backbone.Marionette.View.extend({
 
   onAttach: function() {
     var self = this;
+
     if(this.getOption('training_data')) {
       var RETreeApp = Backbone.Marionette.Application.extend({
         region: '#tree-action-area',
@@ -193,15 +355,22 @@ RETrainingAction = Backbone.Marionette.View.extend({
 
   },
 
+  onDestroy: function() {
+    $('.popover').popover('dispose');
+  },
+
   //----------------
   onStartUpLogic: function() {},
-  clearClick: function() {},
+  clearClick: function() {
+    $('.popover').popover('dispose');
+    this.hide_submit();
+  },
   incorrectClick: function(reconcept) {},
   choiceClick: function(rechoice_model) {},
 
   better_answer: function() {
     $('.popover').popover('dispose');
-    $('#submit_button').hide();
+    this.hide_submit();
     $relation_el = $('#selected-choice');
     $relation_el.popover({
       container: 'body',
@@ -213,10 +382,35 @@ RETrainingAction = Backbone.Marionette.View.extend({
       placement: 'top'
     });
     $relation_el.popover('show');
+  },
+
+  show_submit: function() {
+    $('#submit_button').removeClass('disabled');
+    $('#submit_button').prop('disabled', false);
+  },
+
+  hide_submit: function() {
+    $('#submit_button').addClass('disabled');
+    $('#submit_button').prop('disabled', true);
+  },
+
+  correct_answer: function() {
+    $('.popover').popover('dispose');
+    this.show_submit();
+    $relation_el = $('#selected-choice');
+    $relation_el.popover({
+      container: 'body',
+      html: true,
+      animation: false,
+      content: function() {
+        return "Correct, click 'submit' at the bottom of this page.";
+      },
+      placement: 'top'
+    });
+    $relation_el.popover('show');
   }
 
 });
-
 
 
 RETrainingStepView = TrainingStepView.extend({
@@ -232,7 +426,7 @@ RETrainingStepView = TrainingStepView.extend({
 RETrainingModuleView = TrainingModuleView.extend({
 
   onRender: function() {
-    if(this.model.get('steps') > 1) {
+    if(this.model.get('steps').length > 1) {
       this.showChildView('progress', new TrainingStepProgress({'collection': this.model.get('steps')}));
     }
 

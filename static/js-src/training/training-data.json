@@ -30,9 +30,9 @@
     {
       "name": "Rules for Relationship Extraction",
       "steps": [{
-      "description": "<p class=\"sub\">There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related – but are they really? If they are, how are they related?</p> <p class=\"sub\">Learn how to use the relationship extraction tool to annotate the relationship between genes, diseases, and treatments in biomedical text and earn your Relationship Marking Skill.</p>",
+      "description": "<p class=\"sub\">There are many different kinds of concepts in biomedical text. With the concept recognition task, you identify and tag concepts like genes, disease, and treatments in biomedical abstracts. Concepts in the same abstract may be related – but are they really? If they are, how are they related?</p>",
       "instructions": [
-        { "text": "<p>Determine the relationship based ONLY on the text included. Do NOT use outside information for the relationship. This ONLY applies to the relationship. Feel free to look up the terms.</p>" },
+        { "text": "<p>Determine the relationship based <strong>only</strong> on the text included. <strong>Do not</strong> use outside information for the relationship. This <strong>only</strong> applies to the relationship. Feel free to look up the terms.</p>" },
         { "text": "<p>Select the single, most detailed relationship you can without guessing.</p>",
           "training_data": {
             "document": {
@@ -54,12 +54,11 @@
     {
       "name": "Learn new relationships",
       "steps": [{
-        "description": "<p>Relationships for three different types of concepts will be presented. The concepts will be color-coded.</p>",
+        "description": "<p>Relationships for three different types of concepts will be presented. The concepts will be color-coded.</p><br /><br /><p class=\"sub\">All concept types definitions can be found <a href=\"/instructions/relation/\" target=\"_blank\">here</a></p>",
         "instructions": [
-          { "text": "<p><span class=\"user_annotated\">Disease concept</span> entities will be in <span class=\"user_annotated\">blue</span>. <a href=\"instructions:relation-definition-disease\" target=\"_blank\"><small>Learn more.</small></a></p>" },
-          { "text": "<p><span class=\"user_annotated_green\">Gene/protein concept</span> entities will be in <span class=\"user_annotated_green\">green</span>.  <a href=\"instructions:relation-definition-gene\" target=\"_blank\"><small>Learn more.</small></a></p>" },
-          { "text": "<p><span class=\"user_annotated_pink\">Drug concept</span> entities will be in <span class=\"user_annotated_pink\">pink</span>. <a href=\"instructions:relation-definition-drug\" target=\"_blank\"><small>Learn more.</small></a></p>" },
-          { "text": "<p>Learn more about the concept types <a href=\"instructions:relation\" target=\"_blank\">here</a></p>" }]
+          { "text": "<p><span class=\"user_annotated\">Disease concept</span> entities will be in <span class=\"user_annotated\">blue</span>. <br /><br /><a href=\"/instructions/relation/definition/disease/\" target=\"_blank\"><small>Learn more.</small></a></p>" },
+          { "text": "<p><span class=\"user_annotated_green\">Gene/protein concept</span> entities will be in <span class=\"user_annotated_green\">green</span>. <br /><br /><a href=\"/instructions/relation/definition/gene/\" target=\"_blank\"><small>Learn more.</small></a></p>" },
+          { "text": "<p><span class=\"user_annotated_pink\">Drug concept</span> entities will be in <span class=\"user_annotated_pink\">pink</span>. <br /><br /><a href=\"/instructions/relation/definition/drug/\" target=\"_blank\"><small>Learn more.</small></a></p>" }]
       },
       {
         "description": "<p>In addition to having a relationship or <strong>not</strong> having a relationship, there are three types of relationships currently available</p>",
@@ -73,14 +72,14 @@
     {
       "name": "Gene &raquo; Disease",
       "steps": [{
-        "description": "<p>Gene-Disease Relationships: A <strong>gene</strong> is a sequence of DNA that serves as a blueprint for other biomolecules. Genes are <a href=\"https://en.wikipedia.org/wiki/Transcription_(genetics)\" target=\"_blank\">transcribed</a> to mRNA and the mRNA gene transcript is <a href=\"https://en.wikipedia.org/wiki/Translation_(biology)\" target=\"_blank\">translated</a> to proteins. There are three options for Gene-Disease Relationships</p>",
+        "description": "<p>A <strong>gene</strong> is a sequence of DNA that serves as a blueprint for other biomolecules. Genes are <a href=\"https://en.wikipedia.org/wiki/Transcription_(genetics)\" target=\"_blank\">transcribed</a> to mRNA and the mRNA gene transcript is <a href=\"https://en.wikipedia.org/wiki/Translation_(biology)\" target=\"_blank\">translated</a> to proteins. There are three options for Gene-Disease Relationships</p>",
         "instructions": [
           { "text": "<p><strong>\"altered expression is/may be associated with\"</strong> – Altered gene expression refers to changes in the amount of gene product synthesis. This can happen at transcription or translation. Either way, changes in the amount of gene product synthesis is or may be associated with the disease</p>" },
           { "text": "<p><strong>\"mutation is/may be associated with\"</strong> – A mutation is a permanent change in the DNA sequence that makes up the gene. Changing the blueprint can change the biomolecules that are built from that blueprint and is or may be associated with the disease.</p>" },
-          { "text": "<p>\"post-translational modifications are/may be associated with\"</strong> – After a gene has been transcribed into mRNA and the mRNA translated into a protein, the protein can be modified. These modifications can have huge effects including changing the location of the protein in the cell, changing its activity, and are (or may be) associated with the disease.</p>" }]
+          { "text": "<p><strong>\"post-translational modifications are/may be associated with\"</strong> – After a gene has been transcribed into mRNA and the mRNA translated into a protein, the protein can be modified. These modifications can have huge effects including changing the location of the protein in the cell, changing its activity, and are (or may be) associated with the disease.</p>" }]
       },
       {
-        "description": "<p>Gene-Disease Relationships: Try it out!  Remember, don’t use outside information for <strong>the relationship between</strong> TTR and Familial amyloidotic polyneuropathy, but you’re welcome to look up anything else (Eg- TTR, crest syndrome, multiple myeloma, etc.)</p>",
+        "description": "<p class=\"sub\">Gene-Disease Relationships: Try it out!  Remember, don’t use outside information for <strong>the relationship between</strong> TTR and Familial amyloidotic polyneuropathy, but you’re welcome to look up anything else (Eg- TTR, crest syndrome, multiple myeloma, etc.)</p>",
         "training_data": {
           "document": {
             "passages": [{ "offset": 0, "text": "Together with a case presenting in a patient with multiple myeloma, we describe 2 unique presentations including 1 associated with CREST syndrome in a patient with a previous history of breast carcinoma and another, also associated with cancer, with transthyretin deposits in a woman with a TTR gene mutation and a family history of familial amyloidotic polyneuropathy ." }]
@@ -121,13 +120,14 @@
 
     {
       "name": "Drug &raquo; Disease",
-      "description": "<p>Drug-Disease Relationships: A <strong>drug</strong> is, in the broadest of terms, a <strong>substance</strong> that has known biological effects on humans or other animals. There are five options for how a Drug might relate to a disease</p>",
-      "instructions": [
-        { "text": "<p><strong>\"(may) exacerbate(s)\"</strong> – The chemical or drug worsens or may worsen the disease or symptoms of the disease in any manner</p><p><strong>\"(may) treat(s)\"</strong> – The chemical or drug improves, treats, may improve, or may treat the disease or symptoms of the disease in any manner</p>" },
-        { "text": "<p><strong>(may) increase(s) risk of disease</strong> – The chemical or drug increases or may increase the chances of getting the disease.</p>" },
-        { "text": "<p><strong>\"(may) cause(s)\"</strong> – The chemical or drug causes leads to, may cause, or may lead to the disease or symptoms of the disease</p><p><strong>\"(may) prevent(s)\"</strong> – The chemical or drug prevents or may prevent the disease or symptoms of the disease.</p>" }
-      ],
       "steps": [{
+        "description": "<p>A <strong>drug</strong> is, in the broadest of terms, a <strong>substance</strong> that has known biological effects on humans or other animals. There are five options for how a Drug might relate to a disease</p>",
+        "instructions": [
+          { "text": "<p><strong>\"(may) exacerbate(s)\"</strong> – The chemical or drug worsens or may worsen the disease or symptoms of the disease in any manner</p><p><strong>\"(may) treat(s)\"</strong> – The chemical or drug improves, treats, may improve, or may treat the disease or symptoms of the disease in any manner</p>" },
+          { "text": "<p><strong>\"(may) increase(s) risk of disease\"</strong> – The chemical or drug increases or may increase the chances of getting the disease.</p>" },
+          { "text": "<p><strong>\"(may) cause(s)\"</strong> – The chemical or drug causes leads to, may cause, or may lead to the disease or symptoms of the disease</p><p><strong>\"(may) prevent(s)\"</strong> – The chemical or drug prevents or may prevent the disease or symptoms of the disease.</p>" }]
+        },
+        {
         "training_data": {
           "document": {
             "passages": [{"offset": 0, "text": "Results revealed that risk of ADHD significantly increased as a result of exposure to alcohol by 1.55 times (95% CI 1.33-1.82), maternal smoking during pregnancy by 2.64 times (95% CI 1.45-4.80), and paternal smoking during pregnancy by 1.17 times (95% CI 1.98-1.39)" }]
@@ -167,12 +167,13 @@
 
     {
       "name": "Gene &raquo; Drug",
-      "description": "<p>Gene &raquo; Drug Relationships: <strong>Genes</strong> and <strong>gene products</strong> can affect and be affected by <strong>drugs</strong> in many different ways.  There are two options for describing the relationship between genes and drugs</p>",
+      "steps": [{
+        "description": "<p><strong>Genes</strong> and <strong>gene products</strong> can affect and be affected by <strong>drugs</strong> in many different ways.  There are two options for describing the relationship between genes and drugs</p>",
         "instructions": [
           { "text": "<p><strong>\"(may) affect(s)\"</strong> – The gene or gene product affects or may affect the activity, metabolism, or efficacy of the drug. In other words, the gene or gene product acts on the drug</p>" },
-          { "text": "<p><strong>\"Is/may be affected by\"</strong> – The gene or gene product’s expression, activity, location, modification, or degradation is or may be affected by the drug. In other words the drug acts on the gene or gene product.</p>" }
-        ],
-      "steps": [{
+          { "text": "<p><strong>\"Is/may be affected by\"</strong> – The gene or gene product’s expression, activity, location, modification, or degradation is or may be affected by the drug. In other words the drug acts on the gene or gene product.</p>" }]
+      },
+      {
         "training_data": {
           "document": {
             "passages": [{ "offset": 0, "text": "Adenosine deaminase (ADA) deficiency is a systemic purine metabolic disorder that primarily affects lymphocyte development, viability, and function. Enzyme replacement therapy (ERT) with polyethylene glycol-modified bovine adenosine deaminase (PEG-ADA, Adagen) may be a useful alternative treatment strategy." }]
@@ -187,7 +188,7 @@
       {
         "training_data": {
           "document": {
-            "passages": [{ "offset": 0, "text": "Cytochrome P450 (CYP450) 2D6 is an important member of the P450 enzyme superfamily and responsible for clearing 25% of clinically important drugs. The aim of this study was to assess the catalytic characteristics of 24 CYP2D6 allelic isoforms found in the Chinese population and their effects on the metabolism of <span class=\"user_annotated_pink\">risperidone</span> in vitro. Among <span class=\"user_annotated_green\">CYP2D6</span> variants tested, 2 variants exhibited higher <span class=\"user_annotated_pink\">risperidone</span> clearance values than the wild-type protein." }]
+            "passages": [{ "offset": 0, "text": "Cytochrome P450 (CYP450) 2D6 is an important member of the P450 enzyme superfamily and responsible for clearing 25% of clinically important drugs. The aim of this study was to assess the catalytic characteristics of 24 CYP2D6 allelic isoforms found in the Chinese population and their effects on the metabolism of risperidone in vitro. Among CYP2D6 variants tested, 2 variants exhibited higher risperidone clearance values than the wild-type protein." }]
           },
           "relation_type": "g_c",
           "concepts": {
@@ -199,7 +200,7 @@
       {
         "training_data": {
           "document": {
-            "passages": [{ "offset": 0, "text": "Due to these data, we performed a study to investigate the effect of the <span class=\"user_annotated_green\">PDE5</span>-inhibitor, <span class=\"user_annotated_pink\">tadalafil</span>, on dystrophic skeletal muscle function." }]
+            "passages": [{ "offset": 0, "text": "Due to these data, we performed a study to investigate the effect of the PDE5 - inhibitor, tadalafil , on dystrophic skeletal muscle function." }]
           },
           "relation_type": "g_c",
           "concepts": {
@@ -211,7 +212,7 @@
       {
         "training_data": {
           "document": {
-            "passages": [{ "offset": 0, "text": "In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of EGFR and increased the cell sensitivity to erlotinib. In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated <span class=\"user_annotated_green\">EGFR</span>, and these cells did not respond to <span class=\"user_annotated_pink\">erlotinib</span>." }]
+            "passages": [{ "offset": 0, "text": "In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of EGFR and increased the cell sensitivity to erlotinib. In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated EGFR , and these cells did not respond to erlotinib ." }]
           },
           "relation_type": "g_c",
           "concepts": {

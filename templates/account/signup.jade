@@ -8,59 +8,60 @@ block header
     include includes/header
 
 block content
-  .container
+  #accounts-signup.container-fluid
 
-    .row.m-t-1
-      .col-xs-12
-        h2.text-xs-center You have now completed the tutorial and are ready to Mark2Cure!
+    .row.justify-content-center.my-3
+      .col-12
+        h2.text-center You have now completed training and are ready to Mark2Cure!
 
-      - if not user.is_authenticated
-        .col-xs-10.col-xs-offset-1
-          p.lead To skip the tutorials in the future and to save your score and any points you accumulate, please register for an account.  After registering, we will teach you how to highlight important biomedical concepts like diseases, genes, and treatments. Your efforts, combined with the efforts of other citizen scientists, will help researchers better organize biomedical knowledge.
+      // - if not user.is_authenticated
+      //   .col-10
+      //     p.lead To skip the tutorials in the future and to save your score and any points you accumulate, please register for an account.  After registering, we will teach you how to highlight important biomedical concepts like diseases, genes, and treatments. Your efforts, combined with the efforts of other citizen scientists, will help researchers better organize biomedical knowledge.
 
-      .row.m-y-2
-        .col-md-6
+      .row.justify-content-center.my-2
+        .col-10
           .row
-            .col-sm-12.m-y-2
-              h3.text-xs-center Register for an account
-          .row
+            .col-12.col-md-8
+              .row
+                .col-12.my-2
+                  h3.text-xs-center Register for an account
+              .row
+                .col-12
 
-            form(role='form', method='post', action="{% url 'account_signup' %}").form-horizontal
-              - csrf_token
-              #{form.errors}
+                  form(role='form', method='post', action="{% url 'account_signup' %}").form-horizontal
+                    - csrf_token
+                    #{form.errors}
 
-              .form-group
-                fieldset
-                  label.col-sm-4.control-label Username
-                  .col-sm-8 #{form.username|add_class:'form-control'|attr:"placeholder:Username is displayed on public profile"}
+                    .form-group.row
+                      label.col-form-label.col-12 Username
+                      .col-12
+                        #{form.username|add_class:'form-control'|attr:"placeholder:Username is displayed on public profile"}
 
-              .form-group
-                fieldset
-                  label.col-sm-4.control-label Email
-                  .col-sm-8 #{form.email|add_class:'form-control'|attr:"placeholder:Email will remain hidden"}
+                    .form-group.row
+                      label.col-form-label.col-12 Email
+                      .col-12
+                        #{form.email|add_class:'form-control'|attr:"placeholder:Email will remain hidden"}
 
-              .form-group
-                fieldset
-                  label.col-sm-4.control-label Password
-                  .col-sm-8 #{form.password1|add_class:'form-control'|attr:'type:password'}
+                    .form-group.row
+                      label.col-form-label.col-12 Password
+                      .col-12
+                        #{form.password1|add_class:'form-control'|attr:'type:password'}
 
-              .form-group
-                fieldset
-                  label.col-sm-4.control-label Verify Password
-                  .col-sm-8 #{form.password2|add_class:'form-control'|attr:'type:password'}
+                    .form-group.row
+                      label.col-form-label.col-12 Verify Password
+                      .col-12
+                        #{form.password2|add_class:'form-control'|attr:'type:password'}
 
-              .form-group
-                fieldset
-                  .col-sm-6.col-xs-offset-5
-                    button(type="submit").btn.btn-primary.btn-block Create Account
-
-            //a(title="log in with Google", href="{% provider_login_url 'google' %}") Google
+                    .form-group.row
+                      .col-12
+                        button(type="submit").form-control.btn.btn-primary.btn-block Create Account
 
 
-        .col-md-6
-          .row
-            .col-sm-12.m-y-2
-              h3.text-xs-center Already have an account?
-          .row.m-t-1
-            .col-sm-4.col-sm-offset-4
-              a(href='{% url "account_login" %}').btn.btn-block.btn-primary Login
+            .col-12.col-md-4
+              .row
+                .col-12.my-2
+                  h3.text-center Already have an account?
+
+              .row.justify-content-center.mt-1
+                .col-12.col-lg-8
+                  a(href='{% url "account_login" %}').btn.btn-block.btn-primary Login

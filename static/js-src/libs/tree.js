@@ -403,6 +403,7 @@ REConfirmView = Backbone.Marionette.View.extend({
 
   events: {
     'mousedown @ui.button': function() {
+      console.log('>> mousedown');
       channel.trigger('tree:relationship:submit', this.model);
     }
   },
@@ -665,6 +666,8 @@ Tree = Backbone.Marionette.View.extend({
   },
 
   relationshipSubmit: function(rechoice_model) {
+    console.log('>> relationshipSubmit');
+
     if(!this.getOption('training')) {
       /* Submitting results for a REExtraction */
       var self = this;
