@@ -213,13 +213,7 @@ TrainingStepInstructionView = Backbone.Marionette.View.extend({
     return {'idx':  this.model.collection.indexOf(this.model)+1}
   },
   initialize: function() {
-    if(this.model.get('training_data')) {
-      channel.trigger('training:hide:action');
-      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'), this.model.collection.indexOf(this.model));
-    } else {
-      // (TODO) Check for parent step as a conditional
-      // channel.trigger('training:hide:action');
-    }
+    channel.trigger('training:show:action', 1, this.model.get('training_data'), this.model.get('training_rules'), this.model.collection.indexOf(this.model));
   }
 })
 
@@ -273,12 +267,7 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
   },
 
   onAttach: function() {
-    if(this.model.get('training_data')) {
-      channel.trigger('training:hide:action');
-      channel.trigger('training:show:action', this.model.get('training_data'), this.model.get('training_rules'))
-    } else {
-      channel.trigger('training:hide:action');
-    }
+    channel.trigger('training:show:action', 0, this.model.get('training_data'), this.model.get('training_rules'))
   }
 
 });
@@ -360,18 +349,20 @@ TrainingStepView = Backbone.Marionette.View.extend({
       }
     });
 
-    this.listenTo(channel, 'training:show:action', function(training_data, training_rules, instruction_idx) {
-      var module_idx = self.model.get('module').collection.indexOf(self.model.get('module'));
-      var step_idx = self.model.collection.indexOf(self.model);
-      var instruction_idx = instruction_idx || null;
+    this.listenTo(channel, 'training:show:action', function(source, training_data, training_rules, instruction_idx) {
+      console.log('Channel Trigger', source, training_data);
+      /* source: 0 = Step, 1 = Instruction */
+      if(!(source==1 && training_data==null)) {
+        console.log(' - redraw');
+        var module_idx = self.model.get('module').collection.indexOf(self.model.get('module'));
+        var step_idx = self.model.collection.indexOf(self.model);
+        var instruction_idx = instruction_idx || null;
+        this.getRegion('action').empty();
+        this.showChildView('action', new RETrainingAction({'position': [module_idx, step_idx, instruction_idx],
+                                                           'training_data': training_data,
+                                                           'training_rules': training_rules}));
+      }
 
-      this.showChildView('action', new RETrainingAction({'position': [module_idx, step_idx, instruction_idx],
-                                                         'training_data': training_data,
-                                                         'training_rules': training_rules}));
-    });
-
-    this.listenTo(channel, 'training:hide:action', function() {
-      this.getRegion('action').empty();
     });
 
   },

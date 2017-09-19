@@ -12,7 +12,12 @@ RETrainingActionLogic = Object({
     1:{
       //-- Steps
       onStartUpLogic: function() {
-        $('.holder').remove();
+        console.log('onStartUpLogic 0 1');
+
+        var template = _.template($('#training-action-static-example-template').html());
+        this.$el.html( template() );
+
+        $('.holder').remove().unbind();
         var pos_1 = [$(".paragraph-content").offset(), $(".paragraph-content").height()/2, $(".paragraph-content").width()/2];
         var pos_2 = [$("#c2 .text").offset(), -12, -6];
         var pos_3 = [$("#c1 .concept").offset(), 10, 10];
@@ -20,7 +25,9 @@ RETrainingActionLogic = Object({
         var pos_5 = [$("#submit_button").offset(), 10, 30];
 
         _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, idx) {
-          $("body").append("<div class='holder' data-idx='"+idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
+          if(pos[0]) {
+            $("body").append("<div class='holder' data-idx='"+idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
+          }
         });
         $('.holder').on('click mouseenter', function() {
           channel.trigger('training:set:instruction', +$(this).data('idx'));
@@ -28,10 +35,12 @@ RETrainingActionLogic = Object({
       },
 
       onDestroy: function() {
-        $('.holder').remove();
+        $('.holder').remove().unbind();
       }
+
     }
   },
+
   1: {
     //-- Steps
     0: {
@@ -315,13 +324,21 @@ RETrainingAction = Backbone.Marionette.View.extend({
     this.event_counter = 0;
 
     try {
-      var pos = _.reject(this.getOption('position'), _.isNull);
-      if(pos.length == 2) {
-        var action_version = RETrainingActionLogic[pos[0]||0][pos[1]||0] || {};
-      } else if (pos.length == 3) {
-        var action_version = RETrainingActionLogic[pos[0]||0][pos[1]||0][pos[2]] || {};
+      this.pos = _.reject(this.getOption('position'), _.isNull);
+
+      if(this.pos.length == 2) {
+        var action_version = RETrainingActionLogic[this.pos[0]||0][this.pos[1]||0] || {};
+      } else if (this.pos.length == 3) {
+        var action_version = RETrainingActionLogic[this.pos[0]||0][this.pos[1]||0][this.pos[2]] || {};
+      }
+
+      //-- Check that the inherited object isn't a key lookup (so it would actually has are approved functions)
+      var function_keys = _.compact(_.map(_.keys(action_version), function(x) { return +x; }));
+      if(function_keys.length) {
+        var action_version = {};
       }
       _.extend(this, action_version);
+
     }
     catch(err) {};
 
@@ -350,8 +367,9 @@ RETrainingAction = Backbone.Marionette.View.extend({
       });
       var tree_app = new RETreeApp();
       tree_app.start();
-      self.onStartUpLogic();
     }
+
+    this.onStartUpLogic();
 
   },
 

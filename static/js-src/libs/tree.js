@@ -624,7 +624,6 @@ Tree = Backbone.Marionette.View.extend({
       this.options.training = true
     };
 
-
     if(!this.options.training && this.collection.length == 0) {
       var self = this;
       /* Initalize the page by loading all relation tasks

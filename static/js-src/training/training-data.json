@@ -6,17 +6,6 @@
         "description": "<p>Ready for a new challenge? The interface for identifying concepts (Entity Recognition), and identifying relationships is different.</p>"
       }, {
         "description": "<p>A concept is a term that has been classified. Eg- Biomedical Research is a type of Science</p><p class=\"sub\">Play with the interface to learn how it works.</p>",
-        "training_data": {
-          "document": {
-            "passages": [{ "offset": 0, "text": "Biomedical research literature is growing rapidly around the world, making it hard for researchers to acquire all the new, relevant information. By joining Mark2Cure , as a citizen scientist , I am helping to identify relationships between concepts in biomedical research so that scientists will hopefully be able to uncover new treatment strategies faster. I contribute to Mark2Cure because I am ready to help" }]
-          },
-          "current": true,
-          "relation_type": "re_training",
-          "concepts": {
-            "c1": {"text": "citizen scientist", "type": "g"},
-            "c2": {"text": "biomedical research", "type": "d"}
-          }
-        },
         "instructions": [
           {"text": "<p>The paragraph will contain the concept terms. Your task is to read the paragraph and identify how the concepts are related.</p>"},
           {"text": "<p>The concept terms are color-coded by their classification or type</p>"},
