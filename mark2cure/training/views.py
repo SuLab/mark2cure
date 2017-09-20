@@ -15,16 +15,16 @@ from ..task.models import Level
 #                             content_type=ContentType.objects.get_for_model(task),
 #                             object_id=task.id)
 #
-# Level.objects.create(user=user, task_type='e', level=task.provides_qualification, created=timezone.now())
+# Level.objects.create(user=user, task_type='ner', level=task.provides_qualification, created=timezone.now())
 
 
 @login_required
 def route(request):
     # Prioritize relation training over Entity Recognition for routing
-    if Level.objects.filter(user=request.user, task_type='r').exists():
+    if Level.objects.filter(user=request.user, task_type='re').exists():
         return redirect(reverse('training:re'))
 
-    user_level = Level.objects.filter(user=request.user, task_type='e').first().level
+    user_level = Level.objects.filter(user=request.user, task_type='ner').first().level
     if user_level <= 3:
         task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
     else:

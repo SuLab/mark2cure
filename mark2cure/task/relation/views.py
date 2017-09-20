@@ -90,7 +90,7 @@ def re_task_relationships_list(request, document_pk):
 
     # Create the views
     for section in document.section_set.all():
-        View.objects.get_or_create(task_type='ri', section=section, user=request.user)
+        View.objects.get_or_create(task_type='re', section=section, user=request.user)
 
     cmd_str = ""
     with open('mark2cure/task/relation/commands/get-user-relations-for-document.sql', 'r') as f:
@@ -137,7 +137,7 @@ def re_task_relationship_submit(request, document_pk, relation_pk):
     relation = get_object_or_404(Relation, pk=relation_pk)
 
     first_section = document.section_set.first()
-    view = View.objects.get(task_type='ri', completed=False, section=first_section, user=request.user)
+    view = View.objects.get(task_type='re', completed=False, section=first_section, user=request.user)
 
     current_selection = request.POST.get('relation', None)
     if current_selection:
@@ -196,7 +196,7 @@ def re_task_submit(request, document_pk):
     '''
     document = get_object_or_404(Document, pk=document_pk)
     first_section = document.section_set.first()
-    view = View.objects.filter(task_type='ri', section=first_section, user=request.user).last()
+    view = View.objects.filter(task_type='re', section=first_section, user=request.user).last()
 
     if view.completed:
         re_task_created = False

@@ -46,7 +46,7 @@ LEFT JOIN `task_userquestrelationship_views`
 
 LEFT JOIN `document_view`
   ON `document_view`.`id` = `task_userquestrelationship_views`.`view_id`
-  AND `document_view`.`task_type` = 'cr'
+  AND `document_view`.`task_type` = 'ner'
 
 LEFT JOIN `document_section`
   ON `document_section`.`id` = `document_view`.`section_id`

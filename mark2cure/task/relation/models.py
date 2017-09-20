@@ -31,7 +31,7 @@ class ConceptDocumentRelationship(models.Model):
         ('g', 'Gene'),
         ('c', 'Chemical')
     )
-    stype = models.CharField(max_length=1, choices=STYPE_CHOICES)
+    stype = models.CharField(max_length=1, choices=STYPE_CHOICES, default='d')
 
     def __unicode__(self):
         return self.concept_text.text

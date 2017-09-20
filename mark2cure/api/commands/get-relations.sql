@@ -101,7 +101,7 @@ FROM (
                 INNER JOIN `document_section`
                     ON `document_section`.`id` = `document_view`.`section_id`
                 WHERE `document_section`.`document_id` = `document_relationships`.`document_pk`
-                    AND `document_view`.`task_type` = 'ri'
+                    AND `document_view`.`task_type` = 're'
                     AND `document_view`.`user_id` = @user_id
                     AND `document_view`.`completed` = True
 

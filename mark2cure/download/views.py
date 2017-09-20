@@ -23,23 +23,23 @@ def start_export(request):
     group_pk = request.POST.get('group_pk')
     document_pks = request.POST.get('document_pks')
     ALL = 0
-    ER = 1
-    REL = 2
+    NER = 1
+    RE = 2
 
-    if task_type == 'er':
+    if task_type == 'ner':
         group = Group.objects.get(pk=group_pk)
         docs = group.get_documents()
         group_export.apply_async(
             args=[list(docs.values_list('pk', flat=True))],
-            kwargs={'export_type': ER},
+            kwargs={'export_type': NER},
             queue='mark2cure_downloads')
 
-    elif task_type == 'rel':
+    elif task_type == 're':
         group = RelationGroup.objects.get(pk=group_pk)
         docs = group.documents.all()
         group_export.apply_async(
             args=[list(docs.values_list('pk', flat=True))],
-            kwargs={'export_type': REL},
+            kwargs={'export_type': RE},
             queue='mark2cure_downloads')
 
     else:

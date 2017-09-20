@@ -113,7 +113,7 @@ class Document(models.Model):
         return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
 
     def contributors(self):
-        user_ids = list(set(View.objects.filter(section__document=self, completed=True, task_type='cr').values_list('user', flat=True)))
+        user_ids = list(set(View.objects.filter(section__document=self, completed=True, task_type='ner').values_list('user', flat=True)))
         return user_ids
 
     class Meta:
@@ -266,20 +266,16 @@ class Section(models.Model):
 
 
 TASK_TYPE_CHOICE = (
-    ('cr', 'Concept Recognition'),
-    ('cn', 'Concept Normalization'),
-    ('rv', 'Relationship Verification'),
-    ('ri', 'Relationship Identification'),
-    ('rc', 'Relationship Correction'),
+    ('ner', 'Named Entity Recognition'),
+    ('re', 'Relationship Extraction')
 )
-
 
 class View(models.Model):
     """
         When completing tasks not on a Section level. Work is associated
         with the FIRST section available, regardless of the Section type
     """
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='cr')
+    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICE, blank=True, default='ner')
     completed = models.BooleanField(default=False, blank=True)
     opponent = models.ForeignKey('self', blank=True, null=True)
 
@@ -300,10 +296,10 @@ class View(models.Model):
 
 class Annotation(models.Model):
     ANNOTATION_KIND_CHOICE = (
-        ('e', 'Entity Recognition'),
-        ('r', 'Relation'),
+        ('ner', 'Named Entity Recognition'),
+        ('re', 'Relation Extraction'),
     )
-    kind = models.CharField(max_length=1, choices=ANNOTATION_KIND_CHOICE, blank=False, default='e')
+    kind = models.CharField(max_length=3, choices=ANNOTATION_KIND_CHOICE, blank=False, default='ner')
 
     created = models.DateTimeField(auto_now_add=True)
 
@@ -314,9 +310,9 @@ class Annotation(models.Model):
     view = models.ForeignKey(View, blank=True, null=True)
 
     def __unicode__(self):
-        if self.kind == 'r':
-            return 'Relationship Ann'
-        elif self.kind == 'e':
+        if self.kind == 're':
+            return 'Relationship Extraction'
+        elif self.kind == 'ner':
             return '{0} ({1}) [{2}]'.format(self.metadata.text, self.metadata.start, self.pk)
         else:
             return 'Annotation {0}'.format(self.pk)

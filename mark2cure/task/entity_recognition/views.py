@@ -49,7 +49,7 @@ def ner_quest_document_results(request, task_pk, doc_pk):
         opponent_dict = {
             'pk': opponent_pks[0],
             'name': opponent_user.username,
-            'level': Level.objects.filter(user_id=opponent_pks[0], task_type='e').first().get_name(),
+            'level': Level.objects.filter(user_id=opponent_pks[0], task_type='ner').first().get_name(),
         }
 
         opponent_ner_ann_df = Document.objects.ner_df(document_pks=[doc_pk], user_pks=[opponent_pks[0]], include_pubtator=False)

@@ -65,7 +65,7 @@ class TestBase(object):
         """ Input is a list of users to initiate first login"""
         for user_name in user_names:
             user = User.objects.create_user(user_name, password='password')
-            Level.objects.create(user=user, task_type='e', level=7, created=timezone.now())
+            Level.objects.create(user=user, task_type='ner', level=7, created=timezone.now())
 
 
     def login_test_user(self, users_name):

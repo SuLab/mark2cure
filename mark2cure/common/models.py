@@ -26,7 +26,9 @@ def user_signed_up_(request, user, **kwargs):
         if task_type_str == 'zooniverse':
             Level.objects.create(user=user, task_type='r', level=0, created=timezone.now())
         # elif task_type_str == 're':
-        #     Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=1, created=timezone.now())
+
+    for lvl_i in range(7):
+        Level.objects.create(user=user, task_type='re', level=lvl_i + 1, created=timezone.now())
 
 
 class Group(models.Model):

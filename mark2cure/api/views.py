@@ -121,8 +121,8 @@ def mark2cure_stats(request):
 @login_required
 @api_view(['GET'])
 def user_task_stats(request):
-    ner_level = Level.objects.filter(user=request.user, task_type='e').first()
-    re_level = Level.objects.filter(user=request.user, task_type='r').first()
+    ner_level = Level.objects.filter(user=request.user, task_type='ner').first()
+    re_level = Level.objects.filter(user=request.user, task_type='re').first()
 
     return Response({
         'ner': ner_level.level if ner_level else 0,

@@ -201,7 +201,7 @@ class UserProfile(models.Model):
                 ).values_list('amount', flat=True))
 
                 # Points for submitting relation sets
-                completed_relation_view_pks = View.objects.filter(user=self.user, task_type='ri').values_list('pk', flat=True)
+                completed_relation_view_pks = View.objects.filter(user=self.user, task_type='re').values_list('pk', flat=True)
                 val += sum(Point.objects.filter(
                     user=self.user,
                     content_type=ContentType.objects.get_for_model(View),
@@ -215,10 +215,10 @@ class UserProfile(models.Model):
 
     def unlocked_tasks(self):
         arr = []
-        if Level.objects.filter(user=self.user, task_type='e', level=7).exists():
+        if Level.objects.filter(user=self.user, task_type='ner', level=7).exists():
             arr.append('entity_recognition')
 
-        if Level.objects.filter(user=self.user, task_type='r', level=3).exists():
+        if Level.objects.filter(user=self.user, task_type='re', level=3).exists():
             arr.append('relation')
 
         return arr

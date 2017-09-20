@@ -16,7 +16,7 @@ INNER JOIN `task_userquestrelationship` as `uqr`
 INNER JOIN `task_userquestrelationship_views` as `uqrv`
   ON `uqrv`.`userquestrelationship_id` = `uqr`.`id`
 INNER JOIN `document_view`
-  ON `document_view`.`id` = `uqrv`.`view_id` AND `document_view`.`task_type` = 'cr'
+  ON `document_view`.`id` = `uqrv`.`view_id` AND `document_view`.`task_type` = 'ner'
 
 INNER JOIN `document_annotation`
   ON `document_annotation`.`view_id` = `document_view`.`id`

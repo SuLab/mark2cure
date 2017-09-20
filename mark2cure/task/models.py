@@ -7,13 +7,13 @@ class Level(models.Model):
     """
     user = models.ForeignKey(User)
 
-    ENTITY_RECOGNITION = 'e'
-    RELATION = 'r'
+    ENTITY_RECOGNITION = 'ner'
+    RELATION = 're'
     TASK_TYPE_CHOICES = (
-        (ENTITY_RECOGNITION, 'Entity Recognition'),
-        (RELATION, 'Relation'),
+        (ENTITY_RECOGNITION, 'Name Entity Recognition'),
+        (RELATION, 'Relation Extraction'),
     )
-    task_type = models.CharField(max_length=1, choices=TASK_TYPE_CHOICES)
+    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICES)
     level = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
 
@@ -22,7 +22,7 @@ class Level(models.Model):
         ordering = ('-level', )
 
     def get_name(self):
-        if self.task_type == 'e':
+        if self.task_type == 'ner':
             levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert"]
         else:
             levels = ["Beginner", "Medium", "Expert"]
