@@ -26,11 +26,9 @@ block content
                 a(href='{% url "common:get-started" %}', style="font-size: 1.5em;").btn.btn-block.btn-white Get Started
 
               .col-4.col-md-3.my-1
-                a(href="#learnMore").hidden-sm-down
-                  button.btn.btn-block.btn-white.btn-outline
+                a#watch-more-link(href="#watch-more").hidden-sm-down.btn.btn-block.btn-white.btn-outline
                     <i class="fa fa-play"></i> Watch Video
-                a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md-up
-                  button.btn.btn-block.btn-white.btn-outline
+                a(href="https://www.youtube.com/watch?v=uaD0-GTX0N8").hidden-md-up.btn.btn-block.btn-white.btn-outline
                     <i class="fa fa-play"></i> Watch Video
 
       .cta-bar.container-fluid
@@ -75,7 +73,7 @@ block content
 
     .container
       .row.justify-content-center.my-4
-        #learnMore.col-8
+        #watch-more.col-8
           .embed-responsive.embed-responsive-16by9
             iframe(width="640", height="360", src="https://www.youtube.com/embed/uaD0-GTX0N8", frameborder="0", allowfullscreen)
 
@@ -86,29 +84,30 @@ block content
             | If you can read you can help.
           a(href='{% url "common:get-started" %}').btn.btn-large.btn-primary.btn-lg I want to help
 
-    a#support-icon(data-toggle="modal", data-target="#support-modal")
-      img(src='#{STATIC_URL}images/support-icon.png')
 
-    #support-modal.modal.fade
-      .modal-dialog
-        .modal-content
-          .modal-header
-            <h2 class="modal-title">Contact Support</h2>
-            <h4>Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.</h4>
-            <h5 class="text-xs-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
-
-          .modal-body
-            form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
-              - csrf_token
-              - if request.user.is_authenticated
-                input(type='hidden', name='user', value='{{user.pk}}')
-              input(type='hidden', name='referral', value='{{request.path}}')
-              .form-group
-                label Message
-                textarea(name='text').form-control
-          .modal-footer
-            button(type="button", data-dismiss="modal").btn.btn-default Cancel
-            button(type="button").btn.btn-default.modal-form-submit Submit
+    // a#support-icon(data-toggle="modal", data-target="#support-modal")
+    //   img(src='#{STATIC_URL}images/support-icon.png')
+    //
+    // #support-modal.modal.fade
+    //   .modal-dialog
+    //     .modal-content
+    //       .modal-header
+    //         <h2 class="modal-title">Contact Support</h2>
+    //         <h4>Stuck? Have a look at the <a data-dismiss="modal" data-toggle="modal" data-target="#instructionsModal">HELP page</a> for the current task, or write us a message and we will get back to as soon as possible.</h4>
+    //         <h5 class="text-xs-center">Please include your email address so we can reply to your comment (or <a href="mailto:contact@mark2cure.org?Subject=Mark2Cure">email us directly</a>).</h5>
+    //
+    //       .modal-body
+    //         form(method="post", role='form', action="{% url 'common:support' %}").form-via-ajax
+    //           - csrf_token
+    //           - if request.user.is_authenticated
+    //             input(type='hidden', name='user', value='{{user.pk}}')
+    //           input(type='hidden', name='referral', value='{{request.path}}')
+    //           .form-group
+    //             label Message
+    //             textarea(name='text').form-control
+    //       .modal-footer
+    //         button(type="button", data-dismiss="modal").btn.btn-default Cancel
+    //         button(type="button").btn.btn-default.modal-form-submit Submit
 
 
 block post-footer

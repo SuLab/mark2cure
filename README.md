@@ -327,6 +327,8 @@ server.
 
 ## Migration Commands
 
+python manage.py migrate document
+python manage.py migrate task
 
 Annotation.objects.filter(kind='e').update(kind='ner')
 Annotation.objects.filter(kind='r').update(kind='re')

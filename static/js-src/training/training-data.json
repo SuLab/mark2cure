@@ -61,14 +61,14 @@
     {
       "name": "Gene &raquo; Disease",
       "steps": [{
-        "description": "<p>A <strong>gene</strong> is a sequence of DNA that serves as a blueprint for other biomolecules. Genes are <a href=\"https://en.wikipedia.org/wiki/Transcription_(genetics)\" target=\"_blank\">transcribed</a> to mRNA and the mRNA gene transcript is <a href=\"https://en.wikipedia.org/wiki/Translation_(biology)\" target=\"_blank\">translated</a> to proteins. There are three options for Gene-Disease Relationships</p>",
+        "description": "<p>A <strong>gene</strong> is a sequence of DNA that serves as a blueprint for other biomolecules. Genes are <a href=\"https://en.wikipedia.org/wiki/Transcription_(biology)\" target=\"_blank\">transcribed</a> to mRNA and the mRNA gene transcript is <a href=\"https://en.wikipedia.org/wiki/Translation_(biology)\" target=\"_blank\">translated</a> to proteins. There are three options for Gene-Disease Relationships</p>",
         "instructions": [
           { "text": "<p><strong>\"altered expression is/may be associated with\"</strong> – Altered gene expression refers to changes in the amount of gene product synthesis. This can happen at transcription or translation. Either way, changes in the amount of gene product synthesis is or may be associated with the disease</p>" },
           { "text": "<p><strong>\"mutation is/may be associated with\"</strong> – A mutation is a permanent change in the DNA sequence that makes up the gene. Changing the blueprint can change the biomolecules that are built from that blueprint and is or may be associated with the disease.</p>" },
           { "text": "<p><strong>\"post-translational modifications are/may be associated with\"</strong> – After a gene has been transcribed into mRNA and the mRNA translated into a protein, the protein can be modified. These modifications can have huge effects including changing the location of the protein in the cell, changing its activity, and are (or may be) associated with the disease.</p>" }]
       },
       {
-        "description": "<p class=\"sub\">Gene-Disease Relationships: Try it out!  Remember, don’t use outside information for <strong>the relationship between</strong> TTR and Familial amyloidotic polyneuropathy, but you’re welcome to look up anything else (Eg- TTR, crest syndrome, multiple myeloma, etc.)</p>",
+        "description": "<p class=\"sub\">Gene-Disease Relationships: Try it out!  Remember, don’t use outside information for <strong>the relationship between</strong> TTR and Familial amyloidotic polyneuropathy , but you’re welcome to look up anything else (Eg- TTR, crest syndrome, multiple myeloma, etc.)</p>",
         "training_data": {
           "document": {
             "passages": [{ "offset": 0, "text": "Together with a case presenting in a patient with multiple myeloma, we describe 2 unique presentations including 1 associated with CREST syndrome in a patient with a previous history of breast carcinoma and another, also associated with cancer, with transthyretin deposits in a woman with a TTR gene mutation and a family history of familial amyloidotic polyneuropathy ." }]
@@ -201,7 +201,7 @@
       {
         "training_data": {
           "document": {
-            "passages": [{ "offset": 0, "text": "In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of EGFR and increased the cell sensitivity to erlotinib. In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated EGFR , and these cells did not respond to erlotinib ." }]
+            "passages": [{ "offset": 0, "text": "In Panc-1 cells, overexpression of E-cadherin activated the phosphorylation of EGFR and increased the cell sensitivity to erlotinib . In Capan1 cells, knocking down E-cadherin decreased the expression of phosphorylated EGFR , and these cells did not respond to erlotinib ." }]
           },
           "relation_type": "g_c",
           "concepts": {

@@ -1,16 +1,5 @@
 // $(function() {
-//   $('a[href*=#]:not([href=#])').click(function() {
-//     if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-//       var target = $(this.hash);
-//       target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-//       if (target.length) {
-//         $('html,body').animate({
-//           scrollTop: target.offset().top
-//         }, 1000);
-//         return false;
-//       }
-//     }
-//   });
+
 // });
 
 
@@ -37,7 +26,11 @@ Mark2CureStats = Backbone.Model.extend({
     'ner_annotations': 0,
     're_annotations': 0
   },
-  url: '/api/mark2cure/stats/'
+  url: '/api/mark2cure/stats/',
+
+  numberWithCommas: function(x) {
+    return Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 });
 
 
@@ -88,6 +81,16 @@ HomePageView = Backbone.Marionette.View.extend({
 
   ui: {
     'annotations': '#annotation-counter',
+    'watch_more': '#watch-more-link'
+  },
+
+  events: {
+    'mousedown @ui.watch_more': function(evt) {
+      var target = $('#watch-more');
+      $('html,body').animate({
+        scrollTop: target.offset().top
+      }, 1000);
+    }
   },
 
   regions: {
@@ -102,7 +105,7 @@ HomePageView = Backbone.Marionette.View.extend({
   modelEvents: {
     'sync': function() {
       var total_annotations = this.model.get('ner_annotations') + this.model.get('re_annotations');
-      this.ui.annotations.text(total_annotations);
+      this.ui.annotations.text( this.model.numberWithCommas(total_annotations) );
     }
   },
 
