@@ -163,7 +163,7 @@ def re_task_relationship_submit(request, document_pk, relation_pk):
         relation_ann_content_type = ContentType.objects.get_for_model(relation_ann)
 
         Annotation.objects.create(
-            kind='r',
+            kind='re',
             view=view,
             content_type=relation_ann_content_type,
             object_id=relation_ann.id)

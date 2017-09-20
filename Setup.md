@@ -136,14 +136,14 @@ If you really do not want to do them, here is an alternative that you could do t
 Mark2Cure stores the progress of each user's tasks in the table called `task_level`. There are different levels for different tasks, so you can append rows here to skip them, for example, by running the following scripts. If you are not very sure what you are doing, also read the note below before applying it.
 
   ```
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000000', 'e', '3', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000001', 'r', '1', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000002', 'r', '2', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000003', 'r', '3', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000004', 'e', '4', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000005', 'e', '5', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000006', 'e', '6', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000007', 'e', '7', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000000', 'ner', '3', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000001', 're', '1', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000002', 're', '2', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000003', 're', '3', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000004', 'ner', '4', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000005', 'ner', '5', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000006', 'ner', '6', '1999-09-09 09:09:09.999999', '1');
+  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000007', 'ner', '7', '1999-09-09 09:09:09.999999', '1');
   ```
 
 Two things that you need to know before executing:

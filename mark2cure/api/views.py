@@ -136,8 +136,8 @@ def ner_stats(request):
     return Response({
         'total_score': request.user.profile.score(task='entity_recognition'),
         'quests_completed': UserQuestRelationship.objects.filter(user=request.user, completed=True).count(),
-        'papers_reviewed': View.objects.filter(user=request.user, completed=True, task_type='cr').count(),
-        'annotations': Annotation.objects.filter(kind='e', view__user=request.user).count()
+        'papers_reviewed': View.objects.filter(user=request.user, completed=True, task_type='ner').count(),
+        'annotations': Annotation.objects.filter(kind='re', view__user=request.user).count()
     })
 
 
@@ -200,8 +200,8 @@ def ner_quest_read(request, quest_pk):
 def re_stats(request):
     return Response({
         'total_score': request.user.profile.score(task='relation'),
-        'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='ri').count(),
-        'annotations': Annotation.objects.filter(kind='r', view__user=request.user).count()
+        'quests_completed': View.objects.filter(user=request.user, completed=True, task_type='re').count(),
+        'annotations': Annotation.objects.filter(kind='re', view__user=request.user).count()
     })
 
 

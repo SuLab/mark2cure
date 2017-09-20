@@ -24,7 +24,7 @@ def user_signed_up_(request, user, **kwargs):
         #     # After loggin them in, assign the first Level training so we know where to route them
         #     Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=3, created=timezone.now())
         if task_type_str == 'zooniverse':
-            Level.objects.create(user=user, task_type='r', level=0, created=timezone.now())
+            Level.objects.create(user=user, task_type='re', level=0, created=timezone.now())
         # elif task_type_str == 're':
 
     for lvl_i in range(7):

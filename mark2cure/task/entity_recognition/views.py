@@ -119,7 +119,7 @@ class NERDocumentSubmissionView(ListCreateAPIView):
                     start=d.get('start')
                 )
                 Annotation.objects.create(
-                    kind='e',
+                    kind='re',
                     view=view,
                     content_type=er_ann_content_type,
                     object_id=er_ann.pk)

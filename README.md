@@ -324,3 +324,17 @@ server.
 [Natural Language Tool Kit]:http://www.nltk.org/
 [Mark2Cure.org]:https://mark2cure.org/
 [Django development server]:http://127.0.0.1:8000/
+
+## Migration Commands
+
+
+Annotation.objects.filter(kind='e').update(kind='ner')
+Annotation.objects.filter(kind='r').update(kind='re')
+
+View.objects.filter(task_type='cr').update(task_type='ner')
+View.objects.filter(task_type='ri').update(task_type='re')
+
+Level.objects.filter(task_type='e').update(task_type='ner')
+Level.objects.filter(task_type='r').update(task_type='re')
+
+

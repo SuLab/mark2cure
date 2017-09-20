@@ -12,6 +12,6 @@ SELECT exists(
   INNER JOIN `document_section`
     ON `document_section`.`id` = `document_view`.`section_id` AND `document_section`.`document_id` = {document_id}
 
-  WHERE `document_annotation`.`kind` = 'r'
+  WHERE `document_annotation`.`kind` = 're'
     AND `document_annotation`.`content_type_id` = 56
 ) as `exists`
