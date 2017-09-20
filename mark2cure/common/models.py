@@ -20,13 +20,15 @@ from django.utils import timezone
 def user_signed_up_(request, user, **kwargs):
     task_type_str = request.session.get('initial_training')
     if task_type_str:
-        # if task_type_str == 'ner':
-        #     # After loggin them in, assign the first Level training so we know where to route them
-        #     Level.objects.create(user=user, task_type=request.session.get('initial_training'), level=3, created=timezone.now())
+
         if task_type_str == 'zooniverse':
             Level.objects.create(user=user, task_type='re', level=0, created=timezone.now())
 
         elif task_type_str == 're':
+            for lvl_i in range(3):
+                Level.objects.create(user=user, task_type=task_type_str, level=lvl_i + 1, created=timezone.now())
+
+        elif task_type_str == 'ner':
             for lvl_i in range(7):
                 Level.objects.create(user=user, task_type=task_type_str, level=lvl_i + 1, created=timezone.now())
 

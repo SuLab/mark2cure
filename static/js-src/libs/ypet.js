@@ -925,7 +925,7 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
     });
 
     // If a concept object (RE) was included loose highlight them
-    var concepts = this.getOption('concepts') || this.getOption('training_data')['concepts'];
+    var concepts = this.getOption('concepts') || (this.getOption('training_data') && this.getOption('training_data')['concepts'])
     if(concepts) {
       _.each(_.keys(concepts), function(k) {
         self.collection.each(function(passage) {
@@ -1113,7 +1113,6 @@ NERNavigationView = Backbone.Marionette.View.extend({
       url: '/u/points/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       cache: false,
-      async: false,
       success: function(data) {
         self.ui.score.html(data.points);
         // self.od.update(data.points);
@@ -1320,7 +1319,6 @@ YPet = Backbone.Marionette.View.extend({
       data:  JSON.stringify(annotations),
       dataType: 'json',
       cache: false,
-      async: false,
       success: function() {
         self.model.set('completed', true);
         self.options['review'] = true

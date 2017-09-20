@@ -66,5 +66,4 @@ def user_points(request):
         'points': request.user.profile.score(),
         # (TODO) implement using new score method
         'points_level': 'Hard Worker',
-        'skill_level': Level.objects.filter(user=request.user, task_type='ner').first().get_name()
     })

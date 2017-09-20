@@ -232,7 +232,6 @@ RENavigationView = Backbone.Marionette.View.extend({
       url: '/u/points/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       cache: false,
-      async: false,
       success: function(data) {
         self.ui.score.html(data.points);
       }
