@@ -390,7 +390,7 @@ TrainingModuleView = Backbone.Marionette.View.extend({
         self.model = m;
         self.render();
       } else {
-        alert('Next Module / Complete logic');
+        channel.trigger('training:completed');
       }
     });
 
@@ -442,6 +442,8 @@ TrainingView = Backbone.Marionette.View.extend({
   initialize: function() {
     this.collection = new TrainingTaskCollection();
     this.collection.fetch();
+
+    this.listenTo(channel, 'training:completed', this.completedTraining);
   },
 
   collectionEvents: {
@@ -452,7 +454,7 @@ TrainingView = Backbone.Marionette.View.extend({
     if(this.collection.length) {
       var task = this.collection.get_active();
 
-      if(task.get("task") == "r") {
+      if(task.get("task") == "re") {
         this.showChildView('content', new RETrainingTaskView());
       }
       // if(task.get("task") == "e") {
@@ -460,6 +462,22 @@ TrainingView = Backbone.Marionette.View.extend({
       // }
 
     }
+  },
+
+  completedTraining: function() {
+    var self = this;
+
+    $.ajax({
+      type: 'POST',
+      url: '/api/training/'+self.getOption('mode')+'/',
+      headers: {'X-CSRFTOKEN': self.getOption('csrf_token')},
+      cache: false,
+      success: function(data) {
+        window.location.href = "/accounts/signup/";
+      },
+      error: function() {}
+    });
+
   }
 
 })

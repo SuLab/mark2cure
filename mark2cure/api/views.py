@@ -397,7 +397,7 @@ def leaderboard_teams(request, day_window):
 @api_view(['GET'])
 def training(request):
     if request.user.is_anonymous():
-        return Response([{"task": "r"}])
+        return Response([{"task": "re"}])
 
     cmd_str = ""
     with open('mark2cure/training/commands/get-user-training.sql', 'r') as f:
@@ -426,8 +426,13 @@ def training(request):
     return Response(res)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def training_details(request, task_type):
+
+    if request.method == 'POST':
+        request.session['initial_training'] = task_type
+        return Response({})
+
     if task_type == "re":
         res = training_data["data"]["re"]
 
