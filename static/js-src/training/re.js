@@ -12,8 +12,6 @@ RETrainingActionLogic = Object({
     1:{
       //-- Steps
       onStartUpLogic: function() {
-        console.log('onStartUpLogic 0 1');
-
         var template = _.template($('#training-action-static-example-template').html());
         this.$el.html( template() );
 
@@ -125,8 +123,6 @@ RETrainingActionLogic = Object({
         },
 
         onStartUpLogic: function() {
-          console.log('onStartUpLogic: 1 0 1');
-
           $relates_el = $('ul a.list-group-item:nth(0)');
           $relates_el.popover({
             container: 'body',

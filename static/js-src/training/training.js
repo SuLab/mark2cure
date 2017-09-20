@@ -174,8 +174,9 @@ TrainingModuleProgressItem = Backbone.Marionette.View.extend({
     return 'breadcrumb-item'+ (this.model.get('selected') ? ' active' : '');
   },
   events: {
+    /* Only allow in Debug mode */
     'mousedown': function() {
-      channel.trigger('training:goto:module', this.model);
+      // channel.trigger('training:goto:module', this.model);
     }
   }
 });
@@ -216,7 +217,6 @@ TrainingStepInstructionView = Backbone.Marionette.View.extend({
     channel.trigger('training:show:action', 1, this.model.get('training_data'), this.model.get('training_rules'), this.model.collection.indexOf(this.model));
   }
 })
-
 
 TrainingStepTextView = Backbone.Marionette.View.extend({
   /* Text at the top half of the Instruction page, usually used to describe what to do,
@@ -269,7 +269,6 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
   onAttach: function() {
     channel.trigger('training:show:action', 0, this.model.get('training_data'), this.model.get('training_rules'))
   }
-
 });
 
 TrainingFooterView = Backbone.Marionette.View.extend({
@@ -309,10 +308,7 @@ TrainingFooterView = Backbone.Marionette.View.extend({
       this.render();
     }
   },
-
-
 });
-
 
 TrainingStepView = Backbone.Marionette.View.extend({
   /* this.model = TrainingStep
@@ -333,7 +329,6 @@ TrainingStepView = Backbone.Marionette.View.extend({
     this.listenTo(channel, 'training:re:submit', function(rechoice_model) {
       /* Pass this through, rather than calling next step on the Tree library
        * so we can override if desired */
-      console.log('[Channel] Tree Submit msg');
       channel.trigger('training:next:instruction');
     });
 
@@ -350,10 +345,8 @@ TrainingStepView = Backbone.Marionette.View.extend({
     });
 
     this.listenTo(channel, 'training:show:action', function(source, training_data, training_rules, instruction_idx) {
-      console.log('Channel Trigger', source, training_data);
       /* source: 0 = Step, 1 = Instruction */
       if(!(source==1 && training_data==null)) {
-        console.log(' - redraw');
         var module_idx = self.model.get('module').collection.indexOf(self.model.get('module'));
         var step_idx = self.model.collection.indexOf(self.model);
         var instruction_idx = instruction_idx || null;
@@ -366,7 +359,6 @@ TrainingStepView = Backbone.Marionette.View.extend({
     });
 
   },
-
 });
 
 TrainingModuleView = Backbone.Marionette.View.extend({
@@ -402,7 +394,6 @@ TrainingModuleView = Backbone.Marionette.View.extend({
   },
 });
 
-
 TrainingTaskView = Backbone.Marionette.View.extend({
   /* Base template for organizing everythin needed for going through a Task
    * this.model = None
@@ -421,7 +412,6 @@ TrainingTaskView = Backbone.Marionette.View.extend({
   collectionEvents: {
     'sync': 'render',
   },
-
 })
 
 TrainingView = Backbone.Marionette.View.extend({
@@ -479,5 +469,4 @@ TrainingView = Backbone.Marionette.View.extend({
     });
 
   }
-
 })

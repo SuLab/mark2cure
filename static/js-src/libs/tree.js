@@ -654,10 +654,10 @@ Tree = Backbone.Marionette.View.extend({
           this.render();
         }
       }
-
     }
 
-    this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit);
+    /* (TODO) look into / figure out the exact behavioral differences */
+    channel.once('tree:relationship:submit', this.relationshipSubmit, this);
     this.listenTo(channel, 'tree:relationship:next', this.relationshipNext);
     this.listenTo(channel, 'tree:completed', this.completed);
     this.listenTo(channel, 'tree:error', this.treeError );
