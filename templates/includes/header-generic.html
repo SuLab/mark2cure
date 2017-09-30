@@ -1,0 +1,22 @@
+<nav id="header-generic" class="{{ extraClassNames }} navbar navbar-default">
+  <div class="container"><a href="{% url "common:home" %}" class="navbar-brand"><img{% __pyjade_attrs attrs=[('src',(""+"{}".format(STATIC_URL)+"images/landing/mark2cure-flatbox-logo-white.png"))] %} alt="Mark2Cure"/></a>
+    <ul class="list-inline pull-right">
+      <li class="list-inline-item"><a href="/about/">About</a></li>
+      <li class="list-inline-item"><a href="/faq/">FAQ</a></li>
+      <li class="list-inline-item"><a href="/blog/">Blog</a></li>
+      <li class="list-inline-item"><a href="/contact/">Contact</a></li>
+      <li class="list-inline-item social hidden-xs-down">
+        <a href="blog/rss/" target="_blank"><i class="fa fa-rss-square"></i></a>
+      </li>
+      <li class="list-inline-item social hidden-xs-down">
+        <a href="https://www.facebook.com/pages/Mark2Cure/586806781439862" target="_blank"><i class="fa fa-facebook-square"></i></a>
+      </li>
+      <li class="list-inline-item social hidden-xs-down">
+        <a href="https://twitter.com/Mark2Cure" target="_blank"><i class="fa fa-twitter-square"></i></a>
+      </li>
+      {% if  not user.is_authenticated %}
+      <li class="list-inline-item"><a href="{% url "account_login" %}" class="box-outline">Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>

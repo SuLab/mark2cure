@@ -1,0 +1,30 @@
+{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Gene Concept Marking Rules' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a>
+</li>
+<li class="breadcrumb-item active">Genes</li>{% endblock %}{% block instructions-content %}
+<ol>
+  <li>
+    <p>Mark every instance of a Gene or Gene Product (like proteins or MicroRNAs)</p>
+    <p>--This includes Gene or Gene Product names and symbols</p>
+    <p>Eg- <span class='user_annotated_green'>Caveolin1</span class='user_annotated_green'> gene or <span class='user_annotated_green'>CAV1</span class='user_annotated_green'> protein</p>
+  </li>
+  <li>
+    <p>Use the minimum span needed to encompass multiple terms of a Gene or Gene Product.</p>
+    <p>Eg- <span class='user_annotated_green'>Cluster of Differentiation IV</span class='user_annotated_green'> gene or <span class='user_annotated_green'>CD4</span class='user_annotated_green'> protein , NOT just <span class='user_annotated_green'>Cluster</span class='user_annotated_green'> or <span class='user_annotated_green'>Differentiation IV</span class='user_annotated_green'></p>
+  </li>
+  <li>
+    <p>Mark each instance of a Gene or Gene Product separately or in a separate span (if an instance has multiple words</p>
+    <p>Eg- <span class='user_annotated_green'>RasGAP</span class='user_annotated_green'> (<span class='user_annotated_green'>GTPase activating protein of Ras</span class='user_annotated_green'>) prevented indirect activation of <span class='user_annotated_green'>PDGFRβ</span class='user_annotated_green'></p>
+  </li>
+  <li>
+    <p>Mark each instance of an abbreviation of a Gene or Gene Product</p>
+    <p>Eg- <span class='user_annotated_green'>AKT</span class='user_annotated_green'> levels may affect <span class='user_annotated_green'>PIM1</span class='user_annotated_green'> expression in</p>
+  </li>
+  <li>
+    <p>Don't highlight generic terms like 'gene' or 'protein' unless they are part of a gene or protein name</p>
+    <p>Eg- <span class='user_annotated_green'>Heat shock protein 90</span class='user_annotated_green'> is correct, but NOT <span class='user_annotated_green'>CAV1 protein</span class='user_annotated_green'></p>
+  </li>
+  <li>
+    <p>If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>genenames.org</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>ncbi.nlm.nih.gov/gene/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Genes_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
+  </li>
+</ol>{% endblock %}

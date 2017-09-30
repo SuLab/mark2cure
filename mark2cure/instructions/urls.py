@@ -50,7 +50,5 @@ urlpatterns = [
         TemplateView.as_view(template_name='instructions/tasks/relation/home.jade'),
         name='relation'),
 
-
     url(r'', TemplateView.as_view(template_name='instructions/home.jade'), name='home'),
-
 ]

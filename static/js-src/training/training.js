@@ -176,7 +176,7 @@ TrainingModuleProgressItem = Backbone.Marionette.View.extend({
   events: {
     /* Only allow in Debug mode */
     'mousedown': function() {
-      // channel.trigger('training:goto:module', this.model);
+      channel.trigger('training:goto:module', this.model);
     }
   }
 });

@@ -1,0 +1,17 @@
+{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Drug Definition' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url "instructions:relation" %}">Relation Task</a>
+</li>
+<li class="breadcrumb-item active">Definitions</li>
+<li class="breadcrumb-item active">Drug</li>{% endblock %}{% block instructions-content %}
+<div class="modal-body">
+  <div class="panel">
+    <div class="panel-body">
+      <p class="lead"><span style='background-color:rgb(255, 209, 220);'>Drug</span> concepts include:</p>
+      <ol style="margin-left: 8px;" class="list-unstyled">
+        <li><strong>Drug</strong> – a substance that has biological effects on humans or other animals, and can be at different stages of development and have multiple names</li>
+        <li><strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action</li>
+        <p><br>If you suspect an unfamiliar term of being a drug but are unsure, check here: <a href='http://www.drugbank.ca/' target='_blank'>drugbank.ca</a> or on Google or Wikipedia (for drugs under development) or or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Treatments_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
+      </ol>
+    </div>
+  </div>
+</div>{% endblock %}

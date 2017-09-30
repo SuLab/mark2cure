@@ -72,7 +72,6 @@ gulp.task('js', function() {
     './static/js-src/pages/ner-group.js',
 
     './static/js-src/tasks/relation-synopsis.js',
-    './static/js-src/tasks/relation.js',
 
     //-- Training Libraries
     './static/js-src/training/training.js',

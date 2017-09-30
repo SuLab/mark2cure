@@ -53,12 +53,12 @@ def dashboard(request):
            'mobile': uai.detectMobileLong(),
            'available_tasks': available_tasks,
            }
-    return TemplateResponse(request, 'common/dashboard.jade', ctx)
+    return TemplateResponse(request, 'common/dashboard.html', ctx)
 
 
 def why_mark2cure(request):
     query = UserProfile.objects.exclude(motivation='').order_by('?').values('motivation', 'user')
-    return TemplateResponse(request, 'common/why-i-mark2cure.jade', {'profiles': query})
+    return TemplateResponse(request, 'common/why-i-mark2cure.html', {'profiles': query})
 
 
 def login_with_zooniverse(request):
@@ -72,7 +72,7 @@ def login_with_zooniverse(request):
         'zooniverse_app_id': appId,
         'zooniverse_callback_url': 'https://mark2cure.org/zooniverse-callback/'
     }
-    return TemplateResponse(request, 'common/login_with_zooniverse.jade', ctx)
+    return TemplateResponse(request, 'common/login_with_zooniverse.html', ctx)
 
 
 def zooniverse_callback(request):
@@ -81,14 +81,14 @@ def zooniverse_callback(request):
     ctx = {
         'zooniverse_allauth_callback_url': 'https://mark2cure.org/accounts/zooniverse/login/callback/'
     }
-    return TemplateResponse(request, 'common/zooniverse_callback.jade', ctx)
+    return TemplateResponse(request, 'common/zooniverse_callback.html', ctx)
 
 
 def ner_group_home(request, group_stub):
     '''Landing page for NER Group
     '''
     group = get_object_or_404(Group, stub=group_stub)
-    return TemplateResponse(request, 'common/group_home.jade', {'group': group})
+    return TemplateResponse(request, 'common/group_home.html', {'group': group})
 
 
 @require_http_methods(['POST'])
@@ -107,5 +107,5 @@ def home(request):
     '''
     if request.user.is_authenticated():
         return redirect('common:dashboard')
-    return TemplateResponse(request, 'common/landing.jade')
+    return TemplateResponse(request, 'common/landing.html')
 

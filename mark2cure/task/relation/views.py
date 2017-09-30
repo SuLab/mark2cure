@@ -236,7 +236,7 @@ def re_task_submit(request, document_pk):
 
 @login_required
 def re_task(request, document_pk):
-    '''View that serves required HTML and starts the Tree library
+    '''View that serves required jade and starts the Tree library
 
         Document shuffling, and other RE document ordering logic
         is done by the client.

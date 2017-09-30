@@ -1,0 +1,48 @@
+{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Relation' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
+<li class="breadcrumb-item active">Relation Task</li>{% endblock %}{% block instructions-content %}
+<div class="modal-body">
+  <div class="panel">
+    <div class="panel-body">
+      <p class="lead">Relation Identification Skill: the ability to identify a relation between two scientific concepts:</p>
+      <p class="lead">Review the relation rules for:</p><a href="{% url "instructions:relation-gene-disease" %}">
+        <p class="text-xs-center">Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</p></a><a href="{% url "instructions:relation-drug-disease" %}">
+        <p class="text-xs-center">Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</p></a><a href="{% url "instructions:relation-gene-drug" %}">
+        <p class="text-xs-center">Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Drug</p></a>
+    </div>
+  </div>
+</div>
+<hr/>
+<div class="modal-body">
+  <div class="panel">
+    <div class="panel-body">
+      <p class="lead">Disease concepts include:</p>
+      <ol style="margin-left: 8px;" class="list-unstyled">
+        <li><strong>Disease</strong> – a particular abnormal, pathological condition that affects part or all of an organism</li>
+        <li><strong>Disease Class</strong> – a specific category of similar but different diseases</li>
+        <li><strong>Symptom</strong> – the physical manifestations of a disease</li>
+        <li><strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.</li>
+        <p><br>When in doubt, search online resources like: <a href='http://www.diseasesdatabase.com/begin.asp' target='_blank'>diseasesdatabase.com</a> and <a href='http://www.ncbi.nlm.nih.gov/mesh/' target='_blank'>ncbi.nlm.nih.gov/mesh/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Diseases_Concept_Help' target='_blank'>new Wikia forum for help</a>.</p>
+      </ol>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-body">
+      <p class="lead">Gene concepts include:</p>
+      <ol style="margin-left: 8px;" class="list-unstyled">
+        <li><strong>Genes</strong> – a molecular unit of heredity in an organism, and is usually referred to in biomedical literature by their gene name, gene symbol, or both.</li>
+        <li><strong>Gene Products</strong> – usually a protein or microRNA that is encoded by the gene and will sometimes have the same name/symbol as the gene.</li>
+        <p><br>If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>genenames.org/</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>ncbi.nlm.nih.gov/gene/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Genes_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
+      </ol>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-body">
+      <p class="lead">Drug concepts include:</p>
+      <ol style="margin-left: 8px;" class="list-unstyled">
+        <li><strong>Drug</strong> – a substance that has biological effects on humans or other animals, and can be at different stages of development and have multiple names</li>
+        <li><strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action</li>
+        <p><br>If you suspect an unfamiliar term of being a drug but are unsure, check here: <a href='http://www.drugbank.ca/' target='_blank'>drugbank.ca</a> or on Google or Wikipedia (for drugs under development) or or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Treatments_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
+      </ol>
+    </div>
+  </div>
+</div>{% endblock %}

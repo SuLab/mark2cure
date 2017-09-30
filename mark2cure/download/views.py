@@ -14,7 +14,7 @@ def home(request):
         'groups': groups,
         'downloads': Download.objects.all()
     }
-    return TemplateResponse(request, 'download/home.jade', ctx)
+    return TemplateResponse(request, 'download/home.html', ctx)
 
 
 @require_http_methods(['POST'])

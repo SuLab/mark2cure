@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% with headerMessage='Group Details' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="ner-group-home" class="container content my-3">
+
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <h2 class="text-center">{{ group.name }}</h2>
+      <p class="lead">{{group.description|escape}}</p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header">Top doc set contributors:
+        </div>
+        <div id="group-contributors" class="card-block"></div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header">Group Statistics
+        </div>
+        <div id="group-statistics" class="card-block"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="group-network-action-area" class="row my-5"></div>
+  <div class="row justify-content-center my-5">
+    <div id="group-quest-list" class="col-8"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  var ner_group_app = new NERGroupPageView({'group_pk': {{group.pk|escape}}});
+  ner_group_app.render();
+</script>
+{% endblock %}

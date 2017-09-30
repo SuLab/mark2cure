@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account %}
+
+{% block header %}
+{% with headerMessage='Confirm E-mail Address' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row m-t-2">
+    <div class="col-xs-10 col-xs-offset-1 m-t-2 m-b-2">
+      <h2 class="text-xs-center">Confirm E-mail Address</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1 col-md-6 col-md-offset-3">
+
+      {% if confirmation %}
+      <p>Please confirm that <a href="mailto:{{ confirmation.email_address.email }}">{{ confirmation.email_address.email }}</a> is an e-mail address for user {{ confirmation.email_address.user }}.</p>
+      <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">{%  csrf_token %}
+        <div class="form-group m-t-1">
+          <div class="row">
+            <div class="col-xs-12 col-md-4 col-md-offset-4">
+              <button type="submit" class="btn btn-primary btn-block">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {% else %}
+      {% url 'account_email' as email_url %}
+      <p>This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.</p>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

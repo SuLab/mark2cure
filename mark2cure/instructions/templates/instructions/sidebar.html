@@ -1,0 +1,7 @@
+<h4 class="text-center mb-3"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a></h4>
+<div class="list-group"><a href="{% url "instructions:entity-recognition-diseases" %}" class="list-group-item">Diseases</a><a href="{% url "instructions:entity-recognition-genes" %}" class="list-group-item">Genes</a><a href="{% url "instructions:entity-recognition-treatments" %}" class="list-group-item">Treatments</a></div>
+
+<h4 class="text-center my-3"><a href="{% url "instructions:relation" %}">Relation Task</a></h4>
+<div class="list-group"><a href="{% url "instructions:relation-definition-disease" %}" class="list-group-item">Disease Definition</a><a href="{% url "instructions:relation-definition-gene" %}" class="list-group-item">Gene Definition</a><a href="{% url "instructions:relation-definition-drug" %}" class="list-group-item">Drug Definition</a>
+  <hr/><a href="{% url "instructions:relation-gene-disease" %}" class="list-group-item">Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</a><a href="{% url "instructions:relation-drug-disease" %}" class="list-group-item">Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</a><a href="{% url "instructions:relation-gene-drug" %}" class="list-group-item">Gene <i class="fa fa-angle-right" aria-hidden="true"></i> Drug</a>
+</div>

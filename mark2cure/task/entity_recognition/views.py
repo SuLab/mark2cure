@@ -219,7 +219,7 @@ def ner_quest_submit(request, quest_pk):
 @login_required
 @api_view(['GET'])
 def ner_quest(request, quest_pk):
-    '''View that serves required HTML and starts the YPet library
+    '''View that serves required jade and starts the YPet library
 
         Document shuffling, and other NER document ordering logic
         is done by the client.

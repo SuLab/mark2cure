@@ -1,0 +1,13 @@
+<html>
+  <body>
+  <script>
+    // Get access_token, etc. from the location hash (e.g. https://someurl.com/callback#access_token=1234...)
+    var locationHash = window.location.hash.substr(1);
+
+    if (locationHash.indexOf('access_token=') > -1) {
+        // Has access token - redirect to callback url
+        window.location.replace("{{ zooniverse_allauth_callback_url }}?" + locationHash);
+    }
+    </script>
+  </body>
+</html>

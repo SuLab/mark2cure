@@ -8,4 +8,4 @@ def home(request, teamname):
     team = get_object_or_404(Team, name=teamname)
     members = team.userprofile_set.select_related('user')
     ctx = {'team': team, 'members': members}
-    return TemplateResponse(request, 'team/public-team.jade', ctx)
+    return TemplateResponse(request, 'team/public-team.html', ctx)

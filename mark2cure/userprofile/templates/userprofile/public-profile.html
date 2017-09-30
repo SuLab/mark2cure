@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{%  load widget_tweaks %}
+{%  load humanize %}
+{%  load group %}
+
+{% block header %}
+{%  with headerMessage='User Profile' %}
+{% if  user.is_authenticated %}
+{% include "includes/header.html" %}
+{% else %}
+{% include "includes/header-anon.html" %}
+{% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="profile" class="container">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <h1 class="text-center">{{player.username|escape}}</h1>
+    </div>
+  </div>{% if  owner %}
+  <div class="row justify-content-center">
+    <div class="col-2">
+      <form method="post" action="{% url "account_logout" %}">{%  csrf_token %}
+        <button type="submit" style="margin:0px;padding:0px;" class="btn btn-link">
+          <p>Logout</p>
+        </button>
+      </form>
+    </div>
+    <div class="col-2">
+      <p class="text-center text-muted"><a href="{% url "profile:settings" %}">Settings</a>
+      </p>
+    </div>
+  </div>{% endif %}
+  <div class="row">
+    <div class="col-8">
+      <div class="row">
+        <div class="col-12 mb-4">
+          <div class="card">
+            <div class="card-header">Motivation
+            </div>
+            <div class="card-block">{{player.userprofile.motivation|escape}}
+
+            </div>
+          </div>
+        </div>
+        <div class="col-12 mb-4">
+          <div class="card">
+            <div class="card-header">Quote
+            </div>
+            <div class="card-block">{{player.userprofile.quote|escape}}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card">
+        <div class="card-header">Statistics
+        </div>
+        <div class="card-block">
+          <ol class="list-unstyled">
+            <li>
+              <p>Joined: {{player.date_joined|naturaltime|escape}}</p>
+            </li>
+            <li>
+              <p>Last Seen: {{player.userprofile.last_seen|naturaltime|escape}}</p>
+            </li>
+            <li>
+              <p>Total Quests: {{player.userprofile.quests_count|intcomma|escape}}</p>
+            </li>
+            <li>
+              <p>Total Annotations: {{player.userprofile.annotations_count|intcomma|escape}}</p>
+            </li>{% if  request.user|has_group:"Comment Moderators" %}
+            <li>
+              <p>Performance: {% widthratio player.userprofile.current_avg_f 1 100 %}%</p>
+            </li>{% endif %}
+            <li>
+              <p>Score: {{player.userprofile.score|intcomma|escape}}</p>
+            </li>{% if  player.userprofile.team %}
+            <li>
+              <p>Team:<a href="{% url "team:home" teamname=player.userprofile.team.name %}"> {{player.userprofile.team.name|escape}}</a>
+              </p>
+            </li>{% endif %}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  $('.nav-tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
+</script>
+
+{% for group in contributed_groups|__pyjade_iter:1 %}
+<script>drawUserFScoreLine("#tab-{{group.stub}} #chart", "{{group.pk}}");</script>
+{% endfor %}
+{% endblock %}

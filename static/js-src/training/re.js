@@ -17,10 +17,20 @@ RETrainingActionLogic = Object({
 
         $('.holder').remove().unbind();
         var pos_1 = [$(".paragraph-content").offset(), $(".paragraph-content").height()/2, $(".paragraph-content").width()/2];
+        $('#tree-text').css({'opacity': .25});
+
         var pos_2 = [$("#c2 .text").offset(), -12, -6];
+        $('#c2').css({'opacity': .25});
+
         var pos_3 = [$("#c1 .concept").offset(), 10, 10];
+        $('#c1').css({'opacity': .25});
+
         var pos_4 = [$("ul a.list-group-item:nth(1)").offset(), -4, -4];
+        $('#selected-choice').css({'opacity': .25});
+        $('#rechoices-list').css({'opacity': .25});
+
         var pos_5 = [$("#submit_button").offset(), 10, 30];
+        $('#tree-confirm').css({'opacity': .25})
 
         _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, idx) {
           if(pos[0]) {

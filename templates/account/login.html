@@ -1,0 +1,41 @@
+{% extends "flatpages/base.html" %}
+
+{% load as_vertical_form from bootstrap %}
+{% load as_horizontal_form from bootstrap %}
+
+{% block content %}
+<div id="accounts-login" class="container">
+  <div class="row my-5 justify-content-center">
+    <div class="col-md-8 col-lg-6 col-xl-6">
+      <h2 class="text-center">Login</h2>
+      <p class="text-center">Don't have account? <a href='{% url "common:get-started" %}'>Get started now!</a></p>
+      <form method="post" class="mt-5">
+        {%  csrf_token %}
+
+        {% if  form.errors %}
+        <div class="row justify-content-center">
+          <div class="col-sm-8">
+            <p class="text-danger text-center">Your username and password didn't match. Please try again.</p>
+          </div>
+        </div>
+        {% endif %}
+
+        {{form.login|as_horizontal_form|escape}}
+        {{form.password|as_horizontal_form|escape}}
+
+        <div class="form-group row mt-5 mb-0 justify-content-center">
+          <div class="col-sm-6">
+            <button type="submit" class="btn btn-block btn-primary">Sign in</button>
+          </div>
+        </div>
+        <div class="form-group row justify-content-center">
+          <div class="col-sm-6">
+            <p class="text-right"><small><a href="{% url "account_reset_password" %}">Forgot password?</a></small>
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

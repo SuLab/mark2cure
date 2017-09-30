@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% include "includes/header-generic.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row m-y-1">
+    <div class="col-xs-12">
+      <h2 class="text-xs-center">Login with Zooniverse</h2>
+      <p class="text-xs-center">Use your Zooniverse account to login into Mark2Cure</p>
+    </div>
+  </div>
+  <div class="row m-y-1">
+    <div class="col-xs-10 col-xs-offset-1">
+      <div class="form-group m-y-1">
+        <div class="row">
+          <div class="col-xs-12 text-center">
+            <input id="zooniverse-signin" type="submit" value="Login with Zooniverse" class="btn btn-primary center-block btn-blockextends"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js-libs %}
+{{ block.super }}
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  // Prepare Zooniverse OAuth login URL
+  var oauthUrl = [
+      'https://panoptes.zooniverse.org',
+      '/oauth/authorize',
+      '?response_type=token',
+      '&client_id={{ zooniverse_app_id }}',
+      '&redirect_uri={{ zooniverse_callback_url }}'
+  ].join('');
+
+  // Auto jump into auth
+  window.location.href = oauthUrl;
+
+  $('#zooniverse-signin').click(function (e) {
+      e.preventDefault();
+
+      // Redirect user to sign-in page, with the specified callback URL (that will receive the access token)
+      window.location.href = oauthUrl;
+  });
+</script>
+{% endblock %}

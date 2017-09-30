@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block header %}
+{% with headerMessage='Downloads' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="instructions" class="container m-t-1 m-b-2">
+
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="{% url "instructions:home" %}">Instructions</a>
+      </li>
+      <!--block breadcrumb-->
+    </ol>
+  </div>
+
+  <div class="row">
+    <!-- Sidebar-->
+    <div class="col-md-4">
+      <ul class="list-group">
+
+        {% for group in groups %}
+        <li class="list-group-item row">
+          <div class="col-xs-2">{% if  group.2 == 'er' %}<i aria-hidden="true" class="fa fa-pencil"></i>{% else %}<i aria-hidden="true" class="fa fa-share-alt"></i>{% endif %}
+          </div>
+          <div class="col-xs-10">
+            <form method="post" action="{% url "download:export" %}">{%  csrf_token %}
+              <input name="group_pk" type="hidden" value="{{ group.0 }}"/>
+              <input name="task_type" type="hidden" value="{{ group.2 }}"/>
+              <button type="submit" class="btn btn-link">{{group.1|escape}}</button>
+            </form>
+          </div>
+        </li>
+        {% endfor %}
+
+      </ul>
+    </div>
+    <div class="col-md-8">
+      <p class="lead text-xs-center m-t-2">Here is your resource to be able to download the raw data collected by Mark2Cure</p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>ER</th>
+            <th>Rel</th>
+            <th>Generated</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for download in downloads %}
+          <tr>
+            <th scope="row">{{forloop.counter|escape}}</th>
+            <th></th>
+            <th>{% if download.task_er %}<i aria-hidden="true" class="fa fa-check"></i>{% else %}<i aria-hidden="true" class="fa fa-times"></i>{% endif %}</th>
+            <th>{% if download.task_rel %}<i aria-hidden="true" class="fa fa-check"></i>{% else %}<i aria-hidden="true" class="fa fa-times"></i>{% endif %}</th>
+            <th>{{download.create_time|naturaltime|escape}}</th>
+            <th>{% if download.file %}<a href="{{ download.file.url }}" target="_blank">
+                <p>Download</p></a>{% else %}<i aria-hidden="true" class="fa fa-spinner"></i>{% endif %}
+            </th>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

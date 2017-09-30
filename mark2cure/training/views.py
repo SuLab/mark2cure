@@ -41,5 +41,5 @@ def ner_home(request):
 
 
 def re_home(request):
-    return TemplateResponse(request, 'training/relation/home.jade')
+    return TemplateResponse(request, 'training/relation/home.html')
 

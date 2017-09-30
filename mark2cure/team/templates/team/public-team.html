@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{%  load widget_tweaks %}
+{%  load humanize %}
+
+{% block header %}
+{% if  user.is_authenticated %}
+{% include "includes/header.html" %}
+{% else %}
+{% include "includes/header-anon.html" %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <h1 class="text-center">Team {{team.name|escape}}</h1>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-8 text-center">
+      <div class="card">
+        <div class="card-header">Description
+        </div>
+        <div class="card-block">{{team.description|escape}}
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center my-3">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">Quick Stats
+        </div>
+        <div class="card-block">
+          <div class="row">
+            {% if  members %}
+            <div class="col-6">
+              <ol class="list-unstyled">
+                <li>Total Contributions: {{team.total_annotations.count|intcomma|escape}}</li>
+                <li>Total Docs: {{team.total_documents.count|intcomma|escape}}</li>
+                <li>Quests Finished: {{team.finished_quests.count|intcomma|escape}}</li>
+                <li>Lifetime Score: {{team.total_score|intcomma|escape}}</li>
+              </ol>
+            </div>
+            {% else %}
+            <p>There are no members in this group, so there are no contributions</p>{% endif %}
+            <div class="col-6">
+              <ol class="list-unstyled">
+                {% if  members %}
+                {%  with user=team.last_active_user %}
+                <li>
+                  <p>Last Active User:<a href="{% url "userprofile:public-profile" username=user.username %}">{% if  user.username %}{{user.username|escape}}
+                {% endif %}</a>
+                  </p>
+                </li>
+                {% endwith %}
+                <li>
+                  {% if  members %}
+                  <p>Last Member Activity: {{user.userprofile.last_seen|naturaltime|escape}}</p>
+                  {% endif %}
+                </li>
+                {% endif %}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">About
+            </div>
+            <div class="card-block">
+              <ol class="list-unstyled">
+                <li>
+                  <p>Created: {{team.created|naturaltime|escape}}</p>
+                </li>
+                <li>
+                  <p>Created by:<a href="{% url "userprofile:public-profile" username=team.owner.username %}"> {{team.owner|escape}}</a>
+                  </p>
+                </li>
+                <li>{% if  members %}<p>Members: {{team.members_count|escape}}</p>{% endif %}
+                </li>
+                <li>
+                  {% if  members %}
+                  {%  with userprofile=team.userprofile_set.last %}
+                  <p>Newest Member:<a href="{% url "userprofile:public-profile" username=userprofile.user.username %}"> {{userprofile.user.username|escape}}</a>
+                  </p>
+                  {% endwith %}
+                  {% endif %}
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% if  members %}
+  <div class="row justify-content-center my-3">
+    <div class="col-10">
+      <div class="card">
+        <div class="card-header">Members
+        </div>
+        <div class="card-block">
+          <div class="row">
+            {% for member_profile in members|__pyjade_iter:1 %}
+            <div class="col-4"><a href="{% url "userprofile:public-profile" username=member_profile.user.username %}">
+                <p class="lead text-xs-center">{{member_profile.user.username|escape}}</p></a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

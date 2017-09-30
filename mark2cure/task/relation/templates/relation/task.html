@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{%  load widget_tweaks %}
+{%  load humanize %}
+
+{% block header %}
+{%  with headerMessage=task.name %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="tree-action-area" class="container-fluid"></div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  var RETreeApp = Backbone.Marionette.Application.extend({
+    region: '#tree-action-area',
+
+    onStart: function() {
+      var main = this.getRegion();
+
+      main.show( new Tree({
+        'csrf_token': "{{csrf_token}}",
+        'mode': 're',
+
+        'document_pk': "{{ document.pk }}",
+        'document_pmid': "{{ document.document_id }}"
+        })
+      );
+    }
+  });
+var tree_app = new RETreeApp();
+tree_app.start();
+</script>
+{% endblock %}

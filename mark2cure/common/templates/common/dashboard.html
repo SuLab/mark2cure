@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load group %}
+
+{% block header %}
+{% with headerMessage='Community Dashboard' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container messages">
+  {% if messages %}
+  {% for message in messages %}
+  {% if 'safe' in message.tags %}
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <div class="{{ message.tags }} alert">
+        {{ message|safe }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+</div>
+<div id="dashboard" class="container-fluid"></div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  var DashboardApp = Backbone.Marionette.Application.extend({
+    region: '#dashboard',
+
+    onStart: function() {
+      var main = this.getRegion();
+      main.show( new DashboardView() );
+    }
+  });
+  var dashboard_app = new DashboardApp();
+  dashboard_app.start();
+</script>
+{% endblock %}

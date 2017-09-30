@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{%  load widget_tweaks %}
+{%  load comments %}
+
+{% block header %}
+{%  with headerMessage=task.name %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+<div id="ypet-action-area" class="container-fluid"></div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  var NERYPetApp = Backbone.Marionette.Application.extend({
+    region: '#ypet-action-area',
+
+    onStart: function() {
+      var main = this.getRegion();
+
+      main.show( new YPet({
+        'csrf_token': '{{csrf_token}}',
+        'mode': 'ner',
+        'task_pk': {{ task_pk }},
+        })
+      );
+    }
+  });
+  var ypet_app = new NERYPetApp();
+  ypet_app.start();
+</script>
+{% endblock %}
