@@ -236,7 +236,7 @@ def re_task_submit(request, document_pk):
 
 @login_required
 def re_task(request, document_pk):
-    '''View that serves required jade and starts the Tree library
+    '''View that serves required html and starts the Tree library
 
         Document shuffling, and other RE document ordering logic
         is done by the client.
@@ -245,6 +245,6 @@ def re_task(request, document_pk):
 
     # (TODO) Return if the user has already completed 20 Relations within this Document
 
-    return TemplateResponse(request, 'relation/task.jade', {'document': document})
+    return TemplateResponse(request, 'relation/task.html', {'document': document})
 
 

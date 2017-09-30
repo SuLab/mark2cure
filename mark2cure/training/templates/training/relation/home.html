@@ -15,18 +15,19 @@
 {% endblock %}
 
 {% block post-footer %}
-<script>var RETrainingApp = Backbone.Marionette.Application.extend({
-  region: '#re-training-area',
-  onStart: function() {
-    var main = this.getRegion();
-    main.show( new TrainingView({
-      'csrf_token': "{{csrf_token}}",
-      'mode': 're',
-      })
-    );
-  }
-});
-var re_training = new RETrainingApp();
-re_training.start();
+<script>
+  var RETrainingApp = Backbone.Marionette.Application.extend({
+    region: '#re-training-area',
+    onStart: function() {
+      var main = this.getRegion();
+      main.show( new TrainingView({
+        'csrf_token': "{{csrf_token}}",
+        'mode': 're',
+        })
+      );
+    }
+  });
+  var re_training = new RETrainingApp();
+  re_training.start();
 </script>
 {% endblock %}

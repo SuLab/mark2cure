@@ -23,7 +23,7 @@ def public_profile(request, username):
            'owner': True if request.user == user else False,
            'contributed_groups': user.profile.contributed_groups()}
 
-    return TemplateResponse(request, 'userprofile/public-profile.jade', ctx)
+    return TemplateResponse(request, 'userprofile/public-profile.html', ctx)
 
 
 @login_required
@@ -55,7 +55,7 @@ def settings(request):
     ctx = {'user_change_form': user_change_form,
            'team_form': team_form,
            'user_profile_form': user_profile_form}
-    return TemplateResponse(request, 'userprofile/settings.jade', ctx)
+    return TemplateResponse(request, 'userprofile/settings.html', ctx)
 
 
 @api_view(['GET'])

@@ -1,7 +1,18 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Gene Concept Marking Rules' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Gene Concept Marking Rules' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a>
 </li>
-<li class="breadcrumb-item active">Genes</li>{% endblock %}{% block instructions-content %}
+<li class="breadcrumb-item active">Genes</li>
+{% endblock %}
+
+{% block instructions-content %}
 <ol>
   <li>
     <p>Mark every instance of a Gene or Gene Product (like proteins or MicroRNAs)</p>
@@ -27,4 +38,5 @@
   <li>
     <p>If you suspect an unfamiliar term of being a gene/gene product name or symbol but are unsure, check here: <a href='http://www.genenames.org/' target='_blank'>genenames.org</a> or <a href='http://www.ncbi.nlm.nih.gov/gene/' target='_blank'>ncbi.nlm.nih.gov/gene/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Genes_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
   </li>
-</ol>{% endblock %}
+</ol>
+{% endblock %}

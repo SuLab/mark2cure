@@ -219,7 +219,7 @@ def ner_quest_submit(request, quest_pk):
 @login_required
 @api_view(['GET'])
 def ner_quest(request, quest_pk):
-    '''View that serves required jade and starts the YPet library
+    '''View that serves required html and starts the YPet library
 
         Document shuffling, and other NER document ordering logic
         is done by the client.
@@ -235,4 +235,4 @@ def ner_quest(request, quest_pk):
         for document in documents:
             task.create_views(document, request.user)
 
-    return TemplateResponse(request, 'entity_recognition/quest.jade', {'task_pk': task.pk})
+    return TemplateResponse(request, 'entity_recognition/quest.html', {'task_pk': task.pk})

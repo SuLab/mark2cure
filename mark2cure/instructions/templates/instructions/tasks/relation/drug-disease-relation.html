@@ -1,8 +1,18 @@
-{% extends "instructions/tasks/relation/relation-base.html" %}{% block header %}{%  with headerMessage='Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url "instructions:relation" %}">Relation Task</a>
-</li>
+{% extends "instructions/tasks/relation/relation-base.html" %}
+
+{% block header %}
+{% with headerMessage='Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url "instructions:relation" %}">Relation Task</a></li>
 <li class="breadcrumb-item active">Relationships</li>
-<li class="breadcrumb-item active">Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</li>{% endblock %}{% block instructions-content %}
+<li class="breadcrumb-item active">Drug <i class="fa fa-angle-right" aria-hidden="true"></i> Disease</li>
+{% endblock %}
+
+{% block instructions-content %}
 <div id="instructions-content"></div>
 <script>root = {
   "id": "1-1-1-1-1-1",
@@ -47,4 +57,5 @@
     "example": "e.g.- To study soft tissue sarcoma, an experimental group of mice was given the drug NVP-BHG712.",
         }]
 }
-</script>{% endblock %}
+</script>
+{% endblock %}

@@ -12,12 +12,12 @@
   <meta name="copyright" content="Mark2Cure">
   <meta name="application-name" content="Mark2Cure">
 
-  <link rel="shortcut icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon" />
-  <link rel="icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon" />
-  <link rel="apple-touch-icon" href="#{STATIC_URL}touch-icon-iphone.png" />
-  <link rel="apple-touch-icon" sizes="76x76" href="#{STATIC_URL}touch-icon-ipad.png" />
-  <link rel="apple-touch-icon" sizes="120x120" href="#{STATIC_URL}touch-icon-iphone-retina.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="#{STATIC_URL}touch-icon-ipad-retina.png" />
+  <link rel="shortcut icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon">
+  <link rel="icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="#{STATIC_URL}touch-icon-iphone.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="#{STATIC_URL}touch-icon-ipad.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="#{STATIC_URL}touch-icon-iphone-retina.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="#{STATIC_URL}touch-icon-ipad-retina.png">
 
   {% block social-tags %}
   <meta property="og:title" content="Mark2Cure">
@@ -41,23 +41,6 @@
 </head>
 <body>
 
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '590750244309284',
-        xfbml      : true,
-        version    : 'v2.6'
-      });
-    };
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
-  </script>
-
   {% block header %}
   {% endblock %}
 
@@ -72,27 +55,16 @@
   {% include "js-templates.html" %}
   {% endblock %}
 
-  <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-43341013-1', 'auto');
-  ga('send', 'pageview');
-  </script>
-
-  {% if debug %}
-  <script>ga('set', 'sendHitTask', null);</script>
-  {% endif %}
-
   <script src="#{STATIC_URL}js/mark2cure.min.js"></script>
   <script>
+    //-- Can't do with Tag Manager b/c of email + id
     var raven_options = {
       logger: 'js-logger',
       whitelistUrls: [/mark2cure\.org/, /localhost/],
       fetchContext: true,
       linesOfContext: 30
     };
-    Raven.config('https://2e8a4df0f5a640409c45630cb43472b4@sentry.io/61810').install()
+    Raven.config('https://2e8a4df0f5a640409c45630cb43472b4@sentry.io/61810').install();
     Raven.setUser({
       email: "{{ request.user.email }}",
       id: "{{ request.user.pk }}"

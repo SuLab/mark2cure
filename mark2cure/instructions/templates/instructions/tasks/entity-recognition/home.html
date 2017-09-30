@@ -1,6 +1,18 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Entity Recognition' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
-<li class="breadcrumb-item active">Entity Recognition Task</li>{% endblock %}{% block instructions-content %}
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Entity Recognition' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Entity Recognition Task</li>
+{% endblock %}
+
+{% block instructions-content %}
 <div class="modal-body">
+
   <div class="panel">
     <div class="panel-body">
       <p class="lead">Disease Marking Skill: the ability to identify and mark disease concepts such as:</p>
@@ -9,22 +21,28 @@
         <li><strong>Disease Class</strong> – a specific category of similar but different diseases</li>
         <li><strong>Symptom</strong> – the physical manifestations of a disease</li>
         <li><strong>Signs/diagnostic signs</strong> – symptoms or test results that support a disease diagnosis. These generally exclude genetic tests, which often define (as opposed to support) a disease diagnosis.</li>
-      </ol><a href="{% url "instructions:entity-recognition-diseases" %}">
-        <p class="text-xs-center">Review the rules for Disease Marking</p></a>
+      </ol>
+      <a href="{% url "instructions:entity-recognition-diseases" %}">
+        <p class="text-xs-center">Review the rules for Disease Marking</p>
+      </a>
     </div>
   </div>
   <hr/>
+
   <div class="panel">
     <div class="panel-body">
       <p class="lead">Gene Marking Skill: the ability to identify and mark gene concepts such as:</p>
       <ol style="margin-left: 8px;" class="list-unstyled">
         <li><strong>Genes</strong> – a molecular unit of heredity in an organism, and is usually referred to in biomedical literature by their gene name, gene symbol, or both.</li>
         <li><strong>Gene Products</strong> – usually a protein or microRNA that is encoded by the gene and will sometimes have the same name/symbol as the gene.</li>
-      </ol><a href="{% url "instructions:entity-recognition-genes" %}">
-        <p class="text-xs-center">Review the rules for Gene Marking</p></a>
+      </ol>
+      <a href="{% url "instructions:entity-recognition-genes" %}">
+        <p class="text-xs-center">Review the rules for Gene Marking</p>
+      </a>
     </div>
   </div>
   <hr/>
+
   <div class="panel">
     <div class="panel-body">
       <p class="lead">Treatment Marking Skill: the ability to identify and mark treatment concepts such as:</p>
@@ -32,8 +50,11 @@
         <li><strong>Drug</strong> – a substance that has biological effects on humans or other animals, and can be at different stages of development and have multiple names</li>
         <li><strong>Drug Class</strong> – a specific category of drugs based often (but not always) based on mechanism of action</li>
         <li><strong>Non-Drug Treatment</strong> – Non-drug-based means of mitigating a disease or symptoms of a disease</li>
-      </ol><a href="{% url "instructions:entity-recognition-treatments" %}">
-        <p class="text-xs-center">Review the rules for Treatment Marking</p></a>
+      </ol>
+      <a href="{% url "instructions:entity-recognition-treatments" %}">
+        <p class="text-xs-center">Review the rules for Treatment Marking</p>
+      </a>
     </div>
   </div>
-</div>{% endblock %}
+</div>
+{% endblock %}

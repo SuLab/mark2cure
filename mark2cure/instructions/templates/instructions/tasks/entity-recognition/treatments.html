@@ -1,7 +1,17 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Treatment Concept Marking Rules' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a>
-</li>
-<li class="breadcrumb-item active">Treatments</li>{% endblock %}{% block instructions-content %}
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Treatment Concept Marking Rules' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a></li>
+<li class="breadcrumb-item active">Treatments</li>
+{% endblock %}
+
+{% block instructions-content %}
 <ol>
   <li>
     <p>Mark every instance of a drug class, non-drug treatment, or drug</p>
@@ -27,4 +37,5 @@
   <li>
     <p>If you suspect an unfamiliar term of being a drug but are unsure, check here: <a href='http://www.drugbank.ca/' target='_blank'>drugbank.ca</a> or on Google or Wikipedia (for drugs under development) or or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Treatments_Concept_Help' target='_blank'>new Wikia forum for help</a></p>
   </li>
-</ol>{% endblock %}
+</ol>
+{% endblock %}

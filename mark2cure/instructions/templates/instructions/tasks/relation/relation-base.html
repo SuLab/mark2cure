@@ -1,6 +1,12 @@
-{% extends "instructions/home.html" %}{% block instructions-content %}
-<div id="instructions-content"></div>{% endblock %}{% block post-footer %}
-<script>var i = 0,
+{% extends "instructions/home.html" %}
+
+{% block instructions-content %}
+<div id="instructions-content"></div>
+{% endblock %}
+
+{% block post-footer %}
+<script>
+  var i = 0,
     duration = 550,
     root;
 
@@ -54,4 +60,5 @@ var node = canvas.selectAll('div')
         .style('background-color', '#eceeef')
 
         .html(function(d) { return '<div class="col-xs-12"><p class="lead">'+d.text+'</p></div><div class="col-xs-12"><hr /><small>'+d.desc+'</small></div><div class="col-xs-12"><small>'+d.example+'</small></div>' });
-</script>{% endblock %}
+</script>
+{% endblock %}

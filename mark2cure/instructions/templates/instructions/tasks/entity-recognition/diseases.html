@@ -1,7 +1,19 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Disease Concept Marking Rules' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a>
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Disease Concept Marking Rules' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+  <a href="{% url "instructions:entity-recognition" %}">Entity Recognition Task</a>
 </li>
-<li class="breadcrumb-item active">Diseases</li>{% endblock %}{% block instructions-content %}
+<li class="breadcrumb-item active">Diseases</li>
+{% endblock %}
+
+{% block instructions-content %}
 <ol>
   <li>
     <p>Mark every instance of a Disease, Disease Class, Symptom or Sign/Diagnostic Sign</p>
@@ -27,4 +39,5 @@
   <li>
     <p>When in doubt, search online resources like: <a href='http://www.diseasesdatabase.com/begin.asp' target='_blank'>http://www.diseasesdatabase.com/begin.asp</a> and <a href='http://www.ncbi.nlm.nih.gov/mesh/' target='_blank'>http://www.ncbi.nlm.nih.gov/mesh/</a> or visit our <a href='http://mark2cure.wikia.com/wiki/Board:Diseases_Concept_Help' target='_blank'>new Wikia forum for help</a>.</p>
   </li>
-</ol>{% endblock %}
+</ol>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% load humanize %}
+
+<nav id="header" role="navigation" class="navbar navbar-default">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-2">
+        <a href="{% url "common:dashboard" %}" class="navbar-brand">
+          <img href="#{STATIC_URL}images/landing/mark2cure-flatbox-logo.png" alt="Mark2Cure"/>
+        </a>
+      </div>
+      <div class="col-8">
+        <h1 class="text-center">{{headerMessage|escape}}</h1>
+      </div>
+      <div class="col-2">
+        {% if user.is_authenticated %}
+        <a href="{% url "profile:public-profile" username=user.username %}" class="box-outline text-right">
+          <p class="m-0">{{user}}</p>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

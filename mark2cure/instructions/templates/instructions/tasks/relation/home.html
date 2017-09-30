@@ -1,5 +1,15 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Relation' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
-<li class="breadcrumb-item active">Relation Task</li>{% endblock %}{% block instructions-content %}
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Relation' %}{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Relation Task</li>
+{% endblock %}
+
+{% block instructions-content %}
 <div class="modal-body">
   <div class="panel">
     <div class="panel-body">
@@ -45,4 +55,5 @@
       </ol>
     </div>
   </div>
-</div>{% endblock %}
+</div>
+{% endblock %}

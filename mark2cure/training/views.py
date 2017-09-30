@@ -37,7 +37,7 @@ def route(request):
 
 
 def ner_home(request):
-    return TemplateResponse(request, 'training/entity-recognition/home.jade')
+    return TemplateResponse(request, 'training/entity-recognition/home.html')
 
 
 def re_home(request):

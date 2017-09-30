@@ -1,8 +1,19 @@
-{% extends "instructions/home.html" %}{% block header %}{%  with headerMessage='Disease Definition' %}{% include "includes/header.html" %}{% endwith %}{% endblock %}{% block breadcrumb %}
+{% extends "instructions/home.html" %}
+
+{% block header %}
+{% with headerMessage='Disease Definition' %}
+{% include "includes/header.html" %}
+{% endwith %}
+{% endblock %}
+
+{% block breadcrumb %}
 <li class="breadcrumb-item"><a href="{% url "instructions:relation" %}">Relation Task</a>
 </li>
 <li class="breadcrumb-item active">Definitions</li>
-<li class="breadcrumb-item active">Disease</li>{% endblock %}{% block instructions-content %}
+<li class="breadcrumb-item active">Disease</li>
+{% endblock %}
+
+{% block instructions-content %}
 <div class="modal-body">
   <div class="panel">
     <div class="panel-body">
@@ -16,4 +27,5 @@
       </ol>
     </div>
   </div>
-</div>{% endblock %}
+</div>
+{% endblock %}
