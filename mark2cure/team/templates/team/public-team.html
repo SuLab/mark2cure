@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{%  load widget_tweaks %}
-{%  load humanize %}
+{% load widget_tweaks %}
+{% load humanize %}
 
 {% block header %}
-{% if  user.is_authenticated %}
-{% include "includes/header.html" %}
+{% if user.is_authenticated %}
+  {% include "includes/header.html" %}
 {% else %}
-{% include "includes/header-anon.html" %}
+  {% include "includes/header-anon.html" %}
 {% endif %}
 {% endblock %}
 
@@ -109,7 +109,7 @@
         </div>
         <div class="card-block">
           <div class="row">
-            {% for member_profile in members|__pyjade_iter:1 %}
+            {% for member_profile in members %}
             <div class="col-4"><a href="{% url "userprofile:public-profile" username=member_profile.user.username %}">
                 <p class="lead text-xs-center">{{member_profile.user.username|escape}}</p></a>
             </div>

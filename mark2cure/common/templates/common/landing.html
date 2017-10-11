@@ -5,90 +5,129 @@
 {% load humanize %}
 
 {% block header %}
-{% include "includes/header-generic.html" %}
 {% endblock %}
 
 {% block content %}
-<div id="homepage" class="content">
-  <div id="bg-case-study">
-    <div class="container">
-      <div class="cta row justify-content-center">
-        <div class="col-12 col-md-10">
-          <h1 class="text-center">Bertrand  was the first case of <br class="hidden-xs-down"> NGLY1, but he is not alone.</h1>
-          <div class="row justify-content-center">
-            <div class="col-10 col-md-8 text-center">
-              <p>NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.</p>
-            </div>
-          </div>
-          <div class="row justify-content-center">
-            <div class="col-4 col-md-3 my-1"><a href="https://www.ngly1.org/" target="_blank" class="btn btn-block btn-white btn-outline">About NGLY1</a>
-            </div>
-            <div class="col-4"><a href="{% url "common:get-started" %}" style="font-size: 1.5em;" class="btn btn-block btn-white">Get Started</a>
-            </div>
-            <div class="col-4 col-md-3 my-1">
-              <a id="watch-more-link" href="#watch-more" class="hidden-sm-down btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</a>
-              <a href="https://www.youtube.com/watch?v=uaD0-GTX0N8" class="hidden-md-up btn btn-block btn-white btn-outline"><i class="fa fa-play"></i> Watch Video</a>
-            </div>
-          </div>
+<div id="homepage">
+
+  <nav id="bg-case-study" class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <!-- blue background with purple base -->
+    <div id="landing-header" class="row justify-content-center">
+      <div class="col-11 col-md-10 col-lg-8 col-xl-7">
+        <div class="row justify-content-between">
+
+          <a href="{% url "common:home" %}" class="navbar-brand">
+            <img class="hidden-xs-down" src="{% static 'images/landing/mark2cure-flatbox-logo-white.png' %}" alt="Mark2Cure" />
+          </a>
+          <ul class="list-inline pull-right mt-3">
+            <li class="list-inline-item"><a href="/about/">About</a></li>
+            <li class="list-inline-item"><a href="/faq/">FAQ</a></li>
+            <li class="list-inline-item"><a href="/blog/">Blog</a></li>
+            <li class="list-inline-item"><a href="/contact/">Contact</a></li>
+            {% if not user.is_authenticated %}
+            <li class="list-inline-item ml-4 ml-sm-0"><a href="{% url "account_login" %}" class="box-outline">Login</a></li>
+            {% endif %}
+          </ul>
+
         </div>
       </div>
     </div>
-    <div class="cta-bar container-fluid">
-      <div class="row">
-        <div class="col">
-          <p class="text-center"><a href="http://sulab.org/2015/09/please-help-now/" target="_blank"><span id='annotation-counter'></span> annotations have been submitted so far, but we’re not done! Your help is still needed… <span>Learn More <j class="fa fa-chevron-right"></span></a></p></a>
-          </p>
-        </div>
+
+    <div class="row justify-content-center mt-2 mt-md-3">
+      <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-5">
+        <h1 class="text-center">Bertrand was the first case of NGLY1, but he is not alone.</h1>
       </div>
     </div>
-  </div>
-  <div class="clearfix"></div>
-  <div class="container-fluid sci-comm-cs">
-    <div class="row"></div>
-  </div>
-  <div id="quest-explorer" class="container-fluid"></div>
-  <div class="container py-4">
-    <div class="row justify-content-center">
-      <div class="col-12 text-center">
+    <div class="row justify-content-center my-2 my-md-3">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-3">
+        <p class="text-center">NGLY1 Researchers are racing to find clues in biomedical literature and need your help to uncover hidden links. If you can read, you can help.</p>
+      </div>
+    </div>
+
+    <div id="landing-header-buttons" class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+        <div class="row justify-content-center">
+
+          <div class="col-10 col-md-4 my-1">
+            <a href="https://www.ngly1.org/" target="_blank" class="btn btn-block btn-white btn-outline">About NGLY1</a>
+          </div>
+          <div class="col-10 col-md-4">
+            <a href="{% url 'common:get-started' %}" style="font-size: 1.5em;" class="btn btn-block btn-white">Get Started</a>
+          </div>
+          <div class="col-10 col-md-4 my-1">
+            <a id="watch-more-link" href="#watch-more" class="hidden-sm-down btn btn-block btn-white btn-outline my-0"><i class="fa fa-play"></i> Watch Video</a>
+            <a href="https://www.youtube.com/watch?v=uaD0-GTX0N8" class="hidden-md-up btn btn-block btn-white btn-outline my-0"><i class="fa fa-play"></i> Watch Video</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- the purple base with stats -->
+    <div id="landing-annotation-focus" class="row no-gutters justify-content-center">
+      <div class="col-10 col-md-8 py-3">
+        <p class="text-center mb-0">
+          <a href="http://sulab.org/2015/09/please-help-now/" target="_blank">
+            <span id='annotation-counter'></span> annotations have been submitted so far, but we’re not done! Your help is still needed… <strong>Learn More <i class="fa fa-chevron-right"></i></strong>
+          </a>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <!-- a row gets inserted here -->
+    <div id="quest-explorer" class="my-2"></div>
+
+    <div class="row justify-content-center my-2 my-xl-4">
+      <div class="col-11 col-md-10 col-lg-8 col-xl-6 text-center">
         <h2>Scientific <span class="font-red text-uppercase">communication</span> is broken.</h2>
         <p class="medium">Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.</p>
       </div>
     </div>
     <div class="row justify-content-center">
-      <div class="col-8"><img href="#{STATIC_URL}images/landing/words.jpg" alt="" class="img-fluid"/>
+      <div class="col-8">
+        <div id="landing-network-browser" class="row"></div>
       </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="row py-4">
-      <div class="col text-center">
+
+    <div class="row justify-content-center my-2 my-md-3 my-xl-4">
+      <div class="col-11 col-md-10 col-lg-8 col-xl-6 text-center">
         <h2><span class="font-red text-uppercase">you</span> can fix it and help find cures.</h2>
         <p class="medium">The ability to read remains a uniquely human skill. Mark2Cure allows anyone that can read English, regardless of background, to help in the process of biomedical discovery. You can help them by identifying key pieces of information in scientific text to discover cures faster.</p>
       </div>
     </div>
-    <div class="row justify-content-center my-2">
-      <div class="col-6 col-lg-3 text-right"><img src="#{STATIC_URL}images/landing/ngly1-child.png" alt="" class="img-fluid"/>
+
+    <div class="row justify-content-center my-2 my-md-3 my-xl-4">
+      <div class="col-11 col-md-6 col-lg-3 text-center text-right-md my-2 my-md-0">
+        <img src="{% static 'images/landing/ngly1-child.png' %}" alt="" class="img-fluid"/>
       </div>
-      <div class="col-6 col-lg-3">
-        <p>It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p> <p> <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a></p>
+      <div class="col-11 col-md-6 col-lg-3 my-2 my-md-0">
+        <p>It wasn't that long ago that all of our NGLY1 kids were undiagnosed and without hope. With your help and support, a diagnosis can be found much faster.</p>
+        <p class="text-right text-sm-left">
+          <a href='http://ngly1.org' target='_blank' style="margin-top:35px;">Learn more at ngly1.org <i class="fa fa-chevron-right"></i></a>
+        </p>
       </div>
     </div>
-  </div>
-  <div class="container">
-    <div class="row justify-content-center my-4">
-      <div id="watch-more" class="col-8">
+
+    <div class="row justify-content-center my-2 my-md-3 my-xl-4">
+      <div id="watch-more" class="col-11 col-sm-10 col-md-7 col-lg-6 col-xl-4">
         <div class="embed-responsive embed-responsive-16by9">
           <iframe width="640" height="360" src="https://www.youtube.com/embed/uaD0-GTX0N8" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
         </div>
       </div>
     </div>
-    <div class="row justify-content-center my-4">
-      <div class="col-6 text-center">
-        <p class="m-0 font-purple">If you can read you can help.
-        </p><a href="{% url "common:get-started" %}" class="btn btn-large btn-primary btn-lg">I want to help</a>
+
+    <div class="row justify-content-center my-3 my-lg-4">
+      <div class="col-11 col-sm-10 col-md-7 col-lg-6 col-xl-4 text-center">
+        <p class="my-2 font-purple">If you can read <strong>you can help</strong>.</p>
+        <a href="{% url "common:get-started" %}" class="btn btn-large btn-primary btn-lg">I want to help</a>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}
 

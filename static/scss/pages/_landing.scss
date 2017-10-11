@@ -128,24 +128,55 @@
   color: $color_black;
   font-size: 16px;
 
-  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-    color: inherit;
-    @include font-sans;
+  #bg-case-study {
+    min-height: 679px;
+    width: 100%;
+    background-color: $color_purple;
+    background-image: url('/static/images/landing/bg-case-study-flip.jpg');
+    background-repeat: no-repeat;
+    background-position-x: right;
+    color: $color_white;
+
+    #landing-header {
+      img {
+        height: 60px;
+      }
+
+      a {
+        color: $color_white;
+      }
+
+      .box-outline {
+        border: 2px solid $color_white;
+        padding: 6px 12px;
+
+        &:hover {
+          background-color: $color_white;
+          color: $color_purple;
+          text-decoration: none;
+        }
+      }
+
+    }
+
+    #landing-header-buttons {
+      margin-bottom: 64px;
+    }
+    #landing-annotation-focus {
+      height: 64px;
+
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      background: rgba(0,204,255,.5);
+
+      p a {
+        color: #fff;
+      }
+    }
   }
 
-  a,
-  #footer p a {
-    color: $color_purple;
-  }
-  .btn,
-  .button {
-    border-radius: 30px;
-    padding: 5px 15px;
-    margin-top: 10px;
-  }
-  .btn-flat {
-    border-radius: 0;
-  }
   .btn-outline {
     background: $color_white;
   }
@@ -153,6 +184,10 @@
     color: $color_purple;
     background-color: $color_white;
     border: 2px solid $color_white;
+
+    &:hover {
+      color: $color_black;
+    }
   }
   .btn-primary {
     color: $color_white;
@@ -163,191 +198,54 @@
   }
   .btn-outline.btn-primary {
     color: $color_purple;
+
+    &:hover {
+      color: $color_white;
+    }
   }
-  .btn-outline.btn-primary:hover {
-    color: $color_white;
-  }
+
   .btn-outline.btn-white {
-    background-color: #7f3cff;
+    background-color: transparent;
     color: $color_white;
     border: 2px solid $color_white;
+
+    &:hover {
+      background-color: rgba(127, 60, 255, .5);
+    }
   }
-  .btn-outline.btn-white:hover {
-    color: $color_white;
-  }
+
   .btn-large {
     padding-right: 20px;
     padding-left: 20px;
   }
-  .wrap {
-    position: relative;
-  }
-  .push15 { margin-top: 15px; }
-  .push30 { margin-top: 30px; }
-  .push50 { margin-top: 50px; }
-  .push75 { margin-top: 75px; }
-  .push100 { margin-top: 100px; }
-  .push130 { margin-top: 130px; }
-  .push550 { margin-top: 550px; }
 
-  .aligncenter {
-    display: block;
-    margin: 5px auto 5px auto;
-  }
-  p.medium {
-    font-size: 20px;
-    line-height: 140%;
-  }
+}
 
-  .modal-content {
-    border-radius: 0;
-  }
-  .modal-backdrop {
-    background-color: $color_purple;
-    opacity: 0.9 !important;
-  }
-  #bg-case-study .container,
-  #bg-light .container {
-    margin-top: 100px;
-  }
-  .cta #bg-light h1 {
-    line-height: 150%;
-  }
-  .cta h1 > span.bg-purple {
-    padding: 0 10px 10px 10px;
-  }
-  .cta p {
-    font-size: 20px;
-    line-height: 150%;
-  }
-  .cta-bar p {
-    padding-top: 15px;
-    padding-bottom: 5px;
-  }
-  .cta-bar p a {
-    color: $color_white;
-  }
-  p .fa-chevron-right,
-  p .fa-chevron-left {
-    font-size: 80%;
-  }
-
-
-  #bg-case-study {
-    position: absolute;
-    z-index: 500;
-    top: 0;
-    left: 0;
-    height: 600px;
-    width: 100%;
-    background-color: $color_purple;
-    background-image: url('/static/images/landing/bg-case-study.png');
-    background-image: url('/static/images/landing/bg-case-study-flip.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    color: $color_white;
-
-    .wrap {
-      height: 100%;
+@include media-breakpoint-down(md) {
+  #homepage {
+    #bg-case-study {
+      #landing-header-buttons { margin-bottom: 80px; }
+      #landing-annotation-focus { height: 80px; }
     }
-    .cta-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(0, 204, 255, 0.5);
-      color: $color_white;
-      height: 4em;
+
+    #quest-explorer {
+      .ended-group { display: none; }
     }
   }
-
-
-  .light .sci-comm {
-    margin-top: 100px;
-  }
-  .sci-comm-cs {
-    margin-top: 500px;
-  }
 }
 
-
-@media (max-width: 768px) {
-  .sci-comm-cs {
-    margin-top: 500px;
-  }
-
-  .light .sci-comm {
-    margin-top: 50px;
-  }
-
-  .cta p {
-    font-size: 15px;
+@include media-breakpoint-down(xs) {
+  #homepage {
+    #bg-case-study {
+      #landing-annotation-focus {
+        p { font-size: .75em; }
+      }
+    }
   }
 }
 
-@media (min-width: 992px) {
-  h1 {
-    font-size: 52px;
-    line-height: 150%;
-  }
-  h2 {
-    font-size: 34px;
-    line-height: 150%;
-  }
-  .stick-bottom {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-  }
-}
-
-
-.home-frame {
-
-.container {
-  margin: 0 auto;
-}
-
-
-/* Example wrapper */
-
-.wrap {
-  position: relative;
-  margin: 3em 0;
-}
-
-
-/* Frame */
-
-.frame {
-  height: 250px;
-  line-height: 250px;
-  overflow: hidden;
-}
-
-.frame ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-size: 20px;
-}
-
-.frame ul li {
-  float: left;
-  width: 230px;
-  height: 100%;
-  margin: 0 0 0 0;
-  padding: 0;
-  color: #ddd;
-  text-align: center;
-  cursor: pointer;
-}
-
-.frame ul li:hover {
-  background: #f7f7f9;
-}
+// @include media-breakpoint-down(sm) {}
+// @include media-breakpoint-down(lg) {}
 
 
 /* Scrollbar */
@@ -372,79 +270,4 @@
   left: 0;
   width: 100%;
   height: 20px;
-}
-
-
-/* Pages */
-
-.pages {
-  list-style: none;
-  margin: 20px 0;
-  padding: 0;
-  text-align: center;
-}
-
-.pages li {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin: 0 4px;
-  text-indent: -999px;
-  border-radius: 10px;
-  cursor: pointer;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .2);
-}
-
-.pages li:hover {
-  background: #aaa;
-}
-
-.pages li.active {
-  background: #666;
-}
-
-
-/* Controls */
-
-.controls {
-  margin: 25px 0;
-  text-align: center;
-}
-
-
-/* One Item Per Frame example*/
-
-.oneperframe {
-  height: 300px;
-  line-height: 300px;
-}
-
-.oneperframe ul li {
-  width: 1140px;
-}
-
-.oneperframe ul li.active {
-  background: #333;
-}
-
-
-/* Crazy example */
-
-.crazy ul li:nth-child(2n) {
-  width: 100px;
-  margin: 0 4px 0 20px;
-}
-
-.crazy ul li:nth-child(3n) {
-  width: 300px;
-  margin: 0 10px 0 5px;
-}
-
-.crazy ul li:nth-child(4n) {
-  width: 400px;
-  margin: 0 30px 0 2px;
-}
-
 }

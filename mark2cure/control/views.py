@@ -22,7 +22,7 @@ import datetime
 import uuid
 
 
-def dataframe_view(request, df, format_type, ctx={}, template='control/dataframe_base.jade'):
+def dataframe_view(request, df, format_type, ctx={}, template='control/dataframe_base.html'):
     if format_type == "download":
         return HttpResponse(df.to_csv(), content_type='text/csv')
 
@@ -99,7 +99,7 @@ def group_create(request):
         ctx = {
             'form': group_form
         }
-        return TemplateResponse(request, 'control/group_create.jade', ctx)
+        return TemplateResponse(request, 'control/group_create.html', ctx)
 
 
 @login_required
@@ -108,7 +108,7 @@ def group_list(request):
     ctx = {
         'groups': Group.objects.all().order_by('-order'),
     }
-    return TemplateResponse(request, 'control/group_list.jade', ctx)
+    return TemplateResponse(request, 'control/group_list.html', ctx)
 
 
 @login_required
@@ -118,7 +118,7 @@ def group_report(request, pk, format_type='html'):
     ctx = {
         'model_pk': report.pk
     }
-    return dataframe_view(request, report.dataframe, format_type, ctx, template='control/dataframe_pk_base.jade')
+    return dataframe_view(request, report.dataframe, format_type, ctx, template='control/dataframe_pk_base.html')
 
 
 @login_required
@@ -131,7 +131,7 @@ def group_read(request, pk):
         'group': group,
         'document_quest_relationships': document_quest_relationships
     }
-    return TemplateResponse(request, 'control/group.jade', ctx)
+    return TemplateResponse(request, 'control/group.html', ctx)
 
 
 @login_required
@@ -168,7 +168,7 @@ def document_read(request, pk):
     ctx = {
         'doc': doc
     }
-    return TemplateResponse(request, 'control/doc.jade', ctx)
+    return TemplateResponse(request, 'control/doc.html', ctx)
 
 
 @login_required
@@ -184,5 +184,5 @@ def home(request):
     ctx = {
         'users_online': users_online
     }
-    return TemplateResponse(request, 'control/home.jade', ctx)
+    return TemplateResponse(request, 'control/home.html', ctx)
 

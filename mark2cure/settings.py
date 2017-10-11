@@ -180,6 +180,7 @@ TEMPLATES = [
         'DIRS': [
             PROJECT_PATH + '/templates/',
         ],
+        'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
             'context_processors': [
@@ -195,13 +196,7 @@ TEMPLATES = [
                 # App Specific
                 'mark2cure.common.context_processors.support_form',
             ],
-            'loaders': [
-                ('pyjade.ext.django.Loader', (
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                )),
-            ],
-            'builtins': ['pyjade.ext.django.templatetags'],
+            'builtins': ['django.templatetags.static'],
         },
     },
 ]
@@ -274,7 +269,6 @@ ACCOUNT_PASSWORD_MIN_LENGTH = 6
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_SESSION_REMEMBER = True
-# ACCOUNT_TEMPLATE_EXTENSION = 'jade'
 SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
 SOCIALACCOUNT_PROVIDERS = {'google': {
     'SCOPE': ['profile', 'email'],

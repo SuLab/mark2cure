@@ -1,23 +1,22 @@
 from django import forms
 from django.forms.forms import BoundField, BaseForm
 from django.forms.utils import ErrorList
-from django.template import Library, Context, TemplateSyntaxError
+from django.template import Library, TemplateSyntaxError
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 register = Library()
 
-TEMPLATE_ERRORS = 'bootstrap/_non_field_errors.jade'
-TEMPLATE_HORIZONTAL = 'bootstrap/_field_horizontal.jade'
-TEMPLATE_VERTICAL = 'bootstrap/_field_vertical.jade'
-TEMPLATE_IMAGE = 'bootstrap/_field_image.jade'
+TEMPLATE_ERRORS = 'bootstrap/_non_field_errors.html'
+TEMPLATE_HORIZONTAL = 'bootstrap/_field_horizontal.html'
+TEMPLATE_VERTICAL = 'bootstrap/_field_vertical.html'
 
 
 def render_non_field_errors(errors):
     if not errors:
         return ''
-    context = Context({'errors': errors})
-    return render_to_string(TEMPLATE_ERRORS, context_instance=context)
+    context = {'errors': errors}
+    return render_to_string(TEMPLATE_ERRORS, context=context)
 
 
 def render_field(bound_field, show_label, template):
@@ -36,10 +35,10 @@ def render_field(bound_field, show_label, template):
     else:
         input_type = 'input'
 
-    context = Context({'bound_field': bound_field,
-                       'input_type': input_type,
-                       'show_label': show_label})
-    return render_to_string(template, context_instance=context)
+    context = {'bound_field': bound_field,
+               'input_type': input_type,
+               'show_label': show_label}
+    return render_to_string(template, context=context)
 
 
 def as_bootstrap(obj, show_label, template):
@@ -70,12 +69,6 @@ def as_horizontal_form(obj, show_label=True):
 def as_vertical_form(obj, show_label=True):
     return as_bootstrap(obj=obj, show_label=show_label,
                         template=TEMPLATE_VERTICAL)
-
-
-@register.filter
-def as_image_form(obj, show_label=True):
-    return as_bootstrap(obj=obj, show_label=show_label,
-                        template=TEMPLATE_IMAGE)
 
 
 @register.simple_tag

@@ -299,7 +299,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
     //   if(_.uniq(anns).length > 1) {
     //     console.log('underline prep')
     //
-    //     #<{(| 2 Different Parent Annotations |)}>#
+    //     /* 2 Different Parent Annotations */
     //     words.each(function(word) {
     //       if(word == words.last()) {
     //         word.trigger('underline-space', {'color': '#fff', 'last_word': true});

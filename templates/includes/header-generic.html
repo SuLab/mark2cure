@@ -1,5 +1,7 @@
+{% load static %}
+
 <nav id="header-generic" class="{{ extraClassNames }} navbar navbar-default">
-  <div class="container"><a href="{% url "common:home" %}" class="navbar-brand"><img{% __pyjade_attrs attrs=[('src',(""+"{}".format(STATIC_URL)+"images/landing/mark2cure-flatbox-logo-white.png"))] %} alt="Mark2Cure"/></a>
+  <div class="container"><a href="{% url "common:home" %}" class="navbar-brand"><img src="{% static 'images/landing/mark2cure-flatbox-logo-white.png' %}" alt="Mark2Cure"/></a>
     <ul class="list-inline pull-right">
       <li class="list-inline-item"><a href="/about/">About</a></li>
       <li class="list-inline-item"><a href="/faq/">FAQ</a></li>

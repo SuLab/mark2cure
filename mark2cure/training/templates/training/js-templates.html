@@ -52,7 +52,7 @@
 
 <script id="training-footer-template" type="html/template">
   <% if(instructions_count) { %>
-  <div class="col-9 col-md-4 my-auto">
+  <div class="col-12 col-sm-9 col-md-4 my-auto">
     <div class="progress">
     <div class="progress-bar" role="progressbar" style="width: <%= progress %>%" aria-valuenow="<%= progress %>" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
@@ -60,7 +60,7 @@
   <% } %>
 
   <% if(!hide_next) { %>
-  <div class="col-3 col-lg-2 <% if(instructions_count == 0) { %>text-center<% } %>">
+  <div class="col-12 col-md-3 col-lg-2 <% if(instructions_count == 0) { %>text-center<% } %> my-2 my-md-0 text-center">
     <a class="btn">Next</a>
   </div>
   <% } %>
@@ -87,10 +87,10 @@
       <div class="col-12">
         <div id="tree-selection">
           <div class="row justify-content-center">
-            <div class="col-10">
+            <div class="col-11">
               <div id="tree-extraction" class="row text-center">
 
-              <div id="c1" class="col-10 col-sm-4 col-md-3" style="opacity:.25;">
+              <div id="c1" class="col-8 col-sm-4 col-md-3" style="opacity:.25;">
                 <div class="concept row gene">
                   <div class="flag">✕</div>
                   <div class="text col-xs-12">
@@ -102,12 +102,12 @@
                 </div>
               </div>
 
-              <div style="padding-bottom:10px; padding-top:10px;" class="col-10 col-sm-4 col-md-6">
+              <div class="col-12 col-sm-4 col-md-6">
                 <div id="selected-choice"><h3 class="disabled">Select a Relationship below...</h3></div>
                 <div id="rechoices-list"><ul><a class="list-group-item">relates to</a><a class="list-group-item">has no relation to</a><a class="list-group-item">cannot be determined</a></ul></div>
               </div>
 
-              <div id="c2" class="col-10 col-sm-4 col-md-3">
+              <div id="c2" class="col-8 offset-4 offset-sm-0 col-sm-4 col-md-3">
                 <div class="concept row disease">
                   <div class="flag">✕</div>
                   <div class="text col-xs-12">
@@ -120,15 +120,20 @@
               </div>
 
               </div>
-              <div id="tree-confirm" class="row justify-content-center mb-4"><div class="col-10 col-md-4"><button id="submit_button" class="btn btn-primary btn-block disabled" disabled="">Submit</button></div></div>
+
+              <div id="tree-confirm" class="row justify-content-center my-2 mb-0 mb-md-4">
+                <div class="col-8 col-sm-6 col-md-4">
+                  <button id="submit_button" class="btn btn-primary btn-block disabled" disabled="">Submit</button>
+                </div>
+              </div>
               </div>
             </div>
           </div>
 
-          <div class="row justify-content-center my-4">
-            <div class="col-10">
+          <div class="row justify-content-center my-0 my-md-4">
+            <div class="col-12 col-md-10">
               <div id="tree-text"><div class="row justify-content-center">
-              <div id="ypet-text" class="col-10"><div class="paragraphs"><div class="paragraph-box my-3 ypet-disabled" style="cursor: not-allowed;"><div class="paragraph-content p-3"><p class="paragraph m-0"><span style="margin-right: 0rem; padding-right: 0.25rem;">Biomedical</span><span style="margin-right: 0.25rem; padding-right: 0rem;">research</span><span style="margin-right: 0rem; padding-right: 0.25rem;">literature</span><span style="margin-right: 0rem; padding-right: 0.25rem;">is</span><span style="margin-right: 0rem; padding-right: 0.25rem;">growing</span><span style="margin-right: 0rem; padding-right: 0.25rem;">rapidly</span><span style="margin-right: 0rem; padding-right: 0.25rem;">around</span><span style="margin-right: 0rem; padding-right: 0.25rem;">the</span><span style="margin-right: 0rem; padding-right: 0.25rem;">world,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">making</span><span style="margin-right: 0rem; padding-right: 0.25rem;">it</span><span style="margin-right: 0rem; padding-right: 0.25rem;">hard</span><span style="margin-right: 0rem; padding-right: 0.25rem;">for</span><span style="margin-right: 0rem; padding-right: 0.25rem;">researchers</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">acquire</span><span style="margin-right: 0rem; padding-right: 0.25rem;">all</span><span style="margin-right: 0rem; padding-right: 0.25rem;">the</span><span style="margin-right: 0rem; padding-right: 0.25rem;">new,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">relevant</span><span style="margin-right: 0rem; padding-right: 0.25rem;">information.</span><span style="margin-right: 0rem; padding-right: 0.25rem;">By</span><span style="margin-right: 0rem; padding-right: 0.25rem;">joining</span><span style="margin-right: 0rem; padding-right: 0.25rem;">Mark2Cure</span><span style="margin-right: 0rem; padding-right: 0.25rem;">,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">as</span><span style="margin-right: 0rem; padding-right: 0.25rem;">a</span><span style="margin-right: 0rem; padding-right: 0.25rem; background-color: rgb(177, 255, 168);">citizen</span><span style="margin-right: 0.25rem; padding-right: 0rem; background-color: rgb(177, 255, 168);">scientist</span><span style="margin-right: 0rem; padding-right: 0.25rem;">,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">am</span><span style="margin-right: 0rem; padding-right: 0.25rem;">helping</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">identify</span><span style="margin-right: 0rem; padding-right: 0.25rem;">relationships</span><span style="margin-right: 0rem; padding-right: 0.25rem;">between</span><span style="margin-right: 0rem; padding-right: 0.25rem;">concepts</span><span style="margin-right: 0rem; padding-right: 0.25rem;">in</span><span style="margin-right: 0rem; padding-right: 0.25rem; background-color: rgb(209, 243, 255);">biomedical</span><span style="margin-right: 0.25rem; padding-right: 0rem; background-color: rgb(209, 243, 255);">research</span><span style="margin-right: 0rem; padding-right: 0.25rem;">so</span><span style="margin-right: 0rem; padding-right: 0.25rem;">that</span><span style="margin-right: 0rem; padding-right: 0.25rem;">scientists</span><span style="margin-right: 0rem; padding-right: 0.25rem;">will</span><span style="margin-right: 0rem; padding-right: 0.25rem;">hopefully</span><span style="margin-right: 0rem; padding-right: 0.25rem;">be</span><span style="margin-right: 0rem; padding-right: 0.25rem;">able</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">uncover</span><span style="margin-right: 0rem; padding-right: 0.25rem;">new</span><span style="margin-right: 0rem; padding-right: 0.25rem;">treatment</span><span style="margin-right: 0rem; padding-right: 0.25rem;">strategies</span><span style="margin-right: 0rem; padding-right: 0.25rem;">faster.</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">contribute</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">Mark2Cure</span><span style="margin-right: 0rem; padding-right: 0.25rem;">because</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">am</span><span style="margin-right: 0rem; padding-right: 0.25rem;">ready</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">help</span></p></div></div></div></div>
+              <div id="ypet-text" class="col-12 col-md-10"><div class="paragraphs"><div class="paragraph-box my-0 my-md-3 ypet-disabled" style="cursor: not-allowed;"><div class="paragraph-content p-0 p-md-3"><p class="paragraph m-0"><span style="margin-right: 0rem; padding-right: 0.25rem;">Biomedical</span><span style="margin-right: 0.25rem; padding-right: 0rem;">research</span><span style="margin-right: 0rem; padding-right: 0.25rem;">literature</span><span style="margin-right: 0rem; padding-right: 0.25rem;">is</span><span style="margin-right: 0rem; padding-right: 0.25rem;">growing</span><span style="margin-right: 0rem; padding-right: 0.25rem;">rapidly</span><span style="margin-right: 0rem; padding-right: 0.25rem;">around</span><span style="margin-right: 0rem; padding-right: 0.25rem;">the</span><span style="margin-right: 0rem; padding-right: 0.25rem;">world,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">making</span><span style="margin-right: 0rem; padding-right: 0.25rem;">it</span><span style="margin-right: 0rem; padding-right: 0.25rem;">hard</span><span style="margin-right: 0rem; padding-right: 0.25rem;">for</span><span style="margin-right: 0rem; padding-right: 0.25rem;">researchers</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">acquire</span><span style="margin-right: 0rem; padding-right: 0.25rem;">all</span><span style="margin-right: 0rem; padding-right: 0.25rem;">the</span><span style="margin-right: 0rem; padding-right: 0.25rem;">new,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">relevant</span><span style="margin-right: 0rem; padding-right: 0.25rem;">information.</span><span style="margin-right: 0rem; padding-right: 0.25rem;">By</span><span style="margin-right: 0rem; padding-right: 0.25rem;">joining</span><span style="margin-right: 0rem; padding-right: 0.25rem;">Mark2Cure</span><span style="margin-right: 0rem; padding-right: 0.25rem;">,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">as</span><span style="margin-right: 0rem; padding-right: 0.25rem;">a</span><span style="margin-right: 0rem; padding-right: 0.25rem; background-color: rgb(177, 255, 168);">citizen</span><span style="margin-right: 0.25rem; padding-right: 0rem; background-color: rgb(177, 255, 168);">scientist</span><span style="margin-right: 0rem; padding-right: 0.25rem;">,</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">am</span><span style="margin-right: 0rem; padding-right: 0.25rem;">helping</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">identify</span><span style="margin-right: 0rem; padding-right: 0.25rem;">relationships</span><span style="margin-right: 0rem; padding-right: 0.25rem;">between</span><span style="margin-right: 0rem; padding-right: 0.25rem;">concepts</span><span style="margin-right: 0rem; padding-right: 0.25rem;">in</span><span style="margin-right: 0rem; padding-right: 0.25rem; background-color: rgb(209, 243, 255);">biomedical</span><span style="margin-right: 0.25rem; padding-right: 0rem; background-color: rgb(209, 243, 255);">research</span><span style="margin-right: 0rem; padding-right: 0.25rem;">so</span><span style="margin-right: 0rem; padding-right: 0.25rem;">that</span><span style="margin-right: 0rem; padding-right: 0.25rem;">scientists</span><span style="margin-right: 0rem; padding-right: 0.25rem;">will</span><span style="margin-right: 0rem; padding-right: 0.25rem;">hopefully</span><span style="margin-right: 0rem; padding-right: 0.25rem;">be</span><span style="margin-right: 0rem; padding-right: 0.25rem;">able</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">uncover</span><span style="margin-right: 0rem; padding-right: 0.25rem;">new</span><span style="margin-right: 0rem; padding-right: 0.25rem;">treatment</span><span style="margin-right: 0rem; padding-right: 0.25rem;">strategies</span><span style="margin-right: 0rem; padding-right: 0.25rem;">faster.</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">contribute</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">Mark2Cure</span><span style="margin-right: 0rem; padding-right: 0.25rem;">because</span><span style="margin-right: 0rem; padding-right: 0.25rem;">I</span><span style="margin-right: 0rem; padding-right: 0.25rem;">am</span><span style="margin-right: 0rem; padding-right: 0.25rem;">ready</span><span style="margin-right: 0rem; padding-right: 0.25rem;">to</span><span style="margin-right: 0rem; padding-right: 0.25rem;">help</span></p></div></div></div></div>
             </div>
           </div>
 

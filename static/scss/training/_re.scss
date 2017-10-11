@@ -19,8 +19,15 @@
   #training-message-center {}
 
   #training-module {
+    @include media-breakpoint-down(sm) {
+      margin-bottom: 60px;
+    }
+
     #module-progress {
       // border-bottom: 2px solid $color_black;
+      @include media-breakpoint-down(sm) {
+        display: none;
+      }
     }
 
     #training-action {
@@ -33,6 +40,9 @@
       strong {
         font-weight: 600;
       }
+      @include media-breakpoint-down(sm) {
+        padding: 20px 0px;
+      }
 
       #training-description {
         p {
@@ -42,10 +52,19 @@
             font-size: 1.25em;
           }
         }
+        @include media-breakpoint-down(sm) {
+          padding: 0px;
+          text-align: left;
+          font-size: .75em;
+        }
       }
       #training-instructions {
         min-height: 178px;
         border-left: 2px solid $color_black;
+        @include media-breakpoint-down(sm) {
+          min-height: 0px;
+          border-left: none;
+        }
 
         #training-instruction-counter {
           border-bottom: 2px solid $color_black;
@@ -59,10 +78,23 @@
           top: 0px;
           left: 0px;
           font-size: 1.5em;
+
+          @include media-breakpoint-down(sm) {
+            display: none;
+          }
+
         }
         p {
           margin-left: 42px;
           font-size: 1.25em;
+          @include media-breakpoint-down(sm) {
+            margin: 0px;
+            font-size: .75em;
+
+            border: 2px solid #444;
+            padding: 12px;
+
+          }
         }
       }
     }

@@ -31,7 +31,7 @@ def home(request, pubmed_id):
         'drugs': drug.most_common(20)
     }
 
-    return TemplateResponse(request, 'talk/home.jade', ctx)
+    return TemplateResponse(request, 'talk/home.html', ctx)
 
 
 @login_required
@@ -48,7 +48,7 @@ def annotation_search(request):
         'annotation': annotation,
         'documents': documents
     }
-    return TemplateResponse(request, 'talk/annotation_search.jade', ctx)
+    return TemplateResponse(request, 'talk/annotation_search.html', ctx)
 
 
 @login_required
@@ -110,5 +110,5 @@ def recent_discussion(request):
         'annotations': annotation_counter.most_common(100),
         'documents': documents,
     }
-    return TemplateResponse(request, 'talk/recent_discussion.jade', ctx)
+    return TemplateResponse(request, 'talk/recent_discussion.html', ctx)
 

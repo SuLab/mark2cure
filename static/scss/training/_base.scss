@@ -1,0 +1,19 @@
+@include media-breakpoint-down(sm) {
+
+  #training-module-navigation {
+    #progress-steps {
+      ol.breadcrumb {
+        padding: 0px 20px;
+      }
+      .breadcrumb-item {
+        display: none;
+        &.active {
+          display: inline-block;
+          float: right;
+          font-size: .75em;
+        }
+      }
+    }
+  }
+
+}

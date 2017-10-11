@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 {% load raven %}
+{% load static %}
 
 <!doctype html>
 <html lang="en-US">
@@ -12,23 +13,23 @@
   <meta name="copyright" content="Mark2Cure">
   <meta name="application-name" content="Mark2Cure">
 
-  <link rel="shortcut icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon">
-  <link rel="icon" href="#{STATIC_URL}favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" href="#{STATIC_URL}touch-icon-iphone.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="#{STATIC_URL}touch-icon-ipad.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="#{STATIC_URL}touch-icon-iphone-retina.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="#{STATIC_URL}touch-icon-ipad-retina.png">
+  <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+  <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{% static 'touch-icon-iphone.png' %}">
+  <link rel="apple-touch-icon" sizes="76x76" href="{% static 'touch-icon-ipad.png' %}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{% static 'touch-icon-iphone-retina.png' %}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{% static 'touch-icon-ipad-retina.png' %}">
 
   {% block social-tags %}
   <meta property="og:title" content="Mark2Cure">
   <meta property="og:type" content="article">
-  <meta property="og:image" content="#{STATIC_URL}static/img/mark2ure.png">
+  <meta property="og:image" content="{% static 'img/mark2ure.png' %}">
   <meta property="og:url" content="https://mark2cure.org">
   <meta property="og:description" content="Scientific literature is growing at a rate of more than 2 new articles every single minute. It is impossible for scientists to consume and understand the rapidly expanding ocean of biomedical literature. You can help biomedical researchers find the information they need to discover cures faster.">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Mark2Cure">
   <meta name="twitter:description" content="Let's help scientists organize biomedical knowledge and uncover hidden links.">
-  <meta name="twitter:image" content="#{STATIC_URL}static/img/profile.jpg">
+  <meta name="twitter:image" content="{% static 'img/profile.jpg' %}">
   {% endblock %}
 
   {% block head-title %}
@@ -36,7 +37,7 @@
   {% endblock %}
 
   {% block css-libs %}
-  <link rel="stylesheet" href="#{STATIC_URL}css/style.min.css" />
+  <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
   {% endblock %}
 </head>
 <body>
@@ -55,7 +56,7 @@
   {% include "js-templates.html" %}
   {% endblock %}
 
-  <script src="#{STATIC_URL}js/mark2cure.min.js"></script>
+  <script src="{% static 'js/mark2cure.min.js' %}"></script>
   <script>
     //-- Can't do with Tag Manager b/c of email + id
     var raven_options = {

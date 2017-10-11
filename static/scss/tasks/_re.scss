@@ -101,6 +101,11 @@
         margin-top: 84px;
         position: relative;
 
+        @include media-breakpoint-down(sm) {
+          margin-top: 0px;
+          min-height: 38px;
+        }
+
         .flag {
           border-bottom: 2px solid #000;
           background-color: #fff;
@@ -117,6 +122,9 @@
 
           font-size: 1.2em;
           text-align: center;
+          @include media-breakpoint-down(sm) {
+            border-bottom: none;
+          }
         }
         .flag:hover {
           background-color: $color_error_red;
@@ -126,10 +134,21 @@
         .text {
           font-size: 1.25em;
           margin-top: 30px;
+          @include media-breakpoint-down(sm) {
+            font-size: .75em;
+            margin-top: 6px;
+            margin-left: 36px;
+            p {
+              margin: 0px;
+            }
+          }
         }
 
         .desc {
           visibility: hidden;
+          @include media-breakpoint-down(sm) {
+            display: none;
+          }
         }
 
         @include media-breakpoint-down(sm) { border-width: 8px; }
@@ -142,6 +161,13 @@
       .concept.gene { border: 16px solid $color_gene; }
       .concept.disease { border: 16px solid $color_disease; }
       .concept.drug { border: 16px solid $color_treatment; }
+
+      @include media-breakpoint-down(sm) {
+        .concept.gene { border: 4px solid $color_gene; }
+        .concept.disease { border: 4px solid $color_disease; }
+        .concept.drug { border: 4px solid $color_treatment; }
+      }
+
       .concept.incorrect { border-color: $color_error_red; }
       .concept.incorrect .desc { visibility: visible; }
       #c1 { text-align: right;
@@ -167,7 +193,11 @@
           margin: 10px 0px;
           word-wrap: break-word;
           cursor: pointer;
-          @include media-breakpoint-down(sm) { font-size: 1rem; }
+          @include media-breakpoint-down(sm) {
+            font-size: 1rem;
+            padding: 3px 0;
+            margin: 3px 0px;
+          }
           @include media-breakpoint-only(md) { font-size: 1.25rem; }
           @include media-breakpoint-only(lg) { font-size: 1.5rem; }
         }
@@ -199,6 +229,13 @@
             letter-spacing: 0.05em;
 
             cursor: pointer;
+
+            @include media-breakpoint-down(sm) {
+              text-align: center;
+              padding: 6px;
+              font-size: 1em;
+              display: block;
+            }
           }
 
           .list-group-item:last-child {
@@ -300,6 +337,13 @@
     button:hover {
       cursor: pointer;
     }
+
+    @include media-breakpoint-down(sm) {
+      button {
+        padding: 3px 0px;
+      }
+    }
+
   }
 
 }

@@ -117,16 +117,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 #ypet-text {
   .paragraphs {
     .paragraph-box {
@@ -140,6 +130,11 @@
           line-height: 1.75rem;
           font-size: 1.25rem;
           color: $color_black;
+
+          @include media-breakpoint-down(sm) {
+            font-size: 1em;
+            line-height: 1.5em
+          }
 
           cursor: pointer;
           -webkit-touch-callout: none;

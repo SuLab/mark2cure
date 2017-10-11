@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block header %}
 {% include "includes/header-generic.html" %}
 {% endblock %}
@@ -15,7 +16,7 @@
             </div>
             <div class="card-block">
               <div class="list-group">
-                {% for profile in profiles|__pyjade_iter:1 %}
+                {% for profile in profiles %}
                 <div class="list-group-item">
                   <p class="text-center">{{profile.motivation|escape}}</p>
                 </div>
@@ -27,4 +28,5 @@
       </div>
     </div>
   </div>
-</div>{% endblock %}
+</div>
+{% endblock %}

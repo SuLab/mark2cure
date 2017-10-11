@@ -28,12 +28,12 @@ urlpatterns = [
     # Response / Confirm Changes
     url(r'^reset/done/$',
         reset_views.password_reset_complete,
-        {'template_name': 'password-reset/password_reset_complete.jade'},
+        {'template_name': 'password-reset/password_reset_complete.html'},
         name='reset'),
 
     url(r'^reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         reset_views.password_reset_confirm,
-        {'template_name': 'password-reset/password_reset_confirm.jade',
+        {'template_name': 'password-reset/password_reset_confirm.html',
          'post_reset_redirect': '/reset/done/'},
         name='password_reset_confirm'),
 

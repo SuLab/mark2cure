@@ -338,7 +338,7 @@
   <div id="ypet-navigation" class="col-12"></div>
   <div id="ypet-message-center" class="col-12"></div>
   <div id="ypet-results" class="col-10"></div>
-  <div id="ypet-text" class="col-10"></div>
+  <div id="ypet-text" class="col-12 col-md-10"></div>
   <div id="ypet-footer" class="col-10"></div>
 </script>
 
@@ -393,7 +393,7 @@
     <div id="tree-selection"></div>
     <div id="tree-selection-results"></div>
     <div class="row justify-content-center my-4">
-      <div class="col-10">
+      <div class="col-12 col-md-10">
         <div id="tree-text"></div>
       </div>
     </div>
@@ -446,14 +446,14 @@
 <script id="tree-reextraction-template" type="html/template">
   <div class="col-10">
     <div id="tree-extraction" class="row text-center">
-      <div id="c1" class="col-10 col-sm-4 col-md-3"></div>
-      <div style="padding-bottom:10px; padding-top:10px;" class="col-10 col-sm-4 col-md-6">
+      <div id="c1" class="col-8 col-sm-4 col-md-3"></div>
+      <div style="col-12 col-sm-4 col-md-6" class="col-10 col-sm-4 col-md-6">
         <div id="selected-choice"></div>
         <div id="rechoices-list"></div>
       </div>
-      <div id="c2" class="col-10 col-sm-4 col-md-3"></div>
+      <div id="c2" class="col-8 offset-4 offset-sm-0 col-sm-4 col-md-3"></div>
     </div>
-    <div id="tree-confirm" class="row justify-content-center mb-4"></div>
+    <div id="tree-confirm" class="row justify-content-center my-2 mb-0 mb-md-4"></div>
   </div>
 </script>
 
@@ -541,7 +541,7 @@
   <div class="col-12 text-center">
     <h2>Current <span class="font-red text-uppercase">missions.</span></h2>
   </div>
-  <div class="col-12 list"></div>
+  <div class="col-12 col-md-10 col-lg-11 col-xl-12 list"></div>
 </script>
 
 <script id="homepage-quest-explorer-item-template" type="html/template">
@@ -550,6 +550,10 @@
       <p class="text-justify m-0 description"><%- description %></p></a>
   </div>
   <div class="fadeout"></div>
+</script>
+
+<script id="homepage-network" type="html/template">
+    <div id="network" style="height:230px;"></div>
 </script>
 
 <script id="ner-group-homepage-contributor-item-template" type="html/template"><%- username %>

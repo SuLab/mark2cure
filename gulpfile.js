@@ -59,6 +59,8 @@ gulp.task('js', function() {
     './node_modules/sigma/build/sigma.min.js',
     './node_modules/sigma/build/plugins/sigma.parsers.json.min.js',
     './node_modules/sigma/build/plugins/sigma.plugins.filter.min.js',
+    './node_modules/sigma/build/plugins/sigma.layout.forceAtlas2.min.js',
+    './node_modules/sigma/build/plugins/sigma.plugins.animate.min.js',
 
     './node_modules/raven-js/dist/raven.js',
 
