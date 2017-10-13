@@ -122,6 +122,9 @@
     .paragraph-box {
 
       border: 1rem solid $color_gray_lightest;
+      @include media-breakpoint-down(sm) {
+        border: 4px solid $color_gray_lightest;
+      }
 
       .paragraph-content {
 
@@ -191,12 +194,6 @@
 
   }
 }
-
-
-
-
-
-
 
 
 p.paragraph.no-interactive {

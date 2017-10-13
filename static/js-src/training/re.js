@@ -11,39 +11,58 @@ RETrainingActionLogic = Object({
   0: {
     1:{
       //-- Steps
-      onStartUpLogic: function() {
+      onStartUpLogic: function(idx) {
         var template = _.template($('#training-action-static-example-template').html());
         this.$el.html( template() );
 
+        this.blinded_objects = {
+          0: [$('#tree-text'),],
+          1: [$('#c2'),],
+          2: [$('#c1'),],
+          3: [$('#selected-choice'), $('#rechoices-list')],
+          4: [$('#tree-confirm'),]
+        }
+
         $('.holder').remove().unbind();
         var pos_1 = [$(".paragraph-content").offset(), $(".paragraph-content").height()/2, $(".paragraph-content").width()/2];
-        $('#tree-text').css({'opacity': .25});
-
         var pos_2 = [$("#c2 .text").offset(), -12, -6];
-        $('#c2').css({'opacity': .25});
-
         var pos_3 = [$("#c1 .concept").offset(), 10, 10];
-        $('#c1').css({'opacity': .25});
-
         var pos_4 = [$("ul a.list-group-item:nth(1)").offset(), -4, -4];
-        $('#selected-choice').css({'opacity': .25});
-        $('#rechoices-list').css({'opacity': .25});
-
         var pos_5 = [$("#submit_button").offset(), 10, 30];
-        $('#tree-confirm').css({'opacity': .25})
 
-        _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, idx) {
+        this.fadeAllOut([+idx]);
+
+        _.each([pos_1, pos_2, pos_3, pos_4, pos_5], function(pos, pos_idx) {
           if(pos[0]) {
-            $("body").append("<div class='holder' data-idx='"+idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
+            $("body").append("<div class='holder' data-idx='"+pos_idx+"' style='top:"+(pos[0].top+pos[1])+"px; left:"+(pos[0].left+pos[2])+"px;'><p>"+(pos_idx+1)+"</p><div class='dot'></div><div class='pulse'></div></div>");
           }
         });
+
+        var self = this;
         $('.holder').on('click mouseenter', function() {
-          channel.trigger('training:set:instruction', +$(this).data('idx'));
+          var idx = +$(this).data('idx');
+          var sel_arr = self.blinded_objects[idx];
+
+          _.each(sel_arr, function(selector) {
+            selector.css({'opacity': 1.0});
+          });
+
+          channel.trigger('training:set:instruction', idx);
         });
       },
 
       onDestroy: function() {
         $('.holder').remove().unbind();
+      },
+
+      fadeAllOut: function(exclude) {
+        var self = this;
+        _.each(_.difference(_.map(_.keys(this.blinded_objects), Number), exclude), function(k) {
+          var sel_arr = self.blinded_objects[k];
+          _.each(sel_arr, function(selector) {
+            selector.css({'opacity': .25});
+          });
+        });
       }
 
     }
@@ -353,7 +372,7 @@ RETrainingAction = Backbone.Marionette.View.extend({
     this.listenTo(channel, 'training:re:choice:click', function(rechoice_model) { this.choiceClick(rechoice_model); });
 
     this.listenTo(channel, 'training:next:instruction', function() { this.onStartUpLogic(); })
-    this.listenTo(channel, 'training:set:instruction', function() { this.onStartUpLogic(); })
+    this.listenTo(channel, 'training:set:instruction', function(idx) { this.onStartUpLogic(idx); })
   },
 
   onAttach: function() {

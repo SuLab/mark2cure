@@ -27,6 +27,9 @@ IterableCollection = Backbone.Collection.extend({
   },
   get_next: function() {
     var m = this.findWhere({"selected": true});
+
+    console.log( 'Selected', m );
+
     if(!m) { return false; }
 
     //-- assume if you're proceeding, you've completed the past unit
@@ -241,6 +244,7 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
     this.listenTo(channel, 'training:set:instruction', function(idx) {
         var m = self.model.get('instructions').at(idx);
         m.set('completed', true);
+        m.set('selected', true);
         self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
     });
 
