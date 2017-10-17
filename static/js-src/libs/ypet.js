@@ -186,10 +186,15 @@ NERAnnotation = Backbone.RelationalModel.extend({
       passage.get('words').each(function(w, w_idx) {
         if( ann_text.indexOf(w.get('text').toLowerCase()) == 0 ) {
           var ann_word_array = ann_text.split(' ');
-          // Check forward words as well
+
+          //-- Check forward words as well
           var search_words = _.map(_.range(ann_word_array.length), function(idx) {
             return passage.get('words').at(w_idx + idx);
           });
+
+          //-- (TODO) Why were some empty responses
+          search_words = _.without(search_words, undefined);
+
           var search_words_text = _.map(search_words, function(w) {
             return w.get('text').toLowerCase();
           });

@@ -5,10 +5,6 @@ var channel = Backbone.Radio.channel('mark2cure');
 //
 
 IterableCollection = Backbone.Collection.extend({
-  defaults: {
-    "completed": false,
-    "selected": false,
-  },
   set_active: function(model) {
     this.invoke('set', {"selected": false})
     model.set("selected", true);
@@ -27,19 +23,20 @@ IterableCollection = Backbone.Collection.extend({
   },
   get_next: function() {
     var m = this.findWhere({"selected": true});
-
-    console.log( 'Selected', m );
-
     if(!m) { return false; }
-
     //-- assume if you're proceeding, you've completed the past unit
     m.set("completed", true);
 
-    var next = this.at(this.indexOf(m)+1);
+    // If all instructions are completed, skip to next
+    if(this.pluck('completed').every(function(v) { return v == true; })) { return false; };
+
+    var next = this.findWhere({'completed': false});
+    if(!next) { next = this.at(this.indexOf(m)+1); }
     if(!next) { return false; }
 
     this.invoke('set', {"selected": false})
     next.set("selected", true);
+
     return next;
   }
 })
@@ -48,7 +45,9 @@ TrainingInstruction = Backbone.RelationalModel.extend({
   /* A line of text we want to call attention to */
   defaults: {
     "text": "",
-    "completed": false
+    //-- Allows instructions to be previewed, but another instruction could be in place to determine if it's been answered ("completed")
+    "completed": false, //-- Whether or not the instruction is considered complete
+    "selected": false, //-- What Instruction view is actively being previewed
   }
 });
 
@@ -62,8 +61,9 @@ TrainingStep = Backbone.RelationalModel.extend({
   defaults: {
     "name": "",
     "description": "",
-    "completed": false,
-    "selected": false
+    //-- Allows Steps to be previewed, but another step could be in place to determine if it's been answered ("completed")
+    "completed": false, //-- Whether or not the step is considered complete
+    "selected": false, //-- What Step view is actively being previewed
   },
   relations: [{
     type: 'HasMany',
@@ -82,8 +82,9 @@ TrainingModule = Backbone.RelationalModel.extend({
   /* A section (Level) within training that relates to a specific goal */
   defaults: {
     "name": "",
-    "selected": false,
-    "completed": false,
+    //-- Allows Modules to be previewed, but another module could be in place to determine if it's been answered ("completed")
+    "completed": false, //-- Whether or not the module is considered complete
+    "selected": false, //-- What Module view is actively being previewed
   },
   relations: [{
     type: 'HasMany',
@@ -178,9 +179,9 @@ TrainingModuleProgressItem = Backbone.Marionette.View.extend({
   },
   events: {
     /* Only allow in Debug mode */
-    'mousedown': function() {
-      channel.trigger('training:goto:module', this.model);
-    }
+    // 'mousedown': function() {
+    //   channel.trigger('training:goto:module', this.model);
+    // }
   }
 });
 
@@ -241,9 +242,13 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
   initialize: function() {
     var self = this;
 
-    this.listenTo(channel, 'training:set:instruction', function(idx) {
+    this.listenTo(channel, 'training:completed:instruction', function(idx) {
         var m = self.model.get('instructions').at(idx);
         m.set('completed', true);
+    });
+
+    this.listenTo(channel, 'training:set:instruction', function(idx) {
+        var m = self.model.get('instructions').at(idx);
         m.set('selected', true);
         self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
     });

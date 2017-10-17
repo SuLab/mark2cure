@@ -47,6 +47,7 @@ RETrainingActionLogic = Object({
             selector.css({'opacity': 1.0});
           });
 
+          channel.trigger('training:completed:instruction', idx);
           channel.trigger('training:set:instruction', idx);
         });
       },

@@ -5,11 +5,7 @@
 
 {% block header %}
 {% with headerMessage='User Profile' %}
-{% if  user.is_authenticated %}
 {% include "includes/header.html" %}
-{% else %}
-{% include "includes/header-anon.html" %}
-{% endif %}
 {% endwith %}
 {% endblock %}
 

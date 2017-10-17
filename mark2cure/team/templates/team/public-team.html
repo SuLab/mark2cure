@@ -3,15 +3,11 @@
 {% load humanize %}
 
 {% block header %}
-{% if user.is_authenticated %}
-  {% include "includes/header.html" %}
-{% else %}
-  {% include "includes/header-anon.html" %}
-{% endif %}
+{% include "includes/header.html" %}
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div id="team-profile" class="container">
   <div class="row justify-content-center">
     <div class="col-6">
       <h1 class="text-center">Team {{team.name|escape}}</h1>
