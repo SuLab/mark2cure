@@ -561,7 +561,7 @@
 </script>
 
 <script id="ner-group-homepage-stats-template" type="html/template">
-  <ol>
+  <ul class="list-unstyled">
     <li>
       <p>Total number of contributors: <%- total_contributors %></p>
     </li>
@@ -571,14 +571,16 @@
     <li>
       <p>Complete Percent: <%- complete_percent %></p>
     </li>
+    <% if(current_avg_f_score) { %>
     <li>
       <p>Current average f-score: <%- current_avg_f_score %></p>
     </li>
+    <% } %>
     <li>
-      <p>Start date: <%- start_date %></p>
+      <p>Start: <span id="start-time"><%- start_date %></span></p>
     </li>
     <li>
-      <p>End date: <%- end_date %></p>
+    <p>Last: <span id="end-time"><%- end_date %></span></p>
     </li>
   </ol>
 </script>

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{%  load widget_tweaks %}
-{%  load humanize %}
-{%  load as_vertical_form from bootstrap %}
-{%  load as_horizontal_form from bootstrap %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% load as_vertical_form from bootstrap %}
+{% load as_horizontal_form from bootstrap %}
+
 {% block header %}
-{%  with headerMessage='Account Settings' %}
+{% with headerMessage='Account Settings' %}
 {% include "includes/header.html" %}
 {% endwith %}
 {% endblock %}
@@ -75,9 +76,12 @@
               </div>
             </fieldset>
           </div>
-          <div class="col-5">{{user_profile_form.team|as_horizontal_form|escape}}
-{% if  user_profile_form.team.value == None %}{{team_form.name|as_vertical_form|escape}}
-{% endif %}
+          <div class="col-5">
+            {{user_profile_form.team|as_horizontal_form|escape}}
+
+            {% if user_profile_form.team.value == None %}
+            {{team_form.name|as_vertical_form|escape}}
+            {% endif %}
           </div>
         </div>
       </div>
@@ -88,19 +92,22 @@
         <h2>Profile Information</h2>
       </div>
       <div class="col-10 col-md-12">
+
         <div class="row justify-content-center">
-          <div class="col-md-4">{{user_profile_form.motivation|as_vertical_form|escape}}
-
+          <div class="col-md-4">
+            {{user_profile_form.motivation|as_vertical_form|escape}}
           </div>
-          <div class="col-md-4">{{user_profile_form.referral|as_vertical_form|escape}}
-
+          <div class="col-md-4">
+            {{user_profile_form.referral|as_vertical_form|escape}}
           </div>
         </div>
-        <div class="row justify-content-center">
-          <div class="col-md-8">{{user_profile_form.quote|as_horizontal_form|escape}}
 
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            {{user_profile_form.quote|as_horizontal_form|escape}}
           </div>
         </div>
+
         <div class="row justify-content-center">
           <div class="col-xs-4 col-sm-3"><a href="{% url "userprofile:public-profile" username=user.username %}" class="btn btn-default btn-block">Cancel</a>
           </div>
@@ -108,6 +115,7 @@
             <button type="submit" class="btn btn-primary btn-block">Update</button>
           </div>
         </div>
+
       </div>
     </div>
   </form>

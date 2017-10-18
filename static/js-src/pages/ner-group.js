@@ -5,15 +5,13 @@
 NERGroupStats = Backbone.Model.extend({
   defaults: {
     "pk": null,
-    "enabled": true,
-    "stub": "bipg",
-    "name": "BiP part two",
+    "stub": "",
+    "name": "",
     "description": "",
 
     "total_contributors": 0,
     "document_count": 0,
 
-    "percentage_complete": 0, // What is this?
     "complete_percent": 0,
     "current_avg_f_score": 0,
 
@@ -197,6 +195,10 @@ NERGroupPageContributorListView = Backbone.Marionette.CollectionView.extend({
   className: 'list-group',
   tagName: 'ul',
 
+  filter: function (child, index, collection) {
+    return index <= 4;
+  },
+
   initialize: function() {
     this.collection = new NERGroupContributorsList();
     this.collection.fetch();
@@ -206,9 +208,19 @@ NERGroupPageContributorListView = Backbone.Marionette.CollectionView.extend({
 NERGroupStatsView = Backbone.Marionette.View.extend({
   template: '#ner-group-homepage-stats-template',
 
+  ui: {
+    'start': '#start-time',
+    'end': '#end-time'
+  },
+
   modelEvents: {
     'sync': function() { this.render(); }
   },
+
+  onRender: function() {
+    this.ui.start.html( moment.utc(this.model.get('start_date')).format('LL') );
+    this.ui.end.html( moment.utc(this.model.get('end_date')).format('LL') );
+  }
 });
 
 NERGroupPageView = Backbone.Marionette.View.extend({

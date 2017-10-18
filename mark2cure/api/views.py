@@ -255,48 +255,24 @@ def ner_list(request):
 def ner_list_item(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
 
-    # total annotation count here, plus anns
+    cmd_str = ""
+    with open('mark2cure/common/commands/get-group-info.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(group_pk=group.id)
 
-    # (TODO) this should not be hardcoded here; could not open file? Quick Fix. -JF
-    # data should come from file in static/data "group_release_dates.txt"
-    group_date_dict = {
-        "CDG": {"invite": "2015.05.12", "public": "2015.05.21", "closed": "2015.07.29"},
-        "alacrima": {"invite": "2015.05.21", "public": "2015.05.22", "closed": "2015.06.19"},
-        "OGD": {"invite": "2015.05.29", "public": "2015.05.29", "closed": "2015.11.13"},
-        "FBX": {"invite": "2015.06.25", "public": "2015.06.26", "closed": "2015.08.14"},
-        "ost": {"invite": "2015.07.31", "public": "2015.08.07", "closed": "2016.04.03"},
-        "mfold": {"invite": "2015.09.10", "public": "2015.09.11", "closed": "2015.11.19"},
-        "eeyar": {"invite": "2015.11.04", "public": "2015.11.06", "closed": "2015.12.25"},
-        "mitomis": {"invite": "2015.11.10", "public": "2015.11.11", "closed": "2016.03.04"},
-        "ATGS": {"invite": "2015.12.28", "public": "2015.12.30", "closed": ""},
-        "MATG": {"invite": "2016.02.24", "public": "2016.02.26", "closed": ""},
-        "MATGS": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
-        "training": {"invite": "2015.05.21", "public": "2015.05.21", "closed": ""},
-        "HSPT1": {"invite": "2016.04.15", "public": "2016.04.15", "closed": ""},
-    }
+    c = connection.cursor()
     try:
-        start_date = group_date_dict[group.stub]['invite']
-        end_date = group_date_dict[group.stub]['closed']
-    except:
-        start_date = ""
-        end_date = ""
+        c.execute(cmd_str)
+        queryset = [dict(zip(['id', 'name', 'stub',
+                              'description', 'quest_count', 'document_count',
+                              'total_contributors', 'start_date', 'end_date',
+                              'complete_percent'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
 
-    return Response({
-        "pk": 35,
-        "name": group.name,
-        "stub": group.stub,
-        "description": group.description,
-        "enabled": group.enabled,
+    print(queryset)
 
-        'document_count': group.document_count(),
-
-        'total_contributors': 0,
-        'percentage_complete': 0,
-        "complete_percent": 70.66666666666667,
-        'current_avg_f_score': 0,
-        'start_date': start_date,
-        'end_date': end_date
-    })
+    return Response(queryset[0])
 
 
 @login_required
