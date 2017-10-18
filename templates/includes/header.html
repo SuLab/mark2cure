@@ -12,16 +12,23 @@
           </a>
         </div>
 
+        {% if user.is_authenticated %}
+
+        <div class="hidden-xs-down col-sm-4 col-md-8">
+          <h1 class="text-center text-md-center my-3">{{headerMessage|escape}}</h1>
+        </div>
+        <div class="col-10 col-sm-4 col-md-2 text-right text-md-left">
+          <a href="{% url "profile:public-profile" username=user.username %}" class="box-outline text-right my-2">
+            <p class="m-0">{{user}}</p>
+          </a>
+        </div>
+
+        {% else %}
+
         <div class="col-8">
           <h1 class="text-right text-md-center mb-0 py-2 py-md-3">{{headerMessage|escape}}</h1>
         </div>
 
-        {% if user.is_authenticated %}
-        <div class="col-2">
-          <a href="{% url "profile:public-profile" username=user.username %}" class="box-outline text-right">
-            <p class="m-0">{{user}}</p>
-          </a>
-        </div>
         {% endif %}
 
       </div>

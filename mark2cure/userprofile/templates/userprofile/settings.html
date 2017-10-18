@@ -12,12 +12,12 @@
 
 {% block content %}
 <div class="container">
-  {% if  messages %}
+  {% if messages %}
   {% for message in messages %}
 
   {% if  'safe' in message.tags %}
-  <div class="row">
-    <div class="col-xs-10 col-xs-offset-1">
+  <div class="row justify-content-center">
+    <div class="col">
       <div class="{{ message.tags }} alert">{{ message|safe }}</div>
     </div>
   </div>
@@ -25,6 +25,7 @@
   {% endfor %}
   {% endif %}
 </div>
+
 <div id="settings" class="container content my-3">
   <div class="row justify-content-center">
     <div class="col-10 col-sm-6">
