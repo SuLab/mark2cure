@@ -79,7 +79,7 @@
             </li>
             {% if player.userprofile.team %}
             <li>
-              <p>Team:<a href="{% url "team:home" teamname=player.userprofile.team.name %}"> {{player.userprofile.team.name|escape}}</a>
+              <p>Team:<a href="{% url "team:home" slug=player.userprofile.team.slug %}"> {{player.userprofile.team.name|escape}}</a>
               </p>
             </li>
             {% endif %}

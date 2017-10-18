@@ -4,6 +4,6 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^(?P<teamname>[\w.@+-]+)/',
+    url(r'^(?P<slug>[\w.@+-]+)/',
         views.home, name='home'),
 ]

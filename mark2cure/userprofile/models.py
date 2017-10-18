@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db.models import Q
 
 from django_countries.fields import CountryField
+from django.db.models import signals
+from django.template.defaultfilters import slugify
 
 from ..document.models import Annotation, Document, View
 from ..common.models import Group
@@ -22,7 +24,9 @@ import os
 
 class Team(models.Model):
     owner = models.ForeignKey(User)
-    name = models.CharField(verbose_name=u'Team Name', help_text=u'You can create a new team.', max_length=255, blank=True)
+    name = models.CharField(verbose_name=u'Team Name', help_text=u'You can create a new team.', max_length=100, blank=True)
+    slug = models.SlugField(max_length=100)
+
     description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -85,6 +89,21 @@ class Team(models.Model):
                 return team_df['f-score'].mean()
         except:
             return 0.0
+
+
+def team_pre_save(signal, instance, sender, **kwargs):
+    if not instance.slug:
+        slug = slugify(instance.name)
+        new_slug = slug
+        count = 0
+        while Team.objects.filter(slug=new_slug).exclude(id=instance.id).count() > 0:
+            count += 1
+            new_slug = '{slug}-{count}'.format(slug=slug, count=count)
+
+        instance.slug = new_slug
+
+
+signals.pre_save.connect(team_pre_save, sender=Team)
 
 
 def _createHash():
