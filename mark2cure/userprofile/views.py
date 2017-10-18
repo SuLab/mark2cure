@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_page
 from django.contrib.auth.models import User
 
 from django.shortcuts import get_object_or_404, redirect
@@ -8,15 +7,15 @@ from django.template.response import TemplateResponse
 from allauth.account.forms import UserForm
 
 from .forms import UserProfileForm, TeamForm
-from ..task.models import Level
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib import messages
 
 
-@cache_page(60 * 15)
 def public_profile(request, username):
+    '''A User's dedicated profile page
+    '''
     user = get_object_or_404(User, username=username)
 
     ctx = {'player': user,
