@@ -4,10 +4,11 @@
   {{ bound_field }}
 
 {% else %}
+
   <div class="{{ bound_field.html_name }}{% if bound_field.errors %} has-error{% endif %}{% if input_type == "input" %} has-feedback{% endif %}{% if bound_field.field.required %} required{% endif %} form-group row">
     {% if show_label %}
       <label for="id_{{ bound_field.html_name }} col-form-label">
-        #{bound_field.label}
+        {{ bound_field.label }}
       </label>
     {% endif %}
 
