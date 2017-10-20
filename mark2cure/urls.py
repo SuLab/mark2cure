@@ -1,15 +1,66 @@
 from django.conf.urls import include, url
-from django.contrib import admin
 
+from django.contrib import admin
 from django.contrib.flatpages import views
 from django.contrib.auth import views as reset_views
 
+from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.flatpages.sitemaps import FlatPageSitemap
+from django.urls import reverse
+
+from django.contrib.auth.models import User
+from mark2cure.common.models import Group
+from mark2cure.userprofile.models import Team
+
+
+class FlatPages(FlatPageSitemap):
+    protocol = 'https'
+    priority = 1.0
+    changefreq = 'monthly'
+
+
+class QuestDetails(Sitemap):
+    protocol = 'https'
+    priority = 1.0
+    changefreq = 'weekly'
+
+    def items(self):
+        return Group.objects.values_list('stub', flat=True)
+
+    def location(self, item):
+        return reverse('common:ner-group-home', kwargs={'group_stub': item})
+
+
+class UserDetails(Sitemap):
+    protocol = 'https'
+    priority = .5
+    changefreq = 'weekly'
+
+    def items(self):
+        return User.objects.values_list('username', flat=True)
+
+    def location(self, item):
+        return reverse('profile:public-profile', kwargs={'username': item})
+
+
+class TeamDetails(Sitemap):
+    protocol = 'https'
+    priority = .6
+    changefreq = 'weekly'
+
+    def items(self):
+        return Team.objects.values_list('slug', flat=True)
+
+    def location(self, item):
+        return reverse('team:home', kwargs={'slug': item})
 
 
 sitemaps = {
-    'flatpages': FlatPageSitemap
+    'flatpages': FlatPages,
+    'quest_detail': QuestDetails,
+    'user_detail': UserDetails,
+    'team_detail': TeamDetails
 }
 
 urlpatterns = [
