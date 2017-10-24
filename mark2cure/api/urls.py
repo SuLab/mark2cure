@@ -29,6 +29,12 @@ urlpatterns = [
     url(r're/stats/',
         views.re_stats, name='re-stats-api'),
 
+    # Talk
+    url(r'talk/comments/',
+        views.talk_comments, name='talk-comments-api'),
+    url(r'talk/documents/',
+        views.talk_documents, name='talk-documents-api'),
+
     # - [NER] (TODO) Move into Task
     url(r'ner/(?P<document_pk>\d+)/$',
         views.ner_document, name='ner_document'),

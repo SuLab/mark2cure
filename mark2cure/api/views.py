@@ -205,6 +205,41 @@ def re_stats(request):
     })
 
 
+@login_required
+@api_view(['GET'])
+def talk_comments(request):
+    cmd_str = ""
+    with open('mark2cure/talk/commands/get-recent-comments.sql', 'r') as f:
+        cmd_str = f.read()
+
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['user_id', 'user_name', 'comment',
+                              'submit_date', 'pmid'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    return Response(queryset)
+
+
+@login_required
+@api_view(['GET'])
+def talk_documents(request):
+    cmd_str = ""
+    with open('mark2cure/talk/commands/get-discussed-documents.sql', 'r') as f:
+        cmd_str = f.read()
+
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['id', 'title', 'comments'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    return Response(queryset)
+
+
 @api_view(['GET'])
 def ner_list_item_contributors(request, group_pk):
     group = get_object_or_404(Group, pk=group_pk)
