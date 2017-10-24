@@ -53,23 +53,5 @@ def annotation_search(request):
 
 @login_required
 def recent_discussion(request):
-    doc_content_pk = ContentType.objects.get(app_label='document', model='document').pk
-    completed_document_pks = request.user.profile.completed_document_pks()
-
-    is_moderator = request.user.groups.filter(name='Comment Moderators').exists()
-    last_week = timezone.now().date() - timedelta(days=7)
-
-    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-
-
-    if is_moderator:
-        msg = '<p class="lead text-xs-center">You\'re a moderator, showing Global View.</p>'
-        messages.info(request, msg, extra_tags='safe alert-info')
-
-
-    ctx = {
-        'comments': recent_comments,
-        'documents': documents,
-    }
-    return TemplateResponse(request, 'talk/recent_discussion.html', ctx)
+    return TemplateResponse(request, 'talk/recent_discussion.html')
 

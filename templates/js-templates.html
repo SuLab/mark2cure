@@ -609,6 +609,28 @@
   </div>
 </script>
 
+<script id="talk-template" type="html/template">
+  <div id="talk-documents" class="col-5"></div>
+  <div id="talk-comments" class="col-5"></div>
+</script>
+
+<script id="talk-list-template" type="html/template">
+  <div class="col-12">
+    <h2 class="text-center"><%= list_name %></h2>
+    <div class="list-group"></div>
+  </div>
+</script>
+
+<script id="talk-comment-item-template" type="html/template">
+  <p><%= comment %></p>
+  <p><a href='/u/<%= user_name %>'><%= user_name %></a> on <a href='url "talk:home" comment.pmid'><%= pmid %></a> <span class="time-ago"></span></p>
+</script>
+
+<script id="talk-document-item-template" type="html/template">
+  <h4 class="list-group-item-heading"><%= title %></h4>
+  <a href="/talk/<%= id %>/"><p class="list-group-item-text"><%= comments %> Comments</p></a>
+</script>
+
 <!-- Other-->
 <script id="re-synopsis-detail-template" type="html/template">
   <div class="row">
