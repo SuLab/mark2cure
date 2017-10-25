@@ -2,6 +2,25 @@
 // Models + Collections
 //
 
+TalkDocumentNERAnn = Backbone.Model.extend({
+  defaults: {
+    'text': '',
+    'occurances': 0
+  }
+});
+
+TalkDocumentNERAnnList = Backbone.Collection.extend({
+  model: TalkDocumentNERAnn,
+  url: function() {
+    return '/api/talk/document/'+this.document_pk+'/annotations/'+this.ann_type_idx+'/list/'
+  },
+
+  initialize: function(options) {
+    this.document_pk = options['document_pk'];
+    this.ann_type_idx = options['ann_type_idx'];
+  }
+})
+
 TalkComment = Backbone.Model.extend({
   defaults: {
     'user_id': null,
@@ -125,6 +144,23 @@ TalkView = Backbone.Marionette.View.extend({
   onRender: function() {
     this.showChildView('documents', new TalkDocumentView());
     this.showChildView('comments', new TalkCommentView());
+  }
+});
+
+
+
+
+
+TalkDocumentView = Backbone.Marionette.View.extend({
+  template: '#talk-document-template',
+  className: 'row justify-content-center mt-3',
+
+  regions: {
+  },
+
+  onRender: function() {
+    this.collection = new TalkDocumentNERAnnList({'document_pk':4229, 'ann_type_idx':1});
+    this.collection.fetch();
   }
 });
 

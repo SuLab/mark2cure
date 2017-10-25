@@ -12,21 +12,9 @@ from collections import Counter
 
 @login_required
 @doc_completion_required
-def home(request, pubmed_id):
-    document = get_object_or_404(Document, document_id=pubmed_id)
-    content_type_id = str(ContentType.objects.get_for_model(EntityRecognitionAnnotation.objects.all().first()).id)
-    disease = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 0, content_type_id))
-    gene_protein = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 1, content_type_id))
-    drug = Counter(EntityRecognitionAnnotation.objects.annotations_texts_for_document_and_type(document.pk, 2, content_type_id))
-
-    ctx = {
-        'doc': document,
-        'diseases': disease.most_common(20),
-        'gene_proteins': gene_protein.most_common(20),
-        'drugs': drug.most_common(20)
-    }
-
-    return TemplateResponse(request, 'talk/home.html', ctx)
+def home(request, document_pk):
+    document = get_object_or_404(Document, pk=document_pk)
+    return TemplateResponse(request, 'talk/home.html', {'document': document})
 
 
 @login_required

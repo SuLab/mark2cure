@@ -30,9 +30,12 @@ urlpatterns = [
         views.re_stats, name='re-stats-api'),
 
     # Talk
-    url(r'talk/comments/',
+    url(r'talk/comment/list/',
         views.talk_comments, name='talk-comments-api'),
-    url(r'talk/documents/',
+
+    url(r'talk/document/(?P<document_pk>\d+)/annotations/(?P<ann_idx>\d+)/list/',
+        views.talk_document_annotations, name='talk-document-annotations-api'),
+    url(r'talk/document/list/',
         views.talk_documents, name='talk-documents-api'),
 
     # - [NER] (TODO) Move into Task

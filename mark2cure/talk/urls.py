@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
 
-    url(r'^(?P<pubmed_id>\d+)/$',
+    url(r'^(?P<document_pk>\d+)/$',
         views.home, name='home'),
 
     url(r'^annotation/$',
