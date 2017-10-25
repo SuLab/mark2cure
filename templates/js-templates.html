@@ -623,7 +623,7 @@
 
 <script id="talk-comment-item-template" type="html/template">
   <p><%= comment %></p>
-  <p><a href='/u/<%= user_name %>'><%= user_name %></a> on <a href='url "talk:home" comment.pmid'><%= pmid %></a> <span class="time-ago"></span></p>
+  <p><a href='/u/<%= user_name %>'><%= user_name %></a> on <a href="/talk/<%= pmid %>/"><%= pmid %></a> <span class="time-ago"></span></p>
 </script>
 
 <script id="talk-document-item-template" type="html/template">

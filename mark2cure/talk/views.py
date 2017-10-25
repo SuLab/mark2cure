@@ -3,16 +3,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.response import TemplateResponse
 from django.shortcuts import get_object_or_404
 
-from django_comments.models import Comment
-
 from .decorators import doc_completion_required
 from ..document.models import Document
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 
-from django.contrib import messages
-from django.utils import timezone
 from collections import Counter
-from datetime import timedelta
 
 
 @login_required

@@ -1,9 +1,7 @@
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.contrib.messages import get_messages
 from django.http import HttpResponse
-
 
 from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
@@ -12,22 +10,11 @@ from .utils.mdetect import UAgentInfo
 from .forms import SupportMessageForm
 from .models import Group
 
-import random
-
 
 def get_started(request):
     '''View for directing the request into Training
     '''
-
     return redirect('training:re')
-    # uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
-    # if uai.detectMobileLong():
-    #     return redirect('training:relation-training', part_num=1, step_num=1)
-    # else:
-    #     if random.random() <= .1:
-    #         return redirect('training:relation-training', part_num=1, step_num=1)
-    #     else:
-    #         return redirect('training:introduction', step_num=1)
 
 
 def dashboard(request):
@@ -41,18 +28,12 @@ def dashboard(request):
     if len(available_tasks) == 0:
         return redirect('training:route')
 
-    welcome = False
-    storage = get_messages(request)
-    for message in storage:
-        if message.message == 'dashboard-unlock-success':
-            welcome = True
-
     uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
 
-    ctx = {'welcome': welcome,
-           'mobile': uai.detectMobileLong(),
-           'available_tasks': available_tasks,
-           }
+    ctx = {
+        'mobile': uai.detectMobileLong(),
+        'available_tasks': available_tasks,
+    }
     return TemplateResponse(request, 'common/dashboard.html', ctx)
 
 

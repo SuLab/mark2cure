@@ -441,7 +441,6 @@ TrainingView = Backbone.Marionette.View.extend({
   initialize: function() {
     this.collection = new TrainingTaskCollection();
     this.collection.fetch();
-
     this.listenTo(channel, 'training:completed', this.completedTraining);
   },
 
@@ -451,15 +450,17 @@ TrainingView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     if(this.collection.length) {
+
+      console.log('Selectivly show Training Task');
+
       var task = this.collection.get_active();
 
       if(task.get("task") == "re") {
         this.showChildView('content', new RETrainingTaskView());
       }
-      // if(task.get("task") == "e") {
+      // if(task.get("task") == "ner") {
       //   this.showChildView('content', new NERTrainingTaskView());
       // }
-
     }
   },
 
@@ -476,6 +477,5 @@ TrainingView = Backbone.Marionette.View.extend({
       },
       error: function() {}
     });
-
   }
 })
