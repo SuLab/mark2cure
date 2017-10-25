@@ -112,10 +112,6 @@ class Document(models.Model):
     def annotations(self):
         return EntityRecognitionAnnotation.objects.annotations_for_document_pk(self.pk)
 
-    def contributors(self):
-        user_ids = list(set(View.objects.filter(section__document=self, completed=True, task_type='ner').values_list('user', flat=True)))
-        return user_ids
-
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'updated'

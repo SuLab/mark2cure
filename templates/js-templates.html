@@ -632,8 +632,32 @@
 </script>
 
 <script id="talk-document-template" type="html/template">
-  <div id="talk-document-ner-" class="col-5"></div>
-  <div id="talk-comments" class="col-5"></div>
+  <div id="talk-document-ner" class="col-5"></div>
+  <div id="talk-document-comment" class="col-5"></div>
+</script>
+
+<script id="talk-document-ner-template" type="html/template">
+
+    <div class="row m-t-1">
+      <div class="col-xs-10 col-xs-offset-1">
+        <p class="text-muted"> Mouseover to see other users' annotations:</p>
+        <ul>
+          //for contibutors in workers 
+          <li class="page-item">
+            <a data-userpk='{{user_pk}}') class="page-link"> {{user_pk}}</a>
+          </li>
+          //
+
+        </ul>
+
+        <div id="talk-ner-display"></div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="talk-document-user-item-template" type="html/template">
+<a data-userpk='{{user_pk}}') class="page-link"> {{user_pk}}</a>
 </script>
 
 <!-- Other-->

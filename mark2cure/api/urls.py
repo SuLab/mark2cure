@@ -33,7 +33,10 @@ urlpatterns = [
     url(r'talk/comment/list/',
         views.talk_comments, name='talk-comments-api'),
 
-    url(r'talk/document/(?P<document_pk>\d+)/annotations/(?P<ann_idx>\d+)/list/',
+    url(r'talk/document/(?P<document_pk>\d+)/ner/contributor/list/',
+        views.talk_document_ner_contributors, name='talk-document-ner-contributors-api'),
+
+    url(r'talk/document/(?P<document_pk>\d+)/ner/annotations/(?P<ann_idx>\d+)/list/',
         views.talk_document_annotations, name='talk-document-annotations-api'),
     url(r'talk/document/list/',
         views.talk_documents, name='talk-documents-api'),

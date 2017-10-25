@@ -24,7 +24,7 @@
 
     onStart: function() {
       var main = this.getRegion();
-      main.show( new TalkDocumentView() );
+      main.show( new TalkDocumentView({'document_pk': {{document.pk}}}));
     }
   });
   var talk_document_app = new TalkDocumentApp();

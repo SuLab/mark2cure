@@ -225,6 +225,24 @@ def talk_comments(request):
 
 @login_required
 @api_view(['GET'])
+def talk_document_ner_contributors(request, document_pk):
+    cmd_str = ""
+    with open('mark2cure/task/commands/get-contributors.sql', 'r') as f:
+        cmd_str = f.read()
+    cmd_str = cmd_str.format(document_pk=document_pk, task_type='ner')
+
+    c = connection.cursor()
+    try:
+        c.execute(cmd_str)
+        queryset = [dict(zip(['user_id'], x)) for x in c.fetchall()]
+    finally:
+        c.close()
+
+    return Response(queryset)
+
+
+@login_required
+@api_view(['GET'])
 def talk_document_annotations(request, document_pk, ann_idx):
     cmd_str = ""
     with open('mark2cure/talk/commands/get-ner-ann-occurances.sql', 'r') as f:

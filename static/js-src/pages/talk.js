@@ -147,8 +147,31 @@ TalkView = Backbone.Marionette.View.extend({
   }
 });
 
+TalkDocumentNERUserItem = Backbone.Marionette.CollectionView.extend({
+  className: 'page-item',
+  tagName: 'li',
+  template: 'talk-document-user-item-template'
+});
 
+TalkDocumentNERUserList = Backbone.Marionette.CollectionView.extend({
+  childView: TalkDocumentNERUserItem
+});
 
+TalkDocumentNERView = Backbone.Marionette.View.extend({
+  template: '#talk-document-ner-template',
+
+  regions: {
+  },
+
+  initialize: function() {
+    console.log( this.getOption('document_pk') );
+      // this.collection =
+  },
+
+  onRender: function() {
+    // this.showChildView('list', new TalkDocumentNERUserList({'collection': this.collection}));
+  }
+});
 
 
 TalkDocumentView = Backbone.Marionette.View.extend({
@@ -156,11 +179,15 @@ TalkDocumentView = Backbone.Marionette.View.extend({
   className: 'row justify-content-center mt-3',
 
   regions: {
+    'ner': '#talk-document-ner',
+    'comment': '#talk-document-comment',
   },
 
   onRender: function() {
-    this.collection = new TalkDocumentNERAnnList({'document_pk':4229, 'ann_type_idx':1});
-    this.collection.fetch();
+    // this.collection = new TalkDocumentNERAnnList({'document_pk':4229, 'ann_type_idx':1});
+    // this.collection.fetch();
+
+    this.showChildView('ner', new TalkDocumentNERView(this.options));
   }
 });
 
