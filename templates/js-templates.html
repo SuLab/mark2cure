@@ -634,6 +634,7 @@
 <script id="talk-document-template" type="html/template">
   <div id="talk-document-ner" class="col-7"></div>
   <div id="talk-document-comment" class="col-5"></div>
+  <div id="talk-ner-annotations" class="col-12"></div>
 </script>
 
 <script id="talk-document-ner-template" type="html/template">
@@ -642,6 +643,16 @@
     <div id="talk-ner-user-list"></div>
     <div id="talk-ner-display"></div>
   </div>
+</script>
+
+<script id="talk-document-ner-annotations-template" type="html/template">
+  <div id="talk-ner-annotations-gene" class="col-4"></div>
+  <div id="talk-ner-annotations-disease" class="col-4"></div>
+  <div id="talk-ner-annotations-drug" class="col-4"></div>
+</script>
+
+<script id="talk-document-ner-annotation-item-template" type="html/template">
+  <%= text %> <%= occurances %> times
 </script>
 
 <script id="talk-document-user-item-template" type="html/template">

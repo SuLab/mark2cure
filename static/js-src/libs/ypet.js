@@ -284,9 +284,9 @@ NERAnnotation = Backbone.RelationalModel.extend({
       }
     });
 
-    if(opponent_bool) {
-      console.log(this.get('text'), this.get('words').length);
-    }
+    // if(opponent_bool) {
+    //   console.log(this.get('text'), this.get('words').length);
+    // }
 
     // if(opponent_bool) {
     //   var anns = [];
@@ -645,7 +645,7 @@ NERWordView = Backbone.Marionette.View.extend({
   },
 
   onUnderlineSpace: function(opts) {
-    console.log('onUnderlineSpace')
+    // console.log('onUnderlineSpace')
     /* (UNCLEAR) create a new absolute positioned white div */
     var $container = this.$el.parent(),
     pos = this.$el.position(),
@@ -1313,7 +1313,7 @@ YPet = Backbone.Marionette.View.extend({
     annotations = _.flatten(_.values(ann_dict));
     annotations = _.difference(annotations, _.where(annotations, {'text': ""}));
     annotations = _.map(annotations, function(o) { return _.omit(o, 'opponent');});
-    annotations =_.map(annotations, function(o) { return _.omit(o, 'words');});
+    annotations = _.map(annotations, function(o) { return _.omit(o, 'words');});
 
     /* Submit Task over ajax, then show correct page (new / gm / partner compare) */
     $.ajax({
