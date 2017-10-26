@@ -2,7 +2,7 @@ SELECT  `comment`.`user_id`,
         `comment`.`user_name`,
         `comment`.`comment`,
         `comment`.`submit_date`,
-        `document`.`document_id` as `pmid`
+        `document`.`id` as `document_pk`
 
 FROM `django_comments` as `comment`
 

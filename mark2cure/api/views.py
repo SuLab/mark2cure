@@ -216,7 +216,7 @@ def talk_comments(request):
     try:
         c.execute(cmd_str)
         queryset = [dict(zip(['user_id', 'user_name', 'comment',
-                              'submit_date', 'pmid'], x)) for x in c.fetchall()]
+                              'submit_date', 'document_pk'], x)) for x in c.fetchall()]
     finally:
         c.close()
 

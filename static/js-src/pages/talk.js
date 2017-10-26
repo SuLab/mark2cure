@@ -1,3 +1,5 @@
+var channel = Backbone.Radio.channel('mark2cure');
+
 //
 // Models + Collections
 //
@@ -8,6 +10,23 @@ TalkDocumentNERAnn = Backbone.Model.extend({
     'occurances': 0
   }
 });
+
+TalkDocumentContributor = Backbone.Model.extend({
+  defaults: {
+    user_id: null
+  }
+});
+
+TalkDocumentContributorList = Backbone.Collection.extend({
+  model: TalkDocumentContributor,
+  url: function() {
+    return '/api/talk/document/'+this.document_pk+'/'+this.task_type+'/contributor/list/'
+  },
+  initialize: function(options) {
+    this.document_pk = options['document_pk']
+    this.task_type = 'ner'
+  }
+})
 
 TalkDocumentNERAnnList = Backbone.Collection.extend({
   model: TalkDocumentNERAnn,
@@ -27,14 +46,14 @@ TalkComment = Backbone.Model.extend({
     'user_name': '',
     'comment': '',
     'submit_date': null,
-    'pmid': null
+    'document_pk': null
   }
 });
 
 
 TalkCommentList = Backbone.Collection.extend({
   model: TalkComment,
-  url: '/api/talk/comments/'
+  url: '/api/talk/comment/list/'
 });
 
 
@@ -49,7 +68,7 @@ TalkDocument = Backbone.Model.extend({
 
 TalkDocumentList = Backbone.Collection.extend({
   model: TalkDocument,
-  url: '/api/talk/documents/'
+  url: '/api/talk/document/list/'
 });
 
 //
@@ -64,7 +83,7 @@ TalkDocumentListView = Backbone.Marionette.CollectionView.extend({
   childView: TalkDocumentItemView
 });
 
-TalkDocumentView = Backbone.Marionette.View.extend({
+TalkDiscussedDocumentView = Backbone.Marionette.View.extend({
   template: '#talk-list-template',
   templateContext: {
     'list_name': 'Discussed Documents'
@@ -115,8 +134,6 @@ TalkCommentView = Backbone.Marionette.View.extend({
     'list': '.list-group',
   },
 
-
-
   modelEvents: {
     'sync': function() { this.render(); }
   },
@@ -142,34 +159,50 @@ TalkView = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    this.showChildView('documents', new TalkDocumentView());
+    this.showChildView('documents', new TalkDiscussedDocumentView());
     this.showChildView('comments', new TalkCommentView());
   }
 });
 
-TalkDocumentNERUserItem = Backbone.Marionette.CollectionView.extend({
-  className: 'page-item',
+TalkDocumentNERUserItem = Backbone.Marionette.View.extend({
+  template: '#talk-document-user-item-template',
   tagName: 'li',
-  template: 'talk-document-user-item-template'
+  className: 'list-inline-item',
+  events: {
+    'mouseover': function(evt) {
+      $.getJSON('/task/ner/'+ channel.request('get:document:pk') +'/user/'+ this.model.get('user_id')  +'/results.json', function( data ) {
+        console.log(data);
+      });
+    }
+  }
 });
 
 TalkDocumentNERUserList = Backbone.Marionette.CollectionView.extend({
-  childView: TalkDocumentNERUserItem
+  childView: TalkDocumentNERUserItem,
+  tagName: 'ul',
+  className: 'list-inline'
 });
 
 TalkDocumentNERView = Backbone.Marionette.View.extend({
   template: '#talk-document-ner-template',
+  className: 'row justify-content-center',
 
   regions: {
+    'contributors': '#talk-ner-user-list',
+    'ner_viz': '#talk-ner-display'
+  },
+
+  collectionEvents: {
+    'sync': function() { this.render(); }
   },
 
   initialize: function() {
-    console.log( this.getOption('document_pk') );
-      // this.collection =
+    this.collection = new TalkDocumentContributorList(this.options)
+    this.collection.fetch();
   },
 
   onRender: function() {
-    // this.showChildView('list', new TalkDocumentNERUserList({'collection': this.collection}));
+    this.showChildView('contributors', new TalkDocumentNERUserList({'collection': this.collection}));
   }
 });
 
@@ -183,11 +216,18 @@ TalkDocumentView = Backbone.Marionette.View.extend({
     'comment': '#talk-document-comment',
   },
 
+  initialize: function() {
+    channel.reply('get:document:pk', this.getDocumentPk, this);
+  },
+
   onRender: function() {
     // this.collection = new TalkDocumentNERAnnList({'document_pk':4229, 'ann_type_idx':1});
     // this.collection.fetch();
-
     this.showChildView('ner', new TalkDocumentNERView(this.options));
+  },
+
+  getDocumentPk: function() {
+    return this.getOption('document_pk');
   }
 });
 
@@ -217,52 +257,4 @@ TalkDocumentView = Backbone.Marionette.View.extend({
 //     YPet.addInitializer(function(options) {
 //
 //       $.getJSON('/task/entity-recognition/{{doc.pk}}/user/{{user.pk}}/results.json', function( data ) {
-//         self_data = data;
-//         passages = data.collection.document.passage;
-//         regions = {};
-//
-//         _.each(passages, function(passage, passage_idx) {
-//           var passage_id = _.find(passage.infon, function(o){return o['@key']=='id';})['#text'];
-//           var p_body = '<div id="'+ passage_id +'" class="paragraph-box m-t-1"><p class="paragraph"></p></div></div>';
-//           $('.paragraphs').append(p_body);
-//           regions[''+passage_idx] = '#'+passage_id;
-//         });
-//         YPet.addRegions(regions);
-//
-//         _.each(passages, function(passage, passage_idx) {
-//           var p = new Paragraph({'text': passage.text});
-//           YPet[''+passage_idx].show( new WordCollectionView({
-//             collection: p.get('words'),
-//             passage_json: passage,
-//             bioc_json: data
-//           }) );
-//           YPet[''+passage_idx].currentView.drawBioC(passage, false);
-//           YPet[''+passage_idx].currentView.drawBioC(null, true);
-//         });
-//
-//       });
-//     });
-//     YPet.start();
-//
-//
-//     $('ul.pagination li a').on('mouseover', function(evt) {
-//       var user_pk = $(this).data('userpk');
-//
 //       $.getJSON('/task/entity-recognition/{{doc.pk}}/user/'+ user_pk +'/results.json', function( data ) {
-//         self_data = data;
-//         passages = data.collection.document.passage;
-//
-//         _.each(passages, function(passage, passage_idx) {
-//           var p = new Paragraph({'text': passage.text});
-//           YPet[''+passage_idx].show( new WordCollectionView({
-//             collection: p.get('words'),
-//             passage_json: passage,
-//             bioc_json: data
-//           }) );
-//           YPet[''+passage_idx].currentView.drawBioC(passage, false);
-//           YPet[''+passage_idx].currentView.drawBioC(null, true);
-//         });
-//       });
-//
-//     });
-//

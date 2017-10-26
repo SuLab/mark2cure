@@ -27,6 +27,26 @@ import random
 
 @login_required
 @api_view(['GET'])
+def ner_user_document_results(request, document_pk, user_pk):
+    get_object_or_404(Document, pk=document_pk)
+    get_object_or_404(User, pk=user_pk)
+
+    user_anns = {}
+    user_ner_ann_df = Document.objects.ner_df(document_pks=[document_pk], user_pks=[user_pk], include_pubtator=False)
+    for section_id, group in user_ner_ann_df.groupby('section_id'):
+        user_anns[int(section_id)] = []
+        for ann_group_idx, ann in group.iterrows():
+            user_anns[int(section_id)].append({
+                'type_id': int(ann['ann_type_idx']),
+                'start': int(ann['start_position']),
+                'text': str(ann['text'])
+            })
+
+    return Response(user_anns)
+
+
+@login_required
+@api_view(['GET'])
 def ner_quest_document_results(request, task_pk, doc_pk):
     """Returns back submission results that allow a comparison to an opponent
     """

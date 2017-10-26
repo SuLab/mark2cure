@@ -5,6 +5,9 @@ from .views import NERDocumentSubmissionView
 
 urlpatterns = [
 
+    url(r'^(?P<document_pk>\d+)/user/(?P<user_pk>\d+)/',
+        views.ner_user_document_results, name='ner-user-document-results'),
+
     url(r'^(?P<task_pk>\d+)/(?P<doc_pk>\d+)/results.json',
         views.ner_quest_document_results, name='ner-quest-document-results'),
 
