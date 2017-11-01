@@ -1,3 +1,7 @@
+var numberWithCommas = function(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 /*
  * Models + Collections
  */
@@ -165,6 +169,11 @@ NERDashboardUnlockView = Backbone.Marionette.View.extend({
 NERDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-ner-template',
   className: 'row',
+  templateContext: function() {
+    return {
+      'score': numberWithCommas(this.model.get('total_score'))
+    };
+  },
 
   regions: {
     'list': '#dashboard-ner-list'
@@ -224,6 +233,11 @@ REDashboardUnlockView = Backbone.Marionette.View.extend({
 REDashboardView = Backbone.Marionette.View.extend({
   template: '#dashboard-re-template',
   className: 'col',
+  templateContext: function() {
+    return {
+      'score': numberWithCommas(this.model.get('total_score'))
+    };
+  },
 
   regions: {
     'list': '#dashboard-re-list',

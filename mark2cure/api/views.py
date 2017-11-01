@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from ..document.models import Document, Annotation, View
 from ..task.models import Level, UserQuestRelationship
@@ -383,6 +384,22 @@ def re_list(request):
 
     # Close the connection
     c.close()
+
+    # Prevent documents from being shown that have since been completed
+    # by the community before the requqest.user could complete everything
+    for idx, item in enumerate(queryset):
+        if int(item['user_document_relationships']) <= 0:
+            document = get_object_or_404(Document, pk=item['id'])
+            first_section = document.section_set.first()
+            view = View.objects.filter(task_type='re', section=first_section, user=request.user).last()
+            Point.objects.create(user=request.user,
+                                 amount=settings.RELATION_DOC_POINTS,
+                                 content_type=ContentType.objects.get_for_model(view),
+                                 object_id=view.id)
+            view.completed = True
+            view.save()
+
+            del queryset[idx]
 
     serializer = DocumentRelationSerializer(queryset, many=True)
     return Response(serializer.data)
