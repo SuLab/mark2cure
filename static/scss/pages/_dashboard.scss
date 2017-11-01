@@ -10,26 +10,31 @@
   }
 }
 
-#leaderboard {
+#dashbaord-leaderboard {
   margin-top: 20px;
 
-  a p {
-    color: $color_gray_dark
-  }
+  #leaderboard-item-list .list-group a {
+    overflow: hidden;
 
-  p {
-    letter-spacing: 2px;
-    margin: 0px;
+    p {
+      color: $color_gray_dark;
+      letter-spacing: 2px;
+      margin: 0px;
+      text-transform: uppercase;
+      font-size: .5em;
+    }
+
   }
 
   h2, h4 {
     cursor: pointer;
     color: $color_gray_light;
     white-space: nowrap;
+    font-size: 1.5em;
 
     span {
       position: relative;
-      top: -3px;
+      top: .1em;
       color: $color_purple;
     }
 

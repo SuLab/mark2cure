@@ -56,7 +56,7 @@ LeaderBoardUserList = Backbone.Collection.extend({
 LeaderBoardUserView = Backbone.Marionette.View.extend({
   template: '#dashboard-leaderboard-item-template',
   tagName: 'a',
-  className: 'list-group-item list-group-item-action flex-column align-items-start',
+  className: 'list-group-item list-group-item-action flex-column align-items-start p-2',
 
   /* These events are only triggered when over
    * a span in the paragraph */
