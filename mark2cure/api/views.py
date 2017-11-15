@@ -472,13 +472,18 @@ def training(request):
     try:
         c.execute(cmd_str)
         queryset = [dict(zip(['task_type', 'level', 'last_created',
-                              'completions'], x)) for x in c.fetchall()]
+                              'name', 'completions'], x)) for x in c.fetchall()]
     finally:
         c.close()
 
     res = []
-    for key, group in groupby(queryset, lambda x: x['task_type']):
-        progress = [x for x in group]
+    # for key, group in groupby(queryset, lambda x: x['task_type']):
+    for key in ['ner', 're']:
+        levels = [lvl['name'] for lvl in training_data["data"][key]]
+        print(levels)
+
+        # progress = [x for x in group]
+        progress = [item for item in queryset if item.get('task_type') == key]
         for d in progress:
             del d['task_type']
 

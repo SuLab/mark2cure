@@ -179,9 +179,9 @@ TrainingModuleProgressItem = Backbone.Marionette.View.extend({
   },
   events: {
     /* Only allow in Debug mode */
-    // 'mousedown': function() {
-    //   channel.trigger('training:goto:module', this.model);
-    // }
+    'mousedown': function() {
+      channel.trigger('training:goto:module', this.model);
+    }
   }
 });
 
@@ -253,13 +253,15 @@ TrainingStepTextView = Backbone.Marionette.View.extend({
         self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
     });
 
-    this.listenTo(channel, 'training:next:instruction', function(idx) {
+    this.listenTo(channel, 'training:next:instruction', function() {
       var m = self.model.get('instructions').get_next();
       if(m) {
         //-- If there are more Instructions to go through
+        console.log('[Training Next Instruction] 1');
         self.showChildView('instructions', new TrainingStepInstructionView({'model': m}));
       } else {
         //-- Bubble up to go to next Step
+        console.log('[Training Next Instruction] 2');
         channel.trigger('training:next:step');
       }
     });
@@ -307,7 +309,10 @@ TrainingFooterView = Backbone.Marionette.View.extend({
   },
 
   events: {
-    'mousedown a': function() { channel.trigger('training:next:instruction'); }
+    'mousedown a': function() {
+      /* [Training] go next */
+      channel.trigger('training:next:instruction');
+    }
   },
 
   newInstruction: function(model) {
@@ -320,7 +325,9 @@ TrainingFooterView = Backbone.Marionette.View.extend({
 });
 
 TrainingStepView = Backbone.Marionette.View.extend({
-  /* this.model = TrainingStep
+  /* Skelton View to organize 1) text area 2) action area 3) footer area
+   *
+   * this.model = TrainingStep
    * this.collection = None
    */
   template: '#training-module-step-template',
@@ -335,14 +342,10 @@ TrainingStepView = Backbone.Marionette.View.extend({
   initialize: function() {
     var self = this;
 
-    this.listenTo(channel, 'training:re:submit', function(rechoice_model) {
-      /* Pass this through, rather than calling next step on the Tree library
-       * so we can override if desired */
-      channel.trigger('training:next:instruction');
-    });
-
     this.listenTo(channel, 'training:next:step', function() {
       var m = self.model.collection.get_next();
+      console.log('[TSV IDX]', self.model.collection.indexOf(self.model));
+
       self.model = m;
       if(m) {
         //-- If there are more Steps to go through
@@ -354,6 +357,7 @@ TrainingStepView = Backbone.Marionette.View.extend({
     });
 
     this.listenTo(channel, 'training:show:action', function(source, training_data, training_rules, instruction_idx) {
+      console.log('--   training:show:action');
       /* source: 0 = Step, 1 = Instruction */
       if(!(source==1 && training_data==null)) {
         var module_idx = self.model.get('module').collection.indexOf(self.model.get('module'));
@@ -450,8 +454,6 @@ TrainingView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     if(this.collection.length) {
-
-      console.log('Selectivly show Training Task');
 
       var task = this.collection.get_active();
 

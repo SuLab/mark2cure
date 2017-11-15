@@ -372,7 +372,7 @@ RETrainingAction = Backbone.Marionette.View.extend({
     this.listenTo(channel, 'training:re:concept:incorrect:click', function(reconcept) { this.incorrectClick(reconcept); });
     this.listenTo(channel, 'training:re:choice:click', function(rechoice_model) { this.choiceClick(rechoice_model); });
 
-    this.listenTo(channel, 'training:next:instruction', function() { this.onStartUpLogic(); })
+    // (TODO) these overlap with TrainingStepTextView listeners
     this.listenTo(channel, 'training:set:instruction', function(idx) { this.onStartUpLogic(idx); })
   },
 

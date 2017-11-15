@@ -402,7 +402,8 @@ REConfirmView = Backbone.Marionette.View.extend({
 
   events: {
     'mousedown @ui.button': function() {
-      console.log('>> mousedown');
+      /* Submit the relationship
+      * [Training] go next */
       channel.trigger('tree:relationship:submit', this.model);
     }
   },
@@ -657,15 +658,15 @@ Tree = Backbone.Marionette.View.extend({
     }
 
     /* (TODO) look into / figure out the exact behavioral differences */
-    channel.once('tree:relationship:submit', this.relationshipSubmit, this);
+    /* (TODO) this gets triggered twice in training */
+    this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit, this);
+
     this.listenTo(channel, 'tree:relationship:next', this.relationshipNext);
     this.listenTo(channel, 'tree:completed', this.completed);
     this.listenTo(channel, 'tree:error', this.treeError );
   },
 
   relationshipSubmit: function(rechoice_model) {
-    console.log('>> relationshipSubmit');
-
     if(!this.getOption('training')) {
       /* Submitting results for a REExtraction */
       var self = this;
@@ -685,7 +686,7 @@ Tree = Backbone.Marionette.View.extend({
         },
       });
     } else {
-      channel.trigger('training:re:submit', rechoice_model);
+      channel.trigger('training:next:instruction');
     }
   },
 

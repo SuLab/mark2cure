@@ -181,6 +181,13 @@
   </div>
 </script>
 
+<script id="dashboard-re-unlock-item-template" type="html/template">
+  // <a href="{% url "training:re" %}" class="list-group-item current"><i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface</a>
+  <div class="list-group-item locked disabled">
+  <i class='fa fa-lock' aria-hidden='true'></i>  Rules for Relationship Extraction
+  </div>
+</script>
+
 <script id="dashboard-re-unlock-template" type="html/template">
   <div class="col-10">
     <div class="row justify-content-center">
@@ -199,23 +206,15 @@
     <div class="row">
       <div id="relation-training-progress" class="col-12">
         <div class="list-group dashboard text-center">
-        <% if(re == 0) { %>
-        <a href="{% url "training:re" %}" class="list-group-item current"><i class='fa fa-angle-right' aria-hidden='true'></i>  Using the interface</a>
-        <div class="list-group-item locked disabled"><i class='fa fa-lock' aria-hidden='true'></i>  Rules for Relationship Extraction</div>
-        <div class="list-group-item locked disabled"><i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad</div>
-        <% } %>
 
-        <% if(re == 1) { %>
-        <div class="list-group-item completed"><i class='fa fa-check' aria-hidden='true'></i>  Using the interface</div>
-        <a href="{% url "training:re" %}" class="list-group-item current"><i class='fa fa-angle-right' aria-hidden='true'></i>  Rules for Relationship Extraction</a>
-        <div class="list-group-item locked disabled"><i class='fa fa-lock' aria-hidden='true'></i>  Learn new relationships: Broad</div>
-        <% } %>
-
-        <% if(re == 2) { %>
-          <div class="list-group-item completed"><i class='fa fa-check' aria-hidden='true'></i>  Using the interface</div>
-          <div class="list-group-item completed"><i class='fa fa-check' aria-hidden='true'></i>  Rules for Relationship Extraction</div>
-          <a href="{% url "training:re" %}" class="list-group-item current"><i class='fa fa-angle-right' aria-hidden='true'></i>  Learn new relationships: Broad</a>
-        <% } %>
+          <a href="{% url 'training:re' %}">
+            <p class="list-group-item">Using the Interface</p>
+            <p class="list-group-item">Rules for Relationship Extraction</p>
+            <p class="list-group-item">Learn new relationships</p>
+            <p class="list-group-item">Gene &raquo; Disease</p>
+            <p class="list-group-item">Drug &raquo; Disease</p>
+            <p class="list-group-item">Gene &raquo; Drug</p>
+          </a>
 
         </div>
       </div>
