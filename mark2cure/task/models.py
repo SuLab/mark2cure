@@ -2,19 +2,39 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+ENTITY_RECOGNITION = 'ner'
+RELATION = 're'
+TASK_TYPE_CHOICES = (
+    (ENTITY_RECOGNITION, 'Name Entity Recognition'),
+    (RELATION, 'Relation Extraction'),
+)
+
+
+class Requirement(models.Model):
+    """Required levels (identifiers) for a task to be enabled
+    """
+    # (TODO) why can't I call this id???
+    hash = models.CharField(max_length=8)
+
+    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICES)
+    name = models.CharField(max_length=200)
+    order = models.IntegerField()
+
+    # For training levels no longer used
+    active = models.BooleanField(default=False)
+
+
 class Level(models.Model):
     """The Task Type specific Level a user is trained at
     """
     user = models.ForeignKey(User)
 
-    ENTITY_RECOGNITION = 'ner'
-    RELATION = 're'
-    TASK_TYPE_CHOICES = (
-        (ENTITY_RECOGNITION, 'Name Entity Recognition'),
-        (RELATION, 'Relation Extraction'),
-    )
+    requirement = models.ForeignKey('task.Requirement', blank=True, null=True, related_name="completes")
+
+    # (TODO) to remove after migration completes
     task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICES)
     level = models.IntegerField()
+
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -39,6 +59,7 @@ class Task(models.Model):
     """
     name = models.CharField(max_length=200)
 
+    # (TODO) remove training after migration
     TRAINING = 't'
     QUEST = 'q'
     KIND_CHOICES = (
