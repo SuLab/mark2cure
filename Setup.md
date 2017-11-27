@@ -525,4 +525,12 @@ View.objects.filter(task_type='ri').update(task_type='re')
 Level.objects.filter(task_type='e').update(task_type='ner')
 Level.objects.filter(task_type='r').update(task_type='re')
 
+------ training requirement migrations -----------
+
+for lvl in Level.objects.filter(task_type='re'):
+  r = Requirement.objects.filter(task_type='re', order=lvl.level).first()
+  if(r):
+    lvl.requirement = r
+    lvl.save()
+
 
