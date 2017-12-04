@@ -108,12 +108,13 @@ TrainingModuleCollection = IterableCollection.extend({
   }
 });
 
-TrainingLevel = Backbone.RelationalModel.extend({
+TrainingLevel = Backbone.Model.extend({
   /* Directly associated with a Module, but is the database way
    * of storing progress */
   defaults: {
-    "level": null,
-    "last_created": null,
+    "hash": "",
+    "name": "",
+    "last_created": "",
     "completions": 0
   }
 });
@@ -123,7 +124,7 @@ TrainingLevelCollection = IterableCollection.extend({
   model: TrainingLevel
 });
 
-TrainingTask = Backbone.RelationalModel.extend({
+TrainingTask = Backbone.Model.extend({
   /* Representative of which Task the training will prepare the user for */
   defaults: {
     "selected": false,
@@ -131,10 +132,10 @@ TrainingTask = Backbone.RelationalModel.extend({
   },
   relations: [{
     type: 'HasMany',
-    key: 'progress',
+    key: 'levels',
     relatedModel: TrainingLevel,
-    collectionType: TrainingLevelCollection,
-  }]
+    relatedCollection: TrainingLevelCollection
+  }],
 }),
 
 TrainingTaskCollection = IterableCollection.extend({
@@ -454,8 +455,7 @@ TrainingView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     if(this.collection.length) {
-
-      var task = this.collection.get_active();
+      var task = this.collection.findWhere({'task': this.getOption('mode')});
 
       if(task.get("task") == "re") {
         this.showChildView('content', new RETrainingTaskView());

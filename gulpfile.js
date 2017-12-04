@@ -64,6 +64,11 @@ gulp.task('js', function() {
 
     './node_modules/raven-js/dist/raven.js',
 
+    //-- Training Libraries
+    './static/js-src/training/training.js',
+    './static/js-src/training/ner.js',
+    './static/js-src/training/re.js',
+
     './static/js-src/libs/ypet.js',
     './static/js-src/libs/tree.js',
     './static/js-src/tasks/relation-data-var-assigned.js',
@@ -75,11 +80,6 @@ gulp.task('js', function() {
     './static/js-src/pages/ner-group.js',
 
     './static/js-src/tasks/relation-synopsis.js',
-
-    //-- Training Libraries
-    './static/js-src/training/training.js',
-    './static/js-src/training/ner.js',
-    './static/js-src/training/re.js',
 
     './static/js-src/app.js'
   ];

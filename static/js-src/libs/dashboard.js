@@ -100,40 +100,40 @@ REStats = Backbone.Model.extend({
 });
 
 
-TrainingLevel = Backbone.Model.extend({
-  defaults: {
-    "hash": "",
-    "name": "",
-    "last_created": "",
-    "completions": 0
-  }
-});
+// TrainingLevel = Backbone.Model.extend({
+//   defaults: {
+//     "hash": "",
+//     "name": "",
+//     "last_created": "",
+//     "completions": 0
+//   }
+// });
 
 
-TrainingLevelCollection = Backbone.Collection.extend({
-  // url: '',
-  model: TrainingLevel
-});
+// TrainingLevelCollection = Backbone.Collection.extend({
+//   // url: '',
+//   model: TrainingLevel
+// });
 
 
-DashboardTraining = Backbone.Model.extend({
-  defaults: {
-    'task': '',
-  },
+// DashboardTraining = Backbone.Model.extend({
+//   defaults: {
+//     'task': '',
+//   },
+//
+//   relations: [{
+//     type: 'HasMany',
+//     key: 'levels',
+//     relatedModel: TrainingLevel,
+//     relatedCollection: TrainingLevelCollection
+//   }],
+// });
 
-  relations: [{
-    type: 'HasMany',
-    key: 'levels',
-    relatedModel: TrainingLevel,
-    relatedCollection: TrainingLevelCollection
-  }],
-});
 
-
-DashboardTrainingStats = Backbone.Collection.extend({
-  url: '/api/training/',
-  model: DashboardTraining
-});
+// DashboardTrainingStats = Backbone.Collection.extend({
+//   url: '/api/training/',
+//   model: DashboardTraining
+// });
 
 
 /*
@@ -333,7 +333,7 @@ DashboardView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.model = new DashboardTrainingStats();
+    this.model = new TrainingTaskCollection();
     this.model.fetch();
   },
 
