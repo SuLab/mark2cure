@@ -20,7 +20,7 @@ from . import training_data
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from itertools import chain, groupby
+from itertools import chain
 import networkx as nx
 import datetime
 
@@ -463,33 +463,24 @@ def training(request):
     if request.user.is_anonymous():
         return Response([{"task": "re"}])
 
-    cmd_str = ""
-    with open('mark2cure/training/commands/get-user-training.sql', 'r') as f:
-        cmd_str = f.read()
-    cmd_str = cmd_str.format(user_id=request.user.pk)
-
-    c = connection.cursor()
-    try:
-        c.execute(cmd_str)
-        queryset = [dict(zip(['task_type', 'level', 'last_created',
-                              'name', 'completions'], x)) for x in c.fetchall()]
-    finally:
-        c.close()
-
     res = []
-    # for key, group in groupby(queryset, lambda x: x['task_type']):
-    for key in ['ner', 're']:
-        levels = [lvl['name'] for lvl in training_data["data"][key]]
-        print(levels)
+    for task_type in ["ner", "re"]:
 
-        # progress = [x for x in group]
-        progress = [item for item in queryset if item.get('task_type') == key]
-        for d in progress:
-            del d['task_type']
+        cmd_str = ""
+        with open('mark2cure/training/commands/get-user-requirement-training.sql', 'r') as f:
+            cmd_str = f.read()
+        cmd_str = cmd_str.format(user_id=request.user.pk, task_type=task_type)
+
+        c = connection.cursor()
+        try:
+            c.execute(cmd_str)
+            queryset = [dict(zip(['hash', 'name', 'last_created', 'completions'], x)) for x in c.fetchall()]
+        finally:
+            c.close()
 
         res.append({
-            'task': key,
-            'progress': progress
+            'task': task_type,
+            'levels': queryset
         })
 
     return Response(res)
