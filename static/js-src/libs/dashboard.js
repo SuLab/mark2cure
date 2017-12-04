@@ -100,12 +100,39 @@ REStats = Backbone.Model.extend({
 });
 
 
-DashboardTaskStats = Backbone.Model.extend({
-  url: '/api/task/stats/',
+TrainingLevel = Backbone.Model.extend({
   defaults: {
-    'ner': 0,
-    're': 0
+    "hash": "",
+    "name": "",
+    "last_created": "",
+    "completions": 0
   }
+});
+
+
+TrainingLevelCollection = Backbone.Collection.extend({
+  // url: '',
+  model: TrainingLevel
+});
+
+
+DashboardTraining = Backbone.Model.extend({
+  defaults: {
+    'task': '',
+  },
+
+  relations: [{
+    type: 'HasMany',
+    key: 'levels',
+    relatedModel: TrainingLevel,
+    relatedCollection: TrainingLevelCollection
+  }],
+});
+
+
+DashboardTrainingStats = Backbone.Collection.extend({
+  url: '/api/training/',
+  model: DashboardTraining
 });
 
 
@@ -224,9 +251,38 @@ REEmptyListView = Backbone.Marionette.View.extend({
   template: _.template('Sorry, no relationship tasks currently available for you to work on.')
 });
 
+TrainingItemView = Backbone.Marionette.View.extend({
+  template: '#dashboard-training-item-template',
+  tagName: 'a',
+  className: 'list-group-item',
+
+  onRender: function() {
+    if(this.model.get('completions') == 0) {
+      this.$el.attr('href', '/training/re/');
+    }
+  }
+});
+
+TrainingCollectionView = Backbone.Marionette.CollectionView.extend({
+  className: 'list-group dashboard mt-3',
+  childView: TrainingItemView
+});
+
 REDashboardUnlockView = Backbone.Marionette.View.extend({
   template: '#dashboard-re-unlock-template',
-  className: 'row justify-content-center'
+  className: 'row justify-content-center',
+
+  regions: {
+    'list': '#relation-training-progress'
+  },
+
+  onRender: function() {
+    if(this.model.get('levels')) {
+      var collection = new TrainingLevelCollection(this.model.get('levels'))
+      this.showChildView('list', new TrainingCollectionView({'collection': collection}));
+    }
+  }
+
 })
 
 
@@ -277,7 +333,7 @@ DashboardView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.model = new DashboardTaskStats();
+    this.model = new DashboardTrainingStats();
     this.model.fetch();
   },
 
@@ -286,16 +342,27 @@ DashboardView = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    if(this.model.get('ner') >= 7) {
-      this.showChildView('ner', new NERDashboardView());
-    } else {
-      this.showChildView('ner', new NERDashboardUnlockView({'model': this.model}) );
+    var ner = this.model.findWhere({'task': 'ner'});
+    var re = this.model.findWhere({'task': 're'});
+
+    if(ner) {
+      var ner_complete = ner.get('levels').every(function(lvl) { return lvl['completions'] > 0; });
+
+      if(ner_complete) {
+        this.showChildView('ner', new NERDashboardView());
+      } else {
+        this.showChildView('ner', new NERDashboardUnlockView({'model': ner}) );
+      }
     }
 
-    if(this.model.get('re') >= 3) {
-      this.showChildView('re', new REDashboardView());
-    } else {
-      this.showChildView('re', new REDashboardUnlockView({'model': this.model}) );
+    if(re) {
+      var re_complete = re.get('levels').every(function(lvl) { return lvl['completions'] > 0; });
+
+      if(re_complete) {
+        this.showChildView('re', new REDashboardView());
+      } else {
+        this.showChildView('re', new REDashboardUnlockView({'model': re}) );
+      }
     }
 
     this.showChildView('leaderboard', new LeaderBoardView());

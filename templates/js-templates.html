@@ -188,6 +188,14 @@
   </div>
 </script>
 
+<script id="dashboard-training-item-template" type="html/template">
+  <% if(completions > 0) { %>
+    <strike><p class="mb-0"><%= name %></p></strike>
+  <% } else { %>
+    <p class="mb-0"><%= name %></p>
+  <% } %>
+</script>
+
 <script id="dashboard-re-unlock-template" type="html/template">
   <div class="col-10">
     <div class="row justify-content-center">
@@ -204,20 +212,7 @@
       </div>
     </div>
     <div class="row">
-      <div id="relation-training-progress" class="col-12">
-        <div class="list-group dashboard text-center">
-
-          <a href="{% url 'training:re' %}">
-            <p class="list-group-item">Using the Interface</p>
-            <p class="list-group-item">Rules for Relationship Extraction</p>
-            <p class="list-group-item">Learn new relationships</p>
-            <p class="list-group-item">Gene &raquo; Disease</p>
-            <p class="list-group-item">Drug &raquo; Disease</p>
-            <p class="list-group-item">Gene &raquo; Drug</p>
-          </a>
-
-        </div>
-      </div>
+      <div id="relation-training-progress" class="col-12"></div>
     </div>
   </div>
 </script>
