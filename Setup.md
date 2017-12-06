@@ -533,4 +533,10 @@ for lvl in Level.objects.filter(task_type='re'):
     lvl.requirement = r
     lvl.save()
 
+# We know the old user has previously been considered complete so fill in the new steps
+from django.utils import timezone
+for lvl in Level.objects.filter(task_type='re', level=3):
+  for x in range(4,7):
+
+    Level.objects.create(user=lvl.user, requirement_id=x, task_type="re", level=123, created=timezone.now())
 
