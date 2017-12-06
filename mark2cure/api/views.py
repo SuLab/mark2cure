@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404
 from django.db import connection
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from ..document.models import Document, Annotation, View
-from ..task.models import Level, UserQuestRelationship
+from ..task.models import Requirement, Level, UserQuestRelationship
 
 from .serializers import QuestSerializer, LeaderboardSerializer, NERGroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
@@ -19,6 +20,7 @@ from . import training_data
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from itertools import chain
 import networkx as nx
@@ -488,15 +490,21 @@ def training(request):
 
 @api_view(['GET', 'POST'])
 def training_details(request, task_type):
+    if task_type not in ["re", "ner"]:
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST':
-        request.session['initial_training'] = task_type
-        return Response({})
+        if task_type == "re":
+            r = get_object_or_404(Requirement, hash=request.POST.get('requirement', None), active=True, task_type=task_type)
+            Level.objects.create(user=request.user, requirement=r, task_type="re", level=123, created=timezone.now())
 
-    if task_type == "re":
-        res = training_data["data"]["re"]
+        return Response({'requirement': 'completed'})
 
-    elif task_type == "ner":
-        res = []
+    else:
+        if task_type == "re":
+            res = training_data["data"]["re"]
+
+        elif task_type == "ner":
+            res = []
 
     return Response(res)

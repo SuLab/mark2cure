@@ -390,6 +390,7 @@ TrainingModuleView = Backbone.Marionette.View.extend({
   initialize: function() {
     var self = this;
     this.listenTo(channel, 'training:next:module', function() {
+      channel.trigger('training:completed:module', self.model);
       var m = self.model.collection.get_next();
       if(m) {
         //-- Move onto the next Module
@@ -446,6 +447,7 @@ TrainingView = Backbone.Marionette.View.extend({
   initialize: function() {
     this.collection = new TrainingTaskCollection();
     this.collection.fetch();
+    this.listenTo(channel, 'training:completed:module', this.completedTrainingModule);
     this.listenTo(channel, 'training:completed', this.completedTraining);
   },
 
@@ -466,18 +468,22 @@ TrainingView = Backbone.Marionette.View.extend({
     }
   },
 
-  completedTraining: function() {
+  completedTrainingModule: function(model) {
     var self = this;
 
     $.ajax({
       type: 'POST',
       url: '/api/training/'+self.getOption('mode')+'/',
-      headers: {'X-CSRFTOKEN': self.getOption('csrf_token')},
+      data: $.extend({'csrfmiddlewaretoken': this.getOption('csrf_token')}, {
+        'requirement': model.get('id'),
+      }),
       cache: false,
-      success: function(data) {
-        window.location.href = "/accounts/signup/";
-      },
+      success: function() {},
       error: function() {}
     });
+  },
+
+  completedTraining: function() {
+    window.location.href = "/dashboard/";
   }
 })
