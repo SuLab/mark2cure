@@ -13,11 +13,15 @@ def route(request):
     if Level.objects.filter(user=request.user, task_type='re').exists():
         return redirect(reverse('training:re'))
 
-    user_level = Level.objects.filter(user=request.user, task_type='ner').first().level
-    if user_level <= 3:
+    user_level = Level.objects.filter(user=request.user, task_type='ner').first()
+    if not user_level:
+        return redirect(reverse('training:re'))
+
+    # (TODO) rework all this as it's being done in JS
+    if user_level.level <= 3:
         task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
     else:
-        task = Task.objects.filter(kind=Task.TRAINING, requires_qualification=user_level).first()
+        task = Task.objects.filter(kind=Task.TRAINING, requires_qualification=user_level.level).first()
 
     if task:
         return redirect(task.meta_url)

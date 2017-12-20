@@ -14,7 +14,11 @@ from .models import Group
 def get_started(request):
     '''View for directing the request into Training
     '''
-    return redirect('training:re')
+
+    if not request.user.is_authenticated():
+        return redirect('account_signup')
+
+    return redirect('training:route')
 
 
 def dashboard(request):
