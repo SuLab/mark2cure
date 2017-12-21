@@ -8,7 +8,6 @@ from django.utils import timezone
 from ..document.models import Document, Annotation, View
 from ..task.models import Requirement, Level, UserQuestRelationship
 
-from .serializers import QuestSerializer, LeaderboardSerializer, NERGroupSerializer, TeamLeaderboardSerializer, DocumentRelationSerializer
 from ..userprofile.models import Team
 from ..common.models import Group
 from ..analysis.models import Report
@@ -287,6 +286,8 @@ def ner_list_item_contributors(request, group_pk):
 
 @api_view(['GET'])
 def ner_list_item_quests(request, group_pk):
+
+    from .serializers import QuestSerializer
     group = get_object_or_404(Group, pk=group_pk)
 
     # we now allow users to see a group 'home page' for detailed information whether or
@@ -320,6 +321,7 @@ def ner_list_item_quests(request, group_pk):
 
 @api_view(['GET'])
 def ner_list(request):
+    from .serializers import NERGroupSerializer
     queryset = Group.objects.exclude(stub='training').order_by('-order')
     serializer = NERGroupSerializer(queryset, many=True)
     return Response(serializer.data)
@@ -355,6 +357,7 @@ def re_list(request):
     """ Returns the available relation tasks for a specific user
         Accessed through a JSON API endpoint
     """
+    from .serializers import DocumentRelationSerializer
     cmd_str = ""
     with open('mark2cure/api/commands/get-relations.sql', 'r') as f:
         cmd_str = f.read()
@@ -447,6 +450,7 @@ def get_annotated_teams(days=30):
 
 @api_view(['GET'])
 def leaderboard_users(request, day_window):
+    from .serializers import LeaderboardSerializer
     queryset = users_with_score(days=int(day_window))[:25]
     serializer = LeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
@@ -454,24 +458,21 @@ def leaderboard_users(request, day_window):
 
 @api_view(['GET'])
 def leaderboard_teams(request, day_window):
+    from .serializers import TeamLeaderboardSerializer
     queryset = list(get_annotated_teams(days=int(day_window)))[:25]
     queryset = [team for team in queryset if team.score is not 0]
     serializer = TeamLeaderboardSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def training(request):
-    if request.user.is_anonymous():
-        return Response([{"task": "re"}])
-
+def get_training_dict(user_pk):
     res = []
     for task_type in ["ner", "re"]:
 
         cmd_str = ""
         with open('mark2cure/training/commands/get-user-requirement-training.sql', 'r') as f:
             cmd_str = f.read()
-        cmd_str = cmd_str.format(user_id=request.user.pk, task_type=task_type)
+        cmd_str = cmd_str.format(user_id=user_pk, task_type=task_type)
 
         c = connection.cursor()
         try:
@@ -484,7 +485,19 @@ def training(request):
             'task': task_type,
             'levels': queryset
         })
+    return res
 
+
+@api_view(['GET'])
+def training(request):
+    """Returns back an array of Task Types the platform allows.
+        - For each, provides the steps involved in training and
+          parameters for monitoring a user's progression through it
+    """
+    if request.user.is_anonymous():
+        return Response([{"task": "re"}])
+
+    res = get_training_dict(request.user.pk)
     return Response(res)
 
 

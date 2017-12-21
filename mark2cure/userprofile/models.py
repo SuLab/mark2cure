@@ -15,6 +15,7 @@ from ..task.relation.models import RelationAnnotation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
 from ..score.models import Point
+from ..api.views import get_training_dict
 
 from django.utils import timezone
 import pandas as pd
@@ -233,14 +234,10 @@ class UserProfile(models.Model):
         return int(val)
 
     def unlocked_tasks(self):
-        arr = []
-        if Level.objects.filter(user=self.user, task_type='ner', level=7).exists():
-            arr.append('entity_recognition')
-
-        if Level.objects.filter(user=self.user, task_type='re', level=3).exists():
-            arr.append('relation')
-
-        return arr
+        """Returns back an int of number of available Tasks a User
+            is trained for on the platform
+        """
+        return sum([all([lvl.get('completions') > 0 for lvl in task['levels']]) for task in get_training_dict(self.user.pk) if len(task['levels']) > 0])
 
     def all_annotations(self):
         return Annotation.objects.filter(view__user=self.user)

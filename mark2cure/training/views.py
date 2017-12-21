@@ -3,32 +3,20 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-from ..task.models import Task
-from ..task.models import Level
+from ..api.views import get_training_dict
 
 
 @login_required
 def route(request):
-    # Prioritize relation training over Entity Recognition for routing
-    if Level.objects.filter(user=request.user, task_type='re').exists():
-        return redirect(reverse('training:re'))
 
-    user_level = Level.objects.filter(user=request.user, task_type='ner').first()
-    if not user_level:
-        return redirect(reverse('training:re'))
-
-    # (TODO) rework all this as it's being done in JS
-    if user_level.level <= 3:
-        task = Task.objects.get(kind=Task.TRAINING, provides_qualification='4')
-    else:
-        task = Task.objects.filter(kind=Task.TRAINING, requires_qualification=user_level.level).first()
-
-    if task:
-        return redirect(task.meta_url)
-    else:
-        return redirect('common:dashboard')
+    res = get_training_dict(request.user.pk)
+    print(res)
+    # return redirect('common:dashboard')
+    # return redirect(reverse('training:re'))
+    # return redirect(reverse('training:ner'))
 
 
+@login_required
 def ner_home(request):
     '''Starting HTML for all NER Training Javascript
         (TODO) Not yet built
@@ -36,6 +24,7 @@ def ner_home(request):
     return TemplateResponse(request, 'training/entity-recognition/home.html')
 
 
+@login_required
 def re_home(request):
     '''Starting HTML for all RE Training Javascript
     '''
