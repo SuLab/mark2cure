@@ -28,17 +28,11 @@ def dashboard(request):
         return redirect('common:home')
 
     # We redirect user to the training route if their skill is not level 7
-    available_tasks = request.user.profile.unlocked_tasks()
-    if len(available_tasks) == 0:
+    if request.user.profile.unlocked_tasks() == 0:
         return redirect('training:route')
 
     uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
-
-    ctx = {
-        'mobile': uai.detectMobileLong(),
-        'available_tasks': available_tasks,
-    }
-    return TemplateResponse(request, 'common/dashboard.html', ctx)
+    return TemplateResponse(request, 'common/dashboard.html', {'mobile': uai.detectMobileLong()})
 
 
 def why_mark2cure(request):

@@ -466,6 +466,8 @@ def leaderboard_teams(request, day_window):
 
 
 def get_training_dict(user_pk):
+    """Returns Array of Module dictionaries that contain:
+        Module: {levels: arr, task: str} """
     res = []
     for task_type in ["ner", "re"]:
 

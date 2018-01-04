@@ -15,7 +15,6 @@ from ..task.relation.models import RelationAnnotation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
 from ..score.models import Point
-from ..api.views import get_training_dict
 
 from django.utils import timezone
 import pandas as pd
@@ -237,6 +236,7 @@ class UserProfile(models.Model):
         """Returns back an int of number of available Tasks a User
             is trained for on the platform
         """
+        from ..api.views import get_training_dict
         return sum([all([lvl.get('completions') > 0 for lvl in task['levels']]) for task in get_training_dict(self.user.pk) if len(task['levels']) > 0])
 
     def all_annotations(self):
