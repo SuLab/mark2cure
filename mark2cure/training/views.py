@@ -9,10 +9,14 @@ from ..api.views import get_training_dict
 @login_required
 def route(request):
 
-    res = get_training_dict(request.user.pk)
-    print(res)
-    # return redirect('common:dashboard')
-    # return redirect(reverse('training:re'))
+    arr_of_tasks_completed_training = [task['task'] for task in get_training_dict(request.user.pk) if len(task['levels']) > 0 if all([lvl.get('completions') > 0 for lvl in task['levels']])]
+
+    if len(arr_of_tasks_completed_training) == 2:
+        return redirect('common:dashboard')
+    else:
+        return redirect(reverse('training:re'))
+
+    # (TODO) Is there ever a time we'd use this [requires this training to be completed first!]
     # return redirect(reverse('training:ner'))
 
 

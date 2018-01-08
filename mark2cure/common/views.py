@@ -27,7 +27,7 @@ def dashboard(request):
     if not request.user.is_authenticated():
         return redirect('common:home')
 
-    # We redirect user to the training route if their skill is not level 7
+    # We redirect user to the training route they don't have any qualified task modules
     if request.user.profile.unlocked_tasks() == 0:
         return redirect('training:route')
 

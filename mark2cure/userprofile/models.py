@@ -10,7 +10,7 @@ from django.template.defaultfilters import slugify
 
 from ..document.models import Annotation, Document, View
 from ..common.models import Group
-from ..task.models import Task, UserQuestRelationship, Level
+from ..task.models import Task, UserQuestRelationship
 from ..task.relation.models import RelationAnnotation
 from ..task.entity_recognition.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
