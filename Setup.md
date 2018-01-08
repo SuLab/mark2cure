@@ -2,7 +2,7 @@
 
 This document describes a relatively detailed way to set up Mark2Cure so it could run locally on your computer.
 
-The whole guide was tested on a Ubuntu machine. Mac users may find some difference when following this guide. Remember, whenever you have any trouble, Google is your best friend. 
+The whole guide was tested on a Ubuntu machine. Mac users may find some difference when following this guide. Remember, whenever you have any trouble, Google is your best friend.
 
 ## Requirements
 
@@ -513,18 +513,6 @@ server.
 
 ## Migration Commands
 
-python manage.py migrate document
-python manage.py migrate task
-
-Annotation.objects.filter(kind='e').update(kind='ner')
-Annotation.objects.filter(kind='r').update(kind='re')
-
-View.objects.filter(task_type='cr').update(task_type='ner')
-View.objects.filter(task_type='ri').update(task_type='re')
-
-Level.objects.filter(task_type='e').update(task_type='ner')
-Level.objects.filter(task_type='r').update(task_type='re')
-
 ------ training requirement migrations -----------
 
 for lvl in Level.objects.filter(task_type='re'):
@@ -533,10 +521,12 @@ for lvl in Level.objects.filter(task_type='re'):
     lvl.requirement = r
     lvl.save()
 
-# We know the old user has previously been considered complete so fill in the new steps
-from django.utils import timezone
-for lvl in Level.objects.filter(task_type='re', level=3):
-  for x in range(4,7):
 
-    Level.objects.create(user=lvl.user, requirement_id=x, task_type="re", level=123, created=timezone.now())
+for u in User.objects.all():
+  for lvl in Level.objects.filter(task_type='ner', user_id=u.pk).order_by('-level'):
+
+      r = Requirement.objects.filter(task_type='ner', order=lvl.level+1).first()
+      if(r):
+        lvl.requirement = r
+        lvl.save()
 

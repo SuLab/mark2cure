@@ -9,7 +9,7 @@ LEFT JOIN `task_level`
   ON `task_level`.`requirement_id` = `task_requirement`.`id`
   AND `task_level`.`user_id` = {user_id}
 
-WHERE `task_requirement`.`task_type` = "{task_type}"
+WHERE `task_requirement`.`task_type` = "{task_type}" AND `task_requirement`.`active` = 1
 
 GROUP BY `task_requirement`.`hash`, `task_requirement`.`order`
 
