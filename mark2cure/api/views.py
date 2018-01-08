@@ -293,7 +293,7 @@ def ner_list_item_quests(request, group_pk):
     # we now allow users to see a group 'home page' for detailed information whether or
     # not they are logged in
     if request.user.is_authenticated():
-        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+        queryset = Task.objects.filter(group=group).extra(select={
             "current_submissions_count": """
                 SELECT COUNT(*) AS current_submissions_count
                 FROM task_userquestrelationship
@@ -307,7 +307,7 @@ def ner_list_item_quests(request, group_pk):
                     AND task_userquestrelationship.task_id = task_task.id)""" % (request.user.pk,)
         }).prefetch_related('documents')
     else:
-        queryset = Task.objects.filter(kind=Task.QUEST, group=group).extra(select={
+        queryset = Task.objects.filter(group=group).extra(select={
             "current_submissions_count": """
                 SELECT COUNT(*) AS current_submissions_count
                 FROM task_userquestrelationship

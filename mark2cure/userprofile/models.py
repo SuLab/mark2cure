@@ -300,7 +300,6 @@ class UserProfile(models.Model):
         # by the user, annotated by how many times the community
         # has completed them
         queryset = Task.objects.filter(
-            kind=Task.QUEST,
             group__enabled=True,
         ).extra(select={
             "community_submission_count": """

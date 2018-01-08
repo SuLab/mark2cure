@@ -59,15 +59,6 @@ class Task(models.Model):
     """
     name = models.CharField(max_length=200)
 
-    # (TODO) remove training after migration
-    TRAINING = 't'
-    QUEST = 'q'
-    KIND_CHOICES = (
-        (TRAINING, 'Training'),
-        (QUEST, 'Quest'),
-    )
-    kind = models.CharField(max_length=1, choices=KIND_CHOICES, default=QUEST)
-
     # If no completions defined, allow infinity K value
     completions = models.IntegerField(default=10, blank=True, null=True)
     documents = models.ManyToManyField('document.Document', through='DocumentQuestRelationship', blank=True)
