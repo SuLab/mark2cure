@@ -57,13 +57,11 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ('name', 'group__name')
 
     list_display = ('name', 'contributions', 'completions',
-                    'points', 'experiment', 'document_count',
-                    'requires_qualification', 'provides_qualification', 'meta_url',
+                    'points', 'document_count',
                     'updated', 'created', 'group_preview')
 
     readonly_fields = ('documents',
                     'users',
-                    'meta_url',
                     'updated', 'created', 'group')
 
     def contributions(self, obj):
