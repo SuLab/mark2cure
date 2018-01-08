@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
 
-from .utils.mdetect import UAgentInfo
 from .forms import SupportMessageForm
 from .models import Group
 
@@ -31,8 +30,7 @@ def dashboard(request):
     if request.user.profile.unlocked_tasks() == 0:
         return redirect('training:route')
 
-    uai = UAgentInfo(request.META.get('HTTP_USER_AGENT'), request.META.get('HTTP_ACCEPT'))
-    return TemplateResponse(request, 'common/dashboard.html', {'mobile': uai.detectMobileLong()})
+    return TemplateResponse(request, 'common/dashboard.html')
 
 
 def why_mark2cure(request):
