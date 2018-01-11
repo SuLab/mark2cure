@@ -122,18 +122,6 @@ def mark2cure_stats(request):
 
 @login_required
 @api_view(['GET'])
-def user_task_stats(request):
-    ner_level = Level.objects.filter(user=request.user, task_type='ner').first()
-    re_level = Level.objects.filter(user=request.user, task_type='re').first()
-
-    return Response({
-        'ner': ner_level.level if ner_level else 0,
-        're': re_level.level if re_level else 0
-    })
-
-
-@login_required
-@api_view(['GET'])
 def ner_stats(request):
     return Response({
         'total_score': request.user.profile.score(task='entity_recognition'),
@@ -511,7 +499,7 @@ def training_details(request, task_type):
     if request.method == 'POST':
         if task_type == "re":
             r = get_object_or_404(Requirement, hash=request.POST.get('requirement', None), active=True, task_type=task_type)
-            Level.objects.create(user=request.user, requirement=r, task_type="re", level=123, created=timezone.now())
+            Level.objects.create(user=request.user, requirement=r, created=timezone.now())
 
         return Response({'requirement': 'completed'})
 

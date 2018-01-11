@@ -204,7 +204,7 @@ class UserProfile(models.Model):
                 # These are being assigned to Tasks
                 # (TODO) This whole thing is fucked up, need to get away from Tasks and
                 # find clear way to allocate units complete and points for multi-game system
-                quest_task_pks = Task.objects.filter(kind='q').values_list('pk', flat=True)
+                quest_task_pks = Task.objects.values_list('pk', flat=True)
                 val += sum(Point.objects.filter(
                     user=self.user,
                     content_type=ContentType.objects.get_for_model(Task),

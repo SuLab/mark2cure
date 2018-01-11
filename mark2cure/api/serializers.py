@@ -1,6 +1,6 @@
 from ..userprofile.models import Team
 from ..common.models import Group
-from ..task.models import Level, Task
+from ..task.models import Task
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -56,12 +56,8 @@ class QuestSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Don't pass the 'fields' arg up to the superclass
-        context = kwargs.pop('context', {})
-        user = context.get('user', None)
-        if user.is_authenticated() and Level.objects.filter(user=user, task_type='ner').exists():
-            self.user_highest_level = Level.objects.filter(user=user, task_type='ner').first().level
-        else:
-            self.user_highest_level = 0
+        # context = kwargs.pop('context', {})
+        # user = context.get('user', None)
 
         # Instantiate the superclass normally
         super(QuestSerializer, self).__init__(*args, **kwargs)
@@ -71,7 +67,10 @@ class QuestSerializer(serializers.ModelSerializer):
 
     def get_user_status(self, task):
         if hasattr(task, 'user_completed'):
-            return {'enabled': self.user_highest_level >= task.requires_qualification,
+            # All NER Tasks require the same qualiciation: has or has not completed all NER Training
+            # We used to segment this further but is no longer used so leaving in for historic purposes
+            # until positive all references to it are removed
+            return {'enabled': True,
                     'completed': task.user_completed > 0}
         else:
             return {'enabled': False,
@@ -85,8 +84,7 @@ class QuestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'name', 'documents', 'points',
-                  'requires_qualification', 'provides_qualification',
-                  'meta_url', 'user', 'progress')
+                  'user', 'progress')
 
 
 class DocumentRelationSerializer(serializers.Serializer):

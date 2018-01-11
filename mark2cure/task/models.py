@@ -23,31 +23,29 @@ class Requirement(models.Model):
     # For training levels no longer used
     active = models.BooleanField(default=False)
 
+    class Meta:
+        get_latest_by = 'order'
+        ordering = ('-order', )
+
 
 class Level(models.Model):
     """The Task Type specific Level a user is trained at
     """
     user = models.ForeignKey(User)
-
     requirement = models.ForeignKey('task.Requirement', blank=True, null=True, related_name="completes")
-
-    # (TODO) to remove after migration completes
-    task_type = models.CharField(max_length=3, choices=TASK_TYPE_CHOICES)
-    level = models.IntegerField()
-
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         get_latest_by = 'created'
-        ordering = ('-level', )
+        ordering = ('-created', )
 
     def get_name(self):
-        if self.task_type == 'ner':
-            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert"]
+        if self.requirement.task_type == 'ner':
+            levels = ["Basic", "Disease Marking", "Disease Advanced", "Disease Matching", "Intermediate", "Proficient", "Advanced", "Expert", "Expert", "Expert"]
         else:
-            levels = ["Beginner", "Medium", "Expert"]
+            levels = ["Beginner", "Medium", "Expert", "Expert", "Expert"]
 
-        return levels[self.level]
+        return levels[self.requirement.order]
 
 
 class Task(models.Model):

@@ -10,18 +10,6 @@ from decimal import Decimal
 import random
 from collections import Counter
 
-# from allauth.account.signals import user_signed_up
-# from django.dispatch import receiver
-# from ..task.models import Level
-# from django.utils import timezone
-
-
-# @receiver(user_signed_up, dispatch_uid='mark2cure.common.allauth.user_signed_up')
-# def user_signed_up_(request, user, **kwargs):
-#     task_type_str = request.session.get('initial_training')
-#     if task_type_str == 'zooniverse':
-#         Level.objects.create(user=user, task_type='re', level=0, created=timezone.now())
-
 
 class Group(models.Model):
     '''Describe a non-task specific selection of documents (1-n) that curator defined'''

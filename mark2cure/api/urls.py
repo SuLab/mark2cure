@@ -22,8 +22,6 @@ urlpatterns = [
         views.mark2cure_stats, name='mark2cure-stats-api'),
 
     # Tasks
-    url(r'task/stats/',
-        views.user_task_stats, name='task-stats-api'),
     url(r'ner/stats/',
         views.ner_stats, name='ner-stats-api'),
     url(r're/stats/',
