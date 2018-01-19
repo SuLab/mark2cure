@@ -334,8 +334,6 @@ def ner_list_item(request, group_pk):
     finally:
         c.close()
 
-    print(queryset)
-
     return Response(queryset[0])
 
 
@@ -385,12 +383,16 @@ def re_list(request):
             document = get_object_or_404(Document, pk=item['id'])
             first_section = document.section_set.first()
             view = View.objects.filter(task_type='re', section=first_section, user=request.user).last()
-            Point.objects.create(user=request.user,
-                                 amount=settings.RELATION_DOC_POINTS,
-                                 content_type=ContentType.objects.get_for_model(view),
-                                 object_id=view.id)
-            view.completed = True
-            view.save()
+
+            # print(' - X:', document, first_section, view)
+            # (TODO) Why is there no View on these sections?
+            if view:
+                Point.objects.create(user=request.user,
+                                     amount=settings.RELATION_DOC_POINTS,
+                                     content_type=ContentType.objects.get_for_model(view),
+                                     object_id=view.id)
+                view.completed = True
+                view.save()
 
             del queryset[idx]
 
