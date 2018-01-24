@@ -245,6 +245,6 @@ def re_task(request, document_pk):
 
     # (TODO) Return if the user has already completed 20 Relations within this Document
 
-    return TemplateResponse(request, 'relation/task.html', {'document': document})
+    return TemplateResponse(request, 'task/re-home.html', {'document': document})
 
 

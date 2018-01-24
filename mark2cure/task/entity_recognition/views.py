@@ -255,4 +255,4 @@ def ner_quest(request, quest_pk):
         for document in documents:
             task.create_views(document, request.user)
 
-    return TemplateResponse(request, 'entity_recognition/quest.html', {'task_pk': task.pk})
+    return TemplateResponse(request, 'task/ner-home.html', {'task_pk': task.pk})

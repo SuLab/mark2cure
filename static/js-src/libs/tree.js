@@ -204,7 +204,7 @@ RENavigationView = Backbone.Marionette.View.extend({
   * - Modal: None
   * - Collection: REExtractionList
   */
-  template: '#tree-navigation-template',
+  template: '#task-navigation-template',
   className: 'row justify-content-between',
 
   regions: {

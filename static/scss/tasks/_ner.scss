@@ -3,7 +3,7 @@
 
   #ypet-navigation {
     > .row {
-      height: 34px;
+      min-height: 34px;
       background-color: $color_gray_lightest;
     }
 

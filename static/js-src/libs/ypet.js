@@ -1081,7 +1081,7 @@ NERNavigationView = Backbone.Marionette.View.extend({
    * this.model = None
    * this.collection = NERDocumentList (Quest Documents)
    */
-  template: '#ypet-navigation-template',
+  template: '#task-navigation-template',
   className: 'row justify-content-between',
 
   regions: {
@@ -1213,6 +1213,8 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
   },
 
   showText: function(text) {
+    console.log('showText', text);
+
     this.$el.show();
     var url = 'https://www.google.com/search?q='+text;
     this.ui.link.attr('href', url);

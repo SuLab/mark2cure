@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{%  load widget_tweaks %}
-{%  load humanize %}
+{% load widget_tweaks %}
+{%load humanize %}
 
 {% block header %}
-{%  with headerMessage=task.name %}
+{% with headerMessage=task.name %}
 {% include "includes/header.html" %}
 {% endwith %}
 {% endblock %}
