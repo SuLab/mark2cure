@@ -99,17 +99,13 @@ var channel = Backbone.Radio.channel('mark2cure');
  */
 
 NERMessage = Backbone.Model.extend({
+  /* Simple error or generic feedback message */
   defaults: {'text': ''}
 });
 
-NERAnnotationTypeList = Backbone.Collection.extend({
-  /* Very simple collection to store the type of
-   * Annotations that the application allows
-   * for paragraphs */
-  model: Backbone.Model.extend({}),
-});
-
-NERAnnotationTypes = new NERAnnotationTypeList([
+NERAnnotationTypes = new Backbone.Collection([
+  /* Collection of Annotation Types that YPet allows for paragraphs.
+   * Order is important. */
   {name: 'Disease', color: '#d1f3ff'},
   {name: 'Gene', color: '#B1FFA8'},
   {name: 'Drug', color: '#ffd1dc'}
@@ -117,7 +113,11 @@ NERAnnotationTypes = new NERAnnotationTypeList([
 
 NERWord = Backbone.RelationalModel.extend({
   /* A Word model represents each tokenized word present
-   * in the paragraph YPet is attached to. */
+   * in the paragraph YPet is attached to.
+   * Text: the string associated with the word
+   * Start: the index position the word (accounts for spaces)
+   * Latest: null for blank. 1 for word that starts interaction. Date.now() for any other interaction event.
+   * Neighbor: Tracking if a CSS margin (visible space) needs to be inserted to separate annotations */
   defaults: {
     text: '',
     start: null,
@@ -160,7 +160,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
   },
 
   initialize: function() {
-
     this.listenTo(this, 'change:words', function(b) {
       this.draw();
     });
@@ -171,8 +170,12 @@ NERAnnotation = Backbone.RelationalModel.extend({
       this.unset('type');
     }
     this.parseAnnotation();
-
   },
+
+  // destroy: function() {
+  //   (TODO) Model method expansion?
+  //   channel.trigger('ypet:footer:search:hide');
+  // },
 
   parseAnnotation: function() {
     var self = this;
@@ -237,24 +240,16 @@ NERAnnotation = Backbone.RelationalModel.extend({
       });
 
     } else if(this.get('words').length > 0 && this.get('text') == '') {
-      /* Simple Sanitization if the Annotation was made using NERWordList */
-      var ann = this.sanitizeAnnotation(this.get('words').pluck('text').join(' '), this.get('words').first().get('start'));
-      this.set('text', ann.text);
-      this.set('start', ann.start);
+      /* Simple Sanitization if the Annotation was made using NERWordList
+       *   cleaned string and the (potentially) new start position */
+      var full_str = this.get('words').pluck('text').join(' ');
+      var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
+      this.set('text', str);
+      this.set('start', this.get('words').first().get('start') + full_str.indexOf(str));
 
     } else {
       channel.trigger('ypet:error', 'Annotation Parsing Failure.')
     }
-
-    /* (TODO) Only if user created */
-    channel.trigger('ypet:footer:search:set', this.get('text'));
-
-  },
-
-  sanitizeAnnotation: function(full_str, start) {
-    /* Return the cleaned string and the (potentially) new start position */
-    var str = _.str.clean(full_str).replace(/^[^a-z\d]*|[^a-z\d]*$/gi, '');
-    return {'text':str, 'start': start+full_str.indexOf(str)};
   },
 
   toggleType: function() {
@@ -316,7 +311,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
     //     });
     //   }
     // }
-
   }
 });
 
@@ -358,7 +352,6 @@ NERAnnotationList = Backbone.Collection.extend({
       }
     });
   },
-
 });
 
 NERParagraph = Backbone.RelationalModel.extend({
@@ -388,7 +381,7 @@ NERParagraph = Backbone.RelationalModel.extend({
   }],
 
   initialize : function() {
-    /* Extract (tokenize) the individual words */
+    /* Extract (tokenize) the individual NERWords */
     var self = this;
     var step = 0,
         space_padding,
@@ -907,16 +900,21 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
         return _.some(_.map(selected_words, function(w) { return ann.get('words').contains(w); }));
       });
 
+      /* Selection was only a click */
       if(selected_words.length==1) {
+        /* Clicking on an existing selection intends to toggle the annotation type */
         if(existing_anns.length) {
           _.each(existing_anns, function(ann) { ann.toggleType(); });
         } else {
+          /* Click on a single word intends to create 1 word annotation */
           passage_annotations.create({'words': selected_words});
+          channel.trigger('ypet:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
         }
       } else {
         // Delete conflicting Annotations before creating new Annotation
         _.each(existing_anns, function(ann) { ann.destroy(); });
         passage_annotations.create({'words': selected_words});
+        channel.trigger('ypet:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
       }
     });
 
@@ -1139,7 +1137,6 @@ NERMessageView = Backbone.Marionette.View.extend({
       this.$el.fadeOut();
     },
   },
-
 })
 
 NERFooterHelpView = Backbone.Marionette.View.extend({
@@ -1206,6 +1203,7 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
 
   initialize: function() {
     this.listenTo(channel, 'ypet:footer:search:set', this.showText);
+    this.listenTo(channel, 'ypet:footer:search:hide', this.hideText);
   },
 
   onRender: function() {
@@ -1213,13 +1211,18 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
   },
 
   showText: function(text) {
-    console.log('showText', text);
-
     this.$el.show();
     var url = 'https://www.google.com/search?q='+text;
     this.ui.link.attr('href', url);
     this.ui.small.text(_.str.truncate(text, 36));
+  },
+
+  hideText: function() {
+    this.$el.hide();
+    this.ui.link.attr('href', '#');
+    this.ui.small.text('');
   }
+
 });
 
 NERFooterView = Backbone.Marionette.View.extend({
@@ -1356,6 +1359,7 @@ YPet = Backbone.Marionette.View.extend({
   },
 
   ypetError: function(msg) {
+    /* Display communicative message to the user */
     var model = new NERMessage({'text': msg});
     this.showChildView('message-center', new NERMessageView({'model': model}));
   },
