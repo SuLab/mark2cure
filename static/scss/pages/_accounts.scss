@@ -1,5 +1,18 @@
 #accounts-signup {
   flex: 1;
+
+  .form-group.error {
+    .form-control {
+      border-color: $color_red;
+      &:focus {
+        border-color: inherit;
+      }
+    }
+    p {
+      font-size: .75em;
+      color: $color_red;
+    }
+  }
 }
 
 #accounts-login {
