@@ -135,7 +135,7 @@ NERWordList = Backbone.Collection.extend({
 NERAnnotation = Backbone.RelationalModel.extend({
   /* A User or Opponent Annotation (contains NERWordList) */
   defaults: {
-    /* An annotation doesn't exist when removed so
+    /* Type ID:notation doesn't exist when removed so
      * we can start them all off at 0 and not need to
      * mix in a null type */
     type_id: 0,
