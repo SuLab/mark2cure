@@ -76,7 +76,7 @@ gulp.task('js', function() {
 
     './static/js-src/pages/dashboard.js',
     './static/js-src/pages/ner-group.js',
-    './static/js-src/pages/homepage.js',
+    './static/js-src/pages/landing.js',
     './static/js-src/pages/talk.js',
   ];
 

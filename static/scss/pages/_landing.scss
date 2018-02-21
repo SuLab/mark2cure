@@ -123,7 +123,7 @@
   /* Safari 3.1 to 6.0 */
 }
 
-#homepage {
+#landing {
   background: $color_white;
   color: $color_black;
   font-size: 16px;
@@ -222,7 +222,7 @@
 }
 
 @include media-breakpoint-down(md) {
-  #homepage {
+  #landing {
     #bg-case-study {
       #landing-header-buttons { margin-bottom: 80px; }
       #landing-annotation-focus { height: 80px; }
@@ -235,7 +235,7 @@
 }
 
 @include media-breakpoint-down(xs) {
-  #homepage {
+  #landing {
     #bg-case-study {
       #landing-annotation-focus {
         p { font-size: .75em; }

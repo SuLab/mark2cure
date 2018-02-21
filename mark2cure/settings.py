@@ -12,7 +12,6 @@ INTERNAL_IPS = ('127.0.0.1',)
 # Application definition
 INSTALLED_APPS = (
     'sslserver',  # HTTPS local development server
-    'grappelli',
     'django.contrib.admin',
 
     'django.contrib.auth',
@@ -216,8 +215,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
-
-GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = True
 
 # Admin/Control settings
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'

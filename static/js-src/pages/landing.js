@@ -148,7 +148,7 @@ var sci_comm_data = {
   ]
 };
 
-HomePageQuest = Backbone.Model.extend({
+LandingPageQuest = Backbone.Model.extend({
   defaults: {
     'pk': null,
     'name': '',
@@ -160,8 +160,8 @@ HomePageQuest = Backbone.Model.extend({
 });
 
 
-HomePageQuestList = Backbone.Collection.extend({
-  model: HomePageQuest,
+LandingPageQuestList = Backbone.Collection.extend({
+  model: LandingPageQuest,
   url: '/api/ner/list/'
 });
 
@@ -179,8 +179,8 @@ Mark2CureStats = Backbone.Model.extend({
 });
 
 
-HomePageQuestView = Backbone.Marionette.View.extend({
-  template: '#homepage-quest-explorer-item-template',
+LandingPageQuestView = Backbone.Marionette.View.extend({
+  template: '#landingpage-quest-explorer-item-template',
   className: function() {
     var group_status = this.model.get('enabled') ? 'active-group' : 'ended-group';
     return ['col-10 col-sm-5 col-md-3 col-lg-2 col-xl-1', 'group-item', 'p-1', group_status].join(' ');
@@ -188,8 +188,8 @@ HomePageQuestView = Backbone.Marionette.View.extend({
 });
 
 
-HomePageQuestListView = Backbone.Marionette.CollectionView.extend({
-  childView: HomePageQuestView,
+LandingPageQuestListView = Backbone.Marionette.CollectionView.extend({
+  childView: LandingPageQuestView,
   childViewEventPrefix: 'questlist',
   className: 'row justify-content-center no-gutters',
 
@@ -201,8 +201,8 @@ HomePageQuestListView = Backbone.Marionette.CollectionView.extend({
 });
 
 
-HomePageQuestExplorer = Backbone.Marionette.View.extend({
-  template: '#homepage-quest-explorer-template',
+LandingPageQuestExplorer = Backbone.Marionette.View.extend({
+  template: '#landingpage-quest-explorer-template',
   className: 'row justify-content-center',
 
   regions: {
@@ -210,18 +210,18 @@ HomePageQuestExplorer = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.collection = new HomePageQuestList();
+    this.collection = new LandingPageQuestList();
     this.collection.fetch();
   },
 
   onRender: function() {
-    this.showChildView('list', new HomePageQuestListView({'collection': this.collection}));
+    this.showChildView('list', new LandingPageQuestListView({'collection': this.collection}));
   }
 });
 
 
-HomePageNetwork = Backbone.Marionette.View.extend({
-  template: '#homepage-network',
+LandingPageNetwork = Backbone.Marionette.View.extend({
+  template: '#landingpage-network',
   className: 'col-12',
 
   onAttach: function() {
@@ -276,8 +276,8 @@ HomePageNetwork = Backbone.Marionette.View.extend({
 
 });
 
-HomePageView = Backbone.Marionette.View.extend({
-  el: '#homepage',
+LandingPageView = Backbone.Marionette.View.extend({
+  el: '#landingpage',
   template: false,
 
   ui: {
@@ -312,11 +312,9 @@ HomePageView = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    this.showChildView('quests', new HomePageQuestExplorer());
-    this.showChildView('network', new HomePageNetwork());
+    this.showChildView('quests', new LandingPageQuestExplorer());
+    this.showChildView('network', new LandingPageNetwork());
   },
-
-
 
 });
 

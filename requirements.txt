@@ -27,7 +27,6 @@ django-contrib-comments==1.8.0
 django-cors-headers==2.1.0
 django-countries==5.0
 django-extensions==1.9.1
-django-grappelli==2.10.1
 django-kombu==0.9.4
 django-markdown-deux==1.0.5
 django-model-utils==3.0.0

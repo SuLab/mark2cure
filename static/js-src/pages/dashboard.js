@@ -315,9 +315,6 @@ REDashboardView = Backbone.Marionette.View.extend({
 
   onRender: function() {
     this.showChildView('list', new REDocumentListView({'collection': this.collection}));
-
-    // var doc_rel_board_app = new DocumentRelationBoard();
-    // doc_rel_board_app.start();
   }
 });
 
