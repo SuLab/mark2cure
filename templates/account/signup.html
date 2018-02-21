@@ -22,7 +22,7 @@
               <label class="col-form-label col-12">Username</label>
               <div class="col-12">
                 {{form.username|add_class:'form-control'|attr:"placeholder:Username is displayed on public profile"|escape}}
-                {% if form.username.errors %}<p>{{form.username.errors.as_text}}</p>{% endif %}
+                {% if form.username.errors %}<p class="my-0">{{form.username.errors.as_text}}</p>{% endif %}
               </div>
             </div>
 
@@ -30,7 +30,7 @@
               <label class="col-form-label col-12">Email</label>
               <div class="col-12">
                 {{form.email|add_class:'form-control'|attr:"placeholder:Email will remain hidden"|escape}}
-                {% if form.email.errors %}<p>{{form.email.errors.as_text}}</p>{% endif %}
+                {% if form.email.errors %}<p class="my-0">{{form.email.errors.as_text}}</p>{% endif %}
               </div>
             </div>
 
@@ -38,7 +38,7 @@
               <label class="col-form-label col-12">Password</label>
               <div class="col-12">
                 {{form.password1|add_class:'form-control'|attr:'type:password'|escape}}
-                {% if form.password1.errors %}<p>{{form.password1.errors.as_text}}</p>{% endif %}
+                {% if form.password1.errors %}<p class="my-0">{{form.password1.errors.as_text}}</p>{% endif %}
               </div>
             </div>
 
@@ -46,7 +46,7 @@
               <label class="col-form-label col-12">Verify Password</label>
               <div class="col-12">
                 {{form.password2|add_class:'form-control'|attr:'type:password'|escape}}
-                {% if form.password2.errors %}<p>{{form.password2.errors.as_text}}</p>{% endif %}
+                {% if form.password2.errors %}<p class="my-0">{{form.password2.errors.as_text}}</p>{% endif %}
               </div>
             </div>
 
