@@ -1087,7 +1087,7 @@ NERNavigationView = Backbone.Marionette.View.extend({
   },
 
   ui: {
-    'score': '#score'
+    'score': 'span#score'
   },
 
   initialize: function() {
@@ -1095,33 +1095,25 @@ NERNavigationView = Backbone.Marionette.View.extend({
   },
 
   onRender: function() {
-    var self = this;
-
-    // this.od = new Odometer({
-    //   el: self.ui.score.first(),
-    //   value: 0,
-    //   format: '(,ddd)',
-    //   theme: 'minimal'
-    // });
-
     this.showChildView('progress', new NERProgressView({'collection': this.collection}));
+  },
+
+  onAttach: function() {
     this.updateScore();
   },
 
   updateScore: function() {
     var self = this;
-
     $.ajax({
       type: 'GET',
       url: '/u/points/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       cache: false,
       success: function(data) {
+        console.log(self, self.ui.score);
         self.ui.score.html(data.points);
-        // self.od.update(data.points);
       }
     });
-
   }
 });
 

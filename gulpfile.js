@@ -52,7 +52,6 @@ gulp.task('js', function() {
     './node_modules/d3/d3.js',
     './node_modules/intro.js/intro.js',
     './node_modules/moment/moment.js',
-    './node_modules/odometer/odometer.js',
     './node_modules/sifter/sifter.js',
     './node_modules/@rq/sly-scrolling/dist/sly.js',
 
@@ -69,19 +68,16 @@ gulp.task('js', function() {
     './static/js-src/training/ner.js',
     './static/js-src/training/re.js',
 
-    './static/js-src/libs/ypet.js',
-    './static/js-src/libs/tree.js',
     './static/js-src/tasks/relation-data-var-assigned.js',
-    './static/js-src/libs/leaderboard.js',
-    './static/js-src/libs/dashboard.js',
-    './static/js-src/libs/homepage.js',
-
-    './static/js-src/pages/talk.js',
-    './static/js-src/pages/ner-group.js',
-
     './static/js-src/tasks/relation-synopsis.js',
+    './static/js-src/libs/leaderboard.js',
+    './static/js-src/libs/ner.js',
+    './static/js-src/libs/re.js',
 
-    './static/js-src/app.js'
+    './static/js-src/pages/dashboard.js',
+    './static/js-src/pages/ner-group.js',
+    './static/js-src/pages/homepage.js',
+    './static/js-src/pages/talk.js',
   ];
 
   return gulp.src(project_js_files)

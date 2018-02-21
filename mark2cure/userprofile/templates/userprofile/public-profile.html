@@ -98,8 +98,4 @@
     $(this).tab('show');
   });
 </script>
-
-{% for group in contributed_groups %}
-<script>drawUserFScoreLine("#tab-{{group.stub}} #chart", "{{group.pk}}");</script>
-{% endfor %}
 {% endblock %}
