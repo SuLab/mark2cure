@@ -1,12 +1,9 @@
-from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
-from django.http import HttpResponse
 
 from allauth.socialaccount.models import SocialApp
 from ..userprofile.models import UserProfile
 
-from .forms import SupportMessageForm
 from .models import Group
 
 
@@ -66,17 +63,6 @@ def ner_group_home(request, group_stub):
     '''
     group = get_object_or_404(Group, stub=group_stub)
     return TemplateResponse(request, 'common/group_home.html', {'group': group})
-
-
-@require_http_methods(['POST'])
-def support(request):
-    '''API for submitting SupportMessages
-    '''
-    form = SupportMessageForm(data=request.POST)
-    if form.is_valid():
-        form.save()
-        return HttpResponse(200)
-    return HttpResponse(500)
 
 
 def home(request):

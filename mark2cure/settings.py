@@ -35,14 +35,11 @@ INSTALLED_APPS = (
     'mark2cure.userprofile.providers.zooniverse',
 
     'djrill',
-    # 'djcelery',
     'robots',
     'corsheaders',
 
     'django_extensions',
-    # 'django_nose',
     'rest_framework',
-    # 'debug_toolbar',
 
     # Mark2Cure specific apps
     'mark2cure.document',
@@ -189,8 +186,6 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                # App Specific
-                'mark2cure.common.context_processors.support_form',
             ],
             'builtins': ['django.templatetags.static'],
         },
@@ -301,33 +296,6 @@ RELATION_DOC_POINTS = 1000
 DEFAULT_FROM_EMAIL = 'Mark2Cure <contact@mark2cure.org>'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
-
-# CELERY_DEFAULT_QUEUE = 'default'
-# CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-# CELERY_DEFAULT_ROUTING_KEY = 'default'
-# CELERY_DEFAULT_DELIVERY_MODE = 'persistent'
-# # (TODO) Look into setting this up, same cert as HTTPS?
-# # BROKER_USE_SSL // http://celery.readthedocs.io/en/latest/userguide/security.html#message-signing
-# CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-# CELERY_TIMEZONE = 'America/Los_Angeles'
-# CELERYD_CONCURRENCY = 2
-# CELERYD_PREFETCH_MULTIPLIER = 2  # limit for the number of tasks (messages) a worker can reserve
-# CELERY_TASK_RESULT_EXPIRES = 3600  # If results are sent back, that they expire after one hour if not picked up/acknowledged.
-# CELERY_MAX_CACHED_RESULTS = 100
-# CELERY_TRACK_STARTED = True
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_EVENT_SERIALIZER = 'json'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# # These are just global standards
-# CELERYD_TASK_TIME_LIMIT = 60 * 30
-# CELERYD_TASK_SOFT_TIME_LIMIT = 60 * 5
-# CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
-# CELERY_SEND_EVENTS = True  # Send events so the worker can be monitored by tools like celerymon.
-# CELERY_SEND_TASK_SENT_EVENT = True
-# CELERY_EVENT_QUEUE_TTL = 10 * 60  # Message expiry time in seconds (int/float) for when messages sent to a monitor clients event queue is deleted
-# CELERY_RESULT_PERSISTENT = True
-# CELERY_ALWAYS_EAGER = False
-
 
 try:
     from .local_settings import *  # noqa

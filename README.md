@@ -11,11 +11,11 @@ To be successful, we need your help. Mark2Cure works by directly involving crowd
 
 [Mark2Cure](http://mark2cure.org/) consists of 2 types of tasks:
 
-1. Named Entity Recognition
+1. Named Entity Recognition (NER)
 
 It is important to extract core concepts from an journal article in order for a computer to understand what the research is about. We're interested in having annotated text for Diseases, Genes and Treatments as we believe these three concepts are critical for understanding what the problem is (Disease), what may be causing it (Gene), and how might it be resolved (Treatment).
 
-2. Relationship Extraction
+2. Relationship Extraction (RE)
 
 Understanding how Disease, Gene, and Treatment concepts are related is critical for determining what the research addressed. This provides data on how the same concepts are related across different papers.
 

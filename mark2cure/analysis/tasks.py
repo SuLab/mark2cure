@@ -18,7 +18,6 @@ from .models import Report
 from . import synonyms_dict
 
 from nltk.metrics import scores as nltk_scoring
-# from ..common import celery_app as app
 
 import pandas as pd
 import networkx as nx
@@ -124,10 +123,7 @@ def merge_pairwise_comparisons(inter_annotator_df):
     return avg_user_f
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0, soft_time_limit=600,
-#           acks_late=True, track_started=True,
-#           expires=3600)
+# (Task)
 def generate_reports(group_pk: int) -> None:
     """
     Args:
@@ -151,10 +147,7 @@ def generate_reports(group_pk: int) -> None:
             dataframe=avg_user_f, args=args)
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0,
-#           acks_late=True, track_started=True,
-#           expires=3600)
+# (Task)
 def group_analysis(self):
     for group in Group.objects.all():
         if group.percentage_complete() < 100:

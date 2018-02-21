@@ -3,7 +3,6 @@ from ...document.models import Document
 from ...common.formatter import clean_df
 
 import itertools
-from celery import task
 
 """
 # makes concept lists for only documents that have at least two dictionaries
@@ -15,7 +14,7 @@ determined if there are non-overlapping concepts
 stype_arr = ['d', 'g', 'c']
 
 
-@task()
+# (Task)
 def import_concepts():
     """
         This is where the number of documents to prepopulate the relation app starts
@@ -49,7 +48,7 @@ def import_concepts():
                 cdr, created = ConceptDocumentRelationship.objects.get_or_create(concept_text=ct, document=document, stype=stype_arr[row['ann_type_idx']])
 
 
-@task()
+# (Task)
 def compute_relationships():
     """
         This method takes a document and a relation pair list and makes the

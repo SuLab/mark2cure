@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 
@@ -145,17 +144,4 @@ class Group(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-class SupportMessage(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True)
-    text = models.TextField()
-    referral = models.CharField(max_length=100, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return u'{text} (via {user})'.format(text=self.text, user=self.user)
-
-    class Meta:
-        app_label = 'common'
 

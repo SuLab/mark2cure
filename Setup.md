@@ -247,8 +247,8 @@ Since the project is developing quite quickly, if you see any problems in this g
 
 ### Database Migrations
 
-* `sudo /opt/mark2cure-venv/bin/python manage.py schemamigration APP --auto CHANGE_MESSAGE`
-* `sudo /opt/mark2cure-venv/bin/python manage.py migrate APP`
+* `python manage.py schemamigration APP --auto CHANGE_MESSAGE`
+* `python manage.py migrate APP`
 
 ### Control
 
@@ -256,8 +256,6 @@ Since the project is developing quite quickly, if you see any problems in this g
 * `cd webapps/mark2cure/ && git pull origin HEAD`
 * `sudo supervisorctl restart mark2cure`
 
-* `python /opt/python/current/app/manage.py celeryd -v 2 -E -l INFO`
-* `python /opt/python/current/app/manage.py celerybeat`
 * `sudo chmod a+x /bin/gunicorn_start`
 
 ### Utils

@@ -458,13 +458,9 @@ TrainingView = Backbone.Marionette.View.extend({
   onRender: function() {
     if(this.collection.length) {
       var task = this.collection.findWhere({'task': this.getOption('mode')});
-
       if(task.get("task") == "re") {
         this.showChildView('content', new RETrainingTaskView());
       }
-      // if(task.get("task") == "ner") {
-      //   this.showChildView('content', new NERTrainingTaskView());
-      // }
     }
   },
 

@@ -8,9 +8,6 @@ from mark2cure.common.formatter import pad_split, validate_pubtator
 
 from Bio import Entrez, Medline
 
-# from ..common import celery_app as app
-# from celery.exceptions import SoftTimeLimitExceeded
-
 import requests
 import logging
 import random
@@ -18,10 +15,7 @@ import re
 logger = logging.getLogger(__name__)
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0,
-#           acks_late=True, track_started=True,
-#           expires=300)
+# (Task)
 def check_corpus_health(self):
     """
         Task to run every 10 minutes
@@ -52,10 +46,7 @@ def check_corpus_health(self):
         return True
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0, rate_limit='2/s', soft_time_limit=15,
-#           acks_late=True, track_started=True,
-#           expires=60)
+# (Task)
 def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True, group_pk=None):
     Entrez.email = settings.ENTREZ_EMAIL
 
@@ -98,10 +89,7 @@ def get_pubmed_document(self, pubmed_ids, source='pubmed', include_pubtator=True
         return True
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0,
-#           acks_late=True, track_started=True,
-#           expires=180)
+# Task
 def pubtator_maintenance(self):
     """ A routine job (15 min) that continually handles the status of all
         Pubtator related functions
@@ -127,10 +115,7 @@ def pubtator_maintenance(self):
         return True
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0, rate_limit='2/s', soft_time_limit=15,
-#           acks_late=True, track_started=True,
-#           expires=None)
+# Task
 def submit_pubtator(self, pubtator_pk):
     """Takes an existing Pubtator instance and submits a processing request
     """
@@ -154,10 +139,7 @@ def submit_pubtator(self, pubtator_pk):
         return True
 
 
-# @app.task(bind=True, ignore_result=True,
-#           max_retries=0, rate_limit='2/s', soft_time_limit=15,
-#           acks_late=True, track_started=True,
-#           expires=None)
+# (Task)
 def check_pubtator(self, pubtator_request_pk):
     """Takes a Pubtator Request and checks for the status from the server
     """
