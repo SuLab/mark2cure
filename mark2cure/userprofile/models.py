@@ -12,7 +12,7 @@ from ..document.models import Annotation, Document, View
 from ..common.models import Group
 from ..task.models import Task, UserQuestRelationship
 from ..task.relation.models import RelationAnnotation
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..task.ner.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
 from ..score.models import Point
 

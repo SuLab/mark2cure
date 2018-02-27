@@ -24,12 +24,3 @@ class AnnotationSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = AnnotationListSerializer
 
-    # def create(self, validated_data):
-    #     return EntityRecognitionAnnotation.objects.create(**validated_data)
-    #     data = EntityRecognitionAnnotation.ANNOTATION_TYPE_CHOICE[int(data)]
-    # Must trigger this
-    # def before_render(self):
-    #     """With all of the annotations submitted successfully, mark the view as complete
-    #         before returning
-    #     """
-    #     return HttpResponse(200)

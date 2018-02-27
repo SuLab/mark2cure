@@ -103,7 +103,7 @@ urlpatterns = [
 
 
     # Task Section
-    url(r'^task/ner/', include('mark2cure.task.entity_recognition.urls',
+    url(r'^task/ner/', include('mark2cure.task.ner.urls',
         namespace='task-ner')),
 
     url(r'^task/re/', include('mark2cure.task.relation.urls',

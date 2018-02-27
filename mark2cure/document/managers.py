@@ -2,8 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models, connection
 from typing import List, Dict
 
-# from mark2cure.task.relation import relation_data_flat
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..task.ner.models import EntityRecognitionAnnotation
 
 import xml.etree.ElementTree as ET
 from itertools import groupby

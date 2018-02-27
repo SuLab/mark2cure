@@ -8,8 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from .managers import DocumentManager
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
-# from librabbitmq import ConnectionError
+from ..task.ner.models import EntityRecognitionAnnotation
 
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -265,6 +264,7 @@ TASK_TYPE_CHOICE = (
     ('ner', 'Named Entity Recognition'),
     ('re', 'Relationship Extraction')
 )
+
 
 class View(models.Model):
     """

@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from .decorators import doc_completion_required
 from ..document.models import Document
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..task.ner.models import EntityRecognitionAnnotation
 
 from collections import Counter
 

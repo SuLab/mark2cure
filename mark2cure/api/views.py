@@ -12,7 +12,7 @@ from ..userprofile.models import Team
 from ..common.models import Group
 from ..analysis.models import Report
 from ..task.models import Task
-from ..task.entity_recognition.models import EntityRecognitionAnnotation
+from ..task.ner.models import EntityRecognitionAnnotation
 from ..task.relation.models import RelationAnnotation
 from ..score.models import Point
 from . import training_data
@@ -146,7 +146,7 @@ def ner_document(request, document_pk):
 @api_view(['GET'])
 def ner_quest_read(request, quest_pk):
     cmd_str = ""
-    with open('mark2cure/task/entity_recognition/commands/get-quest-progression.sql', 'r') as f:
+    with open('mark2cure/task/ner/commands/get-quest-progression.sql', 'r') as f:
         cmd_str = f.read()
 
     cmd_str = cmd_str.format(task_id=quest_pk, user_id=request.user.pk)

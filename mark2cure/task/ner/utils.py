@@ -23,7 +23,7 @@ def select_best_opponent(task_pk: int, document_pk: int, player_pk: int) -> int:
         int: user_pk or None
     """
     cmd_str = ""
-    with open('mark2cure/task/entity_recognition/commands/get-quest-user-contributions.sql', 'r') as f:
+    with open('mark2cure/task/ner/commands/get-quest-user-contributions.sql', 'r') as f:
         cmd_str = f.read()
     cmd_str = cmd_str.format(task_id=task_pk, document_id=document_pk)
 
@@ -108,7 +108,7 @@ def generate_results(user_view_pks: List[int], gm_view_pks: List[int]):
      fn  *tn
     """
     cmd_str = ""
-    with open('mark2cure/task/entity_recognition/commands/get-ner-annotations-for-scoring-compare.sql', 'r') as f:
+    with open('mark2cure/task/ner/commands/get-ner-annotations-for-scoring-compare.sql', 'r') as f:
         cmd_str = f.read()
     cmd_str = cmd_str.format(ct_id=ContentType.objects.get_for_model(EntityRecognitionAnnotation).id,
                              user_view_ids=','.join([str(x) for x in user_view_pks]),

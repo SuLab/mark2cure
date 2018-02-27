@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'mark2cure.training',
 
     'mark2cure.task',
-    'mark2cure.task.entity_recognition',
+    'mark2cure.task.ner',
     'mark2cure.task.relation',
 
     'mark2cure.score',

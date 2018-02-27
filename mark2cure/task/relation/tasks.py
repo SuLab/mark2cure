@@ -31,7 +31,7 @@ def import_concepts():
 
         for document in group.documents.all():
 
-            df = Document.objects.entity_recognition_df(documents=[document], include_pubtator=True)
+            df = Document.objects.ner_df(documents=[document], include_pubtator=True)
             # (TODO) Do we need protection or not? I'm confused.
             df = clean_df(df, overlap_protection=False, allow_duplicates=False)
 
