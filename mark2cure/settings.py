@@ -57,7 +57,6 @@ INSTALLED_APPS = (
     'mark2cure.talk',
     'mark2cure.api',
     'mark2cure.download',
-    'mark2cure.control',
     'mark2cure.analysis',
 
     'django.contrib.humanize',
@@ -216,7 +215,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 
-# Admin/Control settings
+# Admin settings
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 SOUTH_TESTS_MIGRATE = False
 REUSE_DB = 1

@@ -205,7 +205,7 @@ TalkDocumentNERUserItem = Backbone.Marionette.View.extend({
   events: {
     'mouseover': function(evt) {
       $.getJSON('/task/ner/'+ channel.request('get:document:pk') +'/user/'+ this.model.get('user_id')  +'/', function(data) {
-        channel.trigger('ypet:paragraph:set:opponent_annotations', data);
+        channel.trigger('ner:paragraph:set:opponent_annotations', data);
       });
     }
   }
@@ -242,7 +242,7 @@ TalkDocumentNERView = Backbone.Marionette.View.extend({
     this.options['mode'] = 're';
     this.options['training'] = false;
 
-    this.showChildView('ner_viz', new YPet(this.options));
+    this.showChildView('ner_viz', new NER(this.options));
   }
 });
 

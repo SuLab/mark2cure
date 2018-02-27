@@ -135,22 +135,6 @@ If you really do not want to do them, here is an alternative that you could do t
 
 Mark2Cure stores the progress of each user's tasks in the table called `task_level`. There are different levels for different tasks, so you can append rows here to skip them, for example, by running the following scripts. If you are not very sure what you are doing, also read the note below before applying it.
 
-  ```
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000000', 'ner', '3', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000001', 're', '1', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000002', 're', '2', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000003', 're', '3', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000004', 'ner', '4', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000005', 'ner', '5', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000006', 'ner', '6', '1999-09-09 09:09:09.999999', '1');
-  INSERT INTO `mark2cure`.`task_level` (`id`, `task_type`, `level`, `created`, `user_id`) VALUES ('1000007', 'ner', '7', '1999-09-09 09:09:09.999999', '1');
-  ```
-
-Two things that you need to know before executing:
-
-1. In the tuple after `VALUES` in each line, the first element (e.g. `'1000000'`, `'1000001'`, etc. has to be unique.
-2. You need to change `user_id` if you are not applying it for the first user created (in the snippet above, `1` was used). If you need to know the `user_id` of the account you just created, view the content in the table called `account_emailaddress`.
-
 ## Create groups of Quests
 
 If you do not know what a Quest is, Quest is a set of Documents you are going to annotate to identify possible concepts (like gene, drug or treatment). The data will be later used in relation tasks.
@@ -462,52 +446,7 @@ User.objects.create_user('test_user', password='password') 
 This does not solve the issue of a "simulated database with real content for
 testing"... more to come.
 
-## Misc. Information about the project (to be expanded):
 
-[Ypet] is a Javascript library built in Marionette.js to rapidly annotate
-paragraphs of text on websites. YPet was developed to rapidly annotate
-bio-medical literature for **mark2cure** at The Su Lab by Max Nanis.
-
-## Troubleshooting:
-
-You will need to create an account to [Sentry] to log in and monitor error codes
-and issues with both development and production versions of **mark2cure**.
-
-When running `$ python manage.py runserver_plus"` did you get this error?:
-
-```sh
-Secret value 'SENTRY_PUBLIC_KEY' is not set
-```
-
-This indicates that you must do the following:
-
-```sh
-$ echo $MARK2CURE_SENTRY_PUBLIC_KEY
-```
-Oh no, nothing is there, so you must "source" the development file:
-
-```sh
-$ source env_vars/development.sh
-```
-
-```sh
-$ echo $MARK2CURE_SENTRY_PUBLIC_KEY
-```
-There, now you should see the key output and can run
-`$ python manage.py runserver_plus"` successfully for testing on the local
-server.
-
-[Virtual Environment Wrapper]:http://virtualenvwrapper.readthedocs.org/en/latest/install.html
-[Django Web Framework]:https://www.djangoproject.com/start/overview/
-[Python Virtual Environments]:http://docs.python-guide.org/en/latest/dev/virtualenvs/
-[Ypet]:https://github.com/SuLab/YPet
-[Dillinger]:http://dillinger.io/
-[Sentry]:http://sentry.sulab.org/tsri/development/
-[Brew]:http://brew.sh/
-[Sequel Pro]:http://www.sequelpro.com/
-[Natural Language Tool Kit]:http://www.nltk.org/
-[Mark2Cure.org]:https://mark2cure.org/
-[Django development server]:http://127.0.0.1:8000/
 
 ## Migration Commands
 
@@ -521,10 +460,16 @@ for lvl in Level.objects.filter(task_type='re'):
 
 
 for u in User.objects.all():
-  for lvl in Level.objects.filter(task_type='ner', user_id=u.pk).order_by('-level'):
+  print( Level.objects.filter(requirement__task_type='ner', user_id=u.pk).count() )
 
-      r = Requirement.objects.filter(task_type='ner', order=lvl.level+1).first()
-      if(r):
-        lvl.requirement = r
-        lvl.save()
+for u in User.objects.all():
+  if Level.objects.filter(requirement__task_type='ner', user_id=u.pk).count() >= 2:
+    for idx in range(10,15):
+      try:
+        Level.objects.get(user_id=u.pk, requirement_id=idx)
+      except Level.DoesNotExist:
+        Level.objects.get_or_create(user_id=u.pk, requirement_id=idx)
+      except:
+        pass
+
 

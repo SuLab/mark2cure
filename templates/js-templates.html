@@ -236,7 +236,7 @@
 </script>
 
 <!-- Tasks (NER + RE)-->
-<script id="ypet-document-results-template" type="html/template">
+<script id="ner-document-results-template" type="html/template">
   <div class="col-12"><% if(opponent) { %>
 
     <div class="header-message">
@@ -252,7 +252,7 @@
   </div>
 </script>
 
-<script id="ypet-quest-completed-template" type="html/template">
+<script id="ner-quest-completed-template" type="html/template">
   <% if(uqr_created) {%>
   <div class="col-12">
     <div class="header-message">
@@ -260,7 +260,7 @@
     </div>
   </div>
   <div class="col-12 my-3 py-3">
-    <div class="ypet-info-message">
+    <div class="ner-info-message">
       <div class="row justify-content-center py-3">
         <div class="col-8">
           <h2 class="text-center">Bonus Points: <%= award.amount %></h2>
@@ -294,7 +294,7 @@
     </div>
   </div>
   <div class="col-12 my-3 py-3">
-    <div class="ypet-info-message">
+    <div class="ner-info-message">
       <div class="row justify-content-center py-3">
         <div class="col-8">
           <p class="lead text-center">Completions are valuable contributions! Tell your friends about it now and help find cures faster.</p>
@@ -329,21 +329,21 @@
   </div>
 </script>
 
-<script id="ypet-template" type="html/template">
-  <div id="ypet-navigation" class="col-12"></div>
-  <div id="ypet-message-center" class="col-12"></div>
-  <div id="ypet-results" class="col-10"></div>
-  <div id="ypet-text" class="col-12 col-md-10"></div>
-  <div id="ypet-footer" class="col-10"></div>
+<script id="ner-template" type="html/template">
+  <div id="ner-navigation" class="col-12"></div>
+  <div id="ner-message-center" class="col-12"></div>
+  <div id="ner-results" class="col-10"></div>
+  <div id="ner-text" class="col-12 col-md-10"></div>
+  <div id="ner-footer" class="col-10"></div>
 </script>
 
-<script id="ypet-footer-template" type="html/template">
-  <div id="ypet-footer-help" class="col-3"></div>
-  <div id="ypet-footer-confirm" class="col-4"></div>
-  <div id="ypet-footer-search" class="col-3"></div>
+<script id="ner-footer-template" type="html/template">
+  <div id="ner-footer-help" class="col-3"></div>
+  <div id="ner-footer-confirm" class="col-4"></div>
+  <div id="ner-footer-search" class="col-3"></div>
 </script>
 
-<script id="ypet-footer-help-template" type="html/template">
+<script id="ner-footer-help-template" type="html/template">
   <div class="col-12">
     <div class="list-group">
     <% if(mode == 'ner') { %>
@@ -358,7 +358,7 @@
   </div>
 </script>
 
-<script id="ypet-footer-next-template" type="html/template">
+<script id="ner-footer-next-template" type="html/template">
   <div class="col-12 next">
     <div style="display:none;" class="row">
       <div class="col-12 text-center">
@@ -376,26 +376,26 @@
   </div>
 </script>
 
-<script id="ypet-footer-search-template" type="html/template">
+<script id="ner-footer-search-template" type="html/template">
   <div class="col-12">
     <a href="#" target="_blank" class="btn btn-info btn-block">Search <i class="fa fa-external-link fa-lg"></i><br/><small></small></a>
   </div>
 </script>
 
-<script id="tree-template" type="html/template">
+<script id="re-template" type="html/template">
   <div class="col-12">
-    <div id="tree-navigation"></div>
-    <div id="tree-selection"></div>
-    <div id="tree-selection-results"></div>
+    <div id="re-navigation"></div>
+    <div id="re-selection"></div>
+    <div id="re-selection-results"></div>
     <div class="row justify-content-center my-4">
       <div class="col-12 col-md-10">
-        <div id="tree-text"></div>
+        <div id="re-text"></div>
       </div>
     </div>
   </div>
 </script>
 
-<script id="tree-reextraction-result-answer-item-template" type="html/template"><div class="box" style="background-color: <%= color %>;"></div>
+<script id="re-reextraction-result-answer-item-template" type="html/template"><div class="box" style="background-color: <%= color %>;"></div>
   <% if(self) { %>
   <p><strong><%= percentage %>% – <%= label %></strong></p>
   <% } else { %>
@@ -403,7 +403,7 @@
   <% } %>
 </script>
 
-<script id="tree-reextraction-results-template" type="html/template">
+<script id="re-reextraction-results-template" type="html/template">
   <div class="col-10">
     <div class="row">
       <div id="reextraction-answers-chart"></div>
@@ -421,7 +421,7 @@
   </div>
 </script>
 
-<script id="tree-reextraction-concept-template" type="html/template">
+<script id="re-reextraction-concept-template" type="html/template">
   <div class="flag">&#10005;</div>
   <div class="text col-xs-12">
     <p><%= text %></p>
@@ -431,9 +431,9 @@
   </div>
 </script>
 
-<script id="tree-reextraction-template" type="html/template">
+<script id="re-reextraction-template" type="html/template">
   <div class="col-10">
-    <div id="tree-extraction" class="row text-center">
+    <div id="re-extraction" class="row text-center">
       <div id="c1" class="col-8 col-sm-4 col-md-3"></div>
       <div style="col-12 col-sm-4 col-md-6" class="col-10 col-sm-4 col-md-6">
         <div id="selected-choice"></div>
@@ -441,11 +441,11 @@
       </div>
       <div id="c2" class="col-8 offset-4 offset-sm-0 col-sm-4 col-md-3"></div>
     </div>
-    <div id="tree-confirm" class="row justify-content-center my-2 mb-0 mb-md-4"></div>
+    <div id="re-confirm" class="row justify-content-center my-2 mb-0 mb-md-4"></div>
   </div>
 </script>
 
-<script id="tree-completed-template" type="html/template">
+<script id="re-completed-template" type="html/template">
   <% if(re_task.created) { %>
     <div class="col-12">
       <div class="header-message">
@@ -456,7 +456,7 @@
     <hr/>
 
     <div class="col-12 my-3 py-3">
-      <div class="tree-info-message">
+      <div class="re-info-message">
         <div class="row justify-content-center py-3">
           <div class="col-8">
             <h2 class="text-center">Bonus Points: <%= award.amount %></h2>
@@ -496,7 +496,7 @@
     <div id="re-synopsis" class="col-12"></div>
     <hr/>
     <div class="col-12 my-3 py-3">
-      <div class="tree-info-message">
+      <div class="re-info-message">
         <div class="row justify-content-center py-3">
           <div class="col-8">
             <p class="lead text-center">Completions are valuable contributions! Tell your friends about it now and help find cures faster.</p>

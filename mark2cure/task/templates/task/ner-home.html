@@ -3,24 +3,24 @@
 {%  load comments %}
 
 {% block header %}
-{%  with headerMessage=task.name %}
+{% with headerMessage=task.name %}
 {% include "includes/header.html" %}
 {% endwith %}
 {% endblock %}
 
 {% block content %}
-<div id="ypet-action-area" class="container-fluid"></div>
+<div id="ner-action-area" class="container-fluid"></div>
 {% endblock %}
 
 {% block post-footer %}
 <script>
-  var NERYPetApp = Backbone.Marionette.Application.extend({
-    region: '#ypet-action-area',
+  var NERApp = Backbone.Marionette.Application.extend({
+    region: '#ner-action-area',
 
     onStart: function() {
       var main = this.getRegion();
 
-      main.show( new YPet({
+      main.show( new NER({
         'csrf_token': '{{csrf_token}}',
         'mode': 'ner',
         'task_pk': {{ task_pk }},
@@ -28,7 +28,7 @@
       );
     }
   });
-  var ypet_app = new NERYPetApp();
-  ypet_app.start();
+  var ner_app = new NERApp();
+  ner_app.start();
 </script>
 {% endblock %}

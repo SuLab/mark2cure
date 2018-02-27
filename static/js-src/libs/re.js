@@ -155,7 +155,7 @@ REExtractionList = Backbone.Collection.extend({
       next_relationship.set('current', true);
       return next_relationship;
     } else {
-      channel.trigger('tree:completed');
+      channel.trigger('re:completed');
       return false;
     }
 
@@ -216,7 +216,7 @@ RENavigationView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.listenTo(channel, 'tree:navigation:score:update', this.updateScore);
+    this.listenTo(channel, 're:navigation:score:update', this.updateScore);
   },
 
   onRender: function() {
@@ -240,7 +240,7 @@ RENavigationView = Backbone.Marionette.View.extend({
 });
 
 REExtractionAnswerItem = Backbone.Marionette.View.extend({
-  template: '#tree-reextraction-result-answer-item-template',
+  template: '#re-reextraction-result-answer-item-template',
   tagName: 'li',
 });
 
@@ -256,8 +256,8 @@ RECompletedView = Backbone.Marionette.View.extend({
    * this.model = REDocumentResult
    * this.collection = None
    */
-  template: '#tree-completed-template',
-  className: 'row tree-completed-view',
+  template: '#re-completed-template',
+  className: 'row re-completed-view',
 
   ui: {
     'next': '#next-re-doc'
@@ -281,7 +281,7 @@ RECompletedView = Backbone.Marionette.View.extend({
       data: {'csrfmiddlewaretoken': self.options.csrf_token },
       cache: false,
       success: function(data) {
-        channel.trigger('tree:navigation:score:update');
+        channel.trigger('re:navigation:score:update');
         self.model = new REDocumentResult(data)
         self.render();
       },
@@ -318,7 +318,7 @@ REExtractionResultView = Backbone.Marionette.View.extend({
   /* The results interface for a single REExtraction
   * – Modal: REExtraction
   * - Collection: REExtractionAnswerList */
-  template: '#tree-reextraction-results-template',
+  template: '#re-reextraction-results-template',
   className: 'row my-3 justify-content-center',
   ui: {
     'answers_chart': 't',
@@ -331,12 +331,12 @@ REExtractionResultView = Backbone.Marionette.View.extend({
 
   events: {
     'mousedown @ui.button': function() {
-      channel.trigger('tree:relationship:next')
+      channel.trigger('re:relationship:next')
     }
   },
 
   initialize: function() {
-    channel.trigger('tree:navigation:score:update');
+    channel.trigger('re:navigation:score:update');
 
     var self = this;
     var data = this.getOption('data');
@@ -404,7 +404,7 @@ REConfirmView = Backbone.Marionette.View.extend({
     'mousedown @ui.button': function() {
       /* Submit the relationship
       * [Training] go next */
-      channel.trigger('tree:relationship:submit', this.model);
+      channel.trigger('re:relationship:submit', this.model);
     }
   },
 
@@ -475,7 +475,7 @@ REConceptView = Backbone.Marionette.View.extend({
   * - Modal: REConcept
   * - Collection: None
   */
-  template: '#tree-reextraction-concept-template',
+  template: '#re-reextraction-concept-template',
   className: 'concept row',
 
   ui: {
@@ -523,7 +523,7 @@ REExtractionView = Backbone.Marionette.View.extend({
   * this.model = a REExtraction instance
   * this.collection = REChoices
   */
-  template: '#tree-reextraction-template',
+  template: '#re-reextraction-template',
   className: 'row justify-content-center',
 
   regions: {
@@ -531,7 +531,7 @@ REExtractionView = Backbone.Marionette.View.extend({
     'selected_choice': '#selected-choice',
     'list': '#rechoices-list',
     'c2': '#c2',
-    'confirm': '#tree-confirm'
+    'confirm': '#re-confirm'
   },
 
   childViewEvents: {
@@ -596,19 +596,19 @@ REExtractionView = Backbone.Marionette.View.extend({
   }
 });
 
-Tree = Backbone.Marionette.View.extend({
+RE = Backbone.Marionette.View.extend({
   /* The top level view for all interations of
   * - Model = current / active REExtraction event
   * - Collection = REExtractionList
   */
-  template: '#tree-template',
+  template: '#re-template',
   className: 'row justify-content-center',
 
   regions: {
-    'navigation': '#tree-navigation',
-    'extraction': '#tree-selection',
-    'extraction-results': '#tree-selection-results',
-    'text': '#tree-text',
+    'navigation': '#re-navigation',
+    'extraction': '#re-selection',
+    'extraction-results': '#re-selection-results',
+    'text': '#re-text',
   },
 
   initialize: function() {
@@ -659,11 +659,11 @@ Tree = Backbone.Marionette.View.extend({
 
     /* (TODO) look into / figure out the exact behavioral differences */
     /* (TODO) this gets triggered twice in training */
-    this.listenTo(channel, 'tree:relationship:submit', this.relationshipSubmit, this);
+    this.listenTo(channel, 're:relationship:submit', this.relationshipSubmit, this);
 
-    this.listenTo(channel, 'tree:relationship:next', this.relationshipNext);
-    this.listenTo(channel, 'tree:completed', this.completed);
-    this.listenTo(channel, 'tree:error', this.treeError );
+    this.listenTo(channel, 're:relationship:next', this.relationshipNext);
+    this.listenTo(channel, 're:completed', this.completed);
+    this.listenTo(channel, 're:error', this.reError );
   },
 
   relationshipSubmit: function(rechoice_model) {
@@ -682,7 +682,7 @@ Tree = Backbone.Marionette.View.extend({
           self.showChildView('extraction-results', new REExtractionResultView({'model': self.model, 'data': data, 'rechoice_model': rechoice_model}));
         },
         error: function() {
-          channel.trigger('tree:error');
+          channel.trigger('re:error');
         },
       });
     } else {
@@ -699,7 +699,7 @@ Tree = Backbone.Marionette.View.extend({
       this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       this.options['model'] = this.model;
       this.showChildView('extraction', new REExtractionView(this.options));
-      this.showChildView('text', new YPet(this.options));
+      this.showChildView('text', new NER(this.options));
     }
   },
 
@@ -709,7 +709,7 @@ Tree = Backbone.Marionette.View.extend({
     this.showChildView('extraction-results', new RECompletedView(this.options))
   },
 
-  treeError: function() {
+  reError: function() {
     alert('error error');
   },
 
@@ -721,7 +721,7 @@ Tree = Backbone.Marionette.View.extend({
         this.showChildView('navigation', new RENavigationView({'collection': this.collection}));
       }
       this.showChildView('extraction', new REExtractionView(this.options));
-      this.showChildView('text', new YPet(this.options));
+      this.showChildView('text', new NER(this.options));
     } else {
       this.showChildView('extraction', new RELoadingView());
     };

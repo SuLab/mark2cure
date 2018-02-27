@@ -96,9 +96,6 @@ urlpatterns = [
     url(r'^download/', include('mark2cure.download.urls',
         namespace='download')),
 
-    url(r'^control/', include('mark2cure.control.urls',
-        namespace='control')),
-
     url(r'^instructions/', include('mark2cure.instructions.urls',
         namespace='instructions')),
     url(r'^training/', include('mark2cure.training.urls',

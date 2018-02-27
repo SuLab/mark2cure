@@ -1,8 +1,8 @@
 /* Parent DIV for all Relationship Extraction */
-#tree-action-area {
+#re-action-area {
   flex: 1;
 
-  #tree-navigation {
+  #re-navigation {
     > .row {
       min-height: 34px;
       background-color: $color_gray_lightest;
@@ -24,7 +24,7 @@
     p { margin-bottom: 0px; }
   }
 
-  #tree-selection {
+  #re-selection {
     .loader-container {
       height: 5em;
       margin: 10em 0;
@@ -85,14 +85,14 @@
       }
     }
 
-    #tree-cover {
+    #re-cover {
       height: 100%;
       width: 100%;
       position: absolute;
       z-index: 9999;
       top: 0;
     }
-    #tree-extraction {
+    #re-extraction {
       font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
       font-weight: 300;
 
@@ -253,7 +253,7 @@
     }
   }
 
-  #tree-selection-results {
+  #re-selection-results {
     // border-bottom: 8px solid $color_gray_light;
     border-bottom: 8px solid $color_gray_lightest;
 
@@ -280,7 +280,7 @@
       cursor: pointer;
     }
 
-    .tree-completed-view {
+    .re-completed-view {
 
       hr {
         border: 0;
@@ -290,7 +290,7 @@
         background-image: linear-gradient(to right, $color_white, $color_gray_lighter, $color_gray_lightest);
       }
 
-      .tree-info-message {
+      .re-info-message {
         border: 1rem solid $color_gray_lightest;
 
 
@@ -333,7 +333,7 @@
 
   }
 
-  #tree-confirm {
+  #re-confirm {
     button:hover {
       cursor: pointer;
     }

@@ -104,7 +104,7 @@ NERMessage = Backbone.Model.extend({
 });
 
 NERAnnotationTypes = new Backbone.Collection([
-  /* Collection of Annotation Types that YPet allows for paragraphs.
+  /* Collection of Annotation Types that NER allows for paragraphs.
    * Order is important. */
   {name: 'Disease', color: '#d1f3ff'},
   {name: 'Gene', color: '#B1FFA8'},
@@ -113,7 +113,7 @@ NERAnnotationTypes = new Backbone.Collection([
 
 NERWord = Backbone.RelationalModel.extend({
   /* A Word model represents each tokenized word present
-   * in the paragraph YPet is attached to.
+   * in the paragraph NER is attached to.
    * Text: the string associated with the word
    * Start: the index position the word (accounts for spaces)
    * Latest: null for blank. 1 for word that starts interaction. Date.now() for any other interaction event.
@@ -171,11 +171,6 @@ NERAnnotation = Backbone.RelationalModel.extend({
     }
     this.parseAnnotation();
   },
-
-  // destroy: function() {
-  //   (TODO) Model method expansion?
-  //   channel.trigger('ypet:footer:search:hide');
-  // },
 
   parseAnnotation: function() {
     var self = this;
@@ -248,7 +243,7 @@ NERAnnotation = Backbone.RelationalModel.extend({
       this.set('start', this.get('words').first().get('start') + full_str.indexOf(str));
 
     } else {
-      channel.trigger('ypet:error', 'Annotation Parsing Failure.')
+      channel.trigger('ner:error', 'Annotation Parsing Failure.')
     }
   },
 
@@ -326,7 +321,7 @@ NERAnnotationList = Backbone.Collection.extend({
     this.listenTo(this, 'change:type_id', function(annotation) { annotation.draw(); });
     this.listenTo(this, 'remove', function(annotation, collection) {
       /* (TODO) Can probably be optimzed rather than a total refresh */
-      channel.trigger('ypet:paragraphs:redraw');
+      channel.trigger('ner:paragraphs:redraw');
     });
 
     this.listenTo(this, 'update', this.overlap_protection);
@@ -426,7 +421,7 @@ NERDocumentResult = Backbone.RelationalModel.extend({
 
     this.listenTo(this, 'change:opponent_annotations', function () {
       if(this.get('opponent_annotations')) {
-        channel.trigger('ypet:paragraph:set:opponent_annotations', this.get('opponent_annotations'))
+        channel.trigger('ner:paragraph:set:opponent_annotations', this.get('opponent_annotations'))
       }
     });
 
@@ -509,7 +504,7 @@ NERDocumentList = Backbone.Collection.extend({
     var available = this.where({'completed': false});
     if(available.length == 0) {
       if(this.is_complete()) {
-        channel.trigger('ypet:quest:completed');
+        channel.trigger('ner:quest:completed');
       }
       return null;
     }
@@ -712,7 +707,7 @@ NERWordView = Backbone.Marionette.View.extend({
     if(this.model.get('disabled')) { return; };
 
     var selected = this.model.collection.filter(function(w) { return w.get('latest') });
-    channel.trigger('ypet:paragraph:set:annotations', {
+    channel.trigger('ner:paragraph:set:annotations', {
       'section_pk': this.getOption('section_pk'),
       'words': selected
     });
@@ -743,7 +738,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
   */
   template: _.template('<div class="paragraph-content p-3"></div>'),
   className: function() {
-    var enabled_status = this.getOption('enabled') ? 'ypet-enabled' : 'ypet-disabled';
+    var enabled_status = this.getOption('enabled') ? 'ner-enabled' : 'ner-disabled';
     return ['paragraph-box', 'my-3', enabled_status].join(' ');
   },
 
@@ -752,7 +747,7 @@ NERParagraphView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.listenTo(channel, 'ypet:paragraphs:redraw', this.render);
+    this.listenTo(channel, 'ner:paragraphs:redraw', this.render);
   },
 
   onRender : function() {
@@ -889,10 +884,10 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
       this.collection = new NERParagraphList({});
     }
 
-    channel.reply('ypet:paragraph:user:annotations', this.getUserAnnotations, this);
-    channel.reply('ypet:paragraph:opponent:annotations', this.getOpponentAnnotations, this);
+    channel.reply('ner:paragraph:user:annotations', this.getUserAnnotations, this);
+    channel.reply('ner:paragraph:opponent:annotations', this.getOpponentAnnotations, this);
 
-    this.listenTo(channel, 'ypet:paragraph:set:annotations', function(obj) {
+    this.listenTo(channel, 'ner:paragraph:set:annotations', function(obj) {
       var passage_annotations = this.getUserAnnotations(obj.section_pk),
           selected_words = obj.words;
 
@@ -908,17 +903,17 @@ NERParagraphsView = Backbone.Marionette.CollectionView.extend({
         } else {
           /* Click on a single word intends to create 1 word annotation */
           passage_annotations.create({'words': selected_words});
-          channel.trigger('ypet:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
+          channel.trigger('ner:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
         }
       } else {
         // Delete conflicting Annotations before creating new Annotation
         _.each(existing_anns, function(ann) { ann.destroy(); });
         passage_annotations.create({'words': selected_words});
-        channel.trigger('ypet:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
+        channel.trigger('ner:footer:search:set', _.map(selected_words, function(m) { return m.get('text'); }).join(' '));
       }
     });
 
-    this.listenTo(channel, 'ypet:paragraph:set:opponent_annotations', function(obj) {
+    this.listenTo(channel, 'ner:paragraph:set:opponent_annotations', function(obj) {
       _.each(_.keys(obj), function(section_pk) {
         var passage_annotations = self.getOpponentAnnotations(section_pk);
         _.each(obj[+section_pk], function(ann) {
@@ -956,7 +951,7 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
    * this.model = NERDocumentResult
    * this.collection = None
    */
-  template: '#ypet-document-results-template',
+  template: '#ner-document-results-template',
   className: 'row',
 
   initialize: function() {
@@ -972,11 +967,11 @@ NERDocumentResultsView = Backbone.Marionette.View.extend({
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
         self.model = new NERDocumentResult(data);
-        channel.trigger('ypet:navigation:score:update');
+        channel.trigger('ner:navigation:score:update');
         self.render();
       },
       error: function(error_res) {
-        channel.trigger('ypet:error', 'Fetching Document Results Failed');
+        channel.trigger('ner:error', 'Fetching Document Results Failed');
         window.scrollTo(0,0);
       }
     });
@@ -992,7 +987,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
    * this.model = NERQuestResult
    * this.collection = None
    */
-  template: '#ypet-quest-completed-template',
+  template: '#ner-quest-completed-template',
   className: 'row',
 
   ui: {
@@ -1013,7 +1008,7 @@ NERQuestCompletedView = Backbone.Marionette.View.extend({
       url: '/task/ner/quest/'+this.options.task_pk+'/submit/',
       headers: {'X-CSRFTOKEN': this.options.csrf_token},
       success: function(data) {
-        channel.trigger('ypet:navigation:score:update');
+        channel.trigger('ner:navigation:score:update');
         self.model = new NERQuestResult(data)
         self.render();
       }
@@ -1091,7 +1086,7 @@ NERNavigationView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.listenTo(channel, 'ypet:navigation:score:update', this.updateScore);
+    this.listenTo(channel, 'ner:navigation:score:update', this.updateScore);
   },
 
   onRender: function() {
@@ -1136,7 +1131,7 @@ NERFooterHelpView = Backbone.Marionette.View.extend({
    * this.model = None
    * this.collection = None
    */
-  template: '#ypet-footer-help-template',
+  template: '#ner-footer-help-template',
   templateContext: function() {
     return {'mode': this.options.mode};
   },
@@ -1155,7 +1150,7 @@ NERFooterConfirmView = Backbone.Marionette.View.extend({
   events: {
     'mousedown': function() {
       this.$el.addClass('disabled');
-      channel.trigger('ypet:quest:submit');
+      channel.trigger('ner:quest:submit');
     }
   }
 });
@@ -1166,7 +1161,7 @@ NERFooterNextView = Backbone.Marionette.View.extend({
    * this.model = None
    * this.collection = None
    */
-  template: '#ypet-footer-next-template',
+  template: '#ner-footer-next-template',
   className: 'row',
 
   ui: {
@@ -1175,7 +1170,7 @@ NERFooterNextView = Backbone.Marionette.View.extend({
 
   events: {
     'mousedown @ui.next': function() {
-      channel.trigger('ypet:quest:next');
+      channel.trigger('ner:quest:next');
     }
   }
 });
@@ -1185,7 +1180,7 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
    * this.model = None
    * this.collection = None
    */
-  template: '#ypet-footer-search-template',
+  template: '#ner-footer-search-template',
   className: 'row',
 
   ui: {
@@ -1194,8 +1189,8 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
   },
 
   initialize: function() {
-    this.listenTo(channel, 'ypet:footer:search:set', this.showText);
-    this.listenTo(channel, 'ypet:footer:search:hide', this.hideText);
+    this.listenTo(channel, 'ner:footer:search:set', this.showText);
+    this.listenTo(channel, 'ner:footer:search:hide', this.hideText);
   },
 
   onRender: function() {
@@ -1219,14 +1214,14 @@ NERFooterSearchView = Backbone.Marionette.View.extend({
 
 NERFooterView = Backbone.Marionette.View.extend({
   /* Help links, submission, search footer for controlling NER Progression */
-  template: '#ypet-footer-template',
+  template: '#ner-footer-template',
   className: 'row my-3 justify-content-between',
   childViewEventPrefix: 'ner:footer',
 
   regions: {
-    'help': '#ypet-footer-help',
-    'confirm': '#ypet-footer-confirm',
-    'search': '#ypet-footer-search'
+    'help': '#ner-footer-help',
+    'confirm': '#ner-footer-confirm',
+    'search': '#ner-footer-search'
   },
 
   initialize: function() {
@@ -1251,20 +1246,20 @@ NERFooterView = Backbone.Marionette.View.extend({
   }
 });
 
-YPet = Backbone.Marionette.View.extend({
+NER = Backbone.Marionette.View.extend({
   /* The top level view for all interactions on text
    * this.model = active NERDocument being annotated
    * this.collection = NERDocumentList (Quest Documents)
    */
-  template: '#ypet-template',
+  template: '#ner-template',
   className: 'row justify-content-center',
 
   regions: {
-    'navigation': '#ypet-navigation',
-    'message-center': '#ypet-message-center',
-    'results': '#ypet-results',
-    'text': '#ypet-text',
-    'footer': '#ypet-footer'
+    'navigation': '#ner-navigation',
+    'message-center': '#ner-message-center',
+    'results': '#ner-results',
+    'text': '#ner-text',
+    'footer': '#ner-footer'
   },
 
   initialize: function() {
@@ -1290,10 +1285,10 @@ YPet = Backbone.Marionette.View.extend({
 
     if(!this.getOption('training')) {
       this.listenTo(this.model, 'sync', this.render);
-      this.listenTo(channel, 'ypet:quest:submit', this.submitDocument);
-      this.listenTo(channel, 'ypet:quest:next', this.nextDocument);
-      this.listenTo(channel, 'ypet:quest:completed', this.completed);
-      this.listenTo(channel, 'ypet:error', this.ypetError );
+      this.listenTo(channel, 'ner:quest:submit', this.submitDocument);
+      this.listenTo(channel, 'ner:quest:next', this.nextDocument);
+      this.listenTo(channel, 'ner:quest:completed', this.completed);
+      this.listenTo(channel, 'ner:error', this.nerError );
     }
   },
 
@@ -1303,7 +1298,7 @@ YPet = Backbone.Marionette.View.extend({
         ann_dict = {};
     /* Iterate over each of the paragraphs or annotatable sections on the page */
     _.each(this.model.get('passages').pluck('pk'), function(section_pk) {
-      ann_dict[section_pk] = channel.request('ypet:paragraph:user:annotations', section_pk).toJSON();
+      ann_dict[section_pk] = channel.request('ner:paragraph:user:annotations', section_pk).toJSON();
       ann_dict[section_pk] = _.map(ann_dict[section_pk], function(obj) { return _.extend(obj, {'section_pk': +section_pk}) })
     });
     /* Do not save data if the annotation is empty */
@@ -1327,7 +1322,7 @@ YPet = Backbone.Marionette.View.extend({
         self.render();
       },
       error: function() {
-        channel.trigger('ypet:error', 'Task Submission Error')
+        channel.trigger('ner:error', 'Task Submission Error')
       }
     });
   },
@@ -1350,7 +1345,7 @@ YPet = Backbone.Marionette.View.extend({
     this.showChildView('results', new NERQuestCompletedView(this.options));
   },
 
-  ypetError: function(msg) {
+  nerError: function(msg) {
     /* Display communicative message to the user */
     var model = new NERMessage({'text': msg});
     this.showChildView('message-center', new NERMessageView({'model': model}));
@@ -1376,8 +1371,6 @@ YPet = Backbone.Marionette.View.extend({
 
     } else if(this.getOption('mode') == 're') {
       if(this.getOption('training')) {
-        // console.log('ypet training onRender',  );
-        // this.options['concepts'] = concepts;
         this.options['model'] = new NERDocument(this.model.get('document'));
         this.showChildView('text', new NERParagraphsView(this.options));
 

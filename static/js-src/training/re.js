@@ -16,11 +16,11 @@ RETrainingActionLogic = Object({
         this.$el.html( template() );
 
         this.blinded_objects = {
-          0: [$('#tree-text'),],
+          0: [$('#re-text'),],
           1: [$('#c2'),],
           2: [$('#c1'),],
           3: [$('#selected-choice'), $('#rechoices-list')],
-          4: [$('#tree-confirm'),]
+          4: [$('#re-confirm'),]
         }
 
         $('.holder').remove().unbind();
@@ -380,19 +380,19 @@ RETrainingAction = Backbone.Marionette.View.extend({
     var self = this;
 
     if(this.getOption('training_data')) {
-      var RETreeApp = Backbone.Marionette.Application.extend({
-        region: '#tree-action-area',
+      var REApp = Backbone.Marionette.Application.extend({
+        region: '#re-action-area',
 
         onStart: function() {
           var main = this.getRegion();
-          main.show( new Tree({
+          main.show( new RE({
             'mode': 're',
             'training_data': self.getOption('training_data')
           }));
         }
       });
-      var tree_app = new RETreeApp();
-      tree_app.start();
+      var re_app = new REApp();
+      re_app.start();
     }
 
     this.onStartUpLogic();

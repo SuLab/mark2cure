@@ -2,13 +2,13 @@ if($('#er-training-basics').length) {
 
   if(ga) { ga('send', 'event', 'ER Training', 'start', 'basics-0'); }
 
-  YPet.addInitializer(function(options) {
+  NER.addInitializer(function(options) {
     var p = new Paragraph({'text': $('#er-training-basics').text().trim()});
-    YPet.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
-    YPet.addRegions({'basics': '#er-training-basics'});
-    YPet['basics'].show(new WordCollectionView({collection: p.get('words')}))
+    NER.AnnotationTypes = new AnnotationTypeList([{name: 'Disease', color: '#d1f3ff'}]);
+    NER.addRegions({'basics': '#er-training-basics'});
+    NER['basics'].show(new WordCollectionView({collection: p.get('words')}))
   });
-  YPet.start();
+  NER.start();
 
 
   $('a').on('click', function(evt) {
@@ -89,7 +89,7 @@ if($('#er-training-basics').length) {
     step_function();
   });
 
-  YPet['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
+  NER['basics'].currentView.collection.parentDocument.get('annotations').on('add', function(model, collection) {
     var model_json = model.toJSON();
 
     /* Unselect wrong answers */
@@ -107,7 +107,7 @@ if($('#er-training-basics').length) {
     if(model_json.text == "because I am ready to help" && collection.length == 1) { step_idx = 3; step_function(); }
   });
 
-  YPet['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
+  NER['basics'].currentView.collection.parentDocument.get('annotations').on('remove', function(model, collection) {
     var model_json = model.toJSON();
     if(model_json.text == "Biomedical" && collection.length == 0) { step_idx = 2; step_function(); }
   });

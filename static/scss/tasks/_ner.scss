@@ -1,7 +1,7 @@
-#ypet-action-area {
+#ner-action-area {
   flex: 1;
 
-  #ypet-navigation {
+  #ner-navigation {
     > .row {
       min-height: 34px;
       background-color: $color_gray_lightest;
@@ -23,7 +23,7 @@
     p { margin-bottom: 0px; }
   }
 
-  #ypet-message-center {
+  #ner-message-center {
     > .row {
       background-color: $color_error_red;
       color: $color_white;
@@ -34,14 +34,14 @@
     }
   }
 
-  #ypet-results {
+  #ner-results {
 
     .header-message {
       border: 1rem solid $color_gray_light;
       border-top: none;
     }
 
-    .ypet-info-message {
+    .ner-info-message {
       border: 1rem solid $color_gray_lightest;
 
       .nav-action-area {
@@ -81,8 +81,8 @@
     }
   }
 
-  #ypet-footer {
-    #ypet-footer-help {
+  #ner-footer {
+    #ner-footer-help {
 
       .list-group {
         .list-group-item i {
@@ -98,7 +98,7 @@
     }
   }
 
-  #ypet-footer-confirm {
+  #ner-footer-confirm {
     .confirm-button {
       background-color: $color_purple;
       color: $color_white;
@@ -117,7 +117,7 @@
 
 
 
-#ypet-text {
+#ner-text {
   .paragraphs {
     .paragraph-box {
 
@@ -177,7 +177,7 @@
 
       }
     }
-    .paragraph-box.ypet-disabled {
+    .paragraph-box.ner-disabled {
       cursor: not-allowed;
       .paragraph-content {
         cursor: not-allowed;
