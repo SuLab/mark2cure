@@ -36,7 +36,7 @@ def document_analysis(request, document_pk, relation_pk=None):
         relation_logic = 'AND `relation_relation`.`id` = {0}'.format(relation.pk)
 
     cmd_str = ""
-    with open('mark2cure/task/relation/commands/get-relations-analysis-for-user-and-document.sql', 'r') as f:
+    with open('mark2cure/task/re/commands/get-relations-analysis-for-user-and-document.sql', 'r') as f:
         cmd_str = f.read()
     cmd_str = cmd_str.format(
         document_id=document.pk,
@@ -93,7 +93,7 @@ def re_task_relationships_list(request, document_pk):
         View.objects.get_or_create(task_type='re', section=section, user=request.user)
 
     cmd_str = ""
-    with open('mark2cure/task/relation/commands/get-user-relations-for-document.sql', 'r') as f:
+    with open('mark2cure/task/re/commands/get-user-relations-for-document.sql', 'r') as f:
         cmd_str = f.read()
 
     # Start the DB Connection
@@ -142,7 +142,7 @@ def re_task_relationship_submit(request, document_pk, relation_pk):
     current_selection = request.POST.get('relation', None)
     if current_selection:
         cmd_str = ""
-        with open('mark2cure/task/relation/commands/get-relation-ann-exists.sql', 'r') as f:
+        with open('mark2cure/task/re/commands/get-relation-ann-exists.sql', 'r') as f:
             cmd_str = f.read()
         cmd_str = cmd_str.format(
             document_id=document.pk,

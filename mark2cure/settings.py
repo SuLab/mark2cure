@@ -50,7 +50,7 @@ INSTALLED_APPS = (
 
     'mark2cure.task',
     'mark2cure.task.ner',
-    'mark2cure.task.relation',
+    'mark2cure.task.re',
 
     'mark2cure.score',
     'mark2cure.common',

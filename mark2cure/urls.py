@@ -106,7 +106,7 @@ urlpatterns = [
     url(r'^task/ner/', include('mark2cure.task.ner.urls',
         namespace='task-ner')),
 
-    url(r'^task/re/', include('mark2cure.task.relation.urls',
+    url(r'^task/re/', include('mark2cure.task.re.urls',
         namespace='task-re')),
 
     url(r'^talk/', include('mark2cure.talk.urls',

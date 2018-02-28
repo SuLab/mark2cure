@@ -11,7 +11,7 @@ from django.template.defaultfilters import slugify
 from ..document.models import Annotation, Document, View
 from ..common.models import Group
 from ..task.models import Task, UserQuestRelationship
-from ..task.relation.models import RelationAnnotation
+from ..task.re.models import RelationAnnotation
 from ..task.ner.models import EntityRecognitionAnnotation
 from ..analysis.models import Report
 from ..score.models import Point

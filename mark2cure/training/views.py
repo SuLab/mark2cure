@@ -21,16 +21,8 @@ def route(request):
 
 
 @login_required
-def ner_home(request):
-    '''Starting HTML for all NER Training Javascript
-        (TODO) Not yet built
-    '''
-    return TemplateResponse(request, 'training/entity-recognition/home.html')
-
-
-@login_required
 def re_home(request):
     '''Starting HTML for all RE Training Javascript
     '''
-    return TemplateResponse(request, 'training/relation/home.html')
+    return TemplateResponse(request, 'training/re/home.html')
 

@@ -13,7 +13,7 @@ from ..common.models import Group
 from ..analysis.models import Report
 from ..task.models import Task
 from ..task.ner.models import EntityRecognitionAnnotation
-from ..task.relation.models import RelationAnnotation
+from ..task.re.models import RelationAnnotation
 from ..score.models import Point
 from . import training_data
 
