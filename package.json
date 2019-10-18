@@ -54,7 +54,7 @@
     "body-parser": "^1.17.2",
     "boom": "^2.10.1",
     "bootstrap": "^4.0.0-alpha.6",
-    "bower": "^1.8.0",
+    "bower": "^1.8.8",
     "brace-expansion": "^1.1.8",
     "braces": "^1.8.5",
     "brorand": "^1.1.0",
