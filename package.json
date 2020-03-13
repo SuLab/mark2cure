@@ -339,7 +339,7 @@
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.1",
     "minimatch": "^3.0.4",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "mkdirp": "^0.5.1",
     "moment": "^2.18.1",
     "ms": "^2.0.0",
