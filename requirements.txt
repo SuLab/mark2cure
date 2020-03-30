@@ -7,7 +7,7 @@ bcrypt==3.1.4
 beautifulsoup4==4.6.0
 billiard==3.3.0.23
 biopython==1.70
-bleach==2.1.1
+bleach==3.1.4
 blinker==1.4
 boto==2.48.0
 certifi==2017.7.27.1
