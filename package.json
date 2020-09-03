@@ -351,7 +351,7 @@
     "node-gyp": "^3.6.2",
     "node-libs-browser": "^2.0.0",
     "node-pre-gyp": "^0.6.36",
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.13.1",
     "nopt": "^3.0.6",
     "normalize-package-data": "^2.4.0",
     "normalize-path": "^2.1.1",
