@@ -535,7 +535,7 @@
     "y18n": "^3.2.1",
     "yallist": "^2.1.2",
     "yargs": "^6.6.0",
-    "yargs-parser": "^4.2.1"
+    "yargs-parser": "^13.1.2"
   },
   "devDependencies": {
     "fsevents": "^1.1.2"
