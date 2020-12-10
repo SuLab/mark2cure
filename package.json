@@ -235,7 +235,7 @@
     "indexof": "0.0.1",
     "inflight": "^1.0.6",
     "inherits": "^2.0.3",
-    "ini": "^1.3.4",
+    "ini": "^1.3.6",
     "inquirer": "^0.11.4",
     "interpret": "^1.0.3",
     "intro.js": "^0.9.0",
