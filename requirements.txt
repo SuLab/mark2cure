@@ -117,7 +117,7 @@ python-openid==2.2.5
 python-social-auth==0.3.6
 python3-openid==3.1.0
 pytz==2017.2
-PyYAML==3.12
+PyYAML==5.4
 pyzmq==16.0.2
 qtconsole==4.3.1
 rauth==0.7.3
