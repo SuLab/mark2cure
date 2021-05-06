@@ -223,7 +223,7 @@
     "hmac-drbg": "^1.0.1",
     "hoek": "^2.16.3",
     "homedir-polyfill": "^1.0.1",
-    "hosted-git-info": "^2.5.0",
+    "hosted-git-info": "^3.0.8",
     "http-errors": "^1.6.2",
     "http-signature": "^1.1.1",
     "https-browserify": "0.0.1",
