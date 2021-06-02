@@ -72,7 +72,7 @@ kombu==4.1.0
 lxml==4.0.0
 Mako==1.0.7
 Markdown==2.6.9
-markdown2==2.3.4
+markdown2==2.4.0
 markup==0.2
 MarkupSafe==1.0
 mccabe==0.6.1
