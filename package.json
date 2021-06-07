@@ -490,7 +490,7 @@
     "to-absolute-glob": "^0.1.1",
     "to-arraybuffer": "^1.0.1",
     "tough-cookie": "^2.3.2",
-    "trim-newlines": "^1.0.0",
+    "trim-newlines": "^4.0.1",
     "tty-browserify": "0.0.0",
     "tunnel-agent": "^0.6.0",
     "tweetnacl": "^0.14.5",
