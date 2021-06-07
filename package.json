@@ -183,7 +183,7 @@
     "getpass": "^0.1.7",
     "glob": "^7.1.2",
     "glob-base": "^0.3.0",
-    "glob-parent": "^2.0.0",
+    "glob-parent": "^5.1.2",
     "glob-stream": "^3.1.18",
     "glob-watcher": "0.0.6",
     "glob2base": "0.0.12",
