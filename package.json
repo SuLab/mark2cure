@@ -476,7 +476,7 @@
     "strip-json-comments": "^1.0.4",
     "supports-color": "^2.0.0",
     "tapable": "^0.2.8",
-    "tar": "^2.2.1",
+    "tar": "^4.4.15",
     "tar-pack": "^3.4.0",
     "ternary-stream": "^2.0.1",
     "tether": "^1.4.0",
