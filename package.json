@@ -383,7 +383,7 @@
     "path-dirname": "^1.0.2",
     "path-exists": "^1.0.0",
     "path-is-absolute": "^1.0.1",
-    "path-parse": "^1.0.5",
+    "path-parse": "^1.0.7",
     "path-root": "^0.1.1",
     "path-root-regex": "^0.1.2",
     "path-type": "^1.1.0",
