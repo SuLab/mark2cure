@@ -69,7 +69,7 @@ jupyter-client==5.1.0
 jupyter-console==5.2.0
 jupyter-core==4.3.0
 kombu==4.1.0
-lxml==4.0.0
+lxml==4.6.5
 Mako==1.0.7
 Markdown==2.6.9
 markdown2==2.3.4
