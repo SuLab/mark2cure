@@ -7,7 +7,7 @@
     "abbrev": "^1.1.0",
     "acorn": "^5.1.1",
     "acorn-dynamic-import": "^2.0.2",
-    "ajv": "^4.11.8",
+    "ajv": "^6.12.3",
     "ajv-keywords": "^1.5.1",
     "align-text": "^0.1.4",
     "amdefine": "^1.0.1",
