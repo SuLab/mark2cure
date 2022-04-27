@@ -31,7 +31,7 @@
     "asn1.js": "^4.9.1",
     "assert": "^1.4.1",
     "assert-plus": "^1.0.0",
-    "async": "^2.5.0",
+    "async": "^2.6.4",
     "async-each": "^1.0.1",
     "async-foreach": "^0.1.3",
     "asynckit": "^0.4.0",
