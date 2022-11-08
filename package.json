@@ -285,7 +285,7 @@
     "livereload-js": "^2.2.2",
     "load-json-file": "^1.1.0",
     "loader-runner": "^2.3.0",
-    "loader-utils": "^0.2.17",
+    "loader-utils": "^1.4.1",
     "lodash": "^4.17.4",
     "lodash._baseassign": "^3.2.0",
     "lodash._basecopy": "^3.0.1",
