@@ -401,7 +401,7 @@
     "pseudomap": "^1.0.2",
     "public-encrypt": "^4.0.0",
     "punycode": "^1.4.1",
-    "qs": "^6.5.0",
+    "qs": "^6.5.3",
     "querystring": "^0.2.0",
     "querystring-es3": "^0.2.1",
     "randomatic": "^1.1.7",
