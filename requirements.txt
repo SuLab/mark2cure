@@ -10,7 +10,7 @@ biopython==1.70
 bleach==2.1.1
 blinker==1.4
 boto==2.48.0
-certifi==2017.7.27.1
+certifi==2022.12.7
 cffi==1.11.2
 chardet==3.0.4
 configparser==3.5.0
